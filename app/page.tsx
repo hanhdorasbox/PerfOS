@@ -1,65 +1,197 @@
-import Image from "next/image";
+import { prisma } from '@/lib/db'
+import { calcGoalMetrics, calcQuantitativeProgress, calcMilestoneProgress, getQuarterProgress } from '@/lib/calculations'
+import GoalCard from '@/components/dashboard/GoalCard'
+import QuarterOverview from '@/components/dashboard/QuarterOverview'
+import AlertBanner from '@/components/dashboard/AlertBanner'
+import DailyCommandCenter from '@/components/dashboard/DailyCommandCenter'
 
-export default function Home() {
+export const dynamic = 'force-dynamic'
+
+export default async function Dashboard() {
+  const user = await prisma.user.findFirst()
+  if (!user) {
+    return (
+      <div style={{ color: '#FF6B6B', padding: '40px' }}>
+        No user found. Run: npx prisma db seed
+      </div>
+    )
+  }
+
+  const quarter = await prisma.quarter.findFirst({
+    where: { userId: user.id, status: 'active' },
+    include: {
+      goals: {
+        include: {
+          milestones: true,
+          progressUpdates: { orderBy: { loggedAt: 'asc' } },
+          weeklyTasks: { include: { goal: true } },
+        },
+      },
+      weeklyPlans: {
+        where: { status: 'active' },
+        include: { tasks: { include: { goal: true } } },
+        orderBy: { weekStart: 'desc' },
+        take: 1,
+      },
+    },
+  })
+
+  const fitnessLogs = await prisma.fitnessLog.findMany({
+    where: { userId: user.id },
+    orderBy: { date: 'desc' },
+    take: 3,
+  })
+
+  // Use most recently created strategy (draft or active) — a fresh draft overrides an older active
+  const activeStrategy = await prisma.fitnessStrategy.findFirst({
+    where: { userId: user.id, status: { in: ['active', 'draft'] } },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  // Meal plan: find the one whose week contains today
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const todayDayOfWeek = today.getDay()
+
+  const todayMealPlan = await prisma.mealPlan.findFirst({
+    where: {
+      userId: user.id,
+      status: { in: ['approved', 'draft'] },
+      weekStart: { lte: today },
+    },
+    include: { meals: true },
+    orderBy: { weekStart: 'desc' },
+  })
+
+  const todayMeals = todayMealPlan?.meals.filter(m => m.dayOfWeek === todayDayOfWeek) ?? []
+
+  // Daily briefing (cached for today)
+  const todayStr = new Date().toISOString().split('T')[0]
+  const briefing = await prisma.dailyBriefing.findUnique({
+    where: { userId_date: { userId: user.id, date: todayStr } },
+  })
+
+  if (!quarter) {
+    return (
+      <div style={{ color: '#F2C063', padding: '40px' }}>
+        No active quarter. Go to <a href="/quarterly" style={{ color: '#B4A7E5' }}>Quarterly</a> to create one.
+      </div>
+    )
+  }
+
+  // ── Calculate goal metrics ────────────────────────────────────────────────
+  const goalsWithMetrics = quarter.goals.map(goal => {
+    let progressPct = 0
+    if (
+      goal.trackingType === 'QUANTITATIVE' &&
+      goal.startValue != null &&
+      goal.targetValue != null &&
+      goal.currentValue != null
+    ) {
+      progressPct = calcQuantitativeProgress(goal.startValue, goal.currentValue, goal.targetValue)
+    } else if (goal.trackingType === 'MILESTONE') {
+      progressPct = calcMilestoneProgress(goal.milestones)
+    }
+    const metrics = calcGoalMetrics({
+      startDate: quarter.startDate,
+      deadline: goal.deadline,
+      progressPct,
+      progressHistory: goal.progressUpdates.map(u => ({ loggedAt: u.loggedAt, pct: u.value })),
+    })
+    return { ...goal, progressPct, metrics }
+  })
+
+  const qProgress = getQuarterProgress(quarter.startDate, quarter.endDate)
+  const totalWeight = goalsWithMetrics.reduce((s, g) => s + g.priorityWeight, 0)
+  const weightedCompletion = goalsWithMetrics.reduce((sum, g) => sum + g.progressPct * g.priorityWeight, 0) / Math.max(1, totalWeight)
+
+  const alerts = goalsWithMetrics.filter(
+    g => g.metrics.status === 'critical' || g.metrics.status === 'at_risk'
+  )
+
+  const currentWeekPlan = quarter.weeklyPlans[0]
+  const weekTasks = currentWeekPlan?.tasks ?? []
+  const weeklyPlanId = currentWeekPlan?.id
+
+  // Calendar connection status
+  const calendarToken = await prisma.googleCalendarToken.findUnique({ where: { userId: user.id } })
+  const calendarConnected = !!calendarToken
+  const calendarIcsConnected = !!user.calendarIcsSources
+
+  // Serialize briefing for client component
+  const serializedBriefing = briefing
+    ? {
+        ...briefing,
+        generatedAt: briefing.generatedAt.toISOString(),
+      }
+    : null
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+
+      {/* ── SECTION 1: Daily Command Center ── */}
+      <div className="animate-entrance">
+      <DailyCommandCenter
+        briefing={serializedBriefing}
+        goals={goalsWithMetrics}
+        tasks={weekTasks}
+        strategy={activeStrategy}
+        todayMeals={todayMeals}
+        tomorrowMeals={[]}
+        fitnessLog={fitnessLogs[0] ?? null}
+        userId={user.id}
+        quarterName={quarter.name}
+        weeklyPlanId={weeklyPlanId}
+        calendarConnected={calendarConnected}
+        calendarIcsConnected={calendarIcsConnected}
+      />
+      </div>
+
+      {/* ── SECTION 2: Strategic Overview ── */}
+      <div className="animate-entrance-delay-1" style={{ marginTop: 4 }}>
+        <div style={{
+          fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em',
+          textTransform: 'uppercase', color: '#76746E', marginBottom: 16,
+        }}>
+          — Strategic Overview
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {alerts.length > 0 && (
+          <AlertBanner
+            alerts={alerts.map(g => ({
+              goalTitle: g.title,
+              status: g.metrics.status,
+              message: g.metrics.recommendation,
+            }))}
+          />
+        )}
+
+        <div style={{ marginTop: alerts.length > 0 ? 16 : 0 }}>
+          <QuarterOverview
+            quarter={quarter}
+            qProgress={qProgress}
+            weightedCompletion={weightedCompletion}
+            goalCount={quarter.goals.length}
+          />
         </div>
-      </main>
+
+        {/* Active Goals — full width */}
+        <div style={{ marginTop: 20 }}>
+          <h2 style={{
+            fontSize: '11px', fontWeight: 700, letterSpacing: '0.18em',
+            textTransform: 'uppercase', color: '#76746E', marginBottom: 12,
+          }}>
+            — Active Goals
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {goalsWithMetrics.map((goal, i) => (
+              <div key={goal.id} className={`animate-entrance-delay-${Math.min(i + 2, 6)}`}>
+                <GoalCard goal={goal} metrics={goal.metrics} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }

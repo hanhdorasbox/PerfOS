@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // xlsx and prisma use filesystem operations — mark as server-only external packages
+  // to prevent Turbopack from over-tracing the project tree
+  serverExternalPackages: ['xlsx', '@prisma/client', 'prisma'],
+
+  // Silence the NFT tracing warning caused by dynamic fs access in lib/excel.ts
+  outputFileTracingExcludes: {
+    '*': ['**/*.xlsx', '**/data/**'],
+  },
 };
 
 export default nextConfig;
