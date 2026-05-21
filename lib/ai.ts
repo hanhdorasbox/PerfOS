@@ -4,7 +4,7 @@ const client = createAnthropicClient()
 
 export async function generateQuarterlyPlan(goals: string[], context: string): Promise<any> {
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-5',
+    model: 'claude-sonnet-4-6',
     max_tokens: 4000,
     system: `You are a strategic performance advisor. Convert user goal descriptions into structured quarterly plans.
 Return ONLY valid JSON. No markdown, no explanation.
@@ -35,7 +35,7 @@ Schema: {
 
 export async function askAdvisor(question: string, dashboardData: any): Promise<string> {
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-5',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1000,
     system: `You are a strategic performance advisor — direct, analytical, no fluff. You have access to the user's performance dashboard data. Reference specific numbers, goals, and deadlines. Never give vague motivational advice. Be like a senior chief of staff reviewing a performance report.`,
     messages: [{

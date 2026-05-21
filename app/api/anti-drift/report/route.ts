@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
     .join('\n\n')
 
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-5',
+    model: 'claude-sonnet-4-6',
     max_tokens: 4096,
     system: `You are a strategic performance analyst. Analyze work distribution data and return ONLY valid JSON. No markdown, no explanation.`,
     messages: [

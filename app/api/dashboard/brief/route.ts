@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
   // Call Anthropic
   const match = (
     await client.messages.create({
-      model: 'claude-sonnet-4-5',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4096,
       system: `You are a personal chief of staff and daily intelligence briefing system. Generate two things in one JSON response:
 

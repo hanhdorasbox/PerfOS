@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
   const workItemSummary = workItems.slice(0, 20).map(w => `[${w.category}] ${w.title}`)
 
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-5',
+    model: 'claude-sonnet-4-6',
     max_tokens: 6000,
     system: `You are a personal chief of staff — direct, analytical, no fluff. Generate an executive performance briefing. Return ONLY valid JSON with this exact structure:
 {
