@@ -21,7 +21,7 @@ export async function GET() {
   let testUrl: string | null = null
   try {
     const testBlob = await put('__blob_check_test.txt', 'ok', {
-      access: 'public',
+      access: 'private',
       addRandomSuffix: false,
     })
     testUrl = testBlob.url

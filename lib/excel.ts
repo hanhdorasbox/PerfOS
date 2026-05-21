@@ -13,7 +13,19 @@ const TMP_PATH = path.join(os.tmpdir(), 'finance-tracker.xlsx')
 
 /** Download workbook from Vercel Blob URL into /tmp and return parsed workbook */
 export async function readWorkbookFromBlob(blobUrl: string): Promise<XLSX.WorkBook> {
-  const res = await fetch(blobUrl, { cache: 'no-store' })
+  // For private blobs, use the Blob SDK to get a fresh signed download URL
+  const { head } = await import('@vercel/blob')
+  let fetchUrl = blobUrl
+  try {
+    const meta = await head(blobUrl)
+    // head() returns the blob metadata; for private blobs use the downloadUrl
+    if ((meta as { downloadUrl?: string }).downloadUrl) {
+      fetchUrl = (meta as { downloadUrl: string }).downloadUrl
+    }
+  } catch {
+    // If head() fails (e.g. public URL), fall back to direct fetch
+  }
+  const res = await fetch(fetchUrl, { cache: 'no-store' })
   if (!res.ok) throw new Error(`Failed to download workbook from Blob: ${res.status}`)
   const buffer = await res.arrayBuffer()
   fs.writeFileSync(TMP_PATH, Buffer.from(buffer))
@@ -26,7 +38,7 @@ export async function saveWorkbookToBlob(wb: XLSX.WorkBook): Promise<string> {
   XLSX.writeFile(wb, TMP_PATH)
   const buffer = fs.readFileSync(TMP_PATH)
   const blob = await put('finance-tracker.xlsx', buffer, {
-    access: 'public',
+    access: 'private', // Blob store is private-only
     addRandomSuffix: false,
   })
   return blob.url
