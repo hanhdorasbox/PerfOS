@@ -1,11 +1,36 @@
 import * as XLSX from 'xlsx'
 import path from 'path'
+import fs from 'fs'
+import os from 'os'
 
 // Path resolution: FINANCE_EXCEL_PATH env var → data/finance-tracker.xlsx (local dev)
-// On Vercel, set FINANCE_EXCEL_PATH to a writable location or use Blob Storage (see README)
+// On Vercel, use Vercel Blob (blobUrl stored in FinanceWorkbook DB record)
 export const WORKBOOK_PATH =
   process.env.FINANCE_EXCEL_PATH ||
   path.join(process.cwd(), 'data', 'finance-tracker.xlsx')
+
+const TMP_PATH = path.join(os.tmpdir(), 'finance-tracker.xlsx')
+
+/** Download workbook from Vercel Blob URL into /tmp and return parsed workbook */
+export async function readWorkbookFromBlob(blobUrl: string): Promise<XLSX.WorkBook> {
+  const res = await fetch(blobUrl, { cache: 'no-store' })
+  if (!res.ok) throw new Error(`Failed to download workbook from Blob: ${res.status}`)
+  const buffer = await res.arrayBuffer()
+  fs.writeFileSync(TMP_PATH, Buffer.from(buffer))
+  return XLSX.readFile(TMP_PATH)
+}
+
+/** Write workbook to /tmp then upload to Vercel Blob; returns new blob URL */
+export async function saveWorkbookToBlob(wb: XLSX.WorkBook): Promise<string> {
+  const { put } = await import('@vercel/blob')
+  XLSX.writeFile(wb, TMP_PATH)
+  const buffer = fs.readFileSync(TMP_PATH)
+  const blob = await put('finance-tracker.xlsx', buffer, {
+    access: 'public',
+    addRandomSuffix: false,
+  })
+  return blob.url
+}
 
 export const CATEGORIES = [
   'incomes',
