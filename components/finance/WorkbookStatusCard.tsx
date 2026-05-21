@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { put } from '@vercel/blob/client'
 
 interface WorkbookData {
   id: string
@@ -54,24 +55,24 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
     setUploading(true)
     startProgress()
     try {
-      // Stream file via our Edge-runtime route → Vercel Blob (no 4.5 MB serverless limit)
-      const form = new FormData()
-      form.append('file', file)
+      // Step 1: get a 10-minute client token (default is 30s — too short for large files)
+      const tokenRes = await fetch(`/api/finance/workbook/blob-token?userId=${userId}`)
+      if (!tokenRes.ok) {
+        const body = await tokenRes.json().catch(() => ({})) as { error?: string }
+        throw new Error(body.error || 'Failed to get upload token')
+      }
+      const { clientToken, pathname } = await tokenRes.json() as { clientToken: string; pathname: string }
 
-      const uploadRes = await fetch(`/api/finance/workbook/upload?userId=${userId}`, {
-        method: 'POST',
-        body: form,
+      // Step 2: upload directly from browser → Vercel Blob CDN with the long-lived token
+      const blob = await put(pathname, file, {
+        token: clientToken,
+        access: 'public',
       })
       finishProgress()
 
-      if (!uploadRes.ok) {
-        const body = await uploadRes.json().catch(() => ({})) as { error?: string }
-        throw new Error(body.error || `Upload failed (${uploadRes.status})`)
-      }
+      const blobUrl = blob.url
 
-      const { blobUrl } = await uploadRes.json() as { blobUrl: string }
-
-      // Save blob URL to DB
+      // Step 3: save blob URL to DB
       const saveRes = await fetch('/api/finance/workbook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
