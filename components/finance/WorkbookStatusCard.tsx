@@ -46,6 +46,14 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
     const killswitch = setTimeout(() => controller.abort(), 5 * 60 * 1000)
 
     try {
+      // Step 0: quick server-side Blob store health check
+      setUploadPhase(1)
+      const checkRes = await fetch('/api/finance/workbook/check-blob', { signal: controller.signal })
+      const check = await checkRes.json() as { ok: boolean; message: string; fix?: string }
+      if (!check.ok) {
+        throw new Error(`${check.message}${check.fix ? `\n\n${check.fix}` : ''}`)
+      }
+
       // Step 1: get a 10-minute client token (server-side; default is 30s — too short)
       const tokenRes = await fetch(`/api/finance/workbook/blob-token?userId=${userId}`, {
         signal: controller.signal,
@@ -57,13 +65,11 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
       const { clientToken, pathname } = await tokenRes.json() as { clientToken: string; pathname: string }
 
       // Step 2: upload directly from browser → Vercel Blob CDN
-      // Use multipart=true: splits file into 8 MB chunks — avoids single-PUT server timeouts
       setUploadPhase(2)
       setUploadPct(0)
       const blob = await put(pathname, file, {
         token: clientToken,
         access: 'public',
-        multipart: true,
         abortSignal: controller.signal,
         onUploadProgress: ({ percentage }) => {
           setUploadPct(Math.round(Math.min(percentage, 98)))
