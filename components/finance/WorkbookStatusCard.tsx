@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { upload } from '@vercel/blob/client'
 
 interface WorkbookData {
   id: string
@@ -54,34 +53,38 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
     setUploadErr(null)
     setUploading(true)
     startProgress()
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 60_000) // 60s timeout
     try {
-      // Upload directly from browser to Vercel Blob (bypasses 4.5MB serverless limit)
-      const blob = await upload(`finance-tracker-${userId}.xlsx`, file, {
-        access: 'public',
-        handleUploadUrl: `/api/finance/workbook/upload?userId=${userId}`,
-        abortSignal: controller.signal,
+      // Stream file via our Edge-runtime route → Vercel Blob (no 4.5 MB serverless limit)
+      const form = new FormData()
+      form.append('file', file)
+
+      const uploadRes = await fetch(`/api/finance/workbook/upload?userId=${userId}`, {
+        method: 'POST',
+        body: form,
       })
-      clearTimeout(timeout)
       finishProgress()
+
+      if (!uploadRes.ok) {
+        const body = await uploadRes.json().catch(() => ({})) as { error?: string }
+        throw new Error(body.error || `Upload failed (${uploadRes.status})`)
+      }
+
+      const { blobUrl } = await uploadRes.json() as { blobUrl: string }
+
       // Save blob URL to DB
-      const res = await fetch('/api/finance/workbook', {
+      const saveRes = await fetch('/api/finance/workbook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, blobUrl: blob.url }),
+        body: JSON.stringify({ userId, blobUrl }),
       })
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({})) as { error?: string }
+      if (!saveRes.ok) {
+        const body = await saveRes.json().catch(() => ({})) as { error?: string }
         throw new Error(body.error || 'Failed to save workbook URL')
       }
-      if (onUploadWorkbook) await onUploadWorkbook(blob.url)
+      if (onUploadWorkbook) await onUploadWorkbook(blobUrl)
     } catch (err) {
-      clearTimeout(timeout)
       finishProgress()
-      const msg = err instanceof Error
-        ? (err.name === 'AbortError' ? 'Upload timed out. Check your connection and try again.' : err.message)
-        : 'Upload failed'
+      const msg = err instanceof Error ? err.message : 'Upload failed'
       setUploadErr(msg)
     } finally {
       setUploading(false)
