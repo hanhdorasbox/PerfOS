@@ -8,6 +8,7 @@ import {
 import Link from 'next/link'
 import QuarterlyGoalRow from '@/components/quarterly/QuarterlyGoalRow'
 import GoalManager from '@/components/quarterly/GoalManager'
+import CreateQuarterForm from '@/components/quarterly/CreateQuarterForm'
 
 export const dynamic = 'force-dynamic'
 
@@ -54,7 +55,10 @@ export default async function QuarterlyPage() {
     return (
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 20px' }}>
         <h1 style={{ fontSize: 28, fontWeight: 800, color: '#FAFAFA' }}>Quarterly Plans</h1>
-        <div style={{ color: '#F2C063', marginTop: 20 }}>No active quarter. Create one to get started.</div>
+        <p style={{ color: '#76746E', marginTop: 8, fontSize: 14 }}>
+          Start by creating a quarter, then add your goals.
+        </p>
+        <CreateQuarterForm />
       </div>
     )
   }
