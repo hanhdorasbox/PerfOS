@@ -360,7 +360,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
       <Field>
         <Label>Nutrition structure this quarter</Label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {[['calorie-tracking', 'Full calorie tracking'], ['protein-only', 'Protein-focused only'], ['meal-plan', 'Use PerfOS meal planning'], ['minimal', 'Minimal structure']].map(([val, lbl]) => (
+          {[['calorie-tracking', 'Full calorie tracking'], ['protein-only', 'Protein-focused only'], ['meal-plan', 'Use Project Hanh meal planning'], ['minimal', 'Minimal structure']].map(([val, lbl]) => (
             <ChoiceButton key={val} label={lbl} selected={nutritionStructure === val} onClick={() => setNutritionStructure(val)} />
           ))}
         </div>
