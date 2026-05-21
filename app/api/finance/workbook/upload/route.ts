@@ -3,6 +3,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return NextResponse.json(
+      { error: 'BLOB_READ_WRITE_TOKEN is not configured. Add it to your Vercel environment variables.' },
+      { status: 500 }
+    )
+  }
+
   const body = (await req.json()) as HandleUploadBody
   const userId = req.nextUrl.searchParams.get('userId') || ''
 

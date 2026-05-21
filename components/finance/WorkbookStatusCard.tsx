@@ -24,6 +24,24 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
   const fileRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [uploadErr, setUploadErr] = useState<string | null>(null)
+  const [uploadPct, setUploadPct] = useState(0)
+
+  // Simulate upload progress (real progress not available via @vercel/blob/client)
+  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const startProgress = () => {
+    setUploadPct(0)
+    progressRef.current = setInterval(() => {
+      setUploadPct(prev => {
+        if (prev >= 90) { clearInterval(progressRef.current!); return 90 }
+        return prev + Math.random() * 8
+      })
+    }, 400)
+  }
+  const finishProgress = () => {
+    clearInterval(progressRef.current!)
+    setUploadPct(100)
+    setTimeout(() => setUploadPct(0), 800)
+  }
 
   const formatDate = (iso: string | null) => {
     if (!iso) return '—'
@@ -35,22 +53,36 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
     if (!file) return
     setUploadErr(null)
     setUploading(true)
+    startProgress()
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 60_000) // 60s timeout
     try {
       // Upload directly from browser to Vercel Blob (bypasses 4.5MB serverless limit)
       const blob = await upload(`finance-tracker-${userId}.xlsx`, file, {
         access: 'public',
         handleUploadUrl: `/api/finance/workbook/upload?userId=${userId}`,
+        abortSignal: controller.signal,
       })
+      clearTimeout(timeout)
+      finishProgress()
       // Save blob URL to DB
       const res = await fetch('/api/finance/workbook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, blobUrl: blob.url }),
       })
-      if (!res.ok) throw new Error('Failed to save workbook URL')
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string }
+        throw new Error(body.error || 'Failed to save workbook URL')
+      }
       if (onUploadWorkbook) await onUploadWorkbook(blob.url)
     } catch (err) {
-      setUploadErr(err instanceof Error ? err.message : 'Upload failed')
+      clearTimeout(timeout)
+      finishProgress()
+      const msg = err instanceof Error
+        ? (err.name === 'AbortError' ? 'Upload timed out. Check your connection and try again.' : err.message)
+        : 'Upload failed'
+      setUploadErr(msg)
     } finally {
       setUploading(false)
       if (fileRef.current) fileRef.current.value = ''
@@ -79,20 +111,35 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
               disabled={uploading}
               className="btn-motion"
               style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 background: 'rgba(180,167,229,0.15)',
                 border: '1px solid rgba(180,167,229,0.4)',
                 color: '#B4A7E5', padding: '10px 22px', borderRadius: 8,
                 fontSize: 13, fontWeight: 600, cursor: uploading ? 'not-allowed' : 'pointer',
-                opacity: uploading ? 0.6 : 1,
+                opacity: uploading ? 0.9 : 1, minWidth: 160,
               }}
             >
-              {uploading ? '⏳ Uploading…' : '☁️ Upload Workbook'}
+              <span>{uploading ? `Uploading… ${Math.round(uploadPct)}%` : '☁️ Upload Workbook'}</span>
+              {uploading && (
+                <div style={{ width: '100%', height: 3, background: 'rgba(180,167,229,0.2)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%', borderRadius: 2,
+                    background: 'rgba(180,167,229,0.8)',
+                    width: `${uploadPct}%`,
+                    transition: 'width 0.3s ease',
+                  }} />
+                </div>
+              )}
             </button>
           </div>
         </div>
         {uploadErr && (
-          <p style={{ color: '#FF6B6B', fontSize: 12, marginTop: 4 }}>{uploadErr}</p>
+          <div style={{
+            background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.3)',
+            color: '#FF6B6B', padding: '8px 12px', borderRadius: 6, fontSize: 12, marginTop: 4,
+          }}>
+            {uploadErr}
+          </div>
         )}
       </div>
     )
@@ -145,16 +192,35 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
             disabled={uploading}
             title="Replace workbook"
             style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
               background: 'rgba(255,255,255,0.05)',
               border: '1px solid rgba(255,255,255,0.1)',
-              color: '#76746E', padding: '3px 10px', borderRadius: 6,
-              fontSize: 11, cursor: uploading ? 'not-allowed' : 'pointer',
+              color: '#76746E', padding: '4px 10px', borderRadius: 6,
+              fontSize: 11, cursor: uploading ? 'not-allowed' : 'pointer', minWidth: 80,
             }}
           >
-            {uploading ? '⏳' : '↑ Replace'}
+            <span>{uploading ? `${Math.round(uploadPct)}%` : '↑ Replace'}</span>
+            {uploading && (
+              <div style={{ width: '100%', height: 2, background: 'rgba(255,255,255,0.08)', borderRadius: 1, overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%', borderRadius: 1,
+                  background: 'rgba(180,167,229,0.6)',
+                  width: `${uploadPct}%`,
+                  transition: 'width 0.3s ease',
+                }} />
+              </div>
+            )}
           </button>
         </div>
       </div>
+      {uploadErr && (
+        <div style={{
+          background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.3)',
+          color: '#FF6B6B', padding: '8px 12px', borderRadius: 6, fontSize: 12, marginTop: 12,
+        }}>
+          {uploadErr}
+        </div>
+      )}
 
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12,

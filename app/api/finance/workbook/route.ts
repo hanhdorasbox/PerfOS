@@ -26,8 +26,9 @@ export async function GET(req: NextRequest) {
       include: { _count: { select: { transactions: true } } },
     })
 
-    // Check whether the actual file exists on disk
-    const fileExists = wb ? existsSync(wb.filePath) : false
+    // For cloud workbooks (blob URL), skip local file check
+    const isCloudWorkbook = wb?.blobUrl || wb?.filePath?.startsWith('http')
+    const fileExists = wb ? (isCloudWorkbook ? true : existsSync(wb.filePath)) : false
 
     return NextResponse.json({
       connected: !!wb && fileExists,
