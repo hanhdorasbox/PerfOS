@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useIsMobile } from '@/lib/useIsMobile'
 
 const primaryLinks = [
@@ -132,12 +133,14 @@ function DesktopNav() {
   )
 }
 
-// ─── Mobile nav (hamburger + drawer) ─────────────────────────────────────────
+// ─── Mobile nav (hamburger + portal drawer) ──────────────────────────────────
 
 function MobileNav() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
+  useEffect(() => { setMounted(true) }, [])
   useEffect(() => { setOpen(false) }, [pathname])
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
@@ -146,51 +149,40 @@ function MobileNav() {
 
   const isActive = (href: string) => pathname === href || (href !== '/' && pathname.startsWith(href))
 
-  return (
+  const drawer = mounted ? createPortal(
     <>
-      <button
-        onClick={() => setOpen(v => !v)}
-        aria-label="Menu"
-        style={{
-          width: 36, height: 36, borderRadius: 8,
-          background: open ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)',
-          border: '1px solid rgba(255,255,255,0.1)',
-          cursor: 'pointer', color: '#FAFAFA', fontSize: 18,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}
-      >
-        {open ? '✕' : '☰'}
-      </button>
-
       {/* Backdrop */}
-      {open && (
-        <div
-          onClick={() => setOpen(false)}
-          style={{
-            position: 'fixed', inset: 0, top: 52,
-            background: 'rgba(0,0,0,0.6)', zIndex: 90,
-            backdropFilter: 'blur(4px)',
-          }}
-        />
-      )}
+      <div
+        onClick={() => setOpen(false)}
+        style={{
+          position: 'fixed', inset: 0, top: 52,
+          background: 'rgba(0,0,0,0.65)',
+          backdropFilter: 'blur(4px)',
+          zIndex: 990,
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? 'all' : 'none',
+          transition: 'opacity 0.25s ease',
+        }}
+      />
 
       {/* Drawer */}
       <div style={{
         position: 'fixed', top: 52, right: 0, bottom: 0,
         width: '80vw', maxWidth: 320,
-        background: 'rgba(8,8,10,0.98)',
-        borderLeft: '1px solid rgba(255,255,255,0.08)',
-        zIndex: 95,
+        background: 'rgba(8,8,10,0.99)',
+        borderLeft: '1px solid rgba(255,255,255,0.1)',
+        zIndex: 991,
         overflowY: 'auto',
-        padding: '16px 12px 40px',
+        WebkitOverflowScrolling: 'touch',
+        padding: '16px 12px 60px',
         transform: open ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 0.25s cubic-bezier(0.22,1,0.36,1)',
+        transition: 'transform 0.28s cubic-bezier(0.22,1,0.36,1)',
       }}>
         {/* Primary links */}
-        <div style={{ marginBottom: 8 }}>
+        <div style={{ marginBottom: 12 }}>
           {primaryLinks.map(link => (
             <Link key={link.href} href={link.href} style={{
-              display: 'block', padding: '11px 14px', borderRadius: 10, marginBottom: 2,
+              display: 'block', padding: '12px 14px', borderRadius: 10, marginBottom: 2,
               fontSize: 15, fontWeight: 600, textDecoration: 'none',
               color: isActive(link.href) ? '#FAFAFA' : '#B8B6B0',
               background: isActive(link.href) ? 'rgba(255,255,255,0.1)' : 'transparent',
@@ -198,13 +190,15 @@ function MobileNav() {
           ))}
         </div>
 
+        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0 12px' }} />
+
         {/* Groups */}
         {menuGroups.map(group => (
-          <div key={group.label} style={{ marginBottom: 16 }}>
+          <div key={group.label} style={{ marginBottom: 18 }}>
             <div style={{
-              fontSize: 10, fontWeight: 800, letterSpacing: '0.12em',
+              fontSize: 10, fontWeight: 800, letterSpacing: '0.14em',
               textTransform: 'uppercase', color: '#76746E',
-              padding: '4px 14px 8px',
+              padding: '0 14px 8px',
             }}>
               {group.emoji} {group.label}
             </div>
@@ -212,7 +206,7 @@ function MobileNav() {
               <div key={link.href}>
                 {link.separator && <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '4px 14px 6px' }} />}
                 <Link href={link.href} style={{
-                  display: 'block', padding: '10px 14px', borderRadius: 10, marginBottom: 2,
+                  display: 'block', padding: '11px 14px', borderRadius: 10, marginBottom: 2,
                   fontSize: 14, fontWeight: 600, textDecoration: 'none',
                   color: isActive(link.href) ? '#FAFAFA' : '#B8B6B0',
                   background: isActive(link.href) ? 'rgba(255,255,255,0.1)' : 'transparent',
@@ -222,6 +216,27 @@ function MobileNav() {
           </div>
         ))}
       </div>
+    </>,
+    document.body
+  ) : null
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(v => !v)}
+        aria-label="Menu"
+        style={{
+          width: 36, height: 36, borderRadius: 8,
+          background: open ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)',
+          border: '1px solid rgba(255,255,255,0.12)',
+          cursor: 'pointer', color: '#FAFAFA', fontSize: 18,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}
+      >
+        {open ? '✕' : '☰'}
+      </button>
+      {drawer}
     </>
   )
 }
