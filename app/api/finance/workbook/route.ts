@@ -47,12 +47,31 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await req.json() as { userId?: string }
+    const body = await req.json() as { userId?: string; blobUrl?: string }
+    const { userId, blobUrl } = body
     if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 })
 
-    // Use env var or project-local data/ directory — never a hardcoded user path
-    const resolvedPath = WORKBOOK_PATH
+    // Cloud blob connection (after client-side upload)
+    if (blobUrl) {
+      const wb = await prisma.financeWorkbook.upsert({
+        where: { userId },
+        create: {
+          userId,
+          filePath: blobUrl,
+          fileName: 'Finance Tracker.xlsx',
+          blobUrl,
+        },
+        update: {
+          blobUrl,
+          filePath: blobUrl,
+          fileName: 'Finance Tracker.xlsx',
+        },
+      })
+      return NextResponse.json({ ...wb, fileExists: true })
+    }
 
+    // Local file connection
+    const resolvedPath = WORKBOOK_PATH
     if (!existsSync(resolvedPath)) {
       return NextResponse.json({
         error: `Excel file not found at: ${resolvedPath}. Place your Finance Tracker .xlsx file at this path, or set the FINANCE_EXCEL_PATH environment variable.`,
