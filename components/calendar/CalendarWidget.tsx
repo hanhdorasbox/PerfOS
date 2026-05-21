@@ -235,7 +235,7 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
         <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: 12 }}>Calendar</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', padding: '8px 0' }}>
           <div style={{ fontSize: 22, marginBottom: 4 }}>📅</div>
-          <div style={{ fontSize: 12, color: '#76746E', textAlign: 'center', lineHeight: 1.5 }}>Connect your calendars so PerfOS can read your schedule</div>
+          <div style={{ fontSize: 12, color: '#76746E', textAlign: 'center', lineHeight: 1.5 }}>Connect your calendars so Project Hanh can read your schedule</div>
           <button onClick={() => setShowIcsForm(true)} className="btn-motion" style={{ padding: '8px 20px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#B4A7E5', width: '100%' }}>
             📅 Connect via ICS URL (recommended)
           </button>

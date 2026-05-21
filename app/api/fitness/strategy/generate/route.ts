@@ -140,7 +140,7 @@ Return JSON with this exact structure:
       "purpose": "string — 1 sentence",
       "focus": ["string", "string"],
       "execute": ["string", "string", "string"],
-      "monitor": "string — what PerfOS will track",
+      "monitor": "string — what Project Hanh will track",
       "decisionPoint": "string — what you evaluate at end of phase"
     },
     {

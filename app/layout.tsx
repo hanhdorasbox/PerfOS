@@ -4,7 +4,7 @@ import NavLinks from "@/components/NavLinks";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "PerfOS — Performance Operating System",
+  title: "Project Hanh — Performance Operating System",
   description: "Strategic performance command center",
 };
 
@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           borderBottom: '1px solid rgba(255,255,255,0.06)',
           padding: '0 24px', display: 'flex', alignItems: 'center', gap: '4px', height: '52px', overflow: 'visible'
         }}>
-          <Link href="/" style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '-0.03em', marginRight: '16px', color: '#FAFAFA', textDecoration: 'none' }}>PerfOS</Link>
+          <Link href="/" style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '-0.03em', marginRight: '16px', color: '#FAFAFA', textDecoration: 'none' }}>Project Hanh</Link>
           <NavLinks />
         </nav>
         <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px 80px' }}>

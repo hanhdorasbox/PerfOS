@@ -147,7 +147,7 @@ function RoadmapPhase({ phase }: { phase: RoadmapPhaseData }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div style={{ padding: '8px 12px', background: 'rgba(96,165,250,0.06)', borderRadius: 8, border: '1px solid rgba(96,165,250,0.15)' }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>PerfOS monitors</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Project Hanh monitors</div>
               <p style={{ fontSize: 12, color: '#B8B6B0', margin: 0, lineHeight: 1.5 }}>{phase.monitor}</p>
             </div>
             <div style={{ padding: '8px 12px', background: 'rgba(242,192,99,0.06)', borderRadius: 8, border: '1px solid rgba(242,192,99,0.15)' }}>
@@ -529,7 +529,7 @@ export default function FitnessStrategyView({ strategy }: Props) {
             <DefRow label="Approach" value={nutr.approach} />
             <DefRow label="Protein" value={nutr.proteinTarget ? `${nutr.proteinTarget}g / day` : null} accent="#6BE3A4" />
             <DefRow label="Calories" value={nutr.caloricTracking ? 'Tracking' : 'Not tracking'} />
-            <DefRow label="Meal plan" value={nutr.mealPlanLinked ? 'Linked to PerfOS' : null} accent="#B4A7E5" />
+            <DefRow label="Meal plan" value={nutr.mealPlanLinked ? 'Linked to Project Hanh' : null} accent="#B4A7E5" />
             <DefRow label="Key rule" value={nutr.keyRule} />
             {nutr.rationale && (
               <div style={{ marginTop: 6, padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 6 }}>
