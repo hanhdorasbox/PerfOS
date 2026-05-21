@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db'
 import {
   readWorkbook,
   saveWorkbook,
+  readWorkbookFromBlob,
+  saveWorkbookToBlob,
   appendTransactions,
   dateToSerial,
   monthToSerial,
@@ -34,15 +36,19 @@ export async function POST(
     (t) => t.txStatus !== 'excluded' && t.txStatus !== 'duplicate'
   )
 
+  // Look up whether this user has a blob-connected workbook
+  const workbookRecord = await prisma.financeWorkbook.findUnique({ where: { userId } })
+  const blobUrl = workbookRecord?.blobUrl
+
   // Write to Excel — fail gracefully if file is unavailable
   let wb
   try {
-    wb = readWorkbook()
+    wb = blobUrl ? await readWorkbookFromBlob(blobUrl) : readWorkbook()
   } catch (xlErr) {
     console.error('[approve] Cannot open Excel workbook:', xlErr)
     return NextResponse.json({
-      error: 'Excel workbook file not found. Place your Finance Tracker .xlsx file in the data/ folder or set FINANCE_EXCEL_PATH.',
-      hint: 'Transactions are saved in the database and can be written to Excel once the workbook file is available.',
+      error: 'Excel workbook not found. Upload your Finance Tracker .xlsx via the Finance page.',
+      hint: 'Transactions are saved in the database and can be written to Excel once the workbook is uploaded.',
     }, { status: 400 })
   }
   const monthSerial = monthToSerial(financeImport.statementMonth)
@@ -61,11 +67,15 @@ export async function POST(
   let excelRows: number[]
   try {
     excelRows = appendTransactions(wb, txRows)
-    saveWorkbook(wb)
+    if (blobUrl) {
+      await saveWorkbookToBlob(wb)
+    } else {
+      saveWorkbook(wb)
+    }
   } catch (writeErr) {
     console.error('[approve] Failed to write workbook:', writeErr)
     return NextResponse.json({
-      error: 'Failed to write transactions to Excel. The file may be locked, read-only, or the path is not writable.',
+      error: 'Failed to write transactions to Excel.',
     }, { status: 500 })
   }
 
@@ -103,7 +113,7 @@ export async function POST(
   })
 
   // Generate report from workbook data
-  const updatedWb = readWorkbook()
+  const updatedWb = blobUrl ? await readWorkbookFromBlob(blobUrl) : readWorkbook()
   const summary = readMonthlySummary(updatedWb, financeImport.statementMonth)
   const annual = readAnnualData(updatedWb)
 

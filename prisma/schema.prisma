@@ -595,6 +595,7 @@ model FinanceWorkbook {
   user            User      @relation(fields: [userId], references: [id])
   filePath        String
   fileName        String
+  blobUrl         String?   // Vercel Blob URL for cloud storage
   connectedAt     DateTime  @default(now())
   lastImportAt    DateTime?
   lastImportMonth String?

@@ -128,6 +128,19 @@ export default function FinanceDashboard({ userId }: Props) {
     }
   }
 
+  const uploadWorkbookFile = async (file: File) => {
+    setError(null)
+    const formData = new FormData()
+    formData.append('userId', userId)
+    formData.append('file', file)
+    const res = await fetch('/api/finance/workbook/upload', { method: 'POST', body: formData })
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({})) as { error?: string }
+      throw new Error(body.error || `Upload failed (${res.status})`)
+    }
+    await fetchStatus()
+  }
+
   const handleFileUpload = async (file: File) => {
     setError(null)
     setUploading(true)
@@ -295,6 +308,8 @@ export default function FinanceDashboard({ userId }: Props) {
           workbook={status?.workbook ?? null}
           ruleCount={status?.ruleCount ?? 0}
           onConnect={connectWorkbook}
+          onUploadWorkbook={uploadWorkbookFile}
+          userId={userId}
         />
 
         {/* Primary CTA */}
