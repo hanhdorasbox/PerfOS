@@ -57,29 +57,18 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
       const { clientToken, pathname } = await tokenRes.json() as { clientToken: string; pathname: string }
 
       // Step 2: upload directly from browser → Vercel Blob CDN
-      // onUploadProgress gives REAL byte-level progress from the XHR
+      // Use multipart=true: splits file into 8 MB chunks — avoids single-PUT server timeouts
       setUploadPhase(2)
       setUploadPct(0)
-
-      // After all bytes are sent, Vercel finalizes server-side (can take 30-90s for large files).
-      // We detect "bytes done, waiting for server" by watching if pct reaches 99 and stalls.
-      let finalizeTimer: ReturnType<typeof setTimeout> | null = null
       const blob = await put(pathname, file, {
         token: clientToken,
         access: 'public',
+        multipart: true,
         abortSignal: controller.signal,
         onUploadProgress: ({ percentage }) => {
-          const pct = Math.round(Math.min(percentage, 98))
-          setUploadPct(pct)
-          if (pct >= 98) {
-            // Bytes sent — now in finalization phase. Give Vercel 3 min to respond.
-            if (!finalizeTimer) {
-              finalizeTimer = setTimeout(() => controller.abort(), 3 * 60 * 1000)
-            }
-          }
+          setUploadPct(Math.round(Math.min(percentage, 98)))
         },
       })
-      if (finalizeTimer) clearTimeout(finalizeTimer)
 
       setUploadPct(100)
       setUploadPhase(3)
