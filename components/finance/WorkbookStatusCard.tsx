@@ -69,7 +69,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
       setUploadPct(0)
       const blob = await put(pathname, file, {
         token: clientToken,
-        access: 'public',
+        access: 'private', // Blob store is configured as private-only
         abortSignal: controller.signal,
         onUploadProgress: ({ percentage }) => {
           setUploadPct(Math.round(Math.min(percentage, 98)))
