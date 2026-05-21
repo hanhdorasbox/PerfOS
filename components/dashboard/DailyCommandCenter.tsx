@@ -657,10 +657,9 @@ export default function DailyCommandCenter({
     startTransition(() => router.refresh())
   }, [userId, router, startTransition])
 
-  // Auto-refresh only if a briefing already exists and is older than 5 hours
+  // Auto-generate on mount if no briefing or older than 5 hours; then refresh every 5 hours
   useEffect(() => {
-    if (!initialBriefing) return
-    const age = briefingAgeMs(initialBriefing.generatedAt)
+    const age = briefingAgeMs(initialBriefing?.generatedAt)
     if (age > REFRESH_INTERVAL_MS) {
       generateBriefing()
     }
@@ -741,45 +740,9 @@ export default function DailyCommandCenter({
               </span>
             )}
           </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {briefing && (
-              <button
-                onClick={clearBriefing}
-                disabled={loadingBrief}
-                title="Clear today's briefing"
-                className="btn-motion"
-                style={{
-                  width: 30, height: 30, borderRadius: 8,
-                  background: 'rgba(255,107,107,0.06)',
-                  border: '1px solid rgba(255,107,107,0.18)',
-                  cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#FF6B6B', fontSize: 13,
-                }}
-              >
-                ✕
-              </button>
-            )}
-            <button
-              onClick={generateBriefing}
-              disabled={loadingBrief}
-              title={briefing ? "Regenerate today's briefing" : "Generate today's briefing"}
-              className="btn-motion"
-              style={{
-                width: 30, height: 30, borderRadius: 8,
-                background: briefing ? 'rgba(180,167,229,0.06)' : 'rgba(180,167,229,0.15)',
-                border: `1px solid ${briefing ? 'rgba(180,167,229,0.18)' : 'rgba(180,167,229,0.35)'}`,
-                cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#B4A7E5', fontSize: 15,
-              }}
-            >
-              {loadingBrief
-                ? <Spinner size={14} color="#B4A7E5" strokeWidth={1.8} />
-                : <span>↻</span>
-              }
-            </button>
-          </div>
+          {loadingBrief && (
+            <Spinner size={14} color="#B4A7E5" strokeWidth={1.8} />
+          )}
         </div>
 
         {/* Bar body: Ring + Intelligence */}
