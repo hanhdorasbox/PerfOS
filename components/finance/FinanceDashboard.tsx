@@ -128,16 +128,8 @@ export default function FinanceDashboard({ userId }: Props) {
     }
   }
 
-  const uploadWorkbookFile = async (file: File) => {
-    setError(null)
-    const formData = new FormData()
-    formData.append('userId', userId)
-    formData.append('file', file)
-    const res = await fetch('/api/finance/workbook/upload', { method: 'POST', body: formData })
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({})) as { error?: string }
-      throw new Error(body.error || `Upload failed (${res.status})`)
-    }
+  const uploadWorkbookFile = async (_blobUrl: string) => {
+    // Blob URL already saved to DB by WorkbookStatusCard — just refresh status
     await fetchStatus()
   }
 

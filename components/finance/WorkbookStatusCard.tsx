@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { upload } from '@vercel/blob/client'
 
 interface WorkbookData {
   id: string
@@ -15,7 +16,7 @@ interface Props {
   workbook: WorkbookData | null
   ruleCount: number
   onConnect: () => void
-  onUploadWorkbook?: (file: File) => Promise<void>
+  onUploadWorkbook?: (blobUrl: string) => Promise<void>
   userId: string
 }
 
@@ -35,9 +36,19 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
     setUploadErr(null)
     setUploading(true)
     try {
-      if (onUploadWorkbook) {
-        await onUploadWorkbook(file)
-      }
+      // Upload directly from browser to Vercel Blob (bypasses 4.5MB serverless limit)
+      const blob = await upload(`finance-tracker-${userId}.xlsx`, file, {
+        access: 'public',
+        handleUploadUrl: `/api/finance/workbook/upload?userId=${userId}`,
+      })
+      // Save blob URL to DB
+      const res = await fetch('/api/finance/workbook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, blobUrl: blob.url }),
+      })
+      if (!res.ok) throw new Error('Failed to save workbook URL')
+      if (onUploadWorkbook) await onUploadWorkbook(blob.url)
     } catch (err) {
       setUploadErr(err instanceof Error ? err.message : 'Upload failed')
     } finally {
