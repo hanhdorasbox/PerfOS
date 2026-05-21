@@ -60,14 +60,26 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
       // onUploadProgress gives REAL byte-level progress from the XHR
       setUploadPhase(2)
       setUploadPct(0)
+
+      // After all bytes are sent, Vercel finalizes server-side (can take 30-90s for large files).
+      // We detect "bytes done, waiting for server" by watching if pct reaches 99 and stalls.
+      let finalizeTimer: ReturnType<typeof setTimeout> | null = null
       const blob = await put(pathname, file, {
         token: clientToken,
         access: 'public',
         abortSignal: controller.signal,
         onUploadProgress: ({ percentage }) => {
-          setUploadPct(Math.round(Math.min(percentage, 99)))
+          const pct = Math.round(Math.min(percentage, 98))
+          setUploadPct(pct)
+          if (pct >= 98) {
+            // Bytes sent — now in finalization phase. Give Vercel 3 min to respond.
+            if (!finalizeTimer) {
+              finalizeTimer = setTimeout(() => controller.abort(), 3 * 60 * 1000)
+            }
+          }
         },
       })
+      if (finalizeTimer) clearTimeout(finalizeTimer)
 
       setUploadPct(100)
       setUploadPhase(3)
@@ -130,15 +142,26 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
                 opacity: uploading ? 0.9 : 1, minWidth: 160,
               }}
             >
-              <span>{!uploading ? '☁️ Upload Workbook' : uploadPhase === 1 ? 'Preparing…' : uploadPhase === 3 ? 'Saving…' : `Uploading ${uploadPct}%`}</span>
+              <span>{!uploading ? '☁️ Upload Workbook' : uploadPhase === 1 ? 'Preparing…' : uploadPhase === 3 ? 'Saving…' : uploadPct >= 98 ? 'Finalizing…' : `Uploading ${uploadPct}%`}</span>
               {uploading && (
                 <div style={{ width: '100%', height: 3, background: 'rgba(180,167,229,0.2)', borderRadius: 2, overflow: 'hidden' }}>
-                  <div style={{
-                    height: '100%', borderRadius: 2,
-                    background: 'rgba(180,167,229,0.8)',
-                    width: `${uploadPct}%`,
-                    transition: 'width 0.3s ease',
-                  }} />
+                  {uploadPct >= 98 ? (
+                    /* Pulsing stripe during finalization so it doesn't look frozen */
+                    <div style={{
+                      height: '100%', borderRadius: 2,
+                      background: 'linear-gradient(90deg, rgba(180,167,229,0.4) 0%, rgba(180,167,229,0.9) 50%, rgba(180,167,229,0.4) 100%)',
+                      backgroundSize: '200% 100%',
+                      animation: 'shimmer 1.4s infinite',
+                      width: '100%',
+                    }} />
+                  ) : (
+                    <div style={{
+                      height: '100%', borderRadius: 2,
+                      background: 'rgba(180,167,229,0.8)',
+                      width: `${uploadPct}%`,
+                      transition: 'width 0.4s ease',
+                    }} />
+                  )}
                 </div>
               )}
             </button>
@@ -210,7 +233,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
               fontSize: 11, cursor: uploading ? 'not-allowed' : 'pointer', minWidth: 80,
             }}
           >
-            <span>{!uploading ? '↑ Replace' : uploadPhase === 1 ? '…' : uploadPhase === 3 ? '✓' : `${uploadPct}%`}</span>
+            <span>{!uploading ? '↑ Replace' : uploadPhase === 1 ? '…' : uploadPhase === 3 ? '✓' : uploadPct >= 98 ? '⏳' : `${uploadPct}%`}</span>
             {uploading && (
               <div style={{ width: '100%', height: 2, background: 'rgba(255,255,255,0.08)', borderRadius: 1, overflow: 'hidden' }}>
                 <div style={{
