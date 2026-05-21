@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   const dislikedMeals = recentFeedback.filter(f => !f.liked).map(f => f.mealTitle)
 
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-5',
+    model: 'claude-sonnet-4-6',
     max_tokens: 6000,
     system: `You are a performance nutrition planner. Generate high-protein, minimal-variety meal plans. Return ONLY valid JSON. No markdown. Always use metric units (g, kg, ml, °C). Never use Fahrenheit — use Celsius for all temperatures (e.g. "pečte při 200 °C", "vnitřní teplota 75 °C").`,
     messages: [{

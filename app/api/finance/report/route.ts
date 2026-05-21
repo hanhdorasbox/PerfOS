@@ -75,7 +75,7 @@ Expenses: ${prevMonthComparison.prevExpenses.toFixed(2)}` : ''}
 Provide a 3-4 paragraph analysis covering: spending patterns, areas of concern, positive trends, and 2-3 concrete recommendations. Be specific and direct.`
 
     const response = await client.messages.create({
-      model: 'claude-sonnet-4-5',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
       messages: [{ role: 'user', content: aiPrompt }],
     })

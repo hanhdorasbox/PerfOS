@@ -10,7 +10,7 @@ export async function parsePDFStatement(fileBuffer: ArrayBuffer): Promise<Parsed
   const base64 = Buffer.from(fileBuffer).toString('base64')
 
   const response = await createAnthropicClient().messages.create({
-    model: 'claude-sonnet-4-5',
+    model: 'claude-sonnet-4-6',
     max_tokens: 16384,
     messages: [
       {
