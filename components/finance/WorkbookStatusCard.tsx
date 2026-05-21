@@ -25,23 +25,8 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
   const [uploading, setUploading] = useState(false)
   const [uploadErr, setUploadErr] = useState<string | null>(null)
   const [uploadPct, setUploadPct] = useState(0)
-
-  // Simulate upload progress (real progress not available via @vercel/blob/client)
-  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const startProgress = () => {
-    setUploadPct(0)
-    progressRef.current = setInterval(() => {
-      setUploadPct(prev => {
-        if (prev >= 90) { clearInterval(progressRef.current!); return 90 }
-        return prev + Math.random() * 8
-      })
-    }, 400)
-  }
-  const finishProgress = () => {
-    clearInterval(progressRef.current!)
-    setUploadPct(100)
-    setTimeout(() => setUploadPct(0), 800)
-  }
+  // 0 = idle, 1 = getting token, 2 = uploading file, 3 = saving
+  const [uploadPhase, setUploadPhase] = useState(0)
 
   const formatDate = (iso: string | null) => {
     if (!iso) return '—'
@@ -53,22 +38,39 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
     if (!file) return
     setUploadErr(null)
     setUploading(true)
-    startProgress()
+    setUploadPct(0)
+    setUploadPhase(1)
+
+    // Abort the entire operation after 5 minutes
+    const controller = new AbortController()
+    const killswitch = setTimeout(() => controller.abort(), 5 * 60 * 1000)
+
     try {
-      // Step 1: get a 10-minute client token (default is 30s — too short for large files)
-      const tokenRes = await fetch(`/api/finance/workbook/blob-token?userId=${userId}`)
+      // Step 1: get a 10-minute client token (server-side; default is 30s — too short)
+      const tokenRes = await fetch(`/api/finance/workbook/blob-token?userId=${userId}`, {
+        signal: controller.signal,
+      })
       if (!tokenRes.ok) {
         const body = await tokenRes.json().catch(() => ({})) as { error?: string }
         throw new Error(body.error || 'Failed to get upload token')
       }
       const { clientToken, pathname } = await tokenRes.json() as { clientToken: string; pathname: string }
 
-      // Step 2: upload directly from browser → Vercel Blob CDN with the long-lived token
+      // Step 2: upload directly from browser → Vercel Blob CDN
+      // onUploadProgress gives REAL byte-level progress from the XHR
+      setUploadPhase(2)
+      setUploadPct(0)
       const blob = await put(pathname, file, {
         token: clientToken,
         access: 'public',
+        abortSignal: controller.signal,
+        onUploadProgress: ({ percentage }) => {
+          setUploadPct(Math.round(Math.min(percentage, 99)))
+        },
       })
-      finishProgress()
+
+      setUploadPct(100)
+      setUploadPhase(3)
 
       const blobUrl = blob.url
 
@@ -77,6 +79,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, blobUrl }),
+        signal: controller.signal,
       })
       if (!saveRes.ok) {
         const body = await saveRes.json().catch(() => ({})) as { error?: string }
@@ -84,11 +87,15 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
       }
       if (onUploadWorkbook) await onUploadWorkbook(blobUrl)
     } catch (err) {
-      finishProgress()
-      const msg = err instanceof Error ? err.message : 'Upload failed'
+      const msg = err instanceof Error
+        ? (err.name === 'AbortError' ? 'Upload timed out after 5 min — Vercel Blob may not be configured correctly.' : err.message)
+        : 'Upload failed'
       setUploadErr(msg)
     } finally {
+      clearTimeout(killswitch)
       setUploading(false)
+      setUploadPct(0)
+      setUploadPhase(0)
       if (fileRef.current) fileRef.current.value = ''
     }
   }
@@ -123,7 +130,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
                 opacity: uploading ? 0.9 : 1, minWidth: 160,
               }}
             >
-              <span>{uploading ? `Uploading… ${Math.round(uploadPct)}%` : '☁️ Upload Workbook'}</span>
+              <span>{!uploading ? '☁️ Upload Workbook' : uploadPhase === 1 ? 'Preparing…' : uploadPhase === 3 ? 'Saving…' : `Uploading ${uploadPct}%`}</span>
               {uploading && (
                 <div style={{ width: '100%', height: 3, background: 'rgba(180,167,229,0.2)', borderRadius: 2, overflow: 'hidden' }}>
                   <div style={{
@@ -203,7 +210,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
               fontSize: 11, cursor: uploading ? 'not-allowed' : 'pointer', minWidth: 80,
             }}
           >
-            <span>{uploading ? `${Math.round(uploadPct)}%` : '↑ Replace'}</span>
+            <span>{!uploading ? '↑ Replace' : uploadPhase === 1 ? '…' : uploadPhase === 3 ? '✓' : `${uploadPct}%`}</span>
             {uploading && (
               <div style={{ width: '100%', height: 2, background: 'rgba(255,255,255,0.08)', borderRadius: 1, overflow: 'hidden' }}>
                 <div style={{
