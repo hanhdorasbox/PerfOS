@@ -746,10 +746,10 @@ export default function DailyCommandCenter({
         </div>
 
         {/* Bar body: Ring + Intelligence */}
-        <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 28, alignItems: 'start' }}>
+        <div className="r-grid-intel">
 
           {/* LEFT — Day ring */}
-          <div style={{
+          <div className="intel-ring-col" style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             borderRight: '1px solid rgba(255,255,255,0.06)',
             paddingRight: 28,
@@ -762,7 +762,7 @@ export default function DailyCommandCenter({
           {loadingBrief && worldBriefing.length === 0 ? (
             <IntelligenceSkeleton />
           ) : (
-            <div key={briefing?.id ?? 'empty'} className="animate-fade-in" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            <div key={briefing?.id ?? 'empty'} className="animate-fade-in r-grid-brief">
 
               {/* World Briefing */}
               <div>
@@ -815,7 +815,7 @@ export default function DailyCommandCenter({
       </div>
 
       {/* ══ TWO-COLUMN BODY ══════════════════════════════════════════════════ */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20 }}>
+      <div className="r-grid-2">
 
         {/* LEFT — Directive + Today's Priorities */}
         <div className="card">

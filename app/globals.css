@@ -178,3 +178,68 @@ body {
   padding-bottom: 6px;
   margin-bottom: -6px;
 }
+
+/* ─── Responsive layout utilities ────────────────────────────────────────── */
+
+/* Two-column grid → single column on mobile */
+.r-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+}
+/* Intel bar inner grid */
+.r-grid-intel {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+/* World briefing / relevant split */
+.r-grid-brief {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  /* Main padding */
+  main {
+    padding: 20px 14px 80px !important;
+  }
+
+  /* Cards */
+  .card {
+    padding: 16px !important;
+    border-radius: 12px !important;
+  }
+
+  /* Responsive grids → single column */
+  .r-grid-2,
+  .r-grid-intel,
+  .r-grid-brief {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Intel ring: remove right border, center */
+  .intel-ring-col {
+    border-right: none !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding-bottom: 16px;
+  }
+
+  /* Hide on mobile */
+  .hide-mobile { display: none !important; }
+
+  /* Full width on mobile */
+  .full-mobile { width: 100% !important; }
+
+  /* Smaller heading sizes */
+  h1 { font-size: 22px !important; }
+  h2 { font-size: 18px !important; }
+
+  /* Scroll horizontally on tables/charts */
+  .scroll-mobile { overflow-x: auto; }
+}
