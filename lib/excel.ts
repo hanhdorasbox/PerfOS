@@ -13,28 +13,72 @@ const TMP_PATH = path.join(os.tmpdir(), 'finance-tracker.xlsx')
 
 /** Download workbook from Vercel Blob URL into /tmp and return parsed workbook */
 export async function readWorkbookFromBlob(blobUrl: string): Promise<XLSX.WorkBook> {
-  const { head } = await import('@vercel/blob')
+  const token = process.env.BLOB_READ_WRITE_TOKEN
 
-  // Get a fresh signed download URL — required for private blobs
-  let downloadUrl: string
-  try {
-    const meta = await head(blobUrl)
-    // meta.downloadUrl is a signed URL valid for 1 hour
-    downloadUrl = meta.downloadUrl || blobUrl
-  } catch (headErr) {
-    // head() failed — could be: blob doesn't exist, token mismatch, store unreachable
+  // Strategy 1: use head() to get a fresh signed downloadUrl (preferred for private blobs)
+  // Strategy 2: fetch with Authorization header (works if token is available)
+  // Strategy 3: direct fetch (works for public blobs or blobs with time-limited signed URLs)
+
+  let buffer: ArrayBuffer | null = null
+  const errors: string[] = []
+
+  // Try head() → signed downloadUrl
+  if (token) {
+    try {
+      const { head } = await import('@vercel/blob')
+      const meta = await head(blobUrl, { token })
+      const fetchUrl = meta.downloadUrl || blobUrl
+      const res = await fetch(fetchUrl, { cache: 'no-store' })
+      if (res.ok) {
+        buffer = await res.arrayBuffer()
+      } else {
+        errors.push(`head()+fetch: HTTP ${res.status}`)
+      }
+    } catch (e) {
+      errors.push(`head(): ${e instanceof Error ? e.message : String(e)}`)
+    }
+  } else {
+    errors.push('head(): BLOB_READ_WRITE_TOKEN not set')
+  }
+
+  // Try Authorization header fetch (works for private blobs server-side)
+  if (!buffer && token) {
+    try {
+      const res = await fetch(blobUrl, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store',
+      })
+      if (res.ok) {
+        buffer = await res.arrayBuffer()
+      } else {
+        errors.push(`auth-fetch: HTTP ${res.status}`)
+      }
+    } catch (e) {
+      errors.push(`auth-fetch: ${e instanceof Error ? e.message : String(e)}`)
+    }
+  }
+
+  // Try direct fetch (last resort — works if URL has embedded auth)
+  if (!buffer) {
+    try {
+      const res = await fetch(blobUrl, { cache: 'no-store' })
+      if (res.ok) {
+        buffer = await res.arrayBuffer()
+      } else {
+        errors.push(`direct-fetch: HTTP ${res.status}`)
+      }
+    } catch (e) {
+      errors.push(`direct-fetch: ${e instanceof Error ? e.message : String(e)}`)
+    }
+  }
+
+  if (!buffer) {
     throw new Error(
-      `Cannot access workbook in Blob storage: ${headErr instanceof Error ? headErr.message : String(headErr)}. ` +
-      `Make sure BLOB_READ_WRITE_TOKEN is set and the workbook has been uploaded.`
+      `Cannot download workbook from Blob storage. Tried: ${errors.join(' | ')}. ` +
+      (token ? '' : 'BLOB_READ_WRITE_TOKEN is not set. ')
     )
   }
 
-  const res = await fetch(downloadUrl, { cache: 'no-store' })
-  if (!res.ok) {
-    throw new Error(`Failed to download workbook from Blob storage (HTTP ${res.status}). ` +
-      `The signed URL may have expired — try re-uploading your workbook.`)
-  }
-  const buffer = await res.arrayBuffer()
   fs.writeFileSync(TMP_PATH, Buffer.from(buffer))
   return XLSX.readFile(TMP_PATH)
 }
