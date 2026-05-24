@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     '*': ['**/*.xlsx', '**/data/**'],
   },
+
+  // Enable instrumentation.ts — runs prisma db push at server startup
+  experimental: {
+    instrumentationHook: true,
+  },
 };
 
 export default nextConfig;

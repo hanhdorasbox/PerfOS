@@ -8,7 +8,8 @@ export default async function LearningPage() {
   const user = await prisma.user.findFirst()
   if (!user) return <div style={{ color: '#FF6B6B' }}>No user found</div>
 
-  const [capabilityGoals, activeGoals] = await Promise.all([
+  const [capabilityGoalsRaw, activeGoals] = await Promise.all([
+    // Try full query with new schema (steps + new columns)
     prisma.capabilityGoal.findMany({
       where: { userId: user.id },
       include: {
@@ -18,6 +19,33 @@ export default async function LearningPage() {
         },
       },
       orderBy: { createdAt: 'desc' },
+    }).catch(async () => {
+      // Fallback: DB schema migration hasn't run yet — query without new relations
+      const legacy = await prisma.capabilityGoal.findMany({
+        where: { userId: user.id },
+        include: { milestones: { orderBy: { id: 'asc' } } },
+        orderBy: { createdAt: 'desc' },
+      }).catch(() => [])
+      // Normalise to new shape expected by components
+      return legacy.map(g => ({
+        ...g,
+        roadmapType: null as string | null,
+        deadline: null as Date | null,
+        weeklyHours: null as number | null,
+        detailLevel: 'standard',
+        healthStatus: 'not_started',
+        nextBestAction: null as string | null,
+        archivedAt: null as Date | null,
+        updatedAt: g.createdAt,
+        milestones: g.milestones.map(m => ({
+          ...m,
+          phaseName: null as string | null,
+          order: 0,
+          description: null as string | null,
+          estimatedHours: null as number | null,
+          steps: [] as import('@prisma/client').LearningStep[],
+        })),
+      }))
     }),
     prisma.goal.findMany({
       where: { userId: user.id, status: 'active' },
@@ -25,6 +53,8 @@ export default async function LearningPage() {
       take: 30,
     }),
   ])
+
+  const capabilityGoals = capabilityGoalsRaw
 
   const activeGoalsList = capabilityGoals.filter(g => g.status === 'active')
   const completedGoalsList = capabilityGoals.filter(g => g.status === 'completed')
