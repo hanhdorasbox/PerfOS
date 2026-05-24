@@ -516,7 +516,16 @@ model CapabilityGoal {
   targetLevel         Int                @default(4)
   evidenceOfMastery   String?
   finalOutput         String?
-  status              String             @default("active")
+  status              String             @default("active") // active | archived | completed
+  // New fields
+  roadmapType         String?            // skill | career | school | portfolio | certification | project | tool | exam
+  deadline            DateTime?
+  weeklyHours         Float?
+  detailLevel         String             @default("standard") // standard | eli5
+  healthStatus        String             @default("not_started") // not_started | on_track | at_risk | behind | stalled | completed
+  nextBestAction      String?
+  archivedAt          DateTime?
+  updatedAt           DateTime           @updatedAt
   createdAt           DateTime           @default(now())
   milestones          LearningMilestone[]
 }
@@ -526,10 +535,32 @@ model LearningMilestone {
   capabilityGoalId String
   capabilityGoal   CapabilityGoal @relation(fields: [capabilityGoalId], references: [id])
   title            String
-  type             String
+  type             String         // knowledge | practice | output
   completed        Boolean        @default(false)
   completedAt      DateTime?
   evidence         String?
+  // New fields
+  phaseName        String?
+  order            Int            @default(0)
+  description      String?
+  estimatedHours   Float?
+  steps            LearningStep[]
+}
+
+model LearningStep {
+  id                 String            @id @default(cuid())
+  milestoneId        String
+  milestone          LearningMilestone @relation(fields: [milestoneId], references: [id])
+  title              String
+  description        String?
+  order              Int               @default(0)
+  estimatedMinutes   Int               @default(30)
+  completionCriteria String?
+  stepType           String            @default("practice") // read | watch | practice | build | reflect | exercise
+  completed          Boolean           @default(false)
+  completedAt        DateTime?
+  weeklyTaskId       String?
+  suggestedDay       String?
 }
 
 // ─── MODULE 28: Ideas ────────────────────────────────────────────────────────
