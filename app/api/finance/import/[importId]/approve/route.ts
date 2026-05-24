@@ -36,64 +36,74 @@ export async function POST(
     (t) => t.txStatus !== 'excluded' && t.txStatus !== 'duplicate'
   )
 
-  // Look up whether this user has a blob-connected workbook
+  // Look up workbook record
   const workbookRecord = await prisma.financeWorkbook.findUnique({ where: { userId } })
   const blobUrl = workbookRecord?.blobUrl
 
-  // Write to Excel — fail gracefully if file is unavailable
-  let wb
-  try {
-    wb = blobUrl ? await readWorkbookFromBlob(blobUrl) : readWorkbook()
-  } catch (xlErr) {
-    console.error('[approve] Cannot open Excel workbook:', xlErr)
-    return NextResponse.json({
-      error: 'Excel workbook not found. Upload your Finance Tracker .xlsx via the Finance page.',
-      hint: 'Transactions are saved in the database and can be written to Excel once the workbook is uploaded.',
-    }, { status: 400 })
-  }
-  const monthSerial = monthToSerial(financeImport.statementMonth)
+  // Derive the user-specific blob pathname (matches what was uploaded in WorkbookStatusCard)
+  const blobPathname = `finance-tracker-${userId}.xlsx`
 
-  const txRows = approvable.map((tx) => ({
-    month: monthSerial,
-    date: dateToSerial(new Date(tx.txDate + 'T00:00:00Z')),
-    description: tx.description,
-    amount: tx.amount,
-    account: tx.account || '',
-    category: tx.category || 'expenses',
-    subCategory: tx.subCategory || '',
-    transferTo: tx.transferTo || '',
-  }))
+  // ── Step 1: Write transactions to Excel (non-blocking) ──────────────────────
+  let excelWritten = false
+  let excelError: string | null = null
+  let excelRows: number[] = approvable.map((_, i) => i + 1) // dummy rows if Excel unavailable
 
-  let excelRows: number[]
   try {
+    const wb = blobUrl ? await readWorkbookFromBlob(blobUrl) : readWorkbook()
+
+    const monthSerial = monthToSerial(financeImport.statementMonth)
+    const txRows = approvable.map((tx) => ({
+      month: monthSerial,
+      date: dateToSerial(new Date(tx.txDate + 'T00:00:00Z')),
+      description: tx.description,
+      amount: tx.amount,
+      account: tx.account || '',
+      category: tx.category || 'expenses',
+      subCategory: tx.subCategory || '',
+      transferTo: tx.transferTo || '',
+    }))
+
     excelRows = appendTransactions(wb, txRows)
+
+    // Save back using the same pathname as the original upload
+    let newBlobUrl: string
     if (blobUrl) {
-      await saveWorkbookToBlob(wb)
+      newBlobUrl = await saveWorkbookToBlob(wb, blobPathname)
     } else {
       saveWorkbook(wb)
+      newBlobUrl = blobUrl || ''
     }
-  } catch (writeErr) {
-    console.error('[approve] Failed to write workbook:', writeErr)
-    return NextResponse.json({
-      error: 'Failed to write transactions to Excel.',
-    }, { status: 500 })
+
+    // Update the stored blob URL (in case it changed after overwrite)
+    if (blobUrl && newBlobUrl && newBlobUrl !== blobUrl) {
+      await prisma.financeWorkbook.updateMany({
+        where: { userId },
+        data: { blobUrl: newBlobUrl, filePath: newBlobUrl },
+      })
+    }
+
+    excelWritten = true
+  } catch (xlErr) {
+    // Excel writing failed — we still approve to DB, report it as a warning
+    console.error('[approve] Excel write failed:', xlErr)
+    excelError = xlErr instanceof Error ? xlErr.message : String(xlErr)
   }
 
-  // Mark transactions as written
+  // ── Step 2: Mark transactions as approved in DB (always runs) ───────────────
   await Promise.all(
     approvable.map((tx, i) =>
       prisma.financeTransaction.update({
         where: { id: tx.id },
         data: {
-          writtenToExcel: true,
-          excelRow: excelRows[i],
+          writtenToExcel: excelWritten,
+          excelRow: excelWritten ? excelRows[i] : null,
           txStatus: 'approved',
         },
       })
     )
   )
 
-  // Update import status
+  // ── Step 3: Update import + workbook status ──────────────────────────────────
   await prisma.financeImport.update({
     where: { id: importId },
     data: {
@@ -103,7 +113,6 @@ export async function POST(
     },
   })
 
-  // Update workbook last import
   await prisma.financeWorkbook.updateMany({
     where: { userId },
     data: {
@@ -112,12 +121,8 @@ export async function POST(
     },
   })
 
-  // Generate report from workbook data
-  const updatedWb = blobUrl ? await readWorkbookFromBlob(blobUrl) : readWorkbook()
-  const summary = readMonthlySummary(updatedWb, financeImport.statementMonth)
-  const annual = readAnnualData(updatedWb)
-
-  // Build chart data
+  // ── Step 4: Generate report ──────────────────────────────────────────────────
+  // Build chart data from DB transactions (no workbook required)
   const totalIncome = approvable
     .filter((t) => t.amount > 0)
     .reduce((s, t) => s + t.amount, 0)
@@ -130,19 +135,28 @@ export async function POST(
     byCategory[cat] = (byCategory[cat] || 0) + Math.abs(tx.amount)
   }
 
-  const chartData = {
-    incomeVsExpense: {
-      income: totalIncome,
-      expense: totalExpense,
-      net: totalIncome - totalExpense,
-    },
-    byCategory,
-    monthlySummary: summary,
-    annualTrend: annual,
-    txCount: approvable.length,
+  // Attempt to read workbook summaries for richer report data
+  let monthlySummary = null
+  let annualTrend = null
+  try {
+    const currentBlobUrl = (await prisma.financeWorkbook.findUnique({ where: { userId } }))?.blobUrl
+    const updatedWb = currentBlobUrl ? await readWorkbookFromBlob(currentBlobUrl) : readWorkbook()
+    monthlySummary = readMonthlySummary(updatedWb, financeImport.statementMonth)
+    annualTrend = readAnnualData(updatedWb)
+  } catch {
+    // Non-fatal — report will use transaction data only
   }
 
-  // AI narrative
+  const chartData = {
+    incomeVsExpense: { income: totalIncome, expense: totalExpense, net: totalIncome - totalExpense },
+    byCategory,
+    monthlySummary,
+    annualTrend,
+    txCount: approvable.length,
+    excelWritten,
+    excelError,
+  }
+
   const aiResponse = await client.messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: 1500,
@@ -180,5 +194,10 @@ Format as plain text paragraphs.`,
     },
   })
 
-  return NextResponse.json({ success: true, report })
+  return NextResponse.json({
+    success: true,
+    report,
+    excelWritten,
+    excelError,
+  })
 }
