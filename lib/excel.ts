@@ -14,72 +14,44 @@ const TMP_PATH = path.join(os.tmpdir(), 'finance-tracker.xlsx')
 /** Download workbook from Vercel Blob URL into /tmp and return parsed workbook */
 export async function readWorkbookFromBlob(blobUrl: string): Promise<XLSX.WorkBook> {
   const token = process.env.BLOB_READ_WRITE_TOKEN
-
-  // Strategy 1: use head() to get a fresh signed downloadUrl (preferred for private blobs)
-  // Strategy 2: fetch with Authorization header (works if token is available)
-  // Strategy 3: direct fetch (works for public blobs or blobs with time-limited signed URLs)
-
-  let buffer: ArrayBuffer | null = null
-  const errors: string[] = []
-
-  // Try head() → signed downloadUrl
-  if (token) {
-    try {
-      const { head } = await import('@vercel/blob')
-      const meta = await head(blobUrl, { token })
-      const fetchUrl = meta.downloadUrl || blobUrl
-      const res = await fetch(fetchUrl, { cache: 'no-store' })
-      if (res.ok) {
-        buffer = await res.arrayBuffer()
-      } else {
-        errors.push(`head()+fetch: HTTP ${res.status}`)
-      }
-    } catch (e) {
-      errors.push(`head(): ${e instanceof Error ? e.message : String(e)}`)
-    }
-  } else {
-    errors.push('head(): BLOB_READ_WRITE_TOKEN not set')
-  }
-
-  // Try Authorization header fetch (works for private blobs server-side)
-  if (!buffer && token) {
-    try {
-      const res = await fetch(blobUrl, {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: 'no-store',
-      })
-      if (res.ok) {
-        buffer = await res.arrayBuffer()
-      } else {
-        errors.push(`auth-fetch: HTTP ${res.status}`)
-      }
-    } catch (e) {
-      errors.push(`auth-fetch: ${e instanceof Error ? e.message : String(e)}`)
-    }
-  }
-
-  // Try direct fetch (last resort — works if URL has embedded auth)
-  if (!buffer) {
-    try {
-      const res = await fetch(blobUrl, { cache: 'no-store' })
-      if (res.ok) {
-        buffer = await res.arrayBuffer()
-      } else {
-        errors.push(`direct-fetch: HTTP ${res.status}`)
-      }
-    } catch (e) {
-      errors.push(`direct-fetch: ${e instanceof Error ? e.message : String(e)}`)
-    }
-  }
-
-  if (!buffer) {
+  if (!token) {
     throw new Error(
-      `Cannot download workbook from Blob storage. Tried: ${errors.join(' | ')}. ` +
-      (token ? '' : 'BLOB_READ_WRITE_TOKEN is not set. ')
+      'BLOB_READ_WRITE_TOKEN is not set — cannot download private workbook. ' +
+      'Go to Vercel Dashboard → your project → Settings → Environment Variables and verify the token is present.'
     )
   }
 
-  fs.writeFileSync(TMP_PATH, Buffer.from(buffer))
+  // Use the SDK's get() which correctly sets Authorization: Bearer <token>
+  // head() + fetch does NOT work for private blobs — head().downloadUrl is just
+  // blobUrl?download=1, not a signed URL, so the fetch still returns 403.
+  const { get } = await import('@vercel/blob')
+  const result = await get(blobUrl, { access: 'private', token, useCache: false })
+
+  if (!result) {
+    throw new Error(
+      `Workbook not found in Blob storage (blob returned null). ` +
+      `The file may have been deleted. Re-upload your Finance Tracker .xlsx.`
+    )
+  }
+
+  if (result.statusCode !== 200 || !result.stream) {
+    throw new Error(
+      `Unexpected Blob storage response (HTTP ${result.statusCode}). ` +
+      `Try re-uploading your workbook.`
+    )
+  }
+
+  // Stream → Buffer
+  const reader = result.stream.getReader()
+  const chunks: Uint8Array[] = []
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    if (value) chunks.push(value)
+  }
+  const buffer = Buffer.concat(chunks)
+
+  fs.writeFileSync(TMP_PATH, buffer)
   return XLSX.readFile(TMP_PATH)
 }
 
