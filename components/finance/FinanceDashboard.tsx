@@ -228,10 +228,14 @@ export default function FinanceDashboard({ userId }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId }),
       })
-      const data = await res.json() as { success?: boolean; report?: ReportRecord; error?: string }
-      if (!res.ok || data.error) throw new Error(data.error || 'Approval failed')
+      const data = await res.json() as { success?: boolean; report?: ReportRecord; error?: string; excelWritten?: boolean; excelError?: string }
+      if (!res.ok) throw new Error(data.error || 'Approval failed')
       setApprovedCount(importData?.transactions.filter(t => t.txStatus !== 'excluded' && t.txStatus !== 'duplicate').length || 0)
       setReportData(data.report!)
+      // Show non-blocking warning if Excel write failed but transactions were still approved
+      if (data.excelError) {
+        setError(`⚠️ Transactions approved in database, but Excel write failed: ${data.excelError}. Re-upload your workbook to fix this.`)
+      }
       setStep('approved')
       await fetchStatus()
     } catch (e) {
@@ -596,15 +600,25 @@ export default function FinanceDashboard({ userId }: Props) {
 
   // ─── Approved ────────────────────────────────────────────────────────────────
   if (step === 'approved') {
+    const excelFailed = error?.startsWith('⚠️')
     return (
       <div style={{ textAlign: 'center', padding: '60px 32px' }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>{excelFailed ? '✅' : '✅'}</div>
         <h2 style={{ color: '#6BE3A4', fontSize: 24, fontWeight: 700 }}>
-          {approvedCount} transactions written to Transaction Log
+          {approvedCount} transactions approved
         </h2>
         <p style={{ color: '#76746E', fontSize: 14, marginTop: 8 }}>
-          Your Excel workbook has been updated
+          {excelFailed ? 'Saved to database — Excel update pending' : 'Transactions saved to database and Excel workbook'}
         </p>
+        {excelFailed && error && (
+          <div style={{
+            maxWidth: 500, margin: '16px auto 0',
+            background: 'rgba(242,192,99,0.08)', border: '1px solid rgba(242,192,99,0.25)',
+            borderRadius: 8, padding: '10px 16px', textAlign: 'left',
+          }}>
+            <p style={{ color: '#F2C063', fontSize: 12 }}>{error}</p>
+          </div>
+        )}
 
         {saving && (
           <p style={{ color: '#B4A7E5', fontSize: 14, marginTop: 24 }}>Generating financial report...</p>

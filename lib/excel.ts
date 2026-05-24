@@ -13,31 +13,43 @@ const TMP_PATH = path.join(os.tmpdir(), 'finance-tracker.xlsx')
 
 /** Download workbook from Vercel Blob URL into /tmp and return parsed workbook */
 export async function readWorkbookFromBlob(blobUrl: string): Promise<XLSX.WorkBook> {
-  // For private blobs, use the Blob SDK to get a fresh signed download URL
   const { head } = await import('@vercel/blob')
-  let fetchUrl = blobUrl
+
+  // Get a fresh signed download URL — required for private blobs
+  let downloadUrl: string
   try {
     const meta = await head(blobUrl)
-    // head() returns the blob metadata; for private blobs use the downloadUrl
-    if ((meta as { downloadUrl?: string }).downloadUrl) {
-      fetchUrl = (meta as { downloadUrl: string }).downloadUrl
-    }
-  } catch {
-    // If head() fails (e.g. public URL), fall back to direct fetch
+    // meta.downloadUrl is a signed URL valid for 1 hour
+    downloadUrl = meta.downloadUrl || blobUrl
+  } catch (headErr) {
+    // head() failed — could be: blob doesn't exist, token mismatch, store unreachable
+    throw new Error(
+      `Cannot access workbook in Blob storage: ${headErr instanceof Error ? headErr.message : String(headErr)}. ` +
+      `Make sure BLOB_READ_WRITE_TOKEN is set and the workbook has been uploaded.`
+    )
   }
-  const res = await fetch(fetchUrl, { cache: 'no-store' })
-  if (!res.ok) throw new Error(`Failed to download workbook from Blob: ${res.status}`)
+
+  const res = await fetch(downloadUrl, { cache: 'no-store' })
+  if (!res.ok) {
+    throw new Error(`Failed to download workbook from Blob storage (HTTP ${res.status}). ` +
+      `The signed URL may have expired — try re-uploading your workbook.`)
+  }
   const buffer = await res.arrayBuffer()
   fs.writeFileSync(TMP_PATH, Buffer.from(buffer))
   return XLSX.readFile(TMP_PATH)
 }
 
-/** Write workbook to /tmp then upload to Vercel Blob; returns new blob URL */
-export async function saveWorkbookToBlob(wb: XLSX.WorkBook): Promise<string> {
+/**
+ * Write workbook to /tmp then upload to Vercel Blob.
+ * @param wb - The workbook to save
+ * @param pathname - The blob pathname to overwrite (e.g. 'finance-tracker-userId.xlsx')
+ * @returns The new blob URL
+ */
+export async function saveWorkbookToBlob(wb: XLSX.WorkBook, pathname = 'finance-tracker.xlsx'): Promise<string> {
   const { put } = await import('@vercel/blob')
   XLSX.writeFile(wb, TMP_PATH)
   const buffer = fs.readFileSync(TMP_PATH)
-  const blob = await put('finance-tracker.xlsx', buffer, {
+  const blob = await put(pathname, buffer, {
     access: 'private', // Blob store is private-only
     addRandomSuffix: false,
   })
