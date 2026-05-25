@@ -9,24 +9,41 @@ interface Report {
   weekEnd: string
   executiveSummary: string | null
   goalBreakdown: string | null
+  status: string
+  liveData: string | null
 }
 
-const STRENGTH_COLORS: Record<string, string> = {
-  strong: '#6BE3A4',
-  neutral: '#60A5FA',
-  weak: '#FF6B6B',
+const STATUS_CFG: Record<string, { color: string; label: string }> = {
+  thriving: { color: '#6BE3A4', label: 'Thriving' },
+  stable:   { color: '#60A5FA', label: 'Stable'   },
+  watch:    { color: '#F2C063', label: 'Watch'     },
+  risk:     { color: '#FB923C', label: 'Risk'      },
+  recovery: { color: '#FF6B6B', label: 'Recovery'  },
+  strong:   { color: '#6BE3A4', label: 'Strong'    },
+  neutral:  { color: '#60A5FA', label: 'Neutral'   },
+  weak:     { color: '#F2C063', label: 'Weak'      },
 }
 
-function getStrength(goalBreakdown: string | null): string | null {
+function deriveStatus(report: Report): string {
+  if (report.status && STATUS_CFG[report.status]) return report.status
   try {
-    const gb = JSON.parse(goalBreakdown || '[]')
-    if (!gb.length) return null
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const avg = gb.reduce((s: number, g: any) => s + (g.delta || 0), 0) / gb.length
-    if (avg >= 5) return 'strong'
-    if (avg >= 0) return 'neutral'
-    return 'weak'
-  } catch { return null }
+    const gb = JSON.parse(report.goalBreakdown || '[]')
+    if (!gb.length) return 'neutral'
+    const avg = gb.reduce((s: number, g: { delta?: number }) => s + (g.delta || 0), 0) / gb.length
+    return avg >= 5 ? 'strong' : avg >= 0 ? 'neutral' : 'weak'
+  } catch { return 'neutral' }
+}
+
+function getArchiveMetrics(report: Report): { taskRate: number | null; goalsOnTrack: number | null; xp: number | null } {
+  if (!report.liveData) return { taskRate: null, goalsOnTrack: null, xp: null }
+  try {
+    const d = JSON.parse(report.liveData)
+    return {
+      taskRate: d.tasks?.rate ?? null,
+      goalsOnTrack: d.goals ? d.goals.filter((g: { status: string }) => g.status === 'on_track' || g.status === 'ahead').length : null,
+      xp: d.avatar?.xpThisWeek ?? null,
+    }
+  } catch { return { taskRate: null, goalsOnTrack: null, xp: null } }
 }
 
 export default function ReportArchive({ reports: initReports }: { reports: Report[] }) {
@@ -38,79 +55,65 @@ export default function ReportArchive({ reports: initReports }: { reports: Repor
 
   const deleteReport = async (id: string) => {
     if (!confirm('Delete this report?')) return
-    setDeleting(id)
-    setError('')
+    setDeleting(id); setError('')
     try {
       const res = await fetch(`/api/reports/${id}`, { method: 'DELETE' })
-      if (!res.ok) {
-        const d = await res.json() as { error?: string }
-        throw new Error(d.error || 'Delete failed')
-      }
+      if (!res.ok) throw new Error('Delete failed')
       setReports(prev => prev.filter(r => r.id !== id))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Delete failed')
       setTimeout(() => setError(''), 4000)
-    } finally {
-      setDeleting(null)
-    }
+    } finally { setDeleting(null) }
   }
 
   return (
-    <div style={{ marginTop: 24 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#B8B6B0', marginBottom: 12 }}>
-        Report Archive
-      </div>
-
+    <div>
       {error && (
         <div style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 12 }}>
           {error}
         </div>
       )}
-
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {reports.map(report => {
-          const strength = getStrength(report.goalBreakdown)
-          const color = strength ? STRENGTH_COLORS[strength] : '#B8B6B0'
+          const status = deriveStatus(report)
+          const cfg = STATUS_CFG[status] || STATUS_CFG.neutral
+          const metrics = getArchiveMetrics(report)
           return (
             <div
               key={report.id}
               className="card"
-              style={{
-                opacity: deleting === report.id ? 0.4 : 1,
-                transition: 'opacity 0.15s ease',
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 12,
-              }}
+              style={{ opacity: deleting === report.id ? 0.4 : 1, transition: 'opacity 0.15s', display: 'flex', alignItems: 'center', gap: 12 }}
             >
               <Link href={`/reports/${report.id}`} style={{ textDecoration: 'none', flex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#FAFAFA', marginBottom: 4 }}>
-                      Week of {new Date(report.weekStart).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      {' '}–{' '}
-                      {new Date(report.weekEnd).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                    </div>
-                    {report.executiveSummary && (
-                      <div style={{ fontSize: 13, color: '#B8B6B0', lineHeight: 1.5, maxWidth: 560 }}>
-                        {report.executiveSummary.slice(0, 160)}{report.executiveSummary.length > 160 ? '...' : ''}
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, marginLeft: 12 }}>
-                    {strength && (
-                      <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: `${color}22`, border: `1px solid ${color}44`, color, textTransform: 'capitalize' }}>
-                        {strength}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: '#FAFAFA' }}>
+                        {new Date(report.weekStart).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} – {new Date(report.weekEnd).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </span>
-                    )}
-                    <span style={{ fontSize: 12, color: '#B8B6B0' }}>→</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, background: `${cfg.color}20`, border: `1px solid ${cfg.color}40`, color: cfg.color }}>
+                        {cfg.label}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 14 }}>
+                      {metrics.taskRate !== null && (
+                        <span style={{ color: '#76746E', fontSize: 11 }}>Tasks: <span style={{ color: metrics.taskRate >= 70 ? '#6BE3A4' : '#F2C063' }}>{metrics.taskRate}%</span></span>
+                      )}
+                      {metrics.goalsOnTrack !== null && (
+                        <span style={{ color: '#76746E', fontSize: 11 }}>On track: <span style={{ color: '#60A5FA' }}>{metrics.goalsOnTrack}</span></span>
+                      )}
+                      {metrics.xp !== null && (
+                        <span style={{ color: '#76746E', fontSize: 11 }}>XP: <span style={{ color: '#B4A7E5' }}>+{metrics.xp}</span></span>
+                      )}
+                    </div>
                   </div>
+                  <span style={{ fontSize: 12, color: '#B8B6B0' }}>→</span>
                 </div>
               </Link>
               <button
                 onClick={() => deleteReport(report.id)}
                 disabled={deleting === report.id}
-                style={{ background: 'none', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer', flexShrink: 0, marginTop: 2 }}
+                style={{ background: 'none', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
               >
                 {deleting === report.id ? '…' : 'Delete'}
               </button>
