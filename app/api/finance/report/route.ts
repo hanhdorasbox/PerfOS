@@ -57,30 +57,41 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const aiPrompt = `You are a personal finance advisor. Analyze this monthly financial data and provide a concise, direct analysis.
+    const aiPrompt = `Generate a structured monthly financial report for ${statement.month}/${statement.year}.
 
-Month: ${statement.month}/${statement.year}
-Total Income: ${totalIncome.toFixed(2)}
-Total Expenses: ${totalExpenses.toFixed(2)}
-Net Result: ${netResult.toFixed(2)}
-Savings Rate: ${savingsRate.toFixed(1)}%
+Data:
+- Income: ${totalIncome.toFixed(2)} Kč
+- Expenses: ${totalExpenses.toFixed(2)} Kč
+- Net: ${netResult.toFixed(2)} Kč
+- Savings rate: ${savingsRate.toFixed(1)}%
+- Category breakdown: ${Object.entries(categoryBreakdown).map(([c, a]) => `${c}: ${a.toFixed(0)} Kč`).join(', ')}
+${prevMonthComparison ? `- Previous month income: ${prevMonthComparison.prevIncome.toFixed(0)} Kč, expenses: ${prevMonthComparison.prevExpenses.toFixed(0)} Kč` : ''}
 
-Category Breakdown:
-${Object.entries(categoryBreakdown).map(([cat, amt]) => `${cat}: ${amt.toFixed(2)}`).join('\n')}
+Return ONLY this JSON (no other text):
+{
+  "status": "positive|watch|risk|critical",
+  "tldr": ["3–5 short bullets: what happened, is it good or bad, top facts"],
+  "watchPoints": ["2–4 specific things to watch or fix next month"],
+  "nextActions": [
+    { "title": "Specific action (max 8 words)", "why": "1 short reason" }
+  ],
+  "deepDive": [
+    { "title": "Section name", "bullets": ["1–2 sentences, specific data"] }
+  ]
+}
 
-${prevMonthComparison ? `Previous Month:
-Income: ${prevMonthComparison.prevIncome.toFixed(2)}
-Expenses: ${prevMonthComparison.prevExpenses.toFixed(2)}` : ''}
-
-Provide a 3-4 paragraph analysis covering: spending patterns, areas of concern, positive trends, and 2-3 concrete recommendations. Be specific and direct.`
+Rules: Use Kč. Be specific with numbers. Max 5 nextActions. Max 4 deepDive sections.`
 
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 1000,
+      system: 'You are a direct personal finance analyst. Return ONLY valid JSON. No markdown, no explanation, no code fences.',
       messages: [{ role: 'user', content: aiPrompt }],
     })
 
-    const aiAnalysis = response.content[0].type === 'text' ? response.content[0].text : ''
+    const rawText = response.content[0].type === 'text' ? response.content[0].text : '{}'
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/)
+    const aiAnalysis = jsonMatch ? jsonMatch[0] : JSON.stringify({ status: 'watch', tldr: ['Report generated.'], watchPoints: [], nextActions: [], deepDive: [] })
 
     const report = await prisma.financialReport.create({
       data: {
