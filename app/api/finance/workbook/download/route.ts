@@ -11,9 +11,26 @@ export async function GET(req: NextRequest) {
     if (userId) {
       const wb = await prisma.financeWorkbook.findUnique({ where: { userId } })
       if (wb?.blobUrl) {
-        const res = await fetch(wb.blobUrl, { cache: 'no-store' })
-        if (!res.ok) throw new Error('Blob download failed')
-        const buffer = await res.arrayBuffer()
+        const token = process.env.BLOB_READ_WRITE_TOKEN
+        if (!token) throw new Error('BLOB_READ_WRITE_TOKEN not set')
+
+        // Use SDK get() — sets Authorization: Bearer TOKEN for private blobs
+        const { get } = await import('@vercel/blob')
+        const result = await get(wb.blobUrl, { access: 'private', token, useCache: false })
+        if (!result || result.statusCode !== 200 || !result.stream) {
+          throw new Error(`Blob download failed (HTTP ${result?.statusCode})`)
+        }
+
+        // Stream → Buffer
+        const reader = result.stream.getReader()
+        const chunks: Uint8Array[] = []
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          if (value) chunks.push(value)
+        }
+        const buffer = Buffer.concat(chunks)
+
         return new NextResponse(buffer, {
           headers: {
             'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
