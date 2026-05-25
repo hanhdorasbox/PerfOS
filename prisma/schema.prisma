@@ -475,6 +475,11 @@ model CareerTrajectory {
   targetRoleTitle  String?
   timeHorizon      String?
   status           String   @default("active")
+  // Execution system fields
+  readinessScore     Int?     // 0-100
+  readinessBreakdown String?  // JSON: { skill, proof_of_work, scope, visibility, experience }
+  executionRoadmap   String?  // JSON: [{phase, monthRange, focus, milestones:[string], keyOutput}]
+  nextBestAction     String?  // One concrete next step for the whole trajectory
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   gaps             TrajectoryGap[]
@@ -491,6 +496,15 @@ model TrajectoryGap {
   priority     Int              @default(2)
   closed       Boolean          @default(false)
   closedAt     DateTime?
+  // Execution system fields
+  actionPlan      String?   // JSON: [{step, action, timeframe, output}]
+  nextBestAction  String?   // One concrete next action
+  evidenceNeeded  String?   // What proof of closure looks like
+  closureEvidence String?   // What was done to close it
+  archived        Boolean   @default(false)
+  archivedAt      DateTime?
+  difficulty      String?   // easy | medium | hard
+  weekEstimate    Int?      // estimated weeks to close
 }
 
 model TrajectoryQuarterPlan {
