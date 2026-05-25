@@ -258,20 +258,46 @@ export default async function OperatingManualPage() {
   const twoQuartersAgo = new Date()
   twoQuartersAgo.setMonth(twoQuartersAgo.getMonth() - 6)
 
-  const [behaviorPatterns, goals, weeklyReports, mealPlans, fitnessStrategies] = await Promise.all([
-    prisma.behaviorPattern.findMany({
-      where: { userId: user.id, active: true },
-      orderBy: [{ domain: 'asc' }, { confidence: 'desc' }],
-    }),
-    prisma.goal.findMany({
-      where: { userId: user.id, createdAt: { gte: twoQuartersAgo } },
-      include: { progressUpdates: true, milestones: true },
-      orderBy: { createdAt: 'desc' },
-    }),
-    prisma.weeklyReport.findMany({ where: { userId: user.id }, orderBy: { weekStart: 'desc' } }),
-    prisma.mealPlan.findMany({ where: { userId: user.id }, include: { feedback: true }, orderBy: { weekStart: 'desc' } }),
-    prisma.fitnessStrategy.findMany({ where: { userId: user.id }, orderBy: { createdAt: 'desc' } }),
-  ])
+  let behaviorPatterns: Awaited<ReturnType<typeof prisma.behaviorPattern.findMany>> = []
+  let goals: Awaited<ReturnType<typeof prisma.goal.findMany>> = []
+  let weeklyReports: Awaited<ReturnType<typeof prisma.weeklyReport.findMany>> = []
+  let mealPlans: Awaited<ReturnType<typeof prisma.mealPlan.findMany>> = []
+  let fitnessStrategies: Awaited<ReturnType<typeof prisma.fitnessStrategy.findMany>> = []
+
+  try {
+    const results = await Promise.all([
+      prisma.behaviorPattern.findMany({
+        where: { userId: user.id, active: true },
+        orderBy: [{ domain: 'asc' }, { confidence: 'desc' }],
+      }),
+      prisma.goal.findMany({
+        where: { userId: user.id, createdAt: { gte: twoQuartersAgo } },
+        include: { progressUpdates: true, milestones: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.weeklyReport.findMany({ where: { userId: user.id }, orderBy: { weekStart: 'desc' } }),
+      prisma.mealPlan.findMany({ where: { userId: user.id }, include: { feedback: true }, orderBy: { weekStart: 'desc' } }),
+      prisma.fitnessStrategy.findMany({ where: { userId: user.id }, orderBy: { createdAt: 'desc' } }),
+    ])
+    ;[behaviorPatterns, goals, weeklyReports, mealPlans, fitnessStrategies] = results
+  } catch (e) {
+    console.error('[OperatingManualPage] DB query failed — schema may not be migrated yet:', e)
+    return (
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 20px' }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#FAFAFA', letterSpacing: '-0.02em', marginBottom: 8 }}>
+          Personal Operating Manual
+        </h1>
+        <div className="card" style={{ background: 'rgba(242,192,99,0.07)', border: '1px solid rgba(242,192,99,0.25)' }}>
+          <p style={{ color: '#F2C063', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
+            ⚠ Database migration in progress
+          </p>
+          <p style={{ color: '#76746E', fontSize: 13 }}>
+            New schema columns are being applied. Please refresh the page in a few seconds.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   // Group patterns by normalised display domain
   const patternsByDisplay: Record<string, typeof behaviorPatterns> = {}

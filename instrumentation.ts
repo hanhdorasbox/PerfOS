@@ -8,9 +8,12 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     try {
       const { execSync } = await import('child_process')
-      execSync('npx prisma db push --accept-data-loss --skip-generate', {
+      // Use the local binary directly — npx adds startup overhead and can
+      // fail silently on Vercel Lambda where PATH may not include npm shims.
+      const prismaBin = `${process.cwd()}/node_modules/.bin/prisma`
+      execSync(`${prismaBin} db push --accept-data-loss --skip-generate`, {
         stdio: 'inherit',
-        timeout: 60_000,
+        timeout: 90_000, // bumped from 60s — Neon cold-start can be slow
       })
     } catch (e) {
       // Non-fatal: log and continue. App will still work; some new features
