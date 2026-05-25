@@ -54,7 +54,7 @@ export default async function StatementPage({ params }: { params: Promise<{ stat
 
       {statement.report && (
         <div style={{ marginBottom: 24 }}>
-          <FinancialReportView report={statement.report} />
+          <FinancialReportView report={statement.report} userId={user.id} />
         </div>
       )}
 
