@@ -31,6 +31,7 @@ interface ParsedReport {
 
 interface Props {
   report: ReportData
+  // userId not needed for regen — reportId is enough
 }
 
 const STATUS_CONFIG = {
@@ -62,6 +63,24 @@ function parseNarrative(raw: string): ParsedReport | null {
 
 export default function FinancialReport({ report }: Props) {
   const [deepDiveOpen, setDeepDiveOpen] = useState(false)
+  const [narrative, setNarrative] = useState(report.narrative)
+  const [regenerating, setRegenerating] = useState(false)
+  const [regenError, setRegenError] = useState('')
+
+  async function regenerate() {
+    setRegenerating(true)
+    setRegenError('')
+    try {
+      const res = await fetch(`/api/finance/reports/${report.id}/regenerate`, { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed')
+      setNarrative(data.narrative)
+    } catch (e) {
+      setRegenError(e instanceof Error ? e.message : 'Regeneration failed')
+    } finally {
+      setRegenerating(false)
+    }
+  }
 
   const chart: ChartData = report.chartData
     ? JSON.parse(report.chartData)
@@ -72,7 +91,7 @@ export default function FinancialReport({ report }: Props) {
   const net = incomeVsExpense.net
   const margin = incomeVsExpense.income > 0 ? (net / incomeVsExpense.income * 100) : 0
 
-  const parsed = parseNarrative(report.narrative)
+  const parsed = parseNarrative(narrative)
   const status = parsed?.status ?? (net >= 0 ? 'positive' : 'risk')
   const statusCfg = STATUS_CONFIG[status] || STATUS_CONFIG.watch
 
@@ -264,31 +283,27 @@ export default function FinancialReport({ report }: Props) {
         </div>
       )}
 
-      {/* Fallback: old-format narrative (prose) — hidden behind toggle */}
-      {!parsed && report.narrative && (
-        <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
+      {/* Old-format narrative → regenerate prompt */}
+      {!parsed && narrative && (
+        <div style={{ background: 'rgba(242,192,99,0.07)', border: '1px solid rgba(242,192,99,0.25)', borderRadius: 12, padding: '16px 20px' }}>
+          <p style={{ color: '#F2C063', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+            ⚠ Analysis is in old format
+          </p>
+          <p style={{ color: '#76746E', fontSize: 12, marginBottom: 14 }}>
+            Regenerate to get structured insights: status chip, key bullets, watch signals, action items.
+          </p>
+          {regenError && <p style={{ color: '#FF6B6B', fontSize: 12, marginBottom: 10 }}>{regenError}</p>}
           <button
-            onClick={() => setDeepDiveOpen(o => !o)}
+            onClick={regenerate}
+            disabled={regenerating}
             style={{
-              width: '100%', background: 'rgba(255,255,255,0.03)',
-              border: 'none', cursor: 'pointer', padding: '12px 20px',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              background: 'rgba(242,192,99,0.15)', border: '1px solid rgba(242,192,99,0.4)',
+              color: '#F2C063', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+              cursor: regenerating ? 'not-allowed' : 'pointer',
             }}
           >
-            <span style={{ color: '#B8B6B0', fontSize: 13, fontWeight: 600 }}>Analysis</span>
-            <span style={{ color: '#76746E', fontSize: 12 }}>{deepDiveOpen ? '▲ collapse' : '▼ expand'}</span>
+            {regenerating ? '⏳ Regenerating...' : '↻ Regenerate Analysis'}
           </button>
-          {deepDiveOpen && (
-            <div style={{ padding: '16px 20px' }}>
-              {report.narrative.split('\n\n').filter(Boolean).map((para, i) => {
-                // Strip raw markdown markers
-                const clean = para.replace(/^#{1,3}\s+/gm, '').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1')
-                return (
-                  <p key={i} style={{ color: '#B8B6B0', fontSize: 13, lineHeight: 1.7, marginBottom: i < 3 ? 12 : 0 }}>{clean}</p>
-                )
-              })}
-            </div>
-          )}
         </div>
       )}
     </div>
