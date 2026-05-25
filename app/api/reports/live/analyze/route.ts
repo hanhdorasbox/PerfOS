@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { createAnthropicClient } from '@/lib/anthropic'
-import type { WeekLiveData } from '../route'
+import type { WeekLiveData } from '@/lib/types/reports'
 
 const client = createAnthropicClient()
 

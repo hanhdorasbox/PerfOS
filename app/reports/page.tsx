@@ -17,33 +17,63 @@ function getWeekBounds() {
   return { weekStart, weekEnd }
 }
 
+// Minimal serializable shape to pass to client components
+interface LiveReportRow {
+  id: string
+  weekStart: Date
+  weekEnd: Date
+  liveData?: string | null
+  status?: string | null
+  updatedAt?: Date | null
+  createdAt: Date
+}
+
+interface ArchiveRow {
+  id: string
+  weekStart: Date
+  weekEnd: Date
+  executiveSummary?: string | null
+  goalBreakdown?: string | null
+  status?: string | null
+  liveData?: string | null
+}
+
 export default async function ReportsPage() {
   const user = await prisma.user.findFirst()
   if (!user) return <div style={{ color: '#FF6B6B', padding: 40 }}>No user found.</div>
 
   const { weekStart, weekEnd } = getWeekBounds()
 
-  // Auto-archive stale live reports + get current live report in one pass
-  const [liveReport, archivedReports] = await Promise.all([
-    prisma.weeklyReport.findFirst({
-      where: { userId: user.id, isLive: true, weekStart: { gte: weekStart, lte: weekEnd } },
-      orderBy: { updatedAt: 'desc' },
-    }),
-    prisma.weeklyReport.findMany({
-      where: { userId: user.id, isLive: false },
-      orderBy: { weekStart: 'desc' },
-      take: 20,
-    }),
-  ])
+  // Gracefully handle DB schema migration lag — new columns may not exist yet
+  let liveReport: LiveReportRow | null = null
+  let archivedReports: ArchiveRow[] = []
 
-  // Serialize for client components
+  try {
+    const [live, archived] = await Promise.all([
+      prisma.weeklyReport.findFirst({
+        where: { userId: user.id, isLive: true, weekStart: { gte: weekStart, lte: weekEnd } },
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.weeklyReport.findMany({
+        where: { userId: user.id, isLive: false },
+        orderBy: { weekStart: 'desc' },
+        take: 20,
+      }),
+    ])
+    if (live) liveReport = live as LiveReportRow
+    archivedReports = archived as ArchiveRow[]
+  } catch (e) {
+    console.error('[ReportsPage] DB query failed — schema may not be migrated yet:', e)
+    // Fall through with empty data; user sees "Load Live Report" button
+  }
+
   const liveReportSerialized = liveReport ? {
     id: liveReport.id,
     weekStart: liveReport.weekStart.toISOString(),
     weekEnd: liveReport.weekEnd.toISOString(),
-    status: liveReport.status,
+    status: liveReport.status ?? 'stable',
     liveData: liveReport.liveData ?? null,
-    updatedAt: liveReport.updatedAt.toISOString(),
+    updatedAt: liveReport.updatedAt?.toISOString() ?? liveReport.createdAt.toISOString(),
   } : null
 
   return (
@@ -73,7 +103,7 @@ export default async function ReportsPage() {
               weekEnd: r.weekEnd.toISOString(),
               executiveSummary: r.executiveSummary ?? null,
               goalBreakdown: r.goalBreakdown ?? null,
-              status: r.status,
+              status: r.status ?? 'stable',
               liveData: r.liveData ?? null,
             }))}
           />

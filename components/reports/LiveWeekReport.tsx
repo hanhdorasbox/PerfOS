@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import type { WeekLiveData } from '@/app/api/reports/live/route'
+import type { WeekLiveData } from '@/lib/types/reports'
 
 interface Report {
   id: string
