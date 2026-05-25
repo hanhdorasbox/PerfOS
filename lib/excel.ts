@@ -68,6 +68,7 @@ export async function saveWorkbookToBlob(wb: XLSX.WorkBook, pathname = 'finance-
   const blob = await put(pathname, buffer, {
     access: 'private', // Blob store is private-only
     addRandomSuffix: false,
+    allowOverwrite: true,
   })
   return blob.url
 }

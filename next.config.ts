@@ -10,10 +10,7 @@ const nextConfig: NextConfig = {
     '*': ['**/*.xlsx', '**/data/**'],
   },
 
-  // Enable instrumentation.ts — runs prisma db push at server startup
-  experimental: {
-    instrumentationHook: true,
-  },
+  // instrumentation.ts is picked up automatically in Next.js 15+ — no config needed
 };
 
 export default nextConfig;
