@@ -86,9 +86,9 @@ export async function POST(req: NextRequest) {
   const response = await client.messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: 6000,
-    system: `You are a personal chief of staff — direct, analytical, no fluff. Generate an executive performance briefing. Return ONLY valid JSON with this exact structure:
+    system: `You are a personal chief of staff — direct, analytical, no fluff. Generate an executive performance briefing. Return ONLY valid JSON with this exact structure (no markdown, no prose paragraphs — everything as arrays of short bullet strings):
 {
-  "executiveSummary": "string — direct summary of how the week affected the quarter",
+  "executiveSummary": ["3–4 bullet strings: headline result, quarter impact, key observation"],
   "strategicStrength": "strong|neutral|weak",
   "goalBreakdown": [{
     "goalId": "string",
@@ -98,15 +98,15 @@ export async function POST(req: NextRequest) {
     "delta": number,
     "overallPct": number,
     "status": "ahead|on_track|watch|at_risk|critical",
-    "forecastNote": "string"
+    "forecastNote": "string — max 10 words"
   }],
-  "strategicWins": ["string"],
-  "slippageRisks": [{"goal": "string", "issue": "string", "recoverable": boolean, "pattern": "string|null"}],
-  "fitnessSection": "string",
-  "careerSection": "string",
-  "antiDriftNote": "string",
-  "nextWeekRec": "string",
-  "chiefOfStaffMsg": "string — direct, not cheesy, 2-3 sentences"
+  "strategicWins": ["string — max 12 words each"],
+  "slippageRisks": [{"goal": "string", "issue": "string — max 15 words", "recoverable": boolean, "pattern": "string|null"}],
+  "fitnessSection": ["2–3 bullet strings about this week's fitness"],
+  "careerSection": ["2–3 bullet strings about career capital built"],
+  "antiDriftNote": ["1–2 bullet strings on drift pattern"],
+  "nextWeekRec": ["3–5 concrete action bullets for next week"],
+  "chiefOfStaffMsg": "string — 1 direct sentence, not cheesy"
 }`,
     messages: [{
       role: 'user',

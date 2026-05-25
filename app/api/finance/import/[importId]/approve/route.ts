@@ -160,28 +160,37 @@ export async function POST(
   const aiResponse = await client.messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: 1500,
+    system: 'You are a direct personal finance analyst. Return ONLY valid JSON. No markdown, no explanation, no code fences.',
     messages: [
       {
         role: 'user',
-        content: `Generate a concise monthly financial report for ${financeImport.statementMonth}.
+        content: `Generate a structured monthly financial report for ${financeImport.statementMonth}.
 
 Data:
 ${JSON.stringify(chartData, null, 2)}
 
-Write a 3-5 paragraph analytical report answering:
-- Overall financial strength this month (income vs expense, net balance)
-- Which categories drove spending
-- Notable observations (unusual expenses, savings pace)
-- What to watch next month
+Return ONLY this JSON structure (no other text):
+{
+  "status": "positive|watch|risk|critical",
+  "tldr": ["3–5 short bullets: what happened, is it good or bad, top 2 facts"],
+  "watchPoints": ["2–4 specific things to watch or fix next month"],
+  "nextActions": [
+    { "title": "Specific action (max 8 words)", "why": "1 short reason" }
+  ],
+  "deepDive": [
+    { "title": "Section name", "bullets": ["1–2 sentences, specific data"] }
+  ]
+}
 
-Style: analytical, direct, practical. No budgeting-app fluff. Use Kč currency.
-Format as plain text paragraphs.`,
+Rules: Use Kč. Be specific with numbers. Max 5 nextActions. Max 4 deepDive sections.`,
       },
     ],
   })
 
-  const narrative =
-    aiResponse.content[0].type === 'text' ? aiResponse.content[0].text : ''
+  const rawNarrative = aiResponse.content[0].type === 'text' ? aiResponse.content[0].text : '{}'
+  // Extract JSON even if model adds extra text
+  const jsonMatch = rawNarrative.match(/\{[\s\S]*\}/)
+  const narrative = jsonMatch ? jsonMatch[0] : JSON.stringify({ status: 'watch', tldr: ['Report generated.'], watchPoints: [], nextActions: [], deepDive: [] })
 
   const report = await prisma.financeReport.create({
     data: {
