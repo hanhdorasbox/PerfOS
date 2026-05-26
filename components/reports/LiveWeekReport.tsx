@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import type { WeekLiveData } from '@/lib/types/reports'
 
 interface Report {
@@ -88,9 +88,10 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
     if (!initialReport?.liveData) return null
     try { return JSON.parse(initialReport.liveData) } catch { return null }
   })
-  const [refreshing, setRefreshing] = useState(false)
+  const [refreshing, setRefreshing] = useState(!initialReport?.liveData) // auto-start if no data
   const [analyzing, setAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const autoRefreshRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const refresh = useCallback(async () => {
     setRefreshing(true); setError(null)
@@ -105,6 +106,18 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
       if (updated.liveData) setData(JSON.parse(updated.liveData))
     } catch { setError('Failed to refresh') } finally { setRefreshing(false) }
   }, [userId])
+
+  // Auto-load on mount if no live data yet
+  useEffect(() => {
+    if (!data) { refresh() }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Auto-refresh every 5 minutes while the page is open
+  useEffect(() => {
+    autoRefreshRef.current = setInterval(() => { refresh() }, 5 * 60 * 1000)
+    return () => { if (autoRefreshRef.current) clearInterval(autoRefreshRef.current) }
+  }, [refresh])
 
   const analyze = useCallback(async () => {
     if (!report) return
@@ -121,12 +134,57 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
   }, [report, userId])
 
   if (!data) {
+    // Skeleton loading state — shown while auto-loading on mount
     return (
-      <div className="card" style={{ textAlign: 'center', padding: '40px 24px' }}>
-        <p style={{ color: '#B8B6B0', fontSize: 14, marginBottom: 16 }}>No live data yet for this week.</p>
-        <button onClick={refresh} disabled={refreshing} style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#B4A7E5', borderRadius: 8, padding: '10px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-          {refreshing ? 'Loading…' : 'Load Live Report'}
-        </button>
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ height: 22, width: 140, background: 'rgba(255,255,255,0.06)', borderRadius: 6, animation: 'pulse 1.5s ease-in-out infinite' }} />
+            <div style={{ height: 20, width: 50, background: 'rgba(107,227,164,0.15)', borderRadius: 99 }} />
+          </div>
+          <div style={{ height: 28, width: 80, background: 'rgba(255,255,255,0.04)', borderRadius: 6 }} />
+        </div>
+        <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 16 }} />
+        {/* Snapshot skeleton */}
+        <div style={{ background: 'rgba(96,165,250,0.06)', border: '1px solid rgba(96,165,250,0.15)', borderRadius: 14, padding: '18px 20px', marginBottom: 16 }}>
+          <div style={{ height: 14, width: 80, background: 'rgba(255,255,255,0.08)', borderRadius: 4, marginBottom: 14 }} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            {[0, 1].map(i => (
+              <div key={i}>
+                <div style={{ height: 10, width: 60, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 10 }} />
+                {[0, 1, 2].map(j => (
+                  <div key={j} style={{ height: 12, width: `${70 + j * 10}%`, background: 'rgba(255,255,255,0.05)', borderRadius: 3, marginBottom: 6 }} />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* KPI row skeleton */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
+          {[0,1,2,3].map(i => (
+            <div key={i} className="card" style={{ padding: '12px 14px', textAlign: 'center' }}>
+              <div style={{ height: 9, width: '60%', background: 'rgba(255,255,255,0.06)', borderRadius: 3, margin: '0 auto 8px' }} />
+              <div style={{ height: 24, width: '50%', background: 'rgba(255,255,255,0.08)', borderRadius: 4, margin: '0 auto' }} />
+            </div>
+          ))}
+        </div>
+        {/* Goals skeleton */}
+        <div className="card" style={{ marginBottom: 16, padding: '16px 20px' }}>
+          <div style={{ height: 9, width: 100, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 14 }} />
+          {[0,1,2].map(i => (
+            <div key={i} style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, marginBottom: 8, borderLeft: '3px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ height: 13, width: `${50 + i * 15}%`, background: 'rgba(255,255,255,0.07)', borderRadius: 4, marginBottom: 10 }} />
+              <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3 }} />
+            </div>
+          ))}
+        </div>
+        {error && (
+          <div style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', borderRadius: 8, padding: '8px 14px', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>{error}</span>
+            <button onClick={refresh} style={{ background: 'none', border: '1px solid rgba(255,107,107,0.4)', color: '#FF6B6B', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer' }}>Retry</button>
+          </div>
+        )}
+        <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
       </div>
     )
   }
