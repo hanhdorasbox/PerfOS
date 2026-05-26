@@ -3,6 +3,7 @@ import PatternAnalyzer from '@/components/operating-manual/PatternAnalyzer'
 import AddPatternForm from '@/components/operating-manual/AddPatternForm'
 import TrajectoryForecast from '@/components/operating-manual/TrajectoryForecast'
 import PatternsList from '@/components/operating-manual/PatternsList'
+import AutoPatternRefresh from '@/components/operating-manual/AutoPatternRefresh'
 
 export const dynamic = 'force-dynamic'
 
@@ -314,7 +315,7 @@ export default async function OperatingManualPage() {
     ...Object.keys(patternsByDisplay).filter(d => !DOMAIN_ORDER.includes(d)),
   ]
 
-  // Empty state — no patterns yet
+  // Empty state — no patterns yet (auto-refresh will trigger in background)
   if (behaviorPatterns.length === 0) {
     return (
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 20px' }}>
@@ -324,8 +325,11 @@ export default async function OperatingManualPage() {
               Personal Operating Manual
             </h1>
             <p style={{ color: '#76746E', fontSize: 14, marginTop: 4 }}>
-              How you actually function — learned from your data.
+              Quietly learning how you work — adjusts future planning automatically.
             </p>
+            <div style={{ marginTop: 8 }}>
+              <AutoPatternRefresh userId={user.id} lastPatternAt={null} />
+            </div>
           </div>
           <PatternAnalyzer userId={user.id} existingPatterns={[]} />
         </div>
@@ -333,10 +337,10 @@ export default async function OperatingManualPage() {
         <div className="card" style={{ textAlign: 'center', padding: '56px 24px', marginBottom: 24 }}>
           <div style={{ fontSize: 40, marginBottom: 14 }}>⚙️</div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#FAFAFA', marginBottom: 8 }}>
-            No behavioral patterns yet
+            Analyzing your behavioral patterns…
           </div>
           <p style={{ color: '#76746E', fontSize: 14, maxWidth: 440, margin: '0 auto 24px' }}>
-            Run an AI analysis of your data to automatically detect patterns, or add your own observations manually below.
+            The system is learning from your goals, tasks, fitness, and finance data. Patterns will appear here automatically — refresh in a moment.
           </p>
         </div>
 
@@ -360,9 +364,17 @@ export default async function OperatingManualPage() {
             Personal Operating Manual
           </h1>
           <p style={{ color: '#76746E', fontSize: 14, marginTop: 4 }}>
-            How you actually function — learned from your data.
+            Quietly learning how you work — adjusts future planning automatically.
           </p>
+          {/* Auto-refresh status chip — updates patterns in background */}
+          <div style={{ marginTop: 8 }}>
+            <AutoPatternRefresh
+              userId={user.id}
+              lastPatternAt={behaviorPatterns[0]?.updatedAt?.toISOString() ?? null}
+            />
+          </div>
         </div>
+        {/* Manual refresh as secondary fallback */}
         <PatternAnalyzer userId={user.id} existingPatterns={behaviorPatterns} />
       </div>
 
