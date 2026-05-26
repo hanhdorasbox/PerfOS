@@ -115,15 +115,31 @@ Rules:
 
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4096,
+      max_tokens: 8192,   // bumped: full roadmap JSON (4-8 milestones × 2-5 steps) easily exceeds 4096
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     })
 
     const text = response.content[0].type === 'text' ? response.content[0].text : ''
     const jsonMatch = text.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) throw new Error('No JSON in response')
-    const parsed = JSON.parse(jsonMatch[0])
+    if (!jsonMatch) throw new Error('AI returned no JSON — try again')
+
+    let parsed: { milestones?: unknown[] }
+    try {
+      parsed = JSON.parse(jsonMatch[0])
+    } catch (parseErr) {
+      // Response was truncated mid-JSON. Try to recover partial milestones:
+      // Extract anything that looks like complete milestone objects.
+      const partialMatch = jsonMatch[0].match(/"milestones"\s*:\s*\[([\s\S]*?)(?:\]\s*\}|$)/)
+      if (!partialMatch) throw new Error('JSON parse failed and no partial milestones found')
+      // Try to close the truncated array and parse what we have
+      try {
+        const repaired = `{"milestones":[${partialMatch[1].replace(/,?\s*\{[^}]*$/, '')}]}`
+        parsed = JSON.parse(repaired)
+      } catch {
+        throw new Error(`AI response JSON was truncated. Original error: ${parseErr instanceof Error ? parseErr.message : parseErr}`)
+      }
+    }
 
     const milestones: Array<{
       title: string; type: string; phaseName?: string; order?: number;
