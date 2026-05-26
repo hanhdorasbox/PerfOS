@@ -37,6 +37,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
   const [goal, setGoal] = useState(initialGoal)
   const [activeTab, setActiveTab] = useState<'plan' | 'overview' | 'health'>('plan')
   const [regenerating, setRegenerating] = useState(false)
+  const [regenError, setRegenError] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [expandedMilestones, setExpandedMilestones] = useState<Set<string>>(
@@ -103,9 +104,17 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
 
   async function regenerateRoadmap() {
     setRegenerating(true)
+    setRegenError('')
     try {
       const res = await fetch(`/api/learning/goals/${goal.id}/roadmap`, { method: 'POST' })
-      if (res.ok) router.refresh()
+      const data = await res.json()
+      if (res.ok) {
+        router.refresh()
+      } else {
+        setRegenError(data.error || 'Generation failed')
+      }
+    } catch (e) {
+      setRegenError(e instanceof Error ? e.message : 'Network error')
     } finally {
       setRegenerating(false)
     }
@@ -190,7 +199,11 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
           </div>
 
           {/* Action controls */}
-          <div style={{ display: 'flex', gap: 8, flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end', flexShrink: 0 }}>
+          {regenError && (
+            <p style={{ color: '#FF6B6B', fontSize: 12, maxWidth: 280, textAlign: 'right' }}>⚠ {regenError}</p>
+          )}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
             {goal.status === 'active' && (
               <>
                 <button
@@ -226,6 +239,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
                 <button onClick={() => setConfirmDelete(false)} style={btnStyle}>Cancel</button>
               </div>
             )}
+          </div>
           </div>
         </div>
 

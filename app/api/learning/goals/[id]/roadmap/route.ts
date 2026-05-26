@@ -4,9 +4,50 @@ import { createAnthropicClient } from '@/lib/anthropic'
 
 const client = createAnthropicClient()
 
+/** Ensure all learning-related schema columns + LearningStep table exist before querying. */
+async function ensureLearningSchema() {
+  const steps = [
+    `ALTER TABLE "CapabilityGoal"
+       ADD COLUMN IF NOT EXISTS "roadmapType"    TEXT,
+       ADD COLUMN IF NOT EXISTS "deadline"       TIMESTAMP(3),
+       ADD COLUMN IF NOT EXISTS "weeklyHours"    DOUBLE PRECISION,
+       ADD COLUMN IF NOT EXISTS "detailLevel"    TEXT NOT NULL DEFAULT 'standard',
+       ADD COLUMN IF NOT EXISTS "healthStatus"   TEXT NOT NULL DEFAULT 'not_started',
+       ADD COLUMN IF NOT EXISTS "nextBestAction" TEXT,
+       ADD COLUMN IF NOT EXISTS "archivedAt"     TIMESTAMP(3),
+       ADD COLUMN IF NOT EXISTS "updatedAt"      TIMESTAMP(3) NOT NULL DEFAULT NOW()`,
+    `ALTER TABLE "LearningMilestone"
+       ADD COLUMN IF NOT EXISTS "phaseName"      TEXT,
+       ADD COLUMN IF NOT EXISTS "order"          INTEGER NOT NULL DEFAULT 0,
+       ADD COLUMN IF NOT EXISTS "description"    TEXT,
+       ADD COLUMN IF NOT EXISTS "estimatedHours" DOUBLE PRECISION`,
+    `CREATE TABLE IF NOT EXISTS "LearningStep" (
+       "id"                 TEXT    NOT NULL,
+       "milestoneId"        TEXT    NOT NULL,
+       "title"              TEXT    NOT NULL,
+       "description"        TEXT,
+       "order"              INTEGER NOT NULL DEFAULT 0,
+       "estimatedMinutes"   INTEGER NOT NULL DEFAULT 30,
+       "completionCriteria" TEXT,
+       "stepType"           TEXT    NOT NULL DEFAULT 'practice',
+       "completed"          BOOLEAN NOT NULL DEFAULT false,
+       "completedAt"        TIMESTAMP(3),
+       "weeklyTaskId"       TEXT,
+       "suggestedDay"       TEXT,
+       CONSTRAINT "LearningStep_pkey" PRIMARY KEY ("id")
+     )`,
+  ]
+  for (const sql of steps) {
+    try { await prisma.$executeRawUnsafe(sql) } catch { /* already migrated or SQLite — skip */ }
+  }
+}
+
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   try {
+    // Apply any missing schema changes before querying (idempotent)
+    await ensureLearningSchema()
+
     const goal = await prisma.capabilityGoal.findUnique({
       where: { id },
       include: { milestones: true },
