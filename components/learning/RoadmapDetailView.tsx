@@ -351,6 +351,8 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
                   onCompleteStep={completeStep}
                   onCompleteMilestone={completeMilestone}
                   isGoalCompleted={goal.status === 'completed'}
+                  onRegenerate={regenerateRoadmap}
+                  regenerating={regenerating}
                 />
               ))}
             </div>
@@ -397,6 +399,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
 
 function MilestoneCard({
   milestone, isExpanded, onToggle, onCompleteStep, onCompleteMilestone, isGoalCompleted,
+  onRegenerate, regenerating,
 }: {
   milestone: MilestoneFull
   isExpanded: boolean
@@ -404,6 +407,8 @@ function MilestoneCard({
   onCompleteStep: (stepId: string, milestoneId: string) => void
   onCompleteMilestone: (milestoneId: string) => void
   isGoalCompleted: boolean
+  onRegenerate?: () => void
+  regenerating?: boolean
 }) {
   const completedSteps = milestone.steps.filter(s => s.completed).length
   const totalSteps = milestone.steps.length
@@ -479,7 +484,22 @@ function MilestoneCard({
               ))}
             </div>
           ) : (
-            <p style={{ color: '#76746E', fontSize: 12 }}>No steps defined.</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ color: '#76746E', fontSize: 12 }}>No steps yet.</span>
+              {onRegenerate && (
+                <button
+                  onClick={onRegenerate}
+                  disabled={regenerating}
+                  style={{
+                    background: 'rgba(180,167,229,0.1)', border: '1px solid rgba(180,167,229,0.25)',
+                    color: '#B4A7E5', padding: '3px 10px', borderRadius: 6,
+                    fontSize: 11, fontWeight: 600, cursor: regenerating ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {regenerating ? '⏳ Generating...' : '⚡ Generate steps'}
+                </button>
+              )}
+            </div>
           )}
 
           {!milestone.completed && !isGoalCompleted && completedSteps === totalSteps && totalSteps > 0 && (
