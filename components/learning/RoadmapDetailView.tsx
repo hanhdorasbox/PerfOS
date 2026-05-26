@@ -109,15 +109,18 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
       const res = await fetch(`/api/learning/goals/${goal.id}/roadmap`, { method: 'POST' })
       const data = await res.json()
       if (res.ok) {
-        router.refresh()
+        // Full reload — router.refresh() alone doesn't reset useState(initialGoal),
+        // so the newly saved milestones+steps would never appear in the UI.
+        window.location.reload()
       } else {
         setRegenError(data.error || 'Generation failed')
+        setRegenerating(false)
       }
     } catch (e) {
       setRegenError(e instanceof Error ? e.message : 'Network error')
-    } finally {
       setRegenerating(false)
     }
+    // Note: no finally — on success we reload the page so state cleanup is irrelevant
   }
 
   async function deleteGoal() {

@@ -125,27 +125,50 @@ Rules:
     if (!jsonMatch) throw new Error('AI returned no JSON — try again')
 
     /**
-     * Repair common AI JSON formatting bugs before parsing:
-     * 1. Missing commas between objects: }  { → },  {   ← the actual bug here
-     * 2. Missing commas between arrays:  ]  [ → ],  [
-     * 3. Trailing commas before ] or }:  x, ] → x ]
+     * Repair common AI JSON bugs using a string-aware state machine.
+     * Naive regex replacements corrupt content inside string values — this
+     * tracks quote boundaries so we only touch structural characters.
      */
     function repairJson(raw: string): string {
-      return raw
-        .replace(/\}(\s*)\{/g, '},$1{')   // } { → }, {
-        .replace(/\](\s*)\[/g, '],$1[')   // ] [ → ], [
-        .replace(/,(\s*)([}\]])/g, '$1$2') // trailing comma before } or ]
+      let out = ''
+      let inStr = false
+      let esc = false
+
+      for (let i = 0; i < raw.length; i++) {
+        const ch = raw[i]
+
+        if (esc)         { out += ch; esc = false; continue }
+        if (ch === '\\' && inStr) { out += ch; esc = true; continue }
+        if (ch === '"')  { inStr = !inStr; out += ch; continue }
+
+        if (!inStr) {
+          // Insert missing comma: previous non-whitespace was } or ] and current is { or [
+          if ((ch === '{' || ch === '[') && out.trimEnd().match(/[}\]"0-9a-zA-Z]$/)) {
+            const trimmed = out.trimEnd()
+            if (!trimmed.endsWith(',')) {
+              out = trimmed + ',' + out.slice(trimmed.length)
+            }
+          }
+          // Remove trailing comma before } or ]
+          if ((ch === '}' || ch === ']') && out.trimEnd().endsWith(',')) {
+            const trimmed = out.trimEnd()
+            out = trimmed.slice(0, -1) + out.slice(trimmed.length)
+          }
+        }
+
+        out += ch
+      }
+      return out
     }
 
     let parsed: { milestones?: unknown[] }
     try {
       parsed = JSON.parse(jsonMatch[0])
     } catch {
-      // Try repairing common AI JSON bugs (missing commas, trailing commas)
       try {
         parsed = JSON.parse(repairJson(jsonMatch[0]))
       } catch (repairErr) {
-        throw new Error(`JSON parse failed even after repair: ${repairErr instanceof Error ? repairErr.message : repairErr}`)
+        throw new Error(`JSON parse failed: ${repairErr instanceof Error ? repairErr.message : repairErr}`)
       }
     }
 
