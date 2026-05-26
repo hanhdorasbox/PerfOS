@@ -124,20 +124,28 @@ Rules:
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (!jsonMatch) throw new Error('AI returned no JSON — try again')
 
+    /**
+     * Repair common AI JSON formatting bugs before parsing:
+     * 1. Missing commas between objects: }  { → },  {   ← the actual bug here
+     * 2. Missing commas between arrays:  ]  [ → ],  [
+     * 3. Trailing commas before ] or }:  x, ] → x ]
+     */
+    function repairJson(raw: string): string {
+      return raw
+        .replace(/\}(\s*)\{/g, '},$1{')   // } { → }, {
+        .replace(/\](\s*)\[/g, '],$1[')   // ] [ → ], [
+        .replace(/,(\s*)([}\]])/g, '$1$2') // trailing comma before } or ]
+    }
+
     let parsed: { milestones?: unknown[] }
     try {
       parsed = JSON.parse(jsonMatch[0])
-    } catch (parseErr) {
-      // Response was truncated mid-JSON. Try to recover partial milestones:
-      // Extract anything that looks like complete milestone objects.
-      const partialMatch = jsonMatch[0].match(/"milestones"\s*:\s*\[([\s\S]*?)(?:\]\s*\}|$)/)
-      if (!partialMatch) throw new Error('JSON parse failed and no partial milestones found')
-      // Try to close the truncated array and parse what we have
+    } catch {
+      // Try repairing common AI JSON bugs (missing commas, trailing commas)
       try {
-        const repaired = `{"milestones":[${partialMatch[1].replace(/,?\s*\{[^}]*$/, '')}]}`
-        parsed = JSON.parse(repaired)
-      } catch {
-        throw new Error(`AI response JSON was truncated. Original error: ${parseErr instanceof Error ? parseErr.message : parseErr}`)
+        parsed = JSON.parse(repairJson(jsonMatch[0]))
+      } catch (repairErr) {
+        throw new Error(`JSON parse failed even after repair: ${repairErr instanceof Error ? repairErr.message : repairErr}`)
       }
     }
 
