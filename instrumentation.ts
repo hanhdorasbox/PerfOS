@@ -74,6 +74,79 @@ const MIGRATIONS = [
      ADD COLUMN IF NOT EXISTS "status"    TEXT    NOT NULL DEFAULT 'stable',
      ADD COLUMN IF NOT EXISTS "liveData"  TEXT,
      ADD COLUMN IF NOT EXISTS "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT NOW()`,
+
+  // ── FitnessScheduleChange ─── fitness schedule removal tracking ───────────
+  `CREATE TABLE IF NOT EXISTS "FitnessScheduleChange" (
+     "id"              TEXT    NOT NULL,
+     "userId"          TEXT    NOT NULL,
+     "weekId"          TEXT    NOT NULL,
+     "sessionLabel"    TEXT    NOT NULL,
+     "sessionDay"      TEXT    NOT NULL,
+     "sessionType"     TEXT    NOT NULL DEFAULT 'strength',
+     "action"          TEXT    NOT NULL,
+     "reason"          TEXT,
+     "replacementText" TEXT,
+     "affectsAdherence" BOOLEAN NOT NULL DEFAULT true,
+     "undone"          BOOLEAN NOT NULL DEFAULT false,
+     "notes"           TEXT,
+     "createdAt"       TIMESTAMP(3) NOT NULL DEFAULT NOW(),
+     CONSTRAINT "FitnessScheduleChange_pkey" PRIMARY KEY ("id")
+   )`,
+
+  // ── Recipe ─── personal recipe library ────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS "Recipe" (
+     "id"            TEXT    NOT NULL,
+     "userId"        TEXT    NOT NULL,
+     "name"          TEXT    NOT NULL,
+     "mealType"      TEXT    NOT NULL,
+     "description"   TEXT,
+     "prepMinutes"   INTEGER,
+     "cookMinutes"   INTEGER,
+     "portions"      INTEGER NOT NULL DEFAULT 1,
+     "difficulty"    TEXT,
+     "tags"          TEXT,
+     "notes"         TEXT,
+     "liked"         BOOLEAN,
+     "storageDays"   INTEGER,
+     "isMealPrep"    BOOLEAN NOT NULL DEFAULT false,
+     "status"        TEXT    NOT NULL DEFAULT 'active',
+     "totalCalories" DOUBLE PRECISION,
+     "totalProtein"  DOUBLE PRECISION,
+     "totalCarbs"    DOUBLE PRECISION,
+     "totalFat"      DOUBLE PRECISION,
+     "totalFiber"    DOUBLE PRECISION,
+     "lastUsedAt"    TIMESTAMP(3),
+     "usageCount"    INTEGER NOT NULL DEFAULT 0,
+     "createdAt"     TIMESTAMP(3) NOT NULL DEFAULT NOW(),
+     "updatedAt"     TIMESTAMP(3) NOT NULL DEFAULT NOW(),
+     CONSTRAINT "Recipe_pkey" PRIMARY KEY ("id")
+   )`,
+
+  // ── RecipeIngredient ─────────────────────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS "RecipeIngredient" (
+     "id"       TEXT    NOT NULL,
+     "recipeId" TEXT    NOT NULL,
+     "name"     TEXT    NOT NULL,
+     "amount"   DOUBLE PRECISION NOT NULL,
+     "unit"     TEXT    NOT NULL DEFAULT 'g',
+     "calories" DOUBLE PRECISION,
+     "protein"  DOUBLE PRECISION,
+     "carbs"    DOUBLE PRECISION,
+     "fat"      DOUBLE PRECISION,
+     "fiber"    DOUBLE PRECISION,
+     "brand"    TEXT,
+     "order"    INTEGER NOT NULL DEFAULT 0,
+     CONSTRAINT "RecipeIngredient_pkey" PRIMARY KEY ("id")
+   )`,
+
+  // ── RecipeStep ───────────────────────────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS "RecipeStep" (
+     "id"          TEXT    NOT NULL,
+     "recipeId"    TEXT    NOT NULL,
+     "instruction" TEXT    NOT NULL,
+     "order"       INTEGER NOT NULL DEFAULT 0,
+     CONSTRAINT "RecipeStep_pkey" PRIMARY KEY ("id")
+   )`,
 ]
 
 async function runMigrations(db: PrismaClient) {
