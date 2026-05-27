@@ -59,10 +59,20 @@ export default async function MealsPage() {
   return (
     <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#FAFAFA' }}>Weekly Meal Planning</h1>
-        <p style={{ color: '#B8B6B0', fontSize: 14, marginTop: 4 }}>
-          High-protein, minimal-variety meals aligned with your fitness goals.
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
+          <div>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#FAFAFA' }}>Weekly Meal Planning</h1>
+            <p style={{ color: '#B8B6B0', fontSize: 14, marginTop: 4 }}>
+              High-protein, minimal-variety meals aligned with your fitness goals.
+            </p>
+          </div>
+          <a
+            href="/meals/recipes"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(107,227,164,0.08)', border: '1px solid rgba(107,227,164,0.2)', borderRadius: 8, color: '#6BE3A4', fontSize: 13, textDecoration: 'none', fontWeight: 600, flexShrink: 0 }}
+          >
+            📖 Recipe Library
+          </a>
+        </div>
       </div>
 
       {!currentPlan ? (

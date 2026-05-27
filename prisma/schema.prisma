@@ -54,6 +54,10 @@ model User {
   calendarToken    GoogleCalendarToken?
   // Daily Briefings (cached)
   dailyBriefings   DailyBriefing[]
+  // Fitness Schedule Changes
+  scheduleChanges  FitnessScheduleChange[]
+  // Recipes
+  recipes          Recipe[]
 }
 
 model LongTermGoal {
@@ -709,4 +713,81 @@ model FinanceReport {
   narrative    String
   chartData    String?       // JSON: chart-ready data
   createdAt    DateTime      @default(now())
+}
+
+// ─── FITNESS SCHEDULE CHANGES ─────────────────────────────────────────────────
+
+model FitnessScheduleChange {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  weekId          String   // Monday date of the week: "2026-05-26"
+  sessionLabel    String   // e.g. "Lower body strength"
+  sessionDay      String   // e.g. "Friday"
+  sessionType     String   @default("strength") // strength|cardio|sauna|walk|recovery|other
+  action          String   // removed|skipped|rescheduled|replaced|completed
+  reason          String?  // cannot_this_week|replace_lighter|plan_too_much|already_done|remove_permanent|moving_day|other
+  replacementText String?
+  affectsAdherence Boolean @default(true)
+  undone          Boolean  @default(false)
+  notes           String?
+  createdAt       DateTime @default(now())
+}
+
+// ─── RECIPE LIBRARY ──────────────────────────────────────────────────────────
+
+model Recipe {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  name          String
+  mealType      String   // breakfast|lunch|dinner|snack|pre_workout|post_workout|meal_prep|other
+  description   String?
+  prepMinutes   Int?
+  cookMinutes   Int?
+  portions      Int      @default(1)
+  difficulty    String?  // easy|medium|hard
+  tags          String?  // JSON: string[]
+  notes         String?
+  liked         Boolean?
+  storageDays   Int?
+  isMealPrep    Boolean  @default(false)
+  status        String   @default("active") // active|archived
+  // Calculated totals (sum of ingredients)
+  totalCalories Float?
+  totalProtein  Float?
+  totalCarbs    Float?
+  totalFat      Float?
+  totalFiber    Float?
+  // Usage tracking
+  lastUsedAt    DateTime?
+  usageCount    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  ingredients   RecipeIngredient[]
+  steps         RecipeStep[]
+}
+
+model RecipeIngredient {
+  id       String  @id @default(cuid())
+  recipeId String
+  recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  name     String
+  amount   Float
+  unit     String  @default("g")
+  calories Float?
+  protein  Float?
+  carbs    Float?
+  fat      Float?
+  fiber    Float?
+  brand    String?
+  order    Int     @default(0)
+}
+
+model RecipeStep {
+  id          String @id @default(cuid())
+  recipeId    String
+  recipe      Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  instruction String
+  order       Int    @default(0)
 }
