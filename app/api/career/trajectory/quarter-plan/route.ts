@@ -28,43 +28,49 @@ export async function POST(req: NextRequest) {
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2048,
-      messages: [
-        {
-          role: 'user',
-          content: `Create a quarterly career plan for someone targeting ${trajectory.targetRoleTitle || trajectory.targetPath}.
+      tools: [{
+        name: 'create_quarter_plan',
+        description: 'Create a quarterly career focus plan with priorities, key output and high-upside bet',
+        input_schema: {
+          type: 'object' as const,
+          properties: {
+            priorities:    { type: 'array', items: { type: 'string' }, description: '3 specific quarterly priorities' },
+            keyOutput:     { type: 'string', description: 'The single most important deliverable to ship this quarter' },
+            highUpsideBet: { type: 'string', description: 'The asymmetric opportunity — high risk but big career payoff' },
+          },
+          required: ['priorities', 'keyOutput', 'highUpsideBet'],
+        },
+      }],
+      tool_choice: { type: 'tool', name: 'create_quarter_plan' },
+      messages: [{
+        role: 'user',
+        content: `Create a quarterly career plan for someone targeting ${trajectory.targetRoleTitle || trajectory.targetPath}.
 
 Current Role: ${trajectory.currentRole}
 Time Horizon: ${trajectory.timeHorizon || 'Not specified'}
 
 Open Gaps (by priority):
-${trajectory.gaps.map(g => `- [${g.gapType}] ${g.title} (priority ${g.priority})`).join('\n')}
+${trajectory.gaps.map(g => `- [${g.gapType}] ${g.title} (priority ${g.priority})`).join('\n') || 'None'}
 
 Active Quarter Goals:
 ${goals.map(g => `- ${g.title} (${g.category})`).join('\n') || 'None'}
 
-Return ONLY valid JSON:
-{
-  "priorities": ["priority 1", "priority 2", "priority 3"],
-  "keyOutput": "the one most important thing to ship/produce this quarter that advances the trajectory",
-  "highUpsideBet": "the asymmetric opportunity this quarter — high risk but big career payoff"
-}
-
-Be specific, direct, and actionable. Respond ONLY with JSON.`,
-        },
-      ],
+Be specific, direct, and actionable.`,
+      }],
     })
 
-    const text = response.content[0].type === 'text' ? response.content[0].text : ''
-    const jsonMatch = text.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) throw new Error('No JSON in response')
-    const parsed = JSON.parse(jsonMatch[0])
+    const toolBlock = response.content.find(c => c.type === 'tool_use')
+    if (!toolBlock || toolBlock.type !== 'tool_use') throw new Error('AI returned no structured data — try again')
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parsed = toolBlock.input as { priorities?: string[]; keyOutput?: string; highUpsideBet?: string }
 
     const plan = await prisma.trajectoryQuarterPlan.create({
       data: {
         trajectoryId,
         quarterId: quarterId ?? null,
-        priorities: JSON.stringify(parsed.priorities || []),
-        keyOutput: parsed.keyOutput ?? null,
+        priorities:    JSON.stringify(parsed.priorities ?? []),
+        keyOutput:     parsed.keyOutput ?? null,
         highUpsideBet: parsed.highUpsideBet ?? null,
       },
     })
