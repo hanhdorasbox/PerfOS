@@ -147,6 +147,18 @@ const MIGRATIONS = [
      "order"       INTEGER NOT NULL DEFAULT 0,
      CONSTRAINT "RecipeStep_pkey" PRIMARY KEY ("id")
    )`,
+
+  // ── CareerRoadmap ─── persistent goal roadmaps ────────────────────────────
+  `CREATE TABLE IF NOT EXISTS "CareerRoadmap" (
+     "id"        TEXT        NOT NULL,
+     "userId"    TEXT        NOT NULL,
+     "goal"      TEXT        NOT NULL,
+     "timeframe" TEXT,
+     "context"   TEXT,
+     "roadmap"   TEXT        NOT NULL,
+     "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+     CONSTRAINT "CareerRoadmap_pkey" PRIMARY KEY ("id")
+   )`,
 ]
 
 async function runMigrations(db: PrismaClient) {

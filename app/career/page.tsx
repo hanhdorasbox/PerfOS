@@ -60,7 +60,7 @@ export default async function CareerPage() {
       </div>
 
       <div style={{ marginTop: 20 }}>
-        <RoadmapGenerator />
+        <RoadmapGenerator userId={user.id} />
       </div>
     </main>
   )

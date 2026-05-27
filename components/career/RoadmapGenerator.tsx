@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Spinner from '@/components/ui/Spinner'
 
 interface Phase {
@@ -17,41 +17,67 @@ interface Roadmap {
   phases: Phase[]
 }
 
-export default function RoadmapGenerator() {
+interface SavedRoadmap {
+  id: string
+  goal: string
+  timeframe: string | null
+  roadmap: Roadmap
+  createdAt: string
+}
+
+export default function RoadmapGenerator({ userId }: { userId: string }) {
   const [goal, setGoal] = useState('')
   const [timeframe, setTimeframe] = useState('')
   const [context, setContext] = useState('')
   const [loading, setLoading] = useState(false)
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null)
+  const [activeId, setActiveId] = useState<string | null>(null)
   const [error, setError] = useState('')
-  const [savedRoadmaps, setSavedRoadmaps] = useState<{ goal: string; roadmap: Roadmap; createdAt: string }[]>(() => {
-    if (typeof window === 'undefined') return []
-    try { return JSON.parse(localStorage.getItem('perfos_roadmaps') || '[]') } catch { return [] }
-  })
+  const [savedRoadmaps, setSavedRoadmaps] = useState<SavedRoadmap[]>([])
+  const [loadingSaved, setLoadingSaved] = useState(true)
+
+  useEffect(() => {
+    fetch(`/api/career/roadmaps?userId=${userId}`)
+      .then(r => r.json())
+      .then((data: SavedRoadmap[]) => { if (Array.isArray(data)) setSavedRoadmaps(data) })
+      .catch(() => {})
+      .finally(() => setLoadingSaved(false))
+  }, [userId])
 
   async function generate() {
     if (!goal.trim() || !timeframe.trim()) return
     setLoading(true)
     setError('')
     setRoadmap(null)
+    setActiveId(null)
     try {
       const res = await fetch('/api/career/roadmap', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ goal: goal.trim(), timeframe: timeframe.trim(), context: context.trim() }),
+        body: JSON.stringify({ goal: goal.trim(), timeframe: timeframe.trim(), context: context.trim(), userId }),
       })
       const data = await res.json()
       if (data.error) throw new Error(data.error)
-      setRoadmap(data)
-      const newEntry = { goal: goal.trim(), roadmap: data, createdAt: new Date().toISOString() }
-      const updated = [newEntry, ...savedRoadmaps].slice(0, 10)
-      setSavedRoadmaps(updated)
-      localStorage.setItem('perfos_roadmaps', JSON.stringify(updated))
-    } catch (e: any) {
-      setError(e.message || 'Failed to generate roadmap')
+      const { id, ...roadmapData } = data
+      setRoadmap(roadmapData)
+      if (id) {
+        setActiveId(id)
+        const newEntry: SavedRoadmap = { id, goal: goal.trim(), timeframe: timeframe.trim(), roadmap: roadmapData, createdAt: new Date().toISOString() }
+        setSavedRoadmaps(prev => [newEntry, ...prev].slice(0, 20))
+      }
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to generate roadmap')
     } finally {
       setLoading(false)
     }
+  }
+
+  async function deleteRoadmap(id: string) {
+    try {
+      await fetch(`/api/career/roadmaps?id=${id}`, { method: 'DELETE' })
+      setSavedRoadmaps(prev => prev.filter(r => r.id !== id))
+      if (activeId === id) { setRoadmap(null); setActiveId(null) }
+    } catch { /* silent */ }
   }
 
   const phaseColors = ['#B4A7E5', '#6BE3A4', '#F2C063', '#60A5FA', '#FB923C']
@@ -87,9 +113,11 @@ export default function RoadmapGenerator() {
               cursor: loading || !goal.trim() || !timeframe.trim() ? 'not-allowed' : 'pointer',
               opacity: !goal.trim() || !timeframe.trim() ? 0.5 : 1,
               whiteSpace: 'nowrap',
+              display: 'flex', alignItems: 'center', gap: 7,
             }}
           >
-            {loading ? '⟳ Generating…' : '✦ Generate Roadmap'}
+            {loading && <Spinner size={13} color="#B4A7E5" strokeWidth={2} />}
+            {loading ? 'Generating…' : '✦ Generate Roadmap'}
           </button>
         </div>
         <textarea
@@ -107,41 +135,61 @@ export default function RoadmapGenerator() {
         </div>
       )}
 
-      {loading && (
-        <div style={{ textAlign: 'center', padding: '32px 0', color: '#76746E', fontSize: 13, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-          <Spinner size={20} color="#B4A7E5" />
-          Generating roadmap…
+      {roadmap && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: 11, color: '#6BE3A4' }}>✓ Saved to your roadmaps</span>
+            <button
+              onClick={() => { setRoadmap(null); setActiveId(null) }}
+              style={{ fontSize: 11, color: '#76746E', background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              ← Back to list
+            </button>
+          </div>
+          <RoadmapView roadmap={roadmap} phaseColors={phaseColors} />
         </div>
       )}
 
-      {roadmap && <RoadmapView roadmap={roadmap} phaseColors={phaseColors} />}
-
-      {savedRoadmaps.length > 0 && !roadmap && (
-        <div style={{ marginTop: 8 }}>
-          <div style={{ fontSize: '11px', color: '#76746E', marginBottom: 10 }}>Recent roadmaps:</div>
-          {savedRoadmaps.slice(0, 5).map((r, i) => (
-            <div
-              key={i}
-              style={{ display: 'flex', alignItems: 'center', padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, marginBottom: 6, border: '1px solid rgba(255,255,255,0.06)' }}
-            >
-              <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setRoadmap(r.roadmap)}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#FAFAFA' }}>{r.goal}</div>
-                <div style={{ fontSize: 11, color: '#76746E', marginTop: 2 }}>
-                  {r.roadmap.phases?.length || 0} phases · {new Date(r.createdAt).toLocaleDateString('cs-CZ')}
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  const updated = savedRoadmaps.filter((_, idx) => idx !== i)
-                  setSavedRoadmaps(updated)
-                  localStorage.setItem('perfos_roadmaps', JSON.stringify(updated))
-                }}
-                style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 13, padding: '0 4px', flexShrink: 0 }}
-                title="Delete"
-              >✕</button>
+      {!roadmap && (
+        <>
+          {loadingSaved ? (
+            <div style={{ textAlign: 'center', padding: '20px 0', color: '#76746E' }}>
+              <Spinner size={16} color="#76746E" />
             </div>
-          ))}
-        </div>
+          ) : savedRoadmaps.length > 0 ? (
+            <div style={{ marginTop: 8 }}>
+              <div style={{ fontSize: '11px', color: '#76746E', marginBottom: 10 }}>
+                Saved roadmaps ({savedRoadmaps.length}):
+              </div>
+              {savedRoadmaps.map(r => (
+                <div
+                  key={r.id}
+                  style={{ display: 'flex', alignItems: 'center', padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, marginBottom: 6, border: '1px solid rgba(255,255,255,0.06)' }}
+                >
+                  <div
+                    style={{ flex: 1, cursor: 'pointer' }}
+                    onClick={() => setRoadmap(r.roadmap)}
+                  >
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#FAFAFA' }}>{r.goal}</div>
+                    <div style={{ fontSize: 11, color: '#76746E', marginTop: 2 }}>
+                      {r.timeframe && <span style={{ marginRight: 8 }}>{r.timeframe}</span>}
+                      {r.roadmap.phases?.length || 0} phases · {new Date(r.createdAt).toLocaleDateString('cs-CZ')}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => deleteRoadmap(r.id)}
+                    style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 13, padding: '0 4px', flexShrink: 0 }}
+                    title="Delete"
+                  >✕</button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '20px 0', color: '#76746E', fontSize: 12 }}>
+              No roadmaps yet. Generate your first one above.
+            </div>
+          )}
+        </>
       )}
     </div>
   )

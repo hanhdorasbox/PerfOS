@@ -58,6 +58,8 @@ model User {
   scheduleChanges  FitnessScheduleChange[]
   // Recipes
   recipes          Recipe[]
+  // Career Roadmaps
+  careerRoadmaps   CareerRoadmap[]
 }
 
 model LongTermGoal {
@@ -790,4 +792,17 @@ model RecipeStep {
   recipe      Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   instruction String
   order       Int    @default(0)
+}
+
+// ─── Career Roadmaps ─────────────────────────────────────────────────────────
+
+model CareerRoadmap {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  goal      String
+  timeframe String?
+  context   String?
+  roadmap   String   // JSON: { title, summary, phases }
+  createdAt DateTime @default(now())
 }
