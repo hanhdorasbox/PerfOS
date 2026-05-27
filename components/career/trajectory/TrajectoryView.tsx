@@ -678,7 +678,7 @@ export default function TrajectoryView({ trajectory, quarterId }: Props) {
               <div style={{ marginBottom: 14 }}>
                 <p style={{ color: '#76746E', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Priorities</p>
                 <div style={{ display: 'grid', gap: 6 }}>
-                  {(JSON.parse(latestPlan.priorities) as string[]).map((p: string, i: number) => (
+                  {((() => { try { return JSON.parse(latestPlan.priorities!) as string[] } catch { return [] } })()).map((p: string, i: number) => (
                     <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                       <span style={{ color: '#B4A7E5', fontWeight: 700, fontSize: 13 }}>{i + 1}.</span>
                       <span style={{ color: '#FAFAFA', fontSize: 13 }}>{p}</span>
