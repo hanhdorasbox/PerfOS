@@ -148,6 +148,11 @@ const MIGRATIONS = [
      CONSTRAINT "RecipeStep_pkey" PRIMARY KEY ("id")
    )`,
 
+  // ── CapabilityGoal extra columns ─── strategic roadmap + capital ──────────
+  `ALTER TABLE "CapabilityGoal"
+     ADD COLUMN IF NOT EXISTS "strategicRoadmap" TEXT,
+     ADD COLUMN IF NOT EXISTS "capitalPotential"  TEXT`,
+
   // ── CareerRoadmap ─── persistent goal roadmaps ────────────────────────────
   `CREATE TABLE IF NOT EXISTS "CareerRoadmap" (
      "id"        TEXT        NOT NULL,
