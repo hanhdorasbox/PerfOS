@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { createAnthropicClient } from '@/lib/anthropic'
+import { jsonrepair } from 'jsonrepair'
 
 const client = createAnthropicClient()
 
@@ -62,56 +63,35 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       ? `You are a learning coach who creates extremely concrete, actionable learning plans. Every step must be so specific that a beginner can start immediately without googling anything extra. Steps must be 15-45 minutes each. Nothing vague. If a task would take more than 60 minutes, split it.`
       : `You are a learning strategist who creates practical, outcome-focused roadmaps. Steps must be specific and actionable, 20-60 minutes each. Focus on building real capability, not just consuming content.`
 
-    const prompt = `Create a detailed learning roadmap for this goal.
+    const prompt = `Create a learning roadmap for this goal. Output ONLY a JSON object — no markdown, no explanation, no code fences.
 
 Goal: ${goal.title}
-Capability Statement: ${goal.capabilityStatement}
-Why it matters: ${goal.whyItMatters || 'Not specified'}
-Starting level: ${goal.startingLevel}/5 → Target level: ${goal.targetLevel}/5
-Level gap: ${levelGap} levels to climb
-Weekly hours available: ${weeklyHours}h/week
-Evidence of mastery: ${goal.evidenceOfMastery || 'Not specified'}
+Capability: ${goal.capabilityStatement}
+Starting level: ${goal.startingLevel}/5 → Target: ${goal.targetLevel}/5
+Weekly hours: ${weeklyHours}h/week
 Final output: ${goal.finalOutput || 'Not specified'}
-Roadmap type: ${goal.roadmapType || 'skill'}
-Detail level: ${isEli5 ? 'ELI5 (extremely concrete, beginner-friendly)' : 'Standard'}
-Deadline: ${goal.deadline ? new Date(goal.deadline).toLocaleDateString() : 'No deadline'}
+Detail level: ${isEli5 ? 'ELI5 (very concrete, beginner)' : 'Standard'}
 
-Return ONLY valid JSON with this exact structure:
-{
-  "milestones": [
-    {
-      "title": "Phase/milestone title",
-      "type": "knowledge|practice|output",
-      "phaseName": "Phase 1: Foundations",
-      "order": 0,
-      "description": "What this milestone achieves",
-      "estimatedHours": 8,
-      "steps": [
-        {
-          "title": "Exact step title",
-          "description": "Exactly what to do, with specific resources/actions",
-          "order": 0,
-          "estimatedMinutes": 30,
-          "completionCriteria": "You'll know this is done when...",
-          "stepType": "read|watch|practice|build|reflect|exercise",
-          "suggestedDay": "Monday"
-        }
-      ]
-    }
-  ]
-}
+REQUIRED JSON FORMAT (copy this structure exactly):
+{"milestones":[{"title":"string","type":"knowledge","phaseName":"Phase 1: Foundations","order":0,"description":"string","estimatedHours":4,"steps":[{"title":"string","description":"string","order":0,"estimatedMinutes":30,"completionCriteria":"string","stepType":"read","suggestedDay":"Monday"}]}]}
 
-Rules:
-- ${Math.max(3, levelGap + 2)}-${Math.max(5, levelGap + 4)} milestones total
-- MUST include at least 2 "output" milestones (tangible things you produce)
-- Each milestone has 2-5 steps
-- Steps are ${isEli5 ? '15-45 minutes each (split anything longer)' : '20-60 minutes each'}
-- ${isEli5 ? 'Steps must name exact resources (e.g., "Watch YouTube: Traversy Media JavaScript Crash Course first 30 minutes"), exact exercises, exact deliverables' : 'Steps must be specific and actionable with clear completion criteria'}
-- Order milestones from foundational → advanced
-- phaseName groups related milestones (e.g., "Phase 1: Foundations", "Phase 2: Core Skills", "Phase 3: Application")
-- stepType: read (articles/books), watch (videos), practice (exercises), build (create something), reflect (review/journal), exercise (physical/hands-on)
-- estimatedHours per milestone should be realistic for the stated weeklyHours=${weeklyHours}
-- Respond ONLY with JSON`
+STRICT RULES — violating these will break the app:
+1. Output ONLY the JSON object. Nothing before or after it.
+2. Every object in an array MUST be separated by a comma: [{...},{...},{...}]
+3. Never omit commas between array items.
+4. No trailing commas: [a,b,c] not [a,b,c,]
+5. All string values must use straight double quotes. No special characters.
+6. Keep ALL string values under 120 characters. Short and specific.
+
+CONTENT RULES:
+- Exactly ${Math.min(5, Math.max(3, levelGap + 2))} milestones total
+- At least 2 milestones must have type "output" (tangible deliverable)
+- Each milestone has exactly 3 steps (no more, no less)
+- type values: "knowledge", "practice", or "output"
+- stepType values: "read", "watch", "practice", "build", "reflect", "exercise"
+- phaseName: "Phase 1: Foundations", "Phase 2: Core Skills", "Phase 3: Application", etc.
+- ${isEli5 ? 'Name exact resources in step descriptions (e.g., specific YouTube channels, exact exercise names)' : 'Make steps specific with clear actions and completion criteria'}
+- estimatedHours per milestone realistic for weeklyHours=${weeklyHours}`
 
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
@@ -121,52 +101,19 @@ Rules:
     })
 
     const text = response.content[0].type === 'text' ? response.content[0].text : ''
+
+    // Extract the JSON object from the response (strips any accidental prefix/suffix text)
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (!jsonMatch) throw new Error('AI returned no JSON — try again')
 
-    /**
-     * Repair common AI JSON bugs using a string-aware state machine.
-     * Naive regex replacements corrupt content inside string values — this
-     * tracks quote boundaries so we only touch structural characters.
-     */
-    function repairJson(raw: string): string {
-      let out = ''
-      let inStr = false
-      let esc = false
-
-      for (let i = 0; i < raw.length; i++) {
-        const ch = raw[i]
-
-        if (esc)         { out += ch; esc = false; continue }
-        if (ch === '\\' && inStr) { out += ch; esc = true; continue }
-        if (ch === '"')  { inStr = !inStr; out += ch; continue }
-
-        if (!inStr) {
-          // Insert missing comma: previous non-whitespace was } or ] and current is { or [
-          if ((ch === '{' || ch === '[') && out.trimEnd().match(/[}\]"0-9a-zA-Z]$/)) {
-            const trimmed = out.trimEnd()
-            if (!trimmed.endsWith(',')) {
-              out = trimmed + ',' + out.slice(trimmed.length)
-            }
-          }
-          // Remove trailing comma before } or ]
-          if ((ch === '}' || ch === ']') && out.trimEnd().endsWith(',')) {
-            const trimmed = out.trimEnd()
-            out = trimmed.slice(0, -1) + out.slice(trimmed.length)
-          }
-        }
-
-        out += ch
-      }
-      return out
-    }
-
-    let parsed: { milestones?: unknown[] }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let parsed: { milestones?: any[] }
     try {
       parsed = JSON.parse(jsonMatch[0])
     } catch {
+      // jsonrepair handles: missing commas, trailing commas, unquoted keys, etc.
       try {
-        parsed = JSON.parse(repairJson(jsonMatch[0]))
+        parsed = JSON.parse(jsonrepair(jsonMatch[0]))
       } catch (repairErr) {
         throw new Error(`JSON parse failed: ${repairErr instanceof Error ? repairErr.message : repairErr}`)
       }
