@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Spinner from '@/components/ui/Spinner'
 
@@ -22,6 +22,36 @@ interface WorkoutPlan {
   progressionRule: string
   trackingNote: string
   days: WorkoutDay[]
+}
+
+// ── Session action types ────────────────────────────────────────────────────
+
+interface RemoveTarget { labelKey: string; session: string; day: string; sessionType: string }
+interface UndoState { id: string; labelKey: string; label: string }
+interface FeedbackState { text: string; type: 'ok' | 'warn' | 'protect' }
+
+const REMOVE_REASONS = [
+  { value: 'cannot_this_week', label: 'Cannot do it this week', emoji: '📅', affectsAdherence: true },
+  { value: 'replace_lighter',  label: 'Replacing with something lighter', emoji: '🔄', affectsAdherence: false },
+  { value: 'plan_too_much',    label: 'Plan is too much right now', emoji: '😤', affectsAdherence: false },
+  { value: 'already_done_equivalent', label: 'Already did something equivalent', emoji: '✅', affectsAdherence: false },
+  { value: 'remove_from_plan', label: 'Remove from plan permanently', emoji: '🗑', affectsAdherence: true },
+  { value: 'moving_to_other_day', label: 'Moving it to another day', emoji: '📆', affectsAdherence: false },
+  { value: 'other',            label: 'Other reason', emoji: '💬', affectsAdherence: true },
+]
+
+function classifySession(session: string): 'strength' | 'cardio' | 'sauna' | 'walk' {
+  const s = session.toLowerCase()
+  if (/sauna/.test(s)) return 'sauna'
+  if (/cardio|run|cycle|swim|rowing|zone/.test(s)) return 'cardio'
+  if (/walk|steps|stroll/.test(s)) return 'walk'
+  return 'strength'
+}
+
+function getWeekId() {
+  const now = new Date(); const day = now.getDay()
+  const diff = day === 0 ? -6 : 1 - day; const mon = new Date(now)
+  mon.setDate(now.getDate() + diff); return mon.toISOString().split('T')[0]
 }
 
 interface FitnessStrategy {
@@ -294,6 +324,105 @@ function WorkoutDayPanel({ day, onClose }: { day: WorkoutDay; onClose: () => voi
   )
 }
 
+// ── Action menu item ────────────────────────────────────────────────────────
+
+function ActionMenuItem({ icon, label, onClick, color }: { icon: string; label: string; onClick: () => void; color?: string }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '7px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: 12, color: color ?? '#B8B6B0' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)' }}
+      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none' }}
+    >
+      <span style={{ fontSize: 13, flexShrink: 0 }}>{icon}</span>
+      <span>{label}</span>
+    </button>
+  )
+}
+
+// ── Weekly Status Bar ────────────────────────────────────────────────────────
+
+function WeeklyStatusBar({
+  schedule, completedKeys, removedKeys, weeklyTargets,
+}: {
+  schedule: { day: string; sessions: string[] }[]
+  completedKeys: Set<string>
+  removedKeys: Set<string>
+  weeklyTargets: Record<string, string> | null
+}) {
+  const counts = { strength: 0, cardio: 0, sauna: 0, walk: 0 }
+  const completed = { strength: 0, cardio: 0, sauna: 0, walk: 0 }
+  const removed = { strength: 0, cardio: 0, sauna: 0, walk: 0 }
+
+  for (const day of schedule) {
+    for (const s of (day.sessions ?? [])) {
+      const type = classifySession(s)
+      counts[type]++
+      const lk = `${day.day}:${s}`
+      if (completedKeys.has(lk)) completed[type]++
+      if (removedKeys.has(lk)) removed[type]++
+    }
+  }
+
+  // Parse target numbers from weeklyTargets strings
+  function parseTarget(val: string | null | undefined): number | null {
+    if (!val) return null
+    const m = val.match(/(\d+)/)
+    return m ? parseInt(m[1]) : null
+  }
+
+  const tStrength = parseTarget(weeklyTargets?.strength)
+  const tCardio   = parseTarget(weeklyTargets?.cardio)
+  const tSauna    = parseTarget(weeklyTargets?.sauna)
+
+  // Classify load
+  const totalPlanned = counts.strength + counts.cardio + counts.sauna + counts.walk
+  const totalRemoved = removed.strength + removed.cardio + removed.sauna + removed.walk
+  const effectiveSessions = totalPlanned - totalRemoved
+  const load: 'optimal' | 'underloaded' =
+    effectiveSessions >= totalPlanned * 0.8 ? 'optimal' : 'underloaded'
+
+  const loadColor = load === 'optimal' ? '#6BE3A4' : '#FF8A8A'
+  const loadLabel = load === 'optimal' ? 'Optimal plan' : 'Underloaded'
+
+  const items = [
+    { label: 'Strength', type: 'strength', planned: tStrength ?? counts.strength, done: completed.strength, removed: removed.strength, color: '#6BE3A4' },
+    counts.cardio > 0 && { label: 'Cardio', type: 'cardio', planned: tCardio ?? counts.cardio, done: completed.cardio, removed: removed.cardio, color: '#60A5FA' },
+    counts.sauna > 0 && { label: 'Sauna', type: 'sauna', planned: tSauna ?? counts.sauna, done: completed.sauna, removed: removed.sauna, color: '#FF9F6B' },
+    counts.walk > 0 && { label: 'Walks', type: 'walk', planned: counts.walk, done: completed.walk, removed: removed.walk, color: '#B4A7E5' },
+  ].filter(Boolean) as { label: string; type: string; planned: number; done: number; removed: number; color: string }[]
+
+  return (
+    <div style={{ padding: '14px 18px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, marginBottom: 0 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#76746E', textTransform: 'uppercase', letterSpacing: '0.12em' }}>This Week</div>
+        <span style={{ fontSize: 11, fontWeight: 700, color: loadColor, background: `${loadColor}12`, border: `1px solid ${loadColor}30`, borderRadius: 99, padding: '2px 9px' }}>{loadLabel}</span>
+      </div>
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+        {items.map(item => {
+          const pct = item.planned > 0 ? Math.min(1, item.done / item.planned) : 0
+          return (
+            <div key={item.type} style={{ flex: '1 1 100px', minWidth: 90 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ fontSize: 11, color: '#76746E' }}>{item.label}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: item.color }}>
+                  {item.done}<span style={{ color: '#76746E', fontWeight: 400 }}>/{item.planned}</span>
+                </span>
+              </div>
+              <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 99, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${pct * 100}%`, background: item.color, borderRadius: 99, transition: 'width 0.3s' }} />
+              </div>
+              {item.removed > 0 && (
+                <div style={{ fontSize: 10, color: '#76746E', marginTop: 3 }}>{item.removed} removed</div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export default function FitnessStrategyView({ strategy }: Props) {
   const router = useRouter()
   const [activating, setActivating] = useState(false)
@@ -306,6 +435,42 @@ export default function FitnessStrategyView({ strategy }: Props) {
   const [dragOverDay, setDragOverDay] = useState<number | null>(null)
   const [savingSchedule, setSavingSchedule] = useState(false)
   const [openWorkoutDay, setOpenWorkoutDay] = useState<WorkoutDay | null>(null)
+
+  // ── Per-session action state ─────────────────────────────────────────────
+  const [completedKeys, setCompletedKeys] = useState<Set<string>>(new Set())
+  const [removedKeys, setRemovedKeys] = useState<Set<string>>(new Set())
+  const [actionMenuKey, setActionMenuKey] = useState<string | null>(null)
+  const [removeTarget, setRemoveTarget] = useState<RemoveTarget | null>(null)
+  const [selectedReason, setSelectedReason] = useState('')
+  const [savingRemoval, setSavingRemoval] = useState(false)
+  const [undoState, setUndoState] = useState<UndoState | null>(null)
+  const [feedback, setFeedback] = useState<FeedbackState | null>(null)
+  const weekId = getWeekId()
+
+  // Close action menu when clicking outside
+  const menuRef = useRef<string | null>(null)
+  menuRef.current = actionMenuKey
+
+  // Load this week's changes from DB on mount
+  useEffect(() => {
+    if (!strategy.userId) return
+    fetch(`/api/fitness/schedule-change?userId=${strategy.userId}&weekId=${weekId}`)
+      .then(r => r.json())
+      .then((changes: Array<{ id: string; sessionLabel: string; sessionDay: string; action: string; undone: boolean }>) => {
+        if (!Array.isArray(changes)) return
+        const removed = new Set<string>()
+        const completed = new Set<string>()
+        for (const c of changes) {
+          if (c.undone) continue
+          const lk = `${c.sessionDay}:${c.sessionLabel}`
+          if (c.action === 'completed') completed.add(lk)
+          else removed.add(lk)
+        }
+        setRemovedKeys(removed)
+        setCompletedKeys(completed)
+      })
+      .catch(() => {})
+  }, [strategy.userId, weekId])
 
   const sp = tryParse(strategy.strengthPlan)
   const cp = tryParse(strategy.cardioPlan)
@@ -363,6 +528,80 @@ export default function FitnessStrategyView({ strategy }: Props) {
     }
   }
 
+  // ── Session action handlers ──────────────────────────────────────────────
+
+  const handleMarkDone = useCallback(async (labelKey: string, session: string, day: string) => {
+    setActionMenuKey(null)
+    const isAlreadyDone = completedKeys.has(labelKey)
+    try {
+      if (isAlreadyDone) {
+        setCompletedKeys(prev => { const n = new Set(prev); n.delete(labelKey); return n })
+      } else {
+        setCompletedKeys(prev => new Set([...prev, labelKey]))
+        await fetch('/api/fitness/schedule-change', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: strategy.userId, weekId, sessionLabel: session, sessionDay: day, sessionType: classifySession(session), action: 'completed', reason: null }),
+        })
+        const type = classifySession(session)
+        setFeedback({ text: `✓ ${session} marked as done. Great work!`, type: 'ok' })
+        setTimeout(() => setFeedback(null), 4000)
+      }
+    } catch { /* silent */ }
+  }, [completedKeys, strategy.userId, weekId])
+
+  const handleRemoveClick = useCallback((labelKey: string, session: string, day: string) => {
+    setActionMenuKey(null)
+    setRemoveTarget({ labelKey, session, day, sessionType: classifySession(session) })
+    setSelectedReason('')
+  }, [])
+
+  const handleConfirmRemove = useCallback(async () => {
+    if (!removeTarget || !selectedReason) return
+    setSavingRemoval(true)
+    try {
+      const res = await fetch('/api/fitness/schedule-change', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: strategy.userId, weekId,
+          sessionLabel: removeTarget.session, sessionDay: removeTarget.day,
+          sessionType: removeTarget.sessionType,
+          action: selectedReason === 'moving_to_other_day' ? 'rescheduled' : 'removed',
+          reason: selectedReason,
+        }),
+      })
+      const data = await res.json() as { id: string }
+      setRemovedKeys(prev => new Set([...prev, removeTarget.labelKey]))
+
+      // Impact message
+      const allOfType = schedule.flatMap(d => (d.sessions ?? []).map(s => ({ type: classifySession(s), lk: `${d.day}:${s}` }))).filter(x => x.type === removeTarget.sessionType)
+      const remaining = allOfType.filter(x => !removedKeys.has(x.lk) && x.lk !== removeTarget.labelKey).length
+      const type = removeTarget.sessionType
+      let impactText = ''
+      if (type === 'strength') impactText = remaining <= 1 ? `⚠️ Strength drops to ${remaining} session this week. Consider rescheduling.` : `Strength: ${remaining} session${remaining !== 1 ? 's' : ''} remaining this week.`
+      else if (type === 'cardio') impactText = `Cardio: ${remaining} session${remaining !== 1 ? 's' : ''} remaining this week.`
+      else if (type === 'sauna') impactText = 'Sauna removed. Recovery target may still be met via other protocols.'
+      else impactText = `Session removed from this week.`
+
+      setFeedback({ text: impactText, type: impactText.startsWith('⚠') ? 'warn' : selectedReason === 'plan_too_much' ? 'protect' : 'ok' })
+      setUndoState({ id: data.id, labelKey: removeTarget.labelKey, label: removeTarget.session })
+      setTimeout(() => { setUndoState(null) }, 8000)
+      setRemoveTarget(null); setSelectedReason('')
+    } catch { /* silent */ }
+    finally { setSavingRemoval(false) }
+  }, [removeTarget, selectedReason, strategy.userId, weekId, schedule, removedKeys])
+
+  const handleUndo = useCallback(async () => {
+    if (!undoState) return
+    try {
+      await fetch('/api/fitness/schedule-change', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: undoState.id }) })
+      setRemovedKeys(prev => { const n = new Set(prev); n.delete(undoState.labelKey); return n })
+      setFeedback(null)
+    } catch { /* silent */ }
+    setUndoState(null)
+  }, [undoState])
+
   function handleDragStart(dayIdx: number, sessionIdx: number) {
     setDragSource({ dayIdx, sessionIdx })
   }
@@ -390,6 +629,84 @@ export default function FitnessStrategyView({ strategy }: Props) {
       {/* ── Workout day detail modal ── */}
       {openWorkoutDay && (
         <WorkoutDayPanel day={openWorkoutDay} onClose={() => setOpenWorkoutDay(null)} />
+      )}
+
+      {/* ── Remove reason modal ── */}
+      {removeTarget && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 50,
+          background: 'rgba(5,5,6,0.85)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+        }} onClick={() => { setRemoveTarget(null); setSelectedReason('') }}>
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#0E0E10', border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 16, padding: 28, maxWidth: 420, width: '100%',
+            }}
+          >
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#76746E', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
+                Remove session
+              </div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: '#FAFAFA', lineHeight: 1.35 }}>
+                Why are you removing <span style={{ color: '#FF8A8A' }}>{removeTarget.session}</span>?
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 20 }}>
+              {REMOVE_REASONS.map(r => (
+                <button
+                  key={r.value}
+                  onClick={() => setSelectedReason(r.value)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 14px', borderRadius: 10, cursor: 'pointer',
+                    background: selectedReason === r.value ? 'rgba(107,227,164,0.1)' : 'rgba(255,255,255,0.03)',
+                    border: selectedReason === r.value ? '1px solid rgba(107,227,164,0.35)' : '1px solid rgba(255,255,255,0.07)',
+                    textAlign: 'left', width: '100%', transition: 'all 0.12s',
+                  }}
+                >
+                  <span style={{ fontSize: 16 }}>{r.emoji}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: selectedReason === r.value ? '#6BE3A4' : '#FAFAFA' }}>{r.label}</div>
+                    {!r.affectsAdherence && (
+                      <div style={{ fontSize: 10, color: '#76746E', marginTop: 1 }}>Won&apos;t count against adherence</div>
+                    )}
+                  </div>
+                  {selectedReason === r.value && (
+                    <span style={{ color: '#6BE3A4', fontSize: 14 }}>✓</span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={handleConfirmRemove}
+                disabled={!selectedReason || savingRemoval}
+                style={{
+                  flex: 1, padding: '11px 0', borderRadius: 9, fontSize: 13, fontWeight: 700,
+                  cursor: selectedReason ? 'pointer' : 'not-allowed',
+                  background: selectedReason ? 'rgba(255,138,138,0.15)' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${selectedReason ? 'rgba(255,138,138,0.35)' : 'rgba(255,255,255,0.07)'}`,
+                  color: selectedReason ? '#FF8A8A' : '#4A4845',
+                  opacity: savingRemoval ? 0.6 : 1,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+                }}
+              >
+                {savingRemoval ? <Spinner size={13} color="#FF8A8A" strokeWidth={2} /> : null}
+                {savingRemoval ? 'Saving…' : 'Confirm Removal'}
+              </button>
+              <button
+                onClick={() => { setRemoveTarget(null); setSelectedReason('') }}
+                style={{ padding: '11px 18px', borderRadius: 9, fontSize: 13, cursor: 'pointer', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#76746E' }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ── Draft activation panel ── */}
@@ -567,71 +884,173 @@ export default function FitnessStrategyView({ strategy }: Props) {
         )}
       </div>
 
+      {/* ── Weekly Progress Status ── */}
+      {weeklySchedule.length > 0 && (
+        <WeeklyStatusBar
+          schedule={weeklySchedule}
+          completedKeys={completedKeys}
+          removedKeys={removedKeys}
+          weeklyTargets={weeklyTargets}
+        />
+      )}
+
+      {/* ── Feedback banner ── */}
+      {feedback && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '10px 14px', borderRadius: 10,
+          background: feedback.type === 'warn' ? 'rgba(242,192,99,0.08)' : feedback.type === 'protect' ? 'rgba(107,227,164,0.06)' : 'rgba(255,255,255,0.04)',
+          border: `1px solid ${feedback.type === 'warn' ? 'rgba(242,192,99,0.2)' : feedback.type === 'protect' ? 'rgba(107,227,164,0.2)' : 'rgba(255,255,255,0.08)'}`,
+        }}>
+          <span style={{ fontSize: 13, color: feedback.type === 'warn' ? '#F2C063' : feedback.type === 'protect' ? '#6BE3A4' : '#B8B6B0' }}>{feedback.text}</span>
+          <div style={{ display: 'flex', gap: 8, marginLeft: 16, flexShrink: 0 }}>
+            {undoState && (
+              <button onClick={handleUndo} style={{ fontSize: 12, color: '#6BE3A4', background: 'none', border: '1px solid rgba(107,227,164,0.3)', borderRadius: 5, padding: '3px 10px', cursor: 'pointer' }}>Undo</button>
+            )}
+            <button onClick={() => setFeedback(null)} style={{ fontSize: 12, color: '#76746E', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+          </div>
+        </div>
+      )}
+
       {/* ── Weekly Schedule ── */}
       {weeklySchedule.length > 0 && (
-        <div className="card">
+        <div className="card" onClick={() => actionMenuKey && setActionMenuKey(null)}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <h2 style={{ fontSize: 13, fontWeight: 700, color: '#B8B6B0', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>
               Weekly Schedule
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               {savingSchedule && <span style={{ fontSize: 11, color: '#76746E' }}>Saving…</span>}
-              <span style={{ fontSize: 11, color: '#76746E' }}>Drag sessions to reschedule</span>
+              <span style={{ fontSize: 11, color: '#76746E' }}>Drag to reschedule · ⋯ for actions</span>
             </div>
           </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
-            {weeklySchedule.map((day, i) => (
+            {weeklySchedule.map((day, di) => (
               <div
-                key={i}
-                style={{ textAlign: 'center' }}
-                onDragOver={e => { e.preventDefault(); setDragOverDay(i) }}
+                key={di}
+                onDragOver={e => { e.preventDefault(); setDragOverDay(di) }}
                 onDragLeave={() => setDragOverDay(null)}
-                onDrop={() => handleDrop(i)}
+                onDrop={() => handleDrop(di)}
               >
+                {/* Day label */}
                 <div style={{
-                  fontSize: 10, fontWeight: 700, marginBottom: 6, letterSpacing: '0.06em',
-                  color: dragOverDay === i ? '#B4A7E5' : '#76746E',
-                  transition: 'color 0.1s',
-                }}>{day.day?.slice(0, 3).toUpperCase()}</div>
+                  fontSize: 10, fontWeight: 700, marginBottom: 6, letterSpacing: '0.06em', textAlign: 'center',
+                  color: dragOverDay === di ? '#B4A7E5' : '#76746E', transition: 'color 0.1s',
+                }}>
+                  {day.day?.slice(0, 3).toUpperCase()}
+                </div>
+
+                {/* Session cards */}
                 <div style={{
-                  display: 'flex', flexDirection: 'column', gap: 4,
-                  minHeight: 32, borderRadius: 8, padding: 2,
-                  background: dragOverDay === i ? 'rgba(180,167,229,0.08)' : 'transparent',
-                  border: dragOverDay === i ? '1px dashed rgba(180,167,229,0.3)' : '1px solid transparent',
+                  display: 'flex', flexDirection: 'column', gap: 5, minHeight: 40,
+                  borderRadius: 8, padding: dragOverDay === di ? 3 : 0,
+                  background: dragOverDay === di ? 'rgba(180,167,229,0.06)' : 'transparent',
+                  border: dragOverDay === di ? '1px dashed rgba(180,167,229,0.3)' : '1px solid transparent',
                   transition: 'all 0.1s',
                 }}>
-                  {(day.sessions || []).map((session, j) => {
+                  {(day.sessions ?? []).map((session, si) => {
+                    const labelKey = `${day.day}:${session}`
+                    const isCompleted = completedKeys.has(labelKey)
+                    const isRemoved   = removedKeys.has(labelKey)
+                    const isDragging  = dragSource?.dayIdx === di && dragSource?.sessionIdx === si
                     const matchedWorkout = workoutByLabel.get(session.toLowerCase())
-                    const isDragging = dragSource?.dayIdx === i && dragSource?.sessionIdx === j
+                    const sessionType = classifySession(session)
+                    const typeColor = sessionType === 'strength' ? '#6BE3A4' : sessionType === 'cardio' ? '#60A5FA' : sessionType === 'sauna' ? '#FF9F6B' : '#B4A7E5'
+                    const isMenuOpen = actionMenuKey === labelKey
+
                     return (
                       <div
-                        key={j}
-                        draggable
-                        onDragStart={() => handleDragStart(i, j)}
+                        key={si}
+                        draggable={!isRemoved && !isCompleted}
+                        onDragStart={() => handleDragStart(di, si)}
                         onDragEnd={() => { setDragSource(null); setDragOverDay(null) }}
-                        onClick={() => matchedWorkout && setOpenWorkoutDay(matchedWorkout)}
                         style={{
-                          fontSize: 10, padding: '4px 6px', borderRadius: 6,
-                          background: isDragging ? 'rgba(180,167,229,0.25)' : 'rgba(180,167,229,0.1)',
-                          color: '#B4A7E5',
-                          border: matchedWorkout
-                            ? '1px solid rgba(180,167,229,0.4)'
-                            : '1px solid rgba(180,167,229,0.2)',
-                          lineHeight: 1.3,
-                          cursor: matchedWorkout ? 'pointer' : 'grab',
-                          userSelect: 'none',
-                          opacity: isDragging ? 0.5 : 1,
-                          transition: 'opacity 0.12s ease, background 0.12s ease',
                           position: 'relative',
+                          padding: '7px 8px',
+                          borderRadius: 8,
+                          background: isCompleted
+                            ? 'rgba(107,227,164,0.1)'
+                            : isRemoved
+                              ? 'rgba(255,255,255,0.02)'
+                              : isDragging
+                                ? 'rgba(180,167,229,0.2)'
+                                : 'rgba(255,255,255,0.04)',
+                          border: isCompleted
+                            ? '1px solid rgba(107,227,164,0.3)'
+                            : isRemoved
+                              ? '1px solid rgba(255,255,255,0.05)'
+                              : `1px solid ${typeColor}28`,
+                          opacity: isDragging ? 0.5 : isRemoved ? 0.4 : 1,
+                          cursor: isRemoved ? 'default' : matchedWorkout ? 'pointer' : 'grab',
+                          userSelect: 'none',
+                          transition: 'opacity 0.12s, background 0.12s',
                         }}
                       >
-                        {session}
-                        {matchedWorkout && <span style={{ marginLeft: 3, opacity: 0.6 }}>↗</span>}
+                        {/* Session name */}
+                        <div
+                          onClick={() => !isRemoved && matchedWorkout && setOpenWorkoutDay(matchedWorkout)}
+                          style={{ fontSize: 11, fontWeight: 600, lineHeight: 1.3, color: isCompleted ? '#6BE3A4' : isRemoved ? '#4A4845' : '#FAFAFA', textDecoration: isRemoved ? 'line-through' : 'none' }}
+                        >
+                          {isCompleted && <span style={{ marginRight: 3, fontSize: 9 }}>✓</span>}
+                          {session}
+                        </div>
+
+                        {/* Type indicator dot */}
+                        {!isRemoved && (
+                          <div style={{ width: 5, height: 5, borderRadius: '50%', background: typeColor, position: 'absolute', top: 6, right: matchedWorkout ? 18 : 6 }} />
+                        )}
+
+                        {/* View workout arrow for matched workouts */}
+                        {!isRemoved && matchedWorkout && (
+                          <div onClick={() => setOpenWorkoutDay(matchedWorkout)} style={{ position: 'absolute', top: 5, right: 6, fontSize: 9, color: typeColor, opacity: 0.7 }}>↗</div>
+                        )}
+
+                        {/* ⋯ action menu button */}
+                        {!isRemoved && (
+                          <button
+                            onClick={e => { e.stopPropagation(); setActionMenuKey(isMenuOpen ? null : labelKey) }}
+                            style={{
+                              position: 'absolute', bottom: 4, right: 4,
+                              width: 18, height: 14, background: 'none', border: 'none',
+                              cursor: 'pointer', color: '#76746E', fontSize: 11, lineHeight: 1,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+                            }}
+                          >⋯</button>
+                        )}
+
+                        {/* Action menu popup */}
+                        {isMenuOpen && (
+                          <div
+                            onClick={e => e.stopPropagation()}
+                            style={{
+                              position: 'absolute', top: '100%', left: 0, zIndex: 200,
+                              background: '#1A1916', border: '1px solid rgba(255,255,255,0.12)',
+                              borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
+                              minWidth: 180, padding: '6px 0', marginTop: 3,
+                            }}
+                          >
+                            {matchedWorkout && (
+                              <ActionMenuItem icon="📋" label="View workout" onClick={() => { setOpenWorkoutDay(matchedWorkout); setActionMenuKey(null) }} />
+                            )}
+                            <ActionMenuItem
+                              icon={isCompleted ? '↩' : '✓'}
+                              label={isCompleted ? 'Unmark done' : 'Mark as done'}
+                              onClick={() => handleMarkDone(labelKey, session, day.day)}
+                              color="#6BE3A4"
+                            />
+                            <ActionMenuItem icon="🔄" label="Replace with lighter" onClick={() => { handleRemoveClick(labelKey, session, day.day); }} />
+                            <ActionMenuItem icon="✕" label="Remove this week" onClick={() => handleRemoveClick(labelKey, session, day.day)} color="#FF8A8A" />
+                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', margin: '4px 0' }} />
+                            <ActionMenuItem icon="🗑" label="Remove from plan" onClick={() => { setSelectedReason('remove_from_plan'); handleRemoveClick(labelKey, session, day.day) }} color="#FF6B6B" />
+                          </div>
+                        )}
                       </div>
                     )
                   })}
+
                   {(!day.sessions || day.sessions.length === 0) && (
-                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.15)', padding: '4px 0' }}>Rest</div>
+                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.12)', textAlign: 'center', padding: '6px 0' }}>Rest</div>
                   )}
                 </div>
               </div>
