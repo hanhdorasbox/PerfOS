@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { createAnthropicClient } from '@/lib/anthropic'
-import { jsonrepair } from 'jsonrepair'
 
 const client = createAnthropicClient()
 
@@ -63,61 +62,78 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       ? `You are a learning coach who creates extremely concrete, actionable learning plans. Every step must be so specific that a beginner can start immediately without googling anything extra. Steps must be 15-45 minutes each. Nothing vague. If a task would take more than 60 minutes, split it.`
       : `You are a learning strategist who creates practical, outcome-focused roadmaps. Steps must be specific and actionable, 20-60 minutes each. Focus on building real capability, not just consuming content.`
 
-    const prompt = `Create a learning roadmap for this goal. Output ONLY a JSON object — no markdown, no explanation, no code fences.
+    const prompt = `Create a learning roadmap for this goal.
 
 Goal: ${goal.title}
 Capability: ${goal.capabilityStatement}
 Starting level: ${goal.startingLevel}/5 → Target: ${goal.targetLevel}/5
 Weekly hours: ${weeklyHours}h/week
 Final output: ${goal.finalOutput || 'Not specified'}
-Detail level: ${isEli5 ? 'ELI5 (very concrete, beginner)' : 'Standard'}
+${goal.whyItMatters ? `Why it matters: ${goal.whyItMatters}` : ''}
 
-REQUIRED JSON FORMAT (copy this structure exactly):
-{"milestones":[{"title":"string","type":"knowledge","phaseName":"Phase 1: Foundations","order":0,"description":"string","estimatedHours":4,"steps":[{"title":"string","description":"string","order":0,"estimatedMinutes":30,"completionCriteria":"string","stepType":"read","suggestedDay":"Monday"}]}]}
-
-STRICT RULES — violating these will break the app:
-1. Output ONLY the JSON object. Nothing before or after it.
-2. Every object in an array MUST be separated by a comma: [{...},{...},{...}]
-3. Never omit commas between array items.
-4. No trailing commas: [a,b,c] not [a,b,c,]
-5. All string values must use straight double quotes. No special characters.
-6. Keep ALL string values under 120 characters. Short and specific.
-
-CONTENT RULES:
-- Exactly ${Math.min(5, Math.max(3, levelGap + 2))} milestones total
-- At least 2 milestones must have type "output" (tangible deliverable)
-- Each milestone has exactly 3 steps (no more, no less)
-- type values: "knowledge", "practice", or "output"
-- stepType values: "read", "watch", "practice", "build", "reflect", "exercise"
-- phaseName: "Phase 1: Foundations", "Phase 2: Core Skills", "Phase 3: Application", etc.
-- ${isEli5 ? 'Name exact resources in step descriptions (e.g., specific YouTube channels, exact exercise names)' : 'Make steps specific with clear actions and completion criteria'}
-- estimatedHours per milestone realistic for weeklyHours=${weeklyHours}`
+Requirements:
+- ${Math.min(5, Math.max(3, levelGap + 2))} milestones, ordered foundational → advanced
+- At least 2 milestones must be type "output" (tangible deliverable)
+- Each milestone has 3 steps
+- ${isEli5 ? 'ELI5 mode: name exact resources (specific YouTube channels, exact exercise names). Steps 15-45 min each.' : 'Steps specific and actionable, 20-60 min each, with clear completion criteria'}
+- phaseName groups milestones: "Phase 1: Foundations", "Phase 2: Core Skills", "Phase 3: Application"
+- estimatedHours per milestone should be realistic for ${weeklyHours}h/week`
 
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 8192,   // bumped: full roadmap JSON (4-8 milestones × 2-5 steps) easily exceeds 4096
+      max_tokens: 8192,
       system: systemPrompt,
+      tools: [{
+        name: 'create_roadmap',
+        description: 'Create a structured learning roadmap with milestones and steps',
+        input_schema: {
+          type: 'object' as const,
+          properties: {
+            milestones: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  title:          { type: 'string', description: 'Milestone title' },
+                  type:           { type: 'string', enum: ['knowledge', 'practice', 'output'] },
+                  phaseName:      { type: 'string', description: 'e.g. Phase 1: Foundations' },
+                  order:          { type: 'number' },
+                  description:    { type: 'string', description: 'What this milestone achieves (1 sentence)' },
+                  estimatedHours: { type: 'number' },
+                  steps: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        title:              { type: 'string' },
+                        description:        { type: 'string', description: 'Exactly what to do' },
+                        order:              { type: 'number' },
+                        estimatedMinutes:   { type: 'number' },
+                        completionCriteria: { type: 'string', description: 'You know this is done when...' },
+                        stepType:           { type: 'string', enum: ['read', 'watch', 'practice', 'build', 'reflect', 'exercise'] },
+                        suggestedDay:       { type: 'string', description: 'e.g. Monday' },
+                      },
+                      required: ['title', 'stepType'],
+                    },
+                  },
+                },
+                required: ['title', 'type', 'steps'],
+              },
+            },
+          },
+          required: ['milestones'],
+        },
+      }],
+      tool_choice: { type: 'tool', name: 'create_roadmap' },
       messages: [{ role: 'user', content: prompt }],
     })
 
-    const text = response.content[0].type === 'text' ? response.content[0].text : ''
-
-    // Extract the JSON object from the response (strips any accidental prefix/suffix text)
-    const jsonMatch = text.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) throw new Error('AI returned no JSON — try again')
+    // tool_use response — input is already a parsed JS object, no JSON.parse needed
+    const toolBlock = response.content.find(c => c.type === 'tool_use')
+    if (!toolBlock || toolBlock.type !== 'tool_use') throw new Error('AI returned no structured data — try again')
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let parsed: { milestones?: any[] }
-    try {
-      parsed = JSON.parse(jsonMatch[0])
-    } catch {
-      // jsonrepair handles: missing commas, trailing commas, unquoted keys, etc.
-      try {
-        parsed = JSON.parse(jsonrepair(jsonMatch[0]))
-      } catch (repairErr) {
-        throw new Error(`JSON parse failed: ${repairErr instanceof Error ? repairErr.message : repairErr}`)
-      }
-    }
+    const parsed: { milestones?: any[] } = toolBlock.input as { milestones?: any[] }
 
     const milestones: Array<{
       title: string; type: string; phaseName?: string; order?: number;
