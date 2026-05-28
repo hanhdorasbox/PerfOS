@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function AntiDriftPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF6B6B', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#FF453A', padding: 40 }}>No user found.</div>
 
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
@@ -45,8 +45,8 @@ export default async function AntiDriftPage() {
   return (
     <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#FAFAFA' }}>Anti-Drift Report</h1>
-        <p style={{ color: '#B8B6B0', fontSize: 14, marginTop: 4 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7' }}>Anti-Drift Report</h1>
+        <p style={{ color: '#A1A1A6', fontSize: 14, marginTop: 4 }}>
           Movement vs advancement. Effort vs leverage. Data sourced from completed tasks and milestones.
         </p>
       </div>
@@ -54,8 +54,8 @@ export default async function AntiDriftPage() {
       {allItems.length === 0 ? (
         <div className="card" style={{ textAlign: 'center', padding: '48px 24px', marginBottom: 20 }}>
           <div style={{ fontSize: 36, marginBottom: 12 }}>📊</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#FAFAFA', marginBottom: 8 }}>No work items yet</div>
-          <p style={{ color: '#76746E', fontSize: 14, maxWidth: 400, margin: '0 auto' }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 8 }}>No work items yet</div>
+          <p style={{ color: '#6E6E73', fontSize: 14, maxWidth: 400, margin: '0 auto' }}>
             Complete goals and milestones in your quarterly plan, or log work items manually below to start tracking your effort breakdown.
           </p>
         </div>

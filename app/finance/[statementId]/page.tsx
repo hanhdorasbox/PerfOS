@@ -12,7 +12,7 @@ export default async function StatementPage({ params }: { params: Promise<{ stat
   const { statementId } = await params
 
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF6B6B' }}>No user found</div>
+  if (!user) return <div style={{ color: '#FF453A' }}>No user found</div>
 
   const [statement, transactionRules] = await Promise.all([
     prisma.bankStatement.findUnique({
@@ -28,24 +28,24 @@ export default async function StatementPage({ params }: { params: Promise<{ stat
   if (!statement) notFound()
 
   const statusColors: Record<string, string> = {
-    pending: '#F2C063',
-    reviewing: '#60A5FA',
-    committed: '#6BE3A4',
+    pending: '#FFD60A',
+    reviewing: '#0A84FF',
+    committed: '#30D158',
   }
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#FAFAFA' }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7' }}>
             {months[statement.month - 1]} {statement.year}
           </h1>
-          <p style={{ color: '#76746E', fontSize: 13, marginTop: 4 }}>{statement.filename}</p>
+          <p style={{ color: '#6E6E73', fontSize: 13, marginTop: 4 }}>{statement.filename}</p>
         </div>
         <span style={{
-          background: `${statusColors[statement.status] ?? '#76746E'}20`,
-          color: statusColors[statement.status] ?? '#76746E',
-          border: `1px solid ${statusColors[statement.status] ?? '#76746E'}40`,
+          background: `${statusColors[statement.status] ?? '#6E6E73'}20`,
+          color: statusColors[statement.status] ?? '#6E6E73',
+          border: `1px solid ${statusColors[statement.status] ?? '#6E6E73'}40`,
           padding: '4px 14px', borderRadius: 999, fontSize: 12, fontWeight: 700, textTransform: 'capitalize',
         }}>
           {statement.status}
@@ -60,7 +60,7 @@ export default async function StatementPage({ params }: { params: Promise<{ stat
 
       {statement.status === 'committed' && !statement.report && (
         <div className="card" style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <p style={{ color: '#B8B6B0', fontSize: 14 }}>Statement committed — ready to generate monthly report.</p>
+          <p style={{ color: '#A1A1A6', fontSize: 14 }}>Statement committed — ready to generate monthly report.</p>
           <GenerateReportButton statementId={statement.id} userId={user.id} />
         </div>
       )}

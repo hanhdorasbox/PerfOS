@@ -28,7 +28,7 @@ function ConfidenceDots({ confidence }: { confidence: number }) {
           key={i}
           style={{
             width: 7, height: 7, borderRadius: '50%',
-            background: i <= confidence ? '#B4A7E5' : 'rgba(255,255,255,0.1)',
+            background: i <= confidence ? '#BF5AF2' : 'rgba(255,255,255,0.1)',
           }}
         />
       ))}
@@ -36,7 +36,7 @@ function ConfidenceDots({ confidence }: { confidence: number }) {
   )
 }
 
-function BulletText({ text, color = '#B8B6B0', bulletColor = '#76746E' }: { text: string; color?: string; bulletColor?: string }) {
+function BulletText({ text, color = '#A1A1A6', bulletColor = '#6E6E73' }: { text: string; color?: string; bulletColor?: string }) {
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
   const bullets = lines.filter(l => l.startsWith('• ') || l.startsWith('- ') || l.startsWith('* '))
   if (bullets.length === 0) {
@@ -88,7 +88,7 @@ export default function PatternsList({ domainGroups }: { domainGroups: DomainGro
               }}>
                 {icon} {displayDomain}
               </span>
-              <span style={{ color: '#76746E', fontSize: 12 }}>
+              <span style={{ color: '#6E6E73', fontSize: 12 }}>
                 {visiblePatterns.length} pattern{visiblePatterns.length !== 1 ? 's' : ''}
               </span>
             </div>
@@ -104,7 +104,7 @@ export default function PatternsList({ domainGroups }: { domainGroups: DomainGro
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-                    <p style={{ color: '#FAFAFA', fontSize: 14, fontWeight: 600, flex: 1, paddingRight: 16, lineHeight: 1.5 }}>
+                    <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, flex: 1, paddingRight: 16, lineHeight: 1.5 }}>
                       {p.pattern}
                     </p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
@@ -112,7 +112,7 @@ export default function PatternsList({ domainGroups }: { domainGroups: DomainGro
                       <button
                         onClick={() => deletePattern(p.id)}
                         disabled={deletingId === p.id}
-                        style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 14, padding: '0 2px', lineHeight: 1 }}
+                        style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 14, padding: '0 2px', lineHeight: 1 }}
                         title="Delete pattern"
                       >
                         ✕
@@ -121,8 +121,8 @@ export default function PatternsList({ domainGroups }: { domainGroups: DomainGro
                   </div>
                   {p.evidence && (
                     <div style={{ marginBottom: 8 }}>
-                      <div style={{ color: '#76746E', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, marginBottom: 5 }}>Evidence</div>
-                      <BulletText text={p.evidence} color="#B8B6B0" bulletColor="#76746E" />
+                      <div style={{ color: '#6E6E73', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, marginBottom: 5 }}>Evidence</div>
+                      <BulletText text={p.evidence} color="#A1A1A6" bulletColor="#6E6E73" />
                     </div>
                   )}
                   {p.implication && (
@@ -134,7 +134,7 @@ export default function PatternsList({ domainGroups }: { domainGroups: DomainGro
                       <div style={{ color, fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
                         Planning Impact
                       </div>
-                      <BulletText text={p.implication} color="#FAFAFA" bulletColor={color} />
+                      <BulletText text={p.implication} color="#F5F5F7" bulletColor={color} />
                     </div>
                   )}
                 </div>

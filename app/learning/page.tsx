@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function LearningPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF6B6B' }}>No user found</div>
+  if (!user) return <div style={{ color: '#FF453A' }}>No user found</div>
 
   const [capabilityGoalsRaw, activeGoals] = await Promise.all([
     // Try full query with new schema (steps + new columns)
@@ -74,8 +74,8 @@ export default async function LearningPage() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#FAFAFA' }}>Learning</h1>
-          <p style={{ color: '#B8B6B0', fontSize: 14, marginTop: 4 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7' }}>Learning</h1>
+          <p style={{ color: '#A1A1A6', fontSize: 14, marginTop: 4 }}>
             Capability acquisition, not content consumption.
           </p>
         </div>
@@ -87,13 +87,13 @@ export default async function LearningPage() {
           display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 20,
         }}>
           {[
-            { label: 'Active Roadmaps', value: activeGoalsList.length, color: '#B4A7E5' },
-            { label: 'Steps Complete', value: `${completedStepsAcrossAll.length}/${totalStepsAcrossAll.length}`, color: '#6BE3A4' },
-            { label: 'Overall Progress', value: `${overallPct}%`, color: '#60A5FA' },
-            { label: 'At Risk', value: atRisk, color: atRisk > 0 ? '#F2C063' : '#76746E' },
+            { label: 'Active Roadmaps', value: activeGoalsList.length, color: '#BF5AF2' },
+            { label: 'Steps Complete', value: `${completedStepsAcrossAll.length}/${totalStepsAcrossAll.length}`, color: '#30D158' },
+            { label: 'Overall Progress', value: `${overallPct}%`, color: '#0A84FF' },
+            { label: 'At Risk', value: atRisk, color: atRisk > 0 ? '#FFD60A' : '#6E6E73' },
           ].map(s => (
             <div key={s.label} className="card" style={{ padding: '12px 16px', textAlign: 'center' }}>
-              <p style={{ color: '#76746E', fontSize: 10, textTransform: 'uppercase', letterSpacing: 1 }}>{s.label}</p>
+              <p style={{ color: '#6E6E73', fontSize: 10, textTransform: 'uppercase', letterSpacing: 1 }}>{s.label}</p>
               <p style={{ color: s.color, fontSize: 20, fontWeight: 700, marginTop: 4 }}>{s.value}</p>
             </div>
           ))}
@@ -108,11 +108,11 @@ export default async function LearningPage() {
       {/* Active */}
       {activeGoalsList.length > 0 && (
         <div style={{ marginBottom: 32 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#FAFAFA', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Active Roadmaps
-            <span style={{ color: '#76746E', fontSize: 12, fontWeight: 400, marginLeft: 8 }}>{activeGoalsList.length}</span>
+            <span style={{ color: '#6E6E73', fontSize: 12, fontWeight: 400, marginLeft: 8 }}>{activeGoalsList.length}</span>
             {onTrack > 0 && (
-              <span style={{ color: '#6BE3A4', fontSize: 11, fontWeight: 600, marginLeft: 8 }}>· {onTrack} on track</span>
+              <span style={{ color: '#30D158', fontSize: 11, fontWeight: 600, marginLeft: 8 }}>· {onTrack} on track</span>
             )}
           </h3>
           <div style={{ display: 'grid', gap: 12 }}>
@@ -126,17 +126,17 @@ export default async function LearningPage() {
       {activeGoalsList.length === 0 && (
         <div className="card" style={{ textAlign: 'center', padding: '48px 24px', marginBottom: 24 }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>🧠</div>
-          <p style={{ color: '#B8B6B0', fontSize: 15, marginBottom: 6 }}>No active roadmaps yet.</p>
-          <p style={{ color: '#76746E', fontSize: 13 }}>Create your first learning roadmap above.</p>
+          <p style={{ color: '#A1A1A6', fontSize: 15, marginBottom: 6 }}>No active roadmaps yet.</p>
+          <p style={{ color: '#6E6E73', fontSize: 13 }}>Create your first learning roadmap above.</p>
         </div>
       )}
 
       {/* Completed */}
       {completedGoalsList.length > 0 && (
         <div style={{ marginBottom: 24 }}>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#6BE3A4', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#30D158', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Completed
-            <span style={{ color: '#76746E', fontSize: 12, fontWeight: 400, marginLeft: 8 }}>{completedGoalsList.length}</span>
+            <span style={{ color: '#6E6E73', fontSize: 12, fontWeight: 400, marginLeft: 8 }}>{completedGoalsList.length}</span>
           </h3>
           <div style={{ display: 'grid', gap: 10 }}>
             {completedGoalsList.map(goal => (
@@ -149,7 +149,7 @@ export default async function LearningPage() {
       {/* Archived */}
       {archivedGoalsList.length > 0 && (
         <div>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#76746E', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#6E6E73', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Archived
             <span style={{ fontSize: 12, fontWeight: 400, marginLeft: 8 }}>{archivedGoalsList.length}</span>
           </h3>

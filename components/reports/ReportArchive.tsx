@@ -14,14 +14,14 @@ interface Report {
 }
 
 const STATUS_CFG: Record<string, { color: string; label: string }> = {
-  thriving: { color: '#6BE3A4', label: 'Thriving' },
-  stable:   { color: '#60A5FA', label: 'Stable'   },
-  watch:    { color: '#F2C063', label: 'Watch'     },
-  risk:     { color: '#FB923C', label: 'Risk'      },
-  recovery: { color: '#FF6B6B', label: 'Recovery'  },
-  strong:   { color: '#6BE3A4', label: 'Strong'    },
-  neutral:  { color: '#60A5FA', label: 'Neutral'   },
-  weak:     { color: '#F2C063', label: 'Weak'      },
+  thriving: { color: '#30D158', label: 'Thriving' },
+  stable:   { color: '#0A84FF', label: 'Stable'   },
+  watch:    { color: '#FFD60A', label: 'Watch'     },
+  risk:     { color: '#FF9F0A', label: 'Risk'      },
+  recovery: { color: '#FF453A', label: 'Recovery'  },
+  strong:   { color: '#30D158', label: 'Strong'    },
+  neutral:  { color: '#0A84FF', label: 'Neutral'   },
+  weak:     { color: '#FFD60A', label: 'Weak'      },
 }
 
 function deriveStatus(report: Report): string {
@@ -69,7 +69,7 @@ export default function ReportArchive({ reports: initReports }: { reports: Repor
   return (
     <div>
       {error && (
-        <div style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 12 }}>
+        <div style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF453A', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 12 }}>
           {error}
         </div>
       )}
@@ -88,7 +88,7 @@ export default function ReportArchive({ reports: initReports }: { reports: Repor
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: '#FAFAFA' }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7' }}>
                         {new Date(report.weekStart).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} – {new Date(report.weekEnd).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </span>
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, background: `${cfg.color}20`, border: `1px solid ${cfg.color}40`, color: cfg.color }}>
@@ -97,23 +97,23 @@ export default function ReportArchive({ reports: initReports }: { reports: Repor
                     </div>
                     <div style={{ display: 'flex', gap: 14 }}>
                       {metrics.taskRate !== null && (
-                        <span style={{ color: '#76746E', fontSize: 11 }}>Tasks: <span style={{ color: metrics.taskRate >= 70 ? '#6BE3A4' : '#F2C063' }}>{metrics.taskRate}%</span></span>
+                        <span style={{ color: '#6E6E73', fontSize: 11 }}>Tasks: <span style={{ color: metrics.taskRate >= 70 ? '#30D158' : '#FFD60A' }}>{metrics.taskRate}%</span></span>
                       )}
                       {metrics.goalsOnTrack !== null && (
-                        <span style={{ color: '#76746E', fontSize: 11 }}>On track: <span style={{ color: '#60A5FA' }}>{metrics.goalsOnTrack}</span></span>
+                        <span style={{ color: '#6E6E73', fontSize: 11 }}>On track: <span style={{ color: '#0A84FF' }}>{metrics.goalsOnTrack}</span></span>
                       )}
                       {metrics.xp !== null && (
-                        <span style={{ color: '#76746E', fontSize: 11 }}>XP: <span style={{ color: '#B4A7E5' }}>+{metrics.xp}</span></span>
+                        <span style={{ color: '#6E6E73', fontSize: 11 }}>XP: <span style={{ color: '#BF5AF2' }}>+{metrics.xp}</span></span>
                       )}
                     </div>
                   </div>
-                  <span style={{ fontSize: 12, color: '#B8B6B0' }}>→</span>
+                  <span style={{ fontSize: 12, color: '#A1A1A6' }}>→</span>
                 </div>
               </Link>
               <button
                 onClick={() => deleteReport(report.id)}
                 disabled={deleting === report.id}
-                style={{ background: 'none', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
+                style={{ background: 'none', border: '1px solid rgba(255,107,107,0.2)', color: '#FF453A', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
               >
                 {deleting === report.id ? '…' : 'Delete'}
               </button>

@@ -68,12 +68,12 @@ export default function CreateQuarterForm() {
         flexDirection: 'column',
         gap: 18,
       }}>
-        <h2 style={{ color: '#FAFAFA', fontSize: 18, fontWeight: 700, margin: 0 }}>
+        <h2 style={{ color: '#F5F5F7', fontSize: 18, fontWeight: 700, margin: 0 }}>
           Create your first quarter
         </h2>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label style={{ color: '#76746E', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+          <label style={{ color: '#6E6E73', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
             Quarter name
           </label>
           <input
@@ -84,14 +84,14 @@ export default function CreateQuarterForm() {
               background: 'rgba(255,255,255,0.06)',
               border: '1px solid rgba(255,255,255,0.12)',
               borderRadius: 8, padding: '10px 14px',
-              color: '#FAFAFA', fontSize: 14, outline: 'none',
+              color: '#F5F5F7', fontSize: 14, outline: 'none',
             }}
           />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ color: '#76746E', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+            <label style={{ color: '#6E6E73', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
               Start date
             </label>
             <input
@@ -103,13 +103,13 @@ export default function CreateQuarterForm() {
                 background: 'rgba(255,255,255,0.06)',
                 border: '1px solid rgba(255,255,255,0.12)',
                 borderRadius: 8, padding: '10px 14px',
-                color: '#FAFAFA', fontSize: 14, outline: 'none',
+                color: '#F5F5F7', fontSize: 14, outline: 'none',
                 colorScheme: 'dark',
               }}
             />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ color: '#76746E', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+            <label style={{ color: '#6E6E73', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
               End date
             </label>
             <input
@@ -121,14 +121,14 @@ export default function CreateQuarterForm() {
                 background: 'rgba(255,255,255,0.06)',
                 border: '1px solid rgba(255,255,255,0.12)',
                 borderRadius: 8, padding: '10px 14px',
-                color: '#FAFAFA', fontSize: 14, outline: 'none',
+                color: '#F5F5F7', fontSize: 14, outline: 'none',
                 colorScheme: 'dark',
               }}
             />
           </div>
         </div>
 
-        {error && <p style={{ color: '#FF6B6B', fontSize: 13 }}>{error}</p>}
+        {error && <p style={{ color: '#FF453A', fontSize: 13 }}>{error}</p>}
 
         <button
           type="submit"
@@ -136,7 +136,7 @@ export default function CreateQuarterForm() {
           style={{
             background: saving ? 'rgba(180,167,229,0.1)' : 'rgba(180,167,229,0.2)',
             border: '1px solid rgba(180,167,229,0.4)',
-            color: '#B4A7E5',
+            color: '#BF5AF2',
             padding: '12px 24px',
             borderRadius: 8,
             fontSize: 14,

@@ -11,7 +11,7 @@ export default async function Dashboard() {
   const user = await prisma.user.findFirst()
   if (!user) {
     return (
-      <div style={{ color: '#FF6B6B', padding: '40px' }}>
+      <div style={{ color: '#FF453A', padding: '40px' }}>
         No user found. Run: npx prisma db seed
       </div>
     )
@@ -73,8 +73,8 @@ export default async function Dashboard() {
 
   if (!quarter) {
     return (
-      <div style={{ color: '#F2C063', padding: '40px' }}>
-        No active quarter. Go to <a href="/quarterly" style={{ color: '#B4A7E5' }}>Quarterly</a> to create one.
+      <div style={{ color: '#FFD60A', padding: '40px' }}>
+        No active quarter. Go to <a href="/quarterly" style={{ color: '#BF5AF2' }}>Quarterly</a> to create one.
       </div>
     )
   }
@@ -150,10 +150,10 @@ export default async function Dashboard() {
       {/* ── SECTION 2: Strategic Overview ── */}
       <div className="animate-entrance-delay-1" style={{ marginTop: 4 }}>
         <div style={{
-          fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em',
-          textTransform: 'uppercase', color: '#76746E', marginBottom: 16,
+          fontSize: 11, fontWeight: 500, letterSpacing: '0.07em',
+          textTransform: 'uppercase', color: '#6E6E73', marginBottom: 18,
         }}>
-          — Strategic Overview
+          Strategic Overview
         </div>
 
         {alerts.length > 0 && (
@@ -177,12 +177,12 @@ export default async function Dashboard() {
 
         {/* Active Goals — full width */}
         <div style={{ marginTop: 20 }}>
-          <h2 style={{
-            fontSize: '11px', fontWeight: 700, letterSpacing: '0.18em',
-            textTransform: 'uppercase', color: '#76746E', marginBottom: 12,
+          <div style={{
+            fontSize: 11, fontWeight: 500, letterSpacing: '0.07em',
+            textTransform: 'uppercase', color: '#6E6E73', marginBottom: 14,
           }}>
-            — Active Goals
-          </h2>
+            Active Goals
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {goalsWithMetrics.map((goal, i) => (
               <div key={goal.id} className={`animate-entrance-delay-${Math.min(i + 2, 6)}`}>

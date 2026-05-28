@@ -37,10 +37,10 @@ interface Props {
 
 const STRATEGIC_ROLES = [
   { value: '', label: 'No role' },
-  { value: 'career_capital', label: 'Career Capital', color: '#B4A7E5' },
-  { value: 'learning', label: 'Learning', color: '#60A5FA' },
-  { value: 'fitness', label: 'Fitness', color: '#6BE3A4' },
-  { value: 'finance', label: 'Finance', color: '#F2C063' },
+  { value: 'career_capital', label: 'Career Capital', color: '#BF5AF2' },
+  { value: 'learning', label: 'Learning', color: '#0A84FF' },
+  { value: 'fitness', label: 'Fitness', color: '#30D158' },
+  { value: 'finance', label: 'Finance', color: '#FFD60A' },
   { value: 'high_upside_bet', label: 'High-Upside Bet', color: '#FF9F6B' },
   { value: 'long_term', label: 'Long-Term', color: '#4DD9D9' },
 ]
@@ -235,7 +235,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
       style={{
         background: 'rgba(255,255,255,0.05)',
         border: '1px solid rgba(255,255,255,0.1)',
-        color: '#76746E',
+        color: '#6E6E73',
         padding: '6px 14px',
         borderRadius: 8,
         fontSize: 12,
@@ -243,8 +243,8 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
         cursor: 'pointer',
         transition: 'all 0.15s ease',
       }}
-      onMouseEnter={e => { (e.target as HTMLButtonElement).style.color = '#FAFAFA'; (e.target as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.2)' }}
-      onMouseLeave={e => { (e.target as HTMLButtonElement).style.color = '#76746E'; (e.target as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.1)' }}
+      onMouseEnter={e => { (e.target as HTMLButtonElement).style.color = '#F5F5F7'; (e.target as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.2)' }}
+      onMouseLeave={e => { (e.target as HTMLButtonElement).style.color = '#6E6E73'; (e.target as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.1)' }}
     >
       ✎ Manage Goals
     </button>
@@ -257,7 +257,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
     background: 'rgba(255,255,255,0.05)',
     border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: 8,
-    color: '#FAFAFA',
+    color: '#F5F5F7',
     padding: '8px 12px',
     fontSize: 13,
     width: '100%',
@@ -266,7 +266,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
 
   const labelStyle: React.CSSProperties = {
     fontSize: 11,
-    color: '#76746E',
+    color: '#6E6E73',
     fontWeight: 700,
     textTransform: 'uppercase',
     letterSpacing: '0.1em',
@@ -294,34 +294,34 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
         }}>
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#FAFAFA' }}>Setup — Your Data</h2>
-            <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 20 }}>✕</button>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#F5F5F7' }}>Setup — Your Data</h2>
+            <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 20 }}>✕</button>
           </div>
 
           {/* Feedback */}
           {msg && (
-            <div style={{ background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.2)', color: '#6BE3A4', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
+            <div style={{ background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.2)', color: '#30D158', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
               {msg}
             </div>
           )}
           {error && (
-            <div style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
+            <div style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF453A', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
               {error}
             </div>
           )}
 
           {/* ── Profile ───────────────────────────────────────────────── */}
           <section style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#76746E', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 12 }}>
               Profile
             </div>
             {!editingProfile ? (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.07)' }}>
                 <div>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA' }}>{user.name}</span>
-                  <span style={{ fontSize: 13, color: '#76746E', marginLeft: 12 }}>{user.email}</span>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7' }}>{user.name}</span>
+                  <span style={{ fontSize: 13, color: '#6E6E73', marginLeft: 12 }}>{user.email}</span>
                 </div>
-                <button onClick={() => setEditingProfile(true)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#76746E', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer' }}>
+                <button onClick={() => setEditingProfile(true)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer' }}>
                   Edit
                 </button>
               </div>
@@ -338,10 +338,10 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={saveProfile} disabled={savingProfile} style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#B4A7E5', borderRadius: 8, padding: '6px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                  <button onClick={saveProfile} disabled={savingProfile} style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#BF5AF2', borderRadius: 8, padding: '6px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                     {savingProfile ? 'Saving…' : 'Save'}
                   </button>
-                  <button onClick={() => { setEditingProfile(false); setProfileName(user.name); setProfileEmail(user.email) }} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#76746E', borderRadius: 8, padding: '6px 16px', fontSize: 13, cursor: 'pointer' }}>
+                  <button onClick={() => { setEditingProfile(false); setProfileName(user.name); setProfileEmail(user.email) }} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 8, padding: '6px 16px', fontSize: 13, cursor: 'pointer' }}>
                     Cancel
                   </button>
                 </div>
@@ -351,23 +351,23 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
 
           {/* ── Quarter ───────────────────────────────────────────────── */}
           <section style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#76746E', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 12 }}>
               Active Quarter
             </div>
             {!editingQuarter ? (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.07)' }}>
-                <span style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA' }}>{quarter.name}</span>
-                <button onClick={() => setEditingQuarter(true)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#76746E', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer' }}>
+                <span style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7' }}>{quarter.name}</span>
+                <button onClick={() => setEditingQuarter(true)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer' }}>
                   Rename
                 </button>
               </div>
             ) : (
               <div style={{ display: 'flex', gap: 8, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(242,192,99,0.2)' }}>
                 <input style={{ ...inputStyle, flex: 1 }} value={quarterName} onChange={e => setQuarterName(e.target.value)} />
-                <button onClick={saveQuarter} disabled={savingQuarter} style={{ background: 'rgba(242,192,99,0.1)', border: '1px solid rgba(242,192,99,0.3)', color: '#F2C063', borderRadius: 8, padding: '6px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={saveQuarter} disabled={savingQuarter} style={{ background: 'rgba(242,192,99,0.1)', border: '1px solid rgba(242,192,99,0.3)', color: '#FFD60A', borderRadius: 8, padding: '6px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                   {savingQuarter ? '…' : 'Save'}
                 </button>
-                <button onClick={() => { setEditingQuarter(false); setQuarterName(quarter.name) }} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#76746E', borderRadius: 8, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>
+                <button onClick={() => { setEditingQuarter(false); setQuarterName(quarter.name) }} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 8, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>
                   Cancel
                 </button>
               </div>
@@ -377,13 +377,13 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
           {/* ── Goals list ────────────────────────────────────────────── */}
           <section style={{ marginBottom: showForm ? 24 : 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#76746E' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#6E6E73' }}>
                 Goals ({goals.length})
               </div>
               {!showForm && (
                 <button
                   onClick={() => { setForm(EMPTY_FORM); setEditingGoal(null); setShowForm(true) }}
-                  style={{ background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.25)', color: '#6BE3A4', borderRadius: 8, padding: '5px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                  style={{ background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.25)', color: '#30D158', borderRadius: 8, padding: '5px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                 >
                   + Add Goal
                 </button>
@@ -391,7 +391,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
             </div>
 
             {goals.length === 0 && (
-              <div style={{ color: '#76746E', fontSize: 13, padding: '14px 0', textAlign: 'center' }}>
+              <div style={{ color: '#6E6E73', fontSize: 13, padding: '14px 0', textAlign: 'center' }}>
                 No goals yet — add your first one below.
               </div>
             )}
@@ -412,14 +412,14 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                   >
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: '#FAFAFA' }}>{goal.title}</span>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: '#F5F5F7' }}>{goal.title}</span>
                         {roleInfo?.value && (
                           <span style={{ fontSize: 10, fontWeight: 700, color: roleInfo.color, background: `${roleInfo.color}18`, border: `1px solid ${roleInfo.color}30`, borderRadius: 4, padding: '2px 6px' }}>
                             {roleInfo.label}
                           </span>
                         )}
                       </div>
-                      <div style={{ fontSize: 11, color: '#76746E', marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 2 }}>
                         {goal.category}
                         {goal.trackingType === 'QUANTITATIVE' && goal.targetValue != null && (
                           <> · {goal.currentValue ?? goal.startValue ?? 0} → {goal.targetValue} {goal.unit}</>
@@ -430,14 +430,14 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                     <div style={{ display: 'flex', gap: 6, marginLeft: 12 }}>
                       <button
                         onClick={() => startEditGoal(goal)}
-                        style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#76746E', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: 'pointer' }}
+                        style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: 'pointer' }}
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => deleteGoal(goal.id)}
                         disabled={deleting === goal.id}
-                        style={{ background: 'none', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: 'pointer' }}
+                        style={{ background: 'none', border: '1px solid rgba(255,107,107,0.2)', color: '#FF453A', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: 'pointer' }}
                       >
                         {deleting === goal.id ? '…' : 'Delete'}
                       </button>
@@ -451,7 +451,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
           {/* ── Goal form ─────────────────────────────────────────────── */}
           {showForm && (
             <form onSubmit={submitForm} style={{ marginTop: 20, padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(180,167,229,0.15)' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#B4A7E5', marginBottom: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#BF5AF2', marginBottom: 16 }}>
                 {editingGoal ? 'Edit Goal' : 'New Goal'}
               </div>
 
@@ -482,7 +482,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                 <div>
                   <label style={labelStyle}>Strategic Role</label>
                   <select
-                    style={{ ...inputStyle, cursor: 'pointer', color: roleColor ?? '#FAFAFA' }}
+                    style={{ ...inputStyle, cursor: 'pointer', color: roleColor ?? '#F5F5F7' }}
                     value={form.strategicRole}
                     onChange={e => setForm(p => ({ ...p, strategicRole: e.target.value }))}
                   >
@@ -511,7 +511,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                         borderRadius: 8,
                         border: form.trackingType === opt.value ? '1px solid rgba(180,167,229,0.4)' : '1px solid rgba(255,255,255,0.08)',
                         background: form.trackingType === opt.value ? 'rgba(180,167,229,0.1)' : 'rgba(255,255,255,0.03)',
-                        color: form.trackingType === opt.value ? '#B4A7E5' : '#76746E',
+                        color: form.trackingType === opt.value ? '#BF5AF2' : '#6E6E73',
                         cursor: 'pointer',
                         textAlign: 'center',
                       }}
@@ -561,14 +561,14 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                 <button
                   type="submit"
                   disabled={savingGoal}
-                  style={{ background: 'rgba(107,227,164,0.12)', border: '1px solid rgba(107,227,164,0.3)', color: '#6BE3A4', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                  style={{ background: 'rgba(107,227,164,0.12)', border: '1px solid rgba(107,227,164,0.3)', color: '#30D158', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
                 >
                   {savingGoal ? 'Saving…' : editingGoal ? 'Update Goal' : 'Add Goal'}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setEditingGoal(null); setForm(EMPTY_FORM) }}
-                  style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#76746E', borderRadius: 8, padding: '8px 16px', fontSize: 13, cursor: 'pointer' }}
+                  style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 8, padding: '8px 16px', fontSize: 13, cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
@@ -580,7 +580,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
           <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'flex-end' }}>
             <button
               onClick={() => { setOpen(false); router.refresh() }}
-              style={{ background: 'rgba(180,167,229,0.1)', border: '1px solid rgba(180,167,229,0.2)', color: '#B4A7E5', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+              style={{ background: 'rgba(180,167,229,0.1)', border: '1px solid rgba(180,167,229,0.2)', color: '#BF5AF2', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
             >
               Done
             </button>

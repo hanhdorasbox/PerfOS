@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function IdeasPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF6B6B' }}>No user found</div>
+  if (!user) return <div style={{ color: '#FF453A' }}>No user found</div>
 
   const ideas = await prisma.idea.findMany({
     where: { userId: user.id },
@@ -17,15 +17,15 @@ export default async function IdeasPage() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#FAFAFA' }}>Idea Pipeline</h1>
-          <p style={{ color: '#B8B6B0', fontSize: 14, marginTop: 4 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7' }}>Idea Pipeline</h1>
+          <p style={{ color: '#A1A1A6', fontSize: 14, marginTop: 4 }}>
             Capture, evaluate, and convert ideas into action.
           </p>
         </div>
       </div>
 
       <div className="card" style={{ marginBottom: 24 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: '#FAFAFA', marginBottom: 14 }}>Add Idea</h3>
+        <h3 style={{ fontSize: 15, fontWeight: 600, color: '#F5F5F7', marginBottom: 14 }}>Add Idea</h3>
         <AddIdeaForm userId={user.id} />
       </div>
 

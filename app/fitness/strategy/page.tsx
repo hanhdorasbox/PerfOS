@@ -28,7 +28,7 @@ interface SerializedStrategy {
 
 export default async function FitnessStrategyPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF6B6B', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#FF453A', padding: 40 }}>No user found.</div>
 
   const ninetyDaysAgo = new Date()
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90)
@@ -109,8 +109,8 @@ export default async function FitnessStrategyPage() {
   return (
     <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#FAFAFA' }}>Quarterly Fitness Strategy</h1>
-        <p style={{ color: '#B8B6B0', fontSize: 14, marginTop: 4 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7' }}>Quarterly Fitness Strategy</h1>
+        <p style={{ color: '#A1A1A6', fontSize: 14, marginTop: 4 }}>
           Structured quarterly fitness plan aligned with your body composition goals.
         </p>
       </div>

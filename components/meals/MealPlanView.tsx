@@ -109,21 +109,21 @@ export default function MealPlanView({ plan, userId }: Props) {
       <div className="card" style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#FAFAFA' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7' }}>
               Week of {new Date(plan.weekStart).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
             </div>
-            <div style={{ fontSize: 12, color: '#B8B6B0', marginTop: 4 }}>
+            <div style={{ fontSize: 12, color: '#A1A1A6', marginTop: 4 }}>
               {plan.targetCalories && `${plan.targetCalories} kcal target`}
               {plan.targetProtein && ` · ${plan.targetProtein}g protein`}
               {' · '}
               <span style={{
                 textTransform: 'capitalize',
-                color: plan.status === 'approved' ? '#6BE3A4' : '#F2C063',
+                color: plan.status === 'approved' ? '#30D158' : '#FFD60A',
               }}>
                 {plan.status}
               </span>
             </div>
-            {plan.aiNotes && <div style={{ fontSize: 12, color: '#B8B6B0', marginTop: 6, fontStyle: 'italic' }}>{plan.aiNotes}</div>}
+            {plan.aiNotes && <div style={{ fontSize: 12, color: '#A1A1A6', marginTop: 6, fontStyle: 'italic' }}>{plan.aiNotes}</div>}
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             {plan.status === 'draft' && (
@@ -131,14 +131,14 @@ export default function MealPlanView({ plan, userId }: Props) {
                 <button
                   onClick={approve}
                   disabled={approving}
-                  style={{ background: 'rgba(107,227,164,0.15)', border: '1px solid rgba(107,227,164,0.3)', color: '#6BE3A4', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                  style={{ background: 'rgba(107,227,164,0.15)', border: '1px solid rgba(107,227,164,0.3)', color: '#30D158', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                 >
                   {approving ? 'Approving...' : 'Approve Plan'}
                 </button>
                 <button
                   onClick={() => regenerate()}
                   disabled={regenerating}
-                  style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#B8B6B0', borderRadius: 8, padding: '8px 16px', fontSize: 13, cursor: 'pointer' }}
+                  style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#A1A1A6', borderRadius: 8, padding: '8px 16px', fontSize: 13, cursor: 'pointer' }}
                 >
                   {regenerating ? 'Regenerating...' : 'Regenerate'}
                 </button>
@@ -146,16 +146,16 @@ export default function MealPlanView({ plan, userId }: Props) {
             )}
           </div>
         </div>
-        {error && <div style={{ fontSize: 12, color: '#FF6B6B', marginTop: 8 }}>{error}</div>}
+        {error && <div style={{ fontSize: 12, color: '#FF453A', marginTop: 8 }}>{error}</div>}
       </div>
 
       {/* 7-day meal grid */}
       <div className="card" style={{ marginBottom: 16, overflowX: 'auto' }}>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA', marginBottom: 16 }}>This Week&apos;s Meals</h2>
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', marginBottom: 16 }}>This Week&apos;s Meals</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(120px, 1fr))', gap: 8 }}>
           {DAYS.map((day, i) => (
             <div key={i}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#B8B6B0', marginBottom: 8, textAlign: 'center' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#A1A1A6', marginBottom: 8, textAlign: 'center' }}>
                 {day}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -168,7 +168,7 @@ export default function MealPlanView({ plan, userId }: Props) {
               {plan.status === 'draft' && (
                 <button
                   onClick={() => regenerate(i)}
-                  style={{ width: '100%', marginTop: 6, background: 'none', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '4px', fontSize: 11, color: '#B8B6B0', cursor: 'pointer' }}
+                  style={{ width: '100%', marginTop: 6, background: 'none', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '4px', fontSize: 11, color: '#A1A1A6', cursor: 'pointer' }}
                 >
                   ↻ redo day
                 </button>
@@ -181,13 +181,13 @@ export default function MealPlanView({ plan, userId }: Props) {
       {/* Batch Cooking */}
       {batchCooking.length > 0 && (
         <div className="card" style={{ marginBottom: 16 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA', marginBottom: 12 }}>Batch Cooking</h2>
+          <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', marginBottom: 12 }}>Batch Cooking</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {batchCooking.map((batch: any, i: number) => (
               <div key={i} style={{ padding: '10px 12px', background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.15)', borderRadius: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#FAFAFA' }}>{batch.meal}</span>
-                  <span style={{ fontSize: 11, color: '#60A5FA' }}>{batch.portions}x · Cook {batch.cookDay}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#F5F5F7' }}>{batch.meal}</span>
+                  <span style={{ fontSize: 11, color: '#0A84FF' }}>{batch.portions}x · Cook {batch.cookDay}</span>
                 </div>
                 {batch.instructions && (() => {
                   // Parse "1. Step one. 2. Step two." into individual numbered steps
@@ -204,11 +204,11 @@ export default function MealPlanView({ plan, userId }: Props) {
                   return steps.length > 1 ? (
                     <ol style={{ margin: '6px 0 0', padding: '0 0 0 18px', display: 'flex', flexDirection: 'column', gap: 4 }}>
                       {steps.map((step, si) => (
-                        <li key={si} style={{ fontSize: 12, color: '#B8B6B0', lineHeight: 1.5 }}>{step}</li>
+                        <li key={si} style={{ fontSize: 12, color: '#A1A1A6', lineHeight: 1.5 }}>{step}</li>
                       ))}
                     </ol>
                   ) : (
-                    <div style={{ fontSize: 12, color: '#B8B6B0', marginTop: 4 }}>{raw}</div>
+                    <div style={{ fontSize: 12, color: '#A1A1A6', marginTop: 4 }}>{raw}</div>
                   )
                 })()}
               </div>
@@ -223,8 +223,8 @@ export default function MealPlanView({ plan, userId }: Props) {
             onClick={() => setShowShopping(!showShopping)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: 0 }}
           >
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA' }}>Shopping List</h2>
-            <span style={{ fontSize: 12, color: '#B8B6B0' }}>{showShopping ? '▲ collapse' : '▼ expand'}</span>
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7' }}>Shopping List</h2>
+            <span style={{ fontSize: 12, color: '#A1A1A6' }}>{showShopping ? '▲ collapse' : '▼ expand'}</span>
           </button>
           {showShopping && (
             <div style={{ marginTop: 12 }}>
@@ -235,13 +235,13 @@ export default function MealPlanView({ plan, userId }: Props) {
                   {(shoppingList as Array<{ buyDay: string; reason?: string; items: Array<{ item: string; quantity?: string; unit?: string }> }>).map((group, gi) => (
                     <div key={gi}>
                       <div style={{ marginBottom: 6 }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: '#B4A7E5', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Buy {group.buyDay}</span>
-                        {group.reason && <span style={{ fontSize: 11, color: '#76746E', marginLeft: 8 }}>— {group.reason}</span>}
+                        <span style={{ fontSize: 12, fontWeight: 700, color: '#BF5AF2', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Buy {group.buyDay}</span>
+                        {group.reason && <span style={{ fontSize: 11, color: '#6E6E73', marginLeft: 8 }}>— {group.reason}</span>}
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                         {(group.items || []).map((item, ii) => (
-                          <div key={ii} style={{ fontSize: 13, color: '#B8B6B0', padding: '3px 0', display: 'flex', gap: 6, alignItems: 'flex-start' }}>
-                            <span style={{ color: '#6BE3A4', flexShrink: 0 }}>□</span>
+                          <div key={ii} style={{ fontSize: 13, color: '#A1A1A6', padding: '3px 0', display: 'flex', gap: 6, alignItems: 'flex-start' }}>
+                            <span style={{ color: '#30D158', flexShrink: 0 }}>□</span>
                             <span>{item.item}{item.quantity ? ` — ${item.quantity}${item.unit ? ' ' + item.unit : ''}` : ''}</span>
                           </div>
                         ))}
@@ -253,10 +253,10 @@ export default function MealPlanView({ plan, userId }: Props) {
                 // Old flat format fallback
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                   {(shoppingList as Array<{ item: string; quantity?: string; unit?: string }>).map((item, i) => (
-                    <div key={i} style={{ fontSize: 13, color: '#B8B6B0', padding: '4px 0', display: 'flex', gap: 6 }}>
-                      <span style={{ color: '#6BE3A4', flexShrink: 0 }}>□</span>
+                    <div key={i} style={{ fontSize: 13, color: '#A1A1A6', padding: '4px 0', display: 'flex', gap: 6 }}>
+                      <span style={{ color: '#30D158', flexShrink: 0 }}>□</span>
                       <span>{item.item}</span>
-                      {item.quantity && <span style={{ color: '#B8B6B0' }}>— {item.quantity} {item.unit}</span>}
+                      {item.quantity && <span style={{ color: '#A1A1A6' }}>— {item.quantity} {item.unit}</span>}
                     </div>
                   ))}
                 </div>
@@ -275,8 +275,8 @@ function MealCard({ meal, type, feedback, onFeedback }: {
   feedback?: MealFeedback
   onFeedback: (title: string, liked: boolean) => void
 }) {
-  const typeColors: Record<string, string> = { breakfast: '#B4A7E5', lunch: '#60A5FA', dinner: '#6BE3A4' }
-  const color = typeColors[type] || '#B8B6B0'
+  const typeColors: Record<string, string> = { breakfast: '#BF5AF2', lunch: '#0A84FF', dinner: '#30D158' }
+  const color = typeColors[type] || '#A1A1A6'
 
   if (!meal) {
     return (
@@ -303,11 +303,11 @@ function MealCard({ meal, type, feedback, onFeedback }: {
       border: `1px solid ${color}22`,
     }}>
       <div style={{ fontSize: 10, color, fontWeight: 700, marginBottom: 3, textTransform: 'uppercase' }}>{type}</div>
-      <div style={{ fontSize: 12, color: '#FAFAFA', fontWeight: 600, lineHeight: 1.3, marginBottom: 4 }}>{meal.title}</div>
-      <div style={{ display: 'flex', gap: 6, fontSize: 10, color: '#B8B6B0', flexWrap: 'wrap' }}>
+      <div style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 600, lineHeight: 1.3, marginBottom: 4 }}>{meal.title}</div>
+      <div style={{ display: 'flex', gap: 6, fontSize: 10, color: '#A1A1A6', flexWrap: 'wrap' }}>
         {meal.calories && <span>{meal.calories}kcal</span>}
         {meal.protein && <span>{meal.protein}g pro</span>}
-        {meal.isRepeated && <span style={{ color: '#60A5FA' }}>batch</span>}
+        {meal.isRepeated && <span style={{ color: '#0A84FF' }}>batch</span>}
       </div>
       <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
         <button
@@ -315,7 +315,7 @@ function MealCard({ meal, type, feedback, onFeedback }: {
           style={{
             background: feedback?.liked === true ? 'rgba(107,227,164,0.2)' : 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 4, padding: '2px 6px', fontSize: 10, cursor: 'pointer', color: '#6BE3A4',
+            borderRadius: 4, padding: '2px 6px', fontSize: 10, cursor: 'pointer', color: '#30D158',
           }}
         >
           ↑
@@ -325,7 +325,7 @@ function MealCard({ meal, type, feedback, onFeedback }: {
           style={{
             background: feedback?.liked === false ? 'rgba(255,107,107,0.2)' : 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 4, padding: '2px 6px', fontSize: 10, cursor: 'pointer', color: '#FF6B6B',
+            borderRadius: 4, padding: '2px 6px', fontSize: 10, cursor: 'pointer', color: '#FF453A',
           }}
         >
           ↓

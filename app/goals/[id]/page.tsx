@@ -29,10 +29,10 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
   const metrics = calcGoalMetrics({ startDate: goal.quarter.startDate, deadline: goal.deadline, progressPct })
 
   const statusColors: Record<string, string> = {
-    ahead: '#6BE3A4', on_track: '#60A5FA', watch: '#F2C063',
-    at_risk: '#FB923C', critical: '#FF6B6B', completed: '#6BE3A4'
+    ahead: '#30D158', on_track: '#0A84FF', watch: '#FFD60A',
+    at_risk: '#FF9F0A', critical: '#FF453A', completed: '#30D158'
   }
-  const color = statusColors[metrics.status] || '#B8B6B0'
+  const color = statusColors[metrics.status] || '#A1A1A6'
 
   const recentUpdates = goal.progressUpdates.slice().reverse().slice(0, 12)
 
@@ -40,10 +40,10 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Header */}
       <div>
-        <Link href="/" style={{ fontSize: '12px', color: '#76746E', textDecoration: 'none' }}>← Dashboard</Link>
-        <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#FAFAFA', marginTop: '8px' }}>{goal.title}</h1>
+        <Link href="/" style={{ fontSize: '12px', color: '#6E6E73', textDecoration: 'none' }}>← Dashboard</Link>
+        <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#F5F5F7', marginTop: '8px' }}>{goal.title}</h1>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '6px' }}>
-          <span style={{ fontSize: '12px', color: '#76746E' }}>{goal.category} · {goal.quarter.name}</span>
+          <span style={{ fontSize: '12px', color: '#6E6E73' }}>{goal.category} · {goal.quarter.name}</span>
           <span className={`badge-${metrics.status}`}>{metrics.statusLabel}</span>
         </div>
       </div>
@@ -52,20 +52,20 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px' }}>
         {[
           { label: 'Progress', value: `${Math.round(progressPct)}%`, color },
-          { label: 'Expected', value: `${Math.round(metrics.expectedPct)}%`, color: '#B8B6B0' },
-          { label: 'Gap', value: `${metrics.gap >= 0 ? '+' : ''}${Math.round(metrics.gap)}%`, color: metrics.gap >= 0 ? '#6BE3A4' : '#FF6B6B' },
-          { label: 'Days left', value: `${Math.round(metrics.daysRemaining)}d`, color: '#B8B6B0' },
+          { label: 'Expected', value: `${Math.round(metrics.expectedPct)}%`, color: '#A1A1A6' },
+          { label: 'Gap', value: `${metrics.gap >= 0 ? '+' : ''}${Math.round(metrics.gap)}%`, color: metrics.gap >= 0 ? '#30D158' : '#FF453A' },
+          { label: 'Days left', value: `${Math.round(metrics.daysRemaining)}d`, color: '#A1A1A6' },
         ].map(stat => (
           <div key={stat.label} className="card" style={{ textAlign: 'center', padding: '16px' }}>
             <div style={{ fontSize: '28px', fontWeight: 800, color: stat.color, fontVariantNumeric: 'tabular-nums' }}>{stat.value}</div>
-            <div style={{ fontSize: '11px', color: '#76746E', marginTop: '4px' }}>{stat.label}</div>
+            <div style={{ fontSize: '11px', color: '#6E6E73', marginTop: '4px' }}>{stat.label}</div>
           </div>
         ))}
       </div>
 
       {/* Chart */}
       <div className="card">
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: '14px' }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '14px' }}>
           Progress vs Expected Trajectory
         </div>
         <GoalDetailChart
@@ -80,16 +80,16 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
 
       {/* Advisor recommendation */}
       <div className="card">
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: '8px' }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '8px' }}>
           Advisor Recommendation
         </div>
-        <div style={{ fontSize: '13px', color: '#B8B6B0', lineHeight: 1.6, padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
+        <div style={{ fontSize: '13px', color: '#A1A1A6', lineHeight: 1.6, padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
           {metrics.recommendation}
         </div>
         {metrics.forecastedCompletionDate && (
-          <div style={{ marginTop: 8, fontSize: '12px', color: '#76746E' }}>
+          <div style={{ marginTop: 8, fontSize: '12px', color: '#6E6E73' }}>
             Forecasted completion:{' '}
-            <span style={{ color: metrics.forecastedCompletionDate > goal.deadline ? '#FF6B6B' : '#6BE3A4' }}>
+            <span style={{ color: metrics.forecastedCompletionDate > goal.deadline ? '#FF453A' : '#30D158' }}>
               {metrics.forecastedCompletionDate.toLocaleDateString('cs-CZ')}
             </span>
             {' '}(deadline: {goal.deadline.toLocaleDateString('cs-CZ')})
@@ -100,7 +100,7 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
       {/* Milestones — interactive */}
       {goal.milestones.length > 0 && (
         <div className="card">
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: '14px' }}>
+          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '14px' }}>
             Milestones
           </div>
           <MilestoneList milestones={goal.milestones.map(m => ({ ...m, dueDate: m.dueDate ?? null }))} />
@@ -109,24 +109,24 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
 
       {/* Progress log + add form */}
       <div className="card">
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: '14px' }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '14px' }}>
           Progress Log
         </div>
 
         {recentUpdates.length === 0 && (
-          <div style={{ fontSize: '12px', color: '#76746E', fontStyle: 'italic', marginBottom: 12 }}>No progress logged yet.</div>
+          <div style={{ fontSize: '12px', color: '#6E6E73', fontStyle: 'italic', marginBottom: 12 }}>No progress logged yet.</div>
         )}
 
         {recentUpdates.map(u => (
           <div key={u.id} style={{ padding: '9px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: '12px' }}>
-              <span style={{ color: '#76746E' }}>{new Date(u.loggedAt).toLocaleDateString('cs-CZ')}</span>
-              <span style={{ color: '#FAFAFA', fontFamily: 'monospace', fontWeight: 700 }}>
+              <span style={{ color: '#6E6E73' }}>{new Date(u.loggedAt).toLocaleDateString('cs-CZ')}</span>
+              <span style={{ color: '#F5F5F7', fontFamily: 'monospace', fontWeight: 700 }}>
                 {u.value}{goal.unit ? ` ${goal.unit}` : ''}
               </span>
             </div>
             {u.note && (
-              <div style={{ marginTop: 3, fontSize: '11px', color: '#B8B6B0', lineHeight: 1.5 }}>
+              <div style={{ marginTop: 3, fontSize: '11px', color: '#A1A1A6', lineHeight: 1.5 }}>
                 {u.note}
               </div>
             )}

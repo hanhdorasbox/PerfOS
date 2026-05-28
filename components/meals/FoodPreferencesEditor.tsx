@@ -17,10 +17,10 @@ interface Props {
 
 const PREF_TYPES = ['dislike', 'allergy', 'preference', 'favorite']
 const PREF_COLORS: Record<string, string> = {
-  dislike: '#FF6B6B',
-  allergy: '#FF6B6B',
-  preference: '#60A5FA',
-  favorite: '#6BE3A4',
+  dislike: '#FF453A',
+  allergy: '#FF453A',
+  preference: '#0A84FF',
+  favorite: '#30D158',
 }
 
 export default function FoodPreferencesEditor({ preferences, userId }: Props) {
@@ -65,11 +65,11 @@ export default function FoodPreferencesEditor({ preferences, userId }: Props) {
         onClick={() => setExpanded(!expanded)}
         style={{ background: 'none', border: 'none', cursor: 'pointer', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 0 }}
       >
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA' }}>
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7' }}>
           Food Preferences
-          <span style={{ fontSize: 12, fontWeight: 400, color: '#B8B6B0', marginLeft: 8 }}>({preferences.length} items)</span>
+          <span style={{ fontSize: 12, fontWeight: 400, color: '#A1A1A6', marginLeft: 8 }}>({preferences.length} items)</span>
         </h2>
-        <span style={{ fontSize: 12, color: '#B8B6B0' }}>{expanded ? '▲ collapse' : '▼ expand'}</span>
+        <span style={{ fontSize: 12, color: '#A1A1A6' }}>{expanded ? '▲ collapse' : '▼ expand'}</span>
       </button>
 
       {expanded && (
@@ -88,11 +88,11 @@ export default function FoodPreferencesEditor({ preferences, userId }: Props) {
                     fontSize: 12,
                   }}>
                     <span style={{ color: PREF_COLORS[pref.type], fontWeight: 600, fontSize: 10, textTransform: 'uppercase' }}>{pref.type}</span>
-                    <span style={{ color: '#FAFAFA' }}>{pref.food}</span>
-                    {pref.notes && <span style={{ color: '#B8B6B0', fontSize: 10 }}>· {pref.notes}</span>}
+                    <span style={{ color: '#F5F5F7' }}>{pref.food}</span>
+                    {pref.notes && <span style={{ color: '#A1A1A6', fontSize: 10 }}>· {pref.notes}</span>}
                     <button
                       onClick={() => handleDelete(pref.id)}
-                      style={{ background: 'none', border: 'none', color: '#B8B6B0', cursor: 'pointer', fontSize: 11, padding: '0 2px', lineHeight: 1 }}
+                      style={{ background: 'none', border: 'none', color: '#A1A1A6', cursor: 'pointer', fontSize: 11, padding: '0 2px', lineHeight: 1 }}
                     >
                       ✕
                     </button>
@@ -108,12 +108,12 @@ export default function FoodPreferencesEditor({ preferences, userId }: Props) {
               placeholder="Food item"
               value={food}
               onChange={e => setFood(e.target.value)}
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#FAFAFA', fontSize: 13, flex: 1, minWidth: 120 }}
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#F5F5F7', fontSize: 13, flex: 1, minWidth: 120 }}
             />
             <select
               value={type}
               onChange={e => setType(e.target.value)}
-              style={{ background: '#0d0d0e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#FAFAFA', fontSize: 13 }}
+              style={{ background: '#0d0d0e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#F5F5F7', fontSize: 13 }}
             >
               {PREF_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
@@ -121,17 +121,17 @@ export default function FoodPreferencesEditor({ preferences, userId }: Props) {
               placeholder="Notes (optional)"
               value={notes}
               onChange={e => setNotes(e.target.value)}
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#FAFAFA', fontSize: 13, flex: 1, minWidth: 120 }}
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#F5F5F7', fontSize: 13, flex: 1, minWidth: 120 }}
             />
             <button
               type="submit"
               disabled={loading || !food.trim()}
-              style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#B4A7E5', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+              style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#BF5AF2', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               + Add
             </button>
           </form>
-          {error && <div style={{ fontSize: 12, color: '#FF6B6B', marginTop: 6 }}>{error}</div>}
+          {error && <div style={{ fontSize: 12, color: '#FF453A', marginTop: 6 }}>{error}</div>}
         </div>
       )}
     </div>

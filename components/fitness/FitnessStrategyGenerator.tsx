@@ -28,7 +28,7 @@ const inputStyle = {
   border: '1px solid rgba(255,255,255,0.1)',
   borderRadius: 8,
   padding: '9px 12px',
-  color: '#FAFAFA',
+  color: '#F5F5F7',
   fontSize: 13,
   width: '100%',
   boxSizing: 'border-box' as const,
@@ -49,7 +49,7 @@ function ChoiceButton({ label, selected, onClick }: { label: string; selected: b
         padding: '9px 14px', borderRadius: 8, fontSize: 13, cursor: 'pointer',
         border: `1px solid ${selected ? 'rgba(180,167,229,0.45)' : 'rgba(255,255,255,0.1)'}`,
         background: selected ? 'rgba(180,167,229,0.15)' : 'rgba(255,255,255,0.04)',
-        color: selected ? '#B4A7E5' : '#B8B6B0',
+        color: selected ? '#BF5AF2' : '#A1A1A6',
         fontWeight: selected ? 600 : 400,
         textAlign: 'left' as const,
       }}
@@ -60,7 +60,7 @@ function ChoiceButton({ label, selected, onClick }: { label: string; selected: b
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <div style={{ fontSize: 12, color: '#76746E', marginBottom: 6, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>{children}</div>
+  return <div style={{ fontSize: 12, color: '#6E6E73', marginBottom: 6, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>{children}</div>
 }
 
 function Field({ children }: { children: React.ReactNode }) {
@@ -446,7 +446,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
         onClick={() => setExpanded(true)}
         style={{
           background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-          color: '#B8B6B0', borderRadius: 8, padding: '10px 20px', fontSize: 13, cursor: 'pointer',
+          color: '#A1A1A6', borderRadius: 8, padding: '10px 20px', fontSize: 13, cursor: 'pointer',
         }}
       >
         {label}
@@ -457,10 +457,10 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
   return (
     <div className="card">
       <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: '#FAFAFA', marginBottom: 4 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 4 }}>
           Quarterly Fitness Review
         </h2>
-        <p style={{ fontSize: 13, color: '#76746E' }}>
+        <p style={{ fontSize: 13, color: '#6E6E73' }}>
           6 sections · Takes about 5 minutes · Strategy generated after completion
         </p>
       </div>
@@ -473,7 +473,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               fontSize: 11, fontWeight: 600,
-              color: i === step ? '#B4A7E5' : i < step ? '#6BE3A4' : '#76746E',
+              color: i === step ? '#BF5AF2' : i < step ? '#30D158' : '#6E6E73',
             }}
           >
             <div style={{
@@ -491,17 +491,17 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
 
       {/* Section title */}
       <div style={{ marginBottom: 18 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#76746E', marginBottom: 4 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 4 }}>
           Section {step + 1} of {SECTION_TITLES.length}
         </div>
-        <div style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA' }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7' }}>
           {SECTION_TITLES[step]}
         </div>
       </div>
 
       {sectionContent[step]}
 
-      {error && <div style={{ fontSize: 12, color: '#FF6B6B', marginTop: 12 }}>{error}</div>}
+      {error && <div style={{ fontSize: 12, color: '#FF453A', marginTop: 12 }}>{error}</div>}
 
       {/* Generation loading panel (replaces nav when running) */}
       {loading ? (
@@ -516,8 +516,8 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
-            <Spinner size={18} color="#6BE3A4" strokeWidth={2} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#6BE3A4' }}>Generating your Fitness Strategy…</span>
+            <Spinner size={18} color="#30D158" strokeWidth={2} />
+            <span style={{ fontSize: 14, fontWeight: 600, color: '#30D158' }}>Generating your Fitness Strategy…</span>
           </div>
           <StepProgress
             compact
@@ -536,7 +536,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
             className="btn-motion"
             style={{
               background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-              color: '#B8B6B0', borderRadius: 8, padding: '9px 18px', fontSize: 13, cursor: 'pointer',
+              color: '#A1A1A6', borderRadius: 8, padding: '9px 18px', fontSize: 13, cursor: 'pointer',
             }}
           >
             {step === 0 ? 'Cancel' : '← Back'}
@@ -548,7 +548,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
               className="btn-motion"
               style={{
                 background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)',
-                color: '#B4A7E5', borderRadius: 8, padding: '9px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                color: '#BF5AF2', borderRadius: 8, padding: '9px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
               }}
             >
               Continue →
@@ -561,7 +561,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
               style={{
                 background: 'rgba(107,227,164,0.15)',
                 border: '1px solid rgba(107,227,164,0.3)',
-                color: '#6BE3A4', borderRadius: 8, padding: '9px 24px',
+                color: '#30D158', borderRadius: 8, padding: '9px 24px',
                 fontSize: 13, fontWeight: 700, cursor: 'pointer',
               }}
             >

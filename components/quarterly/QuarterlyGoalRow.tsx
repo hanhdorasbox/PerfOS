@@ -31,22 +31,22 @@ const ROLE_OPTIONS = [
 ]
 
 const ROLE_META: Record<string, { label: string; color: string; bg: string }> = {
-  career_capital: { label: 'Career Capital', color: '#B4A7E5', bg: 'rgba(180,167,229,0.12)' },
-  learning: { label: 'Learning', color: '#60A5FA', bg: 'rgba(96,165,250,0.12)' },
-  fitness: { label: 'Fitness', color: '#6BE3A4', bg: 'rgba(107,227,164,0.12)' },
-  finance: { label: 'Finance', color: '#F2C063', bg: 'rgba(242,192,99,0.12)' },
+  career_capital: { label: 'Career Capital', color: '#BF5AF2', bg: 'rgba(180,167,229,0.12)' },
+  learning: { label: 'Learning', color: '#0A84FF', bg: 'rgba(96,165,250,0.12)' },
+  fitness: { label: 'Fitness', color: '#30D158', bg: 'rgba(107,227,164,0.12)' },
+  finance: { label: 'Finance', color: '#FFD60A', bg: 'rgba(242,192,99,0.12)' },
   high_upside_bet: { label: 'High-Upside Bet', color: '#FF9F6B', bg: 'rgba(255,159,107,0.12)' },
   long_term: { label: 'Long-Term', color: '#4DD9D9', bg: 'rgba(77,217,217,0.12)' },
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  ahead: '#6BE3A4',
-  on_track: '#6BE3A4',
-  watch: '#F2C063',
+  ahead: '#30D158',
+  on_track: '#30D158',
+  watch: '#FFD60A',
   at_risk: '#FF9F6B',
-  critical: '#FF6B6B',
-  completed: '#B4A7E5',
-  paused: '#76746E',
+  critical: '#FF453A',
+  completed: '#BF5AF2',
+  paused: '#6E6E73',
 }
 
 export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
@@ -71,9 +71,9 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
     }
   }
 
-  const statusColor = STATUS_COLORS[goal.metrics.status] || '#76746E'
+  const statusColor = STATUS_COLORS[goal.metrics.status] || '#6E6E73'
   const roleMeta = role ? ROLE_META[role] : null
-  const gapColor = goal.metrics.gap >= 0 ? '#6BE3A4' : goal.metrics.gap >= -10 ? '#F2C063' : '#FF6B6B'
+  const gapColor = goal.metrics.gap >= 0 ? '#30D158' : goal.metrics.gap >= -10 ? '#FFD60A' : '#FF453A'
 
   return (
     <div
@@ -97,11 +97,11 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
       <div>
         <Link
           href={`/goals/${goal.id}`}
-          style={{ fontSize: 13, fontWeight: 600, color: '#FAFAFA', textDecoration: 'none' }}
+          style={{ fontSize: 13, fontWeight: 600, color: '#F5F5F7', textDecoration: 'none' }}
         >
           {goal.title}
         </Link>
-        <div style={{ fontSize: 10, color: '#76746E', marginTop: 1 }}>{goal.category}</div>
+        <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 1 }}>{goal.category}</div>
       </div>
 
       {/* Strategic role badge + inline select */}
@@ -124,7 +124,7 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
             }}
           >
             {ROLE_OPTIONS.map(opt => (
-              <option key={opt.value} value={opt.value} style={{ background: '#0d0d0e', color: '#FAFAFA' }}>
+              <option key={opt.value} value={opt.value} style={{ background: '#0d0d0e', color: '#F5F5F7' }}>
                 {opt.label}
               </option>
             ))}
@@ -140,13 +140,13 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
               borderRadius: 6,
               padding: '3px 6px',
               fontSize: 10,
-              color: '#76746E',
+              color: '#6E6E73',
               cursor: 'pointer',
               width: '100%',
             }}
           >
             {ROLE_OPTIONS.map(opt => (
-              <option key={opt.value} value={opt.value} style={{ background: '#0d0d0e', color: '#FAFAFA' }}>
+              <option key={opt.value} value={opt.value} style={{ background: '#0d0d0e', color: '#F5F5F7' }}>
                 {opt.label}
               </option>
             ))}
@@ -156,7 +156,7 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
 
       {/* Progress bar */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#FAFAFA', fontVariantNumeric: 'tabular-nums' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#F5F5F7', fontVariantNumeric: 'tabular-nums' }}>
           {Math.round(goal.progressPct)}%
         </div>
         <div style={{ position: 'relative', height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2 }}>
@@ -179,7 +179,7 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
               left: `${Math.min(100, goal.metrics.expectedPct)}%`,
               width: 2,
               height: 6,
-              background: '#76746E',
+              background: '#6E6E73',
               borderRadius: 1,
             }}
           />
@@ -199,12 +199,12 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
       </div>
 
       {/* Expected */}
-      <div style={{ fontSize: 11, color: '#76746E', fontVariantNumeric: 'tabular-nums' }}>
+      <div style={{ fontSize: 11, color: '#6E6E73', fontVariantNumeric: 'tabular-nums' }}>
         {Math.round(goal.metrics.expectedPct)}%
       </div>
 
       {/* Deadline */}
-      <div style={{ fontSize: 11, color: '#76746E' }}>
+      <div style={{ fontSize: 11, color: '#6E6E73' }}>
         {new Date(goal.deadline).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'short' })}
       </div>
 

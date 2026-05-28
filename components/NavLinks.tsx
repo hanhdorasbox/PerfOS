@@ -29,7 +29,8 @@ const menuGroups: Array<{ label: string; emoji: string; links: NavLink[] }> = [
     links: [
       { href: '/fitness',          label: '💪 Fitness' },
       { href: '/meals',            label: '🥗 Meal Planning' },
-      { href: '/fitness/strategy', label: '🏋️ Fitness Strategy', separator: true },
+      { href: '/fitness/strategy', label: '🏋️ Fitness Strategy' },
+      { href: '/habits',           label: '🚫 Habit Breaker', separator: true },
     ],
   },
   {
@@ -81,15 +82,18 @@ function DesktopNav() {
   const isActive = (href: string) => pathname === href || (href !== '/' && pathname.startsWith(href))
 
   return (
-    <div ref={containerRef} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+    <div ref={containerRef} style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
       {primaryLinks.map(link => (
         <Link key={link.href} href={link.href} style={{
-          padding: '5px 12px', borderRadius: 8, fontSize: 13, fontWeight: 600,
-          color: isActive(link.href) ? '#FAFAFA' : '#B8B6B0',
-          background: isActive(link.href) ? 'rgba(255,255,255,0.08)' : 'transparent',
-          textDecoration: 'none', whiteSpace: 'nowrap',
-          transition: 'color 0.12s ease, background 0.12s ease',
-        }}>{link.label}</Link>
+          padding: '6px 12px', borderRadius: 10, fontSize: 13, fontWeight: 500,
+          color: isActive(link.href) ? '#F5F5F7' : '#A1A1A6',
+          background: isActive(link.href) ? 'rgba(255,255,255,0.1)' : 'transparent',
+          textDecoration: 'none', whiteSpace: 'nowrap', letterSpacing: '-0.01em',
+          transition: 'color 0.15s ease, background 0.15s ease',
+        }}
+          onMouseEnter={e => { if (!isActive(link.href)) { (e.currentTarget as HTMLAnchorElement).style.color = '#F5F5F7'; (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.06)' } }}
+          onMouseLeave={e => { if (!isActive(link.href)) { (e.currentTarget as HTMLAnchorElement).style.color = '#A1A1A6'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' } }}
+        >{link.label}</Link>
       ))}
 
       {menuGroups.map(group => {
@@ -101,27 +105,27 @@ function DesktopNav() {
               onClick={() => { cancelClose(); setOpenGroup(prev => prev === group.label ? null : group.label) }}
               onMouseEnter={() => { cancelClose(); if (openGroup && openGroup !== group.label) setOpenGroup(group.label) }}
               style={{
-                padding: '5px 12px', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                color: groupActive || isOpen ? '#FAFAFA' : '#B8B6B0',
-                background: groupActive || isOpen ? 'rgba(255,255,255,0.08)' : 'transparent',
-                border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
-                transition: 'color 0.12s ease, background 0.12s ease',
+                padding: '6px 12px', borderRadius: 10, fontSize: 13, fontWeight: 500,
+                color: groupActive || isOpen ? '#F5F5F7' : '#A1A1A6',
+                background: groupActive || isOpen ? 'rgba(255,255,255,0.1)' : 'transparent',
+                border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', letterSpacing: '-0.01em',
+                transition: 'color 0.15s ease, background 0.15s ease',
               }}
             >{group.emoji} {group.label} ▾</button>
 
             <div className={`dropdown-panel${isOpen ? ' open' : ''}`}>
               {group.links.map(link => (
                 <div key={link.href}>
-                  {link.separator && <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '5px 8px 4px' }} />}
+                  {link.separator && <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '5px 6px' }} />}
                   <Link href={link.href} onClick={() => setOpenGroup(null)} style={{
-                    display: 'block', padding: '7px 12px', borderRadius: 8,
-                    fontSize: 13, fontWeight: 600, textDecoration: 'none',
-                    color: isActive(link.href) ? '#FAFAFA' : '#B8B6B0',
-                    background: isActive(link.href) ? 'rgba(255,255,255,0.08)' : 'transparent',
-                    transition: 'color 0.1s ease, background 0.1s ease',
+                    display: 'block', padding: '8px 12px', borderRadius: 10,
+                    fontSize: 13, fontWeight: 500, textDecoration: 'none', letterSpacing: '-0.01em',
+                    color: isActive(link.href) ? '#F5F5F7' : '#A1A1A6',
+                    background: isActive(link.href) ? 'rgba(255,255,255,0.1)' : 'transparent',
+                    transition: 'color 0.12s ease, background 0.12s ease',
                   }}
-                    onMouseEnter={e => { if (!isActive(link.href)) { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLAnchorElement).style.color = '#FAFAFA' } }}
-                    onMouseLeave={e => { if (!isActive(link.href)) { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = '#B8B6B0' } }}
+                    onMouseEnter={e => { if (!isActive(link.href)) { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLAnchorElement).style.color = '#F5F5F7' } }}
+                    onMouseLeave={e => { if (!isActive(link.href)) { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = '#A1A1A6' } }}
                   >{link.label}</Link>
                 </div>
               ))}
@@ -167,37 +171,40 @@ function MobileNav() {
 
       {/* Drawer */}
       <div style={{
-        position: 'fixed', top: 52, right: 0, bottom: 0,
-        width: '80vw', maxWidth: 320,
-        background: 'rgba(8,8,10,0.99)',
-        borderLeft: '1px solid rgba(255,255,255,0.1)',
+        position: 'fixed', top: 56, right: 0, bottom: 0,
+        width: '80vw', maxWidth: 300,
+        background: 'rgba(22, 22, 24, 0.97)',
+        backdropFilter: 'blur(28px) saturate(1.8)',
+        WebkitBackdropFilter: 'blur(28px) saturate(1.8)',
+        borderLeft: '1px solid rgba(255,255,255,0.09)',
         zIndex: 991,
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
-        padding: '16px 12px 60px',
+        padding: '20px 12px 60px',
         transform: open ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 0.28s cubic-bezier(0.22,1,0.36,1)',
+        transition: 'transform 0.3s cubic-bezier(0.22,1,0.36,1)',
+        boxShadow: '-20px 0 60px rgba(0,0,0,0.5)',
       }}>
         {/* Primary links */}
-        <div style={{ marginBottom: 12 }}>
+        <div style={{ marginBottom: 16 }}>
           {primaryLinks.map(link => (
             <Link key={link.href} href={link.href} style={{
-              display: 'block', padding: '12px 14px', borderRadius: 10, marginBottom: 2,
-              fontSize: 15, fontWeight: 600, textDecoration: 'none',
-              color: isActive(link.href) ? '#FAFAFA' : '#B8B6B0',
+              display: 'block', padding: '11px 14px', borderRadius: 12, marginBottom: 2,
+              fontSize: 15, fontWeight: 500, textDecoration: 'none', letterSpacing: '-0.01em',
+              color: isActive(link.href) ? '#F5F5F7' : '#A1A1A6',
               background: isActive(link.href) ? 'rgba(255,255,255,0.1)' : 'transparent',
             }}>{link.label}</Link>
           ))}
         </div>
 
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0 12px' }} />
+        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 2px 16px' }} />
 
         {/* Groups */}
         {menuGroups.map(group => (
-          <div key={group.label} style={{ marginBottom: 18 }}>
+          <div key={group.label} style={{ marginBottom: 20 }}>
             <div style={{
-              fontSize: 10, fontWeight: 800, letterSpacing: '0.14em',
-              textTransform: 'uppercase', color: '#76746E',
+              fontSize: 10, fontWeight: 600, letterSpacing: '0.1em',
+              textTransform: 'uppercase', color: '#6E6E73',
               padding: '0 14px 8px',
             }}>
               {group.emoji} {group.label}
@@ -206,9 +213,9 @@ function MobileNav() {
               <div key={link.href}>
                 {link.separator && <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '4px 14px 6px' }} />}
                 <Link href={link.href} style={{
-                  display: 'block', padding: '11px 14px', borderRadius: 10, marginBottom: 2,
-                  fontSize: 14, fontWeight: 600, textDecoration: 'none',
-                  color: isActive(link.href) ? '#FAFAFA' : '#B8B6B0',
+                  display: 'block', padding: '10px 14px', borderRadius: 12, marginBottom: 2,
+                  fontSize: 14, fontWeight: 500, textDecoration: 'none', letterSpacing: '-0.01em',
+                  color: isActive(link.href) ? '#F5F5F7' : '#A1A1A6',
                   background: isActive(link.href) ? 'rgba(255,255,255,0.1)' : 'transparent',
                 }}>{link.label}</Link>
               </div>
@@ -229,7 +236,7 @@ function MobileNav() {
           width: 36, height: 36, borderRadius: 8,
           background: open ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)',
           border: '1px solid rgba(255,255,255,0.12)',
-          cursor: 'pointer', color: '#FAFAFA', fontSize: 18,
+          cursor: 'pointer', color: '#F5F5F7', fontSize: 18,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}

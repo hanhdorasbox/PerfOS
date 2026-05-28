@@ -63,15 +63,15 @@ export default function StatementUploader({ userId }: { userId: string }) {
         {loading ? (
           <div>
             <div style={{ fontSize: 24, marginBottom: 8 }}>⏳</div>
-            <p style={{ color: '#B4A7E5', fontSize: 14, fontWeight: 600 }}>Processing...</p>
+            <p style={{ color: '#BF5AF2', fontSize: 14, fontWeight: 600 }}>Processing...</p>
           </div>
         ) : (
           <>
             <div style={{ fontSize: 28, marginBottom: 8 }}>📄</div>
-            <p style={{ color: '#FAFAFA', fontSize: 14, fontWeight: 600, marginBottom: 4 }}>
+            <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, marginBottom: 4 }}>
               Drop your statement here
             </p>
-            <p style={{ color: '#76746E', fontSize: 13 }}>or click to browse — CSV or XLSX accepted</p>
+            <p style={{ color: '#6E6E73', fontSize: 13 }}>or click to browse — CSV or XLSX accepted</p>
           </>
         )}
       </div>
@@ -85,7 +85,7 @@ export default function StatementUploader({ userId }: { userId: string }) {
       />
 
       {error && (
-        <p style={{ color: '#FF6B6B', fontSize: 13, marginTop: 10 }}>{error}</p>
+        <p style={{ color: '#FF453A', fontSize: 13, marginTop: 10 }}>{error}</p>
       )}
 
       {result && (
@@ -94,13 +94,13 @@ export default function StatementUploader({ userId }: { userId: string }) {
           borderRadius: 10, padding: '12px 16px', display: 'flex', gap: 24,
         }}>
           <div>
-            <span style={{ color: '#6BE3A4', fontWeight: 700, fontSize: 18 }}>{result.transactionCount}</span>
-            <span style={{ color: '#B8B6B0', fontSize: 13, marginLeft: 6 }}>transactions imported</span>
+            <span style={{ color: '#30D158', fontWeight: 700, fontSize: 18 }}>{result.transactionCount}</span>
+            <span style={{ color: '#A1A1A6', fontSize: 13, marginLeft: 6 }}>transactions imported</span>
           </div>
           {result.reviewNeeded > 0 && (
             <div>
-              <span style={{ color: '#F2C063', fontWeight: 700, fontSize: 18 }}>{result.reviewNeeded}</span>
-              <span style={{ color: '#B8B6B0', fontSize: 13, marginLeft: 6 }}>need review</span>
+              <span style={{ color: '#FFD60A', fontWeight: 700, fontSize: 18 }}>{result.reviewNeeded}</span>
+              <span style={{ color: '#A1A1A6', fontSize: 13, marginLeft: 6 }}>need review</span>
             </div>
           )}
         </div>

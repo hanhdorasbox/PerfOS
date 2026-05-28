@@ -41,7 +41,7 @@ export default function StrategyHistory({ strategies }: Props) {
 
   return (
     <div style={{ marginTop: 24 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#B8B6B0', marginBottom: 12 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A1A1A6', marginBottom: 12 }}>
         Strategy History
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -49,10 +49,10 @@ export default function StrategyHistory({ strategies }: Props) {
           <div key={s.id} className="card" style={{ padding: '14px 18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#FAFAFA', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#F5F5F7', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {s.mainObjective}
                 </div>
-                <div style={{ fontSize: 11, color: '#76746E' }}>
+                <div style={{ fontSize: 11, color: '#6E6E73' }}>
                   {new Date(s.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </div>
               </div>
@@ -61,7 +61,7 @@ export default function StrategyHistory({ strategies }: Props) {
                 <span style={{
                   fontSize: 11, padding: '2px 8px', borderRadius: 99,
                   background: s.status === 'active' ? 'rgba(107,227,164,0.15)' : 'rgba(255,255,255,0.06)',
-                  color: s.status === 'active' ? '#6BE3A4' : '#B8B6B0',
+                  color: s.status === 'active' ? '#30D158' : '#A1A1A6',
                   border: `1px solid ${s.status === 'active' ? 'rgba(107,227,164,0.3)' : 'rgba(255,255,255,0.1)'}`,
                 }}>
                   {s.status}
@@ -69,7 +69,7 @@ export default function StrategyHistory({ strategies }: Props) {
 
                 {confirmId === s.id ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 12, color: '#F2C063' }}>Delete?</span>
+                    <span style={{ fontSize: 12, color: '#FFD60A' }}>Delete?</span>
                     <button
                       onClick={() => handleDelete(s.id)}
                       disabled={deleting === s.id}
@@ -77,11 +77,11 @@ export default function StrategyHistory({ strategies }: Props) {
                       style={{
                         padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600,
                         cursor: 'pointer', background: 'rgba(255,107,107,0.15)',
-                        border: '1px solid rgba(255,107,107,0.4)', color: '#FF6B6B',
+                        border: '1px solid rgba(255,107,107,0.4)', color: '#FF453A',
                         display: 'flex', alignItems: 'center', gap: 5,
                       }}
                     >
-                      {deleting === s.id ? <Spinner size={12} color="#FF6B6B" strokeWidth={2} /> : null}
+                      {deleting === s.id ? <Spinner size={12} color="#FF453A" strokeWidth={2} /> : null}
                       Yes, delete
                     </button>
                     <button
@@ -90,7 +90,7 @@ export default function StrategyHistory({ strategies }: Props) {
                       style={{
                         padding: '4px 10px', borderRadius: 6, fontSize: 12,
                         cursor: 'pointer', background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.1)', color: '#76746E',
+                        border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73',
                       }}
                     >
                       Cancel
@@ -103,7 +103,7 @@ export default function StrategyHistory({ strategies }: Props) {
                     style={{
                       padding: '4px 10px', borderRadius: 6, fontSize: 12,
                       cursor: 'pointer', background: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.08)', color: '#76746E',
+                      border: '1px solid rgba(255,255,255,0.08)', color: '#6E6E73',
                     }}
                   >
                     Delete

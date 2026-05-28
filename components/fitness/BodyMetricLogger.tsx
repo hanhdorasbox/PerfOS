@@ -129,7 +129,7 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
     background: 'rgba(255,255,255,0.05)',
     border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: 8,
-    color: '#FAFAFA',
+    color: '#F5F5F7',
     padding: '7px 10px',
     fontSize: 13,
     width: '100%',
@@ -140,21 +140,21 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
     <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E' }}>
+          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73' }}>
             Body Metrics
           </div>
           {latest && !showForm && (
-            <div style={{ fontSize: 12, color: '#B8B6B0', marginTop: 4 }}>
+            <div style={{ fontSize: 12, color: '#A1A1A6', marginTop: 4 }}>
               Latest ({new Date(latest.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}):
-              {latest.weight != null && <> <strong style={{ color: '#FAFAFA' }}>{latest.weight} kg</strong></>}
-              {latest.waist != null && <> · <strong style={{ color: '#FAFAFA' }}>{latest.waist} cm</strong> waist</>}
-              {latest.hip != null && <> · <strong style={{ color: '#FAFAFA' }}>{latest.hip} cm</strong> hip</>}
+              {latest.weight != null && <> <strong style={{ color: '#F5F5F7' }}>{latest.weight} kg</strong></>}
+              {latest.waist != null && <> · <strong style={{ color: '#F5F5F7' }}>{latest.waist} cm</strong> waist</>}
+              {latest.hip != null && <> · <strong style={{ color: '#F5F5F7' }}>{latest.hip} cm</strong> hip</>}
             </div>
           )}
         </div>
         <button
           onClick={() => setShowForm(p => !p)}
-          style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#76746E', borderRadius: 6, padding: '4px 12px', fontSize: 12, cursor: 'pointer' }}
+          style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 6, padding: '4px 12px', fontSize: 12, cursor: 'pointer' }}
         >
           {showForm ? 'Hide Form' : 'Log Measurement'}
         </button>
@@ -171,12 +171,12 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
           {height === null && (
-            <span style={{ fontSize: 12, color: '#B4A7E5', flex: 1 }}>
+            <span style={{ fontSize: 12, color: '#BF5AF2', flex: 1 }}>
               Set your height to enable BMI tracking
             </span>
           )}
           {height !== null && (
-            <span style={{ fontSize: 12, color: '#76746E', flex: 1 }}>Edit height (cm)</span>
+            <span style={{ fontSize: 12, color: '#6E6E73', flex: 1 }}>Edit height (cm)</span>
           )}
           <input
             type="number"
@@ -187,21 +187,21 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
             value={heightInput}
             onChange={e => setHeightInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && saveHeight()}
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '5px 10px', color: '#FAFAFA', fontSize: 13, width: 90, outline: 'none' }}
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '5px 10px', color: '#F5F5F7', fontSize: 13, width: 90, outline: 'none' }}
             autoFocus={height === null}
           />
-          <span style={{ fontSize: 12, color: '#76746E' }}>cm</span>
+          <span style={{ fontSize: 12, color: '#6E6E73' }}>cm</span>
           <button
             onClick={saveHeight}
             disabled={savingHeight || !heightInput}
-            style={{ background: 'rgba(107,227,164,0.12)', border: '1px solid rgba(107,227,164,0.3)', color: '#6BE3A4', borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+            style={{ background: 'rgba(107,227,164,0.12)', border: '1px solid rgba(107,227,164,0.3)', color: '#30D158', borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
           >
             {savingHeight ? '…' : 'Save'}
           </button>
           {height !== null && (
             <button
               onClick={() => setEditingHeight(false)}
-              style={{ background: 'none', border: 'none', color: '#76746E', fontSize: 12, cursor: 'pointer' }}
+              style={{ background: 'none', border: 'none', color: '#6E6E73', fontSize: 12, cursor: 'pointer' }}
             >
               Cancel
             </button>
@@ -209,11 +209,11 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
         </div>
       ) : (
         <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 12, color: '#76746E' }}>Height:</span>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#B8B6B0' }}>{height} cm</span>
+          <span style={{ fontSize: 12, color: '#6E6E73' }}>Height:</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#A1A1A6' }}>{height} cm</span>
           <button
             onClick={() => { setHeightInput(String(height)); setEditingHeight(true) }}
-            style={{ background: 'none', border: 'none', color: '#76746E', fontSize: 11, cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
+            style={{ background: 'none', border: 'none', color: '#6E6E73', fontSize: 11, cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
           >
             edit
           </button>
@@ -224,19 +224,19 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
         <form onSubmit={save} style={{ marginTop: 16 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 10 }}>
             <div>
-              <label style={{ fontSize: 10, color: '#76746E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Date</label>
+              <label style={{ fontSize: 10, color: '#6E6E73', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Date</label>
               <input type="date" style={inputStyle} value={date} onChange={e => setDate(e.target.value)} />
             </div>
             <div>
-              <label style={{ fontSize: 10, color: '#76746E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Weight (kg)</label>
+              <label style={{ fontSize: 10, color: '#6E6E73', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Weight (kg)</label>
               <input type="number" step="0.1" min="0" placeholder="e.g. 65.5" style={inputStyle} value={weight} onChange={e => setWeight(e.target.value)} />
             </div>
             <div>
-              <label style={{ fontSize: 10, color: '#76746E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Waist (cm)</label>
+              <label style={{ fontSize: 10, color: '#6E6E73', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Waist (cm)</label>
               <input type="number" step="0.1" min="0" placeholder="e.g. 72" style={inputStyle} value={waist} onChange={e => setWaist(e.target.value)} />
             </div>
             <div>
-              <label style={{ fontSize: 10, color: '#76746E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Hip (cm)</label>
+              <label style={{ fontSize: 10, color: '#6E6E73', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Hip (cm)</label>
               <input type="number" step="0.1" min="0" placeholder="e.g. 95" style={inputStyle} value={hip} onChange={e => setHip(e.target.value)} />
             </div>
           </div>
@@ -254,7 +254,7 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
               style={{
                 background: 'rgba(107,227,164,0.12)',
                 border: '1px solid rgba(107,227,164,0.3)',
-                color: '#6BE3A4',
+                color: '#30D158',
                 borderRadius: 8,
                 padding: '8px 18px',
                 fontSize: 13,
@@ -269,7 +269,7 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
           </div>
 
           {msg && (
-            <div style={{ marginTop: 8, fontSize: 12, color: msgIsError ? '#FF6B6B' : '#6BE3A4' }}>
+            <div style={{ marginTop: 8, fontSize: 12, color: msgIsError ? '#FF453A' : '#30D158' }}>
               {msg}
             </div>
           )}
@@ -278,7 +278,7 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
 
       {logs.length > 0 && (
         <div style={{ marginTop: 16 }}>
-          <div style={{ fontSize: 10, color: '#76746E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
+          <div style={{ fontSize: 10, color: '#6E6E73', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
             Recent Measurements
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -293,17 +293,17 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
                   transition: 'opacity 0.15s ease',
                 }}
               >
-                <span style={{ color: '#76746E', minWidth: 60 }}>
+                <span style={{ color: '#6E6E73', minWidth: 60 }}>
                   {new Date(log.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                 </span>
-                {log.weight != null && <span style={{ color: '#FAFAFA', fontWeight: 600 }}>{log.weight} kg</span>}
-                {log.waist != null && <span style={{ color: '#B8B6B0' }}>{log.waist} cm waist</span>}
-                {log.hip != null && <span style={{ color: '#B8B6B0' }}>{log.hip} cm hip</span>}
-                {log.notes && <span style={{ color: '#76746E', flex: 1 }}>{log.notes}</span>}
+                {log.weight != null && <span style={{ color: '#F5F5F7', fontWeight: 600 }}>{log.weight} kg</span>}
+                {log.waist != null && <span style={{ color: '#A1A1A6' }}>{log.waist} cm waist</span>}
+                {log.hip != null && <span style={{ color: '#A1A1A6' }}>{log.hip} cm hip</span>}
+                {log.notes && <span style={{ color: '#6E6E73', flex: 1 }}>{log.notes}</span>}
                 <button
                   onClick={() => deleteLog(log.id)}
                   disabled={deleting === log.id}
-                  style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 13, padding: '0 2px', lineHeight: 1 }}
+                  style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 13, padding: '0 2px', lineHeight: 1 }}
                   title="Delete"
                 >
                   ✕
@@ -314,7 +314,7 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
           {logs.length > 3 && (
             <button
               onClick={() => setShowAll(p => !p)}
-              style={{ marginTop: 6, background: 'none', border: 'none', color: '#76746E', fontSize: 11, cursor: 'pointer', padding: 0 }}
+              style={{ marginTop: 6, background: 'none', border: 'none', color: '#6E6E73', fontSize: 11, cursor: 'pointer', padding: 0 }}
             >
               {showAll ? 'Show less ▲' : `Show ${logs.length - 3} more ▼`}
             </button>

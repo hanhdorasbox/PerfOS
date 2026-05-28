@@ -164,6 +164,44 @@ const MIGRATIONS = [
      "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
      CONSTRAINT "CareerRoadmap_pkey" PRIMARY KEY ("id")
    )`,
+
+  // ── AlcoholLog ─── habit breaker module ───────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS "AlcoholLog" (
+     "id"               TEXT             NOT NULL,
+     "userId"           TEXT             NOT NULL,
+     "date"             TIMESTAMP(3)     NOT NULL,
+     "drinks"           DOUBLE PRECISION NOT NULL,
+     "occasion"         TEXT,
+     "afterWorkout"     BOOLEAN          NOT NULL DEFAULT false,
+     "beforeWorkoutDay" BOOLEAN          NOT NULL DEFAULT false,
+     "sleepHours"       DOUBLE PRECISION,
+     "sleepQuality"     INTEGER,
+     "nextDayEnergy"    INTEGER,
+     "missedWorkout"    BOOLEAN          NOT NULL DEFAULT false,
+     "missedSteps"      BOOLEAN          NOT NULL DEFAULT false,
+     "proteinHit"       BOOLEAN,
+     "calorieOverage"   INTEGER,
+     "hadCravings"      BOOLEAN          NOT NULL DEFAULT false,
+     "moodScore"        INTEGER,
+     "recoveryRating"   INTEGER,
+     "notes"            TEXT,
+     "createdAt"        TIMESTAMP(3)     NOT NULL DEFAULT NOW(),
+     CONSTRAINT "AlcoholLog_pkey" PRIMARY KEY ("id")
+   )`,
+
+  // ── AlcoholSettings ─── habit breaker settings ────────────────────────────
+  `CREATE TABLE IF NOT EXISTS "AlcoholSettings" (
+     "id"                   TEXT        NOT NULL,
+     "userId"               TEXT        NOT NULL,
+     "budgetType"           TEXT        NOT NULL DEFAULT 'flexible',
+     "weeklyBudget"         INTEGER     NOT NULL DEFAULT 2,
+     "goal"                 TEXT        NOT NULL DEFAULT 'fat_loss',
+     "damageControlEnabled" BOOLEAN     NOT NULL DEFAULT true,
+     "createdAt"            TIMESTAMP(3) NOT NULL DEFAULT NOW(),
+     "updatedAt"            TIMESTAMP(3) NOT NULL DEFAULT NOW(),
+     CONSTRAINT "AlcoholSettings_pkey" PRIMARY KEY ("id"),
+     CONSTRAINT "AlcoholSettings_userId_key" UNIQUE ("userId")
+   )`,
 ]
 
 async function runMigrations(db: PrismaClient) {

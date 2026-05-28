@@ -15,12 +15,12 @@ type ProofOfWork = {
 }
 
 const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
-  project: { bg: 'rgba(59,130,246,0.15)', color: '#60A5FA' },
+  project: { bg: 'rgba(59,130,246,0.15)', color: '#0A84FF' },
   automation: { bg: 'rgba(139,92,246,0.15)', color: '#A78BFA' },
   portfolio: { bg: 'rgba(16,185,129,0.15)', color: '#34D399' },
   public_work: { bg: 'rgba(20,184,166,0.15)', color: '#2DD4BF' },
   certification: { bg: 'rgba(245,158,11,0.15)', color: '#FBBF24' },
-  case_study: { bg: 'rgba(249,115,22,0.15)', color: '#FB923C' },
+  case_study: { bg: 'rgba(249,115,22,0.15)', color: '#FF9F0A' },
 }
 
 const POW_TYPES = ['project', 'automation', 'case_study', 'portfolio', 'certification', 'public_work']
@@ -29,7 +29,7 @@ function Stars({ value }: { value: number }) {
   return (
     <div style={{ display: 'flex', gap: 2 }}>
       {[1, 2, 3, 4, 5].map(i => (
-        <span key={i} style={{ fontSize: 12, color: i <= value ? '#F2C063' : 'rgba(242,192,99,0.2)' }}>★</span>
+        <span key={i} style={{ fontSize: 12, color: i <= value ? '#FFD60A' : 'rgba(242,192,99,0.2)' }}>★</span>
       ))}
     </div>
   )
@@ -95,14 +95,14 @@ export default function ProofOfWorkTracker({
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA', margin: 0 }}>Proof of Work</h2>
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', margin: 0 }}>Proof of Work</h2>
         <button
           onClick={() => setShowForm(v => !v)}
           style={{
             background: 'rgba(242,192,99,0.12)',
             border: '1px solid rgba(242,192,99,0.3)',
             borderRadius: 7,
-            color: '#F2C063',
+            color: '#FFD60A',
             padding: '5px 12px',
             fontSize: 12,
             fontWeight: 600,
@@ -151,7 +151,7 @@ export default function ProofOfWorkTracker({
             style={{ ...inputStyle, resize: 'vertical' }}
           />
           <div>
-            <label style={{ color: '#B8B6B0', fontSize: 12, display: 'block', marginBottom: 4 }}>
+            <label style={{ color: '#A1A1A6', fontSize: 12, display: 'block', marginBottom: 4 }}>
               Reusability: {form.reusability}/5
             </label>
             <input
@@ -160,25 +160,25 @@ export default function ProofOfWorkTracker({
               max={5}
               value={form.reusability}
               onChange={e => setForm(f => ({ ...f, reusability: Number(e.target.value) }))}
-              style={{ width: '100%', accentColor: '#F2C063' }}
+              style={{ width: '100%', accentColor: '#FFD60A' }}
             />
           </div>
           <div style={{ display: 'flex', gap: 16 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#B8B6B0', fontSize: 13, cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#A1A1A6', fontSize: 13, cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={form.monetizable}
                 onChange={e => setForm(f => ({ ...f, monetizable: e.target.checked }))}
-                style={{ accentColor: '#6BE3A4' }}
+                style={{ accentColor: '#30D158' }}
               />
               Monetizable
             </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#B8B6B0', fontSize: 13, cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#A1A1A6', fontSize: 13, cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={form.isPublic}
                 onChange={e => setForm(f => ({ ...f, isPublic: e.target.checked }))}
-                style={{ accentColor: '#6BE3A4' }}
+                style={{ accentColor: '#30D158' }}
               />
               Public
             </label>
@@ -188,7 +188,7 @@ export default function ProofOfWorkTracker({
               type="submit"
               disabled={submitting}
               style={{
-                background: '#F2C063',
+                background: '#FFD60A',
                 border: 'none',
                 borderRadius: 7,
                 color: '#1A1916',
@@ -207,7 +207,7 @@ export default function ProofOfWorkTracker({
                 background: 'transparent',
                 border: '1px solid rgba(255,255,255,0.12)',
                 borderRadius: 7,
-                color: '#76746E',
+                color: '#6E6E73',
                 padding: '7px 14px',
                 fontSize: 13,
                 cursor: 'pointer',
@@ -221,7 +221,7 @@ export default function ProofOfWorkTracker({
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {proofOfWork.map(pow => {
-          const tc = TYPE_COLORS[pow.type] ?? { bg: 'rgba(255,255,255,0.08)', color: '#B8B6B0' }
+          const tc = TYPE_COLORS[pow.type] ?? { bg: 'rgba(255,255,255,0.08)', color: '#A1A1A6' }
           return (
             <div
               key={pow.id}
@@ -235,7 +235,7 @@ export default function ProofOfWorkTracker({
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                <span style={{ color: '#FAFAFA', fontSize: 13, fontWeight: 600 }}>{pow.title}</span>
+                <span style={{ color: '#F5F5F7', fontSize: 13, fontWeight: 600 }}>{pow.title}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 8 }}>
                   <span style={{ background: tc.bg, color: tc.color, fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 700, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                     {pow.type.replace('_', ' ')}
@@ -243,22 +243,22 @@ export default function ProofOfWorkTracker({
                   <button
                     onClick={() => deletePow(pow.id)}
                     disabled={deleting === pow.id}
-                    style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 12, padding: '0 2px', lineHeight: 1 }}
+                    style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 12, padding: '0 2px', lineHeight: 1 }}
                     title="Delete"
                   >✕</button>
                 </div>
               </div>
               {pow.impact && (
-                <div style={{ color: '#B8B6B0', fontSize: 12, marginBottom: 8 }}>{pow.impact}</div>
+                <div style={{ color: '#A1A1A6', fontSize: 12, marginBottom: 8 }}>{pow.impact}</div>
               )}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                 <Stars value={pow.reusability} />
-                <span style={{ color: '#76746E', fontSize: 11 }}>reusability</span>
+                <span style={{ color: '#6E6E73', fontSize: 11 }}>reusability</span>
                 {pow.monetizable && (
                   <span
                     style={{
                       background: 'rgba(107,227,164,0.12)',
-                      color: '#6BE3A4',
+                      color: '#30D158',
                       fontSize: 10,
                       padding: '2px 7px',
                       borderRadius: 4,
@@ -272,7 +272,7 @@ export default function ProofOfWorkTracker({
                   <span
                     style={{
                       background: 'rgba(96,165,250,0.12)',
-                      color: '#60A5FA',
+                      color: '#0A84FF',
                       fontSize: 10,
                       padding: '2px 7px',
                       borderRadius: 4,
@@ -287,7 +287,7 @@ export default function ProofOfWorkTracker({
           )
         })}
         {proofOfWork.length === 0 && (
-          <div style={{ color: '#76746E', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>
+          <div style={{ color: '#6E6E73', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>
             No proof-of-work assets yet. Add your first deliverable.
           </div>
         )}
@@ -300,7 +300,7 @@ const inputStyle: React.CSSProperties = {
   background: 'rgba(255,255,255,0.06)',
   border: '1px solid rgba(255,255,255,0.12)',
   borderRadius: 7,
-  color: '#FAFAFA',
+  color: '#F5F5F7',
   padding: '8px 12px',
   fontSize: 13,
   width: '100%',

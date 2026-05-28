@@ -23,10 +23,10 @@ interface Props {
 const CATEGORIES = ['advancement', 'maintenance', 'reactive', 'busywork']
 const DOMAINS = ['career', 'fitness', 'finance', 'personal', 'learning']
 const CATEGORY_COLORS: Record<string, string> = {
-  advancement: '#6BE3A4',
-  maintenance: '#60A5FA',
-  reactive: '#F2C063',
-  busywork: '#FF6B6B',
+  advancement: '#30D158',
+  maintenance: '#0A84FF',
+  reactive: '#FFD60A',
+  busywork: '#FF453A',
 }
 
 export default function WorkItemLogger({ userId, existingItems, manualItems }: Props) {
@@ -77,8 +77,8 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
   return (
     <div className="card">
       <div style={{ marginBottom: 14 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA', marginBottom: 4 }}>Work Items</h2>
-        <p style={{ fontSize: 12, color: '#76746E' }}>
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', marginBottom: 4 }}>Work Items</h2>
+        <p style={{ fontSize: 12, color: '#6E6E73' }}>
           Most items are auto-generated from your completed tasks and milestones. Use this to add supplementary context.
         </p>
       </div>
@@ -94,7 +94,7 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
           border: '1px solid rgba(255,255,255,0.08)',
           borderRadius: 8,
           padding: '8px 14px',
-          color: '#B8B6B0',
+          color: '#A1A1A6',
           fontSize: 12,
           fontWeight: 600,
           cursor: 'pointer',
@@ -105,7 +105,7 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
         <span style={{ fontSize: 14 }}>{formOpen ? '−' : '+'}</span>
         Add Manual Item
         {!formOpen && (
-          <span style={{ marginLeft: 'auto', fontSize: 10, color: '#76746E' }}>secondary / supplementary</span>
+          <span style={{ marginLeft: 'auto', fontSize: 10, color: '#6E6E73' }}>secondary / supplementary</span>
         )}
       </button>
 
@@ -115,20 +115,20 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
             placeholder="What did you complete?"
             value={title}
             onChange={e => setTitle(e.target.value)}
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#FAFAFA', fontSize: 13, width: '100%', boxSizing: 'border-box' }}
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#F5F5F7', fontSize: 13, width: '100%', boxSizing: 'border-box' }}
           />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <select
               value={category}
               onChange={e => setCategory(e.target.value)}
-              style={{ background: '#0d0d0e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#FAFAFA', fontSize: 13 }}
+              style={{ background: '#0d0d0e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#F5F5F7', fontSize: 13 }}
             >
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
             <select
               value={domain}
               onChange={e => setDomain(e.target.value)}
-              style={{ background: '#0d0d0e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#FAFAFA', fontSize: 13 }}
+              style={{ background: '#0d0d0e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#F5F5F7', fontSize: 13 }}
             >
               {DOMAINS.map(d => <option key={d} value={d}>{d}</option>)}
             </select>
@@ -137,13 +137,13 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
             placeholder="Impact (optional): What changed permanently?"
             value={impact}
             onChange={e => setImpact(e.target.value)}
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#FAFAFA', fontSize: 13, width: '100%', boxSizing: 'border-box' }}
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#F5F5F7', fontSize: 13, width: '100%', boxSizing: 'border-box' }}
           />
-          {error && <div style={{ fontSize: 12, color: '#FF6B6B' }}>{error}</div>}
+          {error && <div style={{ fontSize: 12, color: '#FF453A' }}>{error}</div>}
           <button
             type="submit"
             disabled={loading || !title.trim()}
-            style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#B4A7E5', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}
+            style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#BF5AF2', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}
           >
             {loading ? 'Saving...' : '+ Add Item'}
           </button>
@@ -153,7 +153,7 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
       {/* Manual items list (collapsed by default) */}
       {hasManual && (
         <div style={{ marginTop: formOpen ? 0 : 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#76746E', marginBottom: 10 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
             Manual Items ({manualOnly.length})
           </div>
           {CATEGORIES.map(cat => {
@@ -168,8 +168,8 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
                 >
                   <div style={{ width: 8, height: 8, borderRadius: 2, background: CATEGORY_COLORS[cat], flexShrink: 0 }} />
                   <span style={{ fontSize: 13, fontWeight: 600, color: CATEGORY_COLORS[cat] }}>{cat}</span>
-                  <span style={{ fontSize: 11, color: '#B8B6B0' }}>({items.length})</span>
-                  <span style={{ fontSize: 11, color: '#B8B6B0', marginLeft: 'auto' }}>{isOpen ? '▲' : '▼'}</span>
+                  <span style={{ fontSize: 11, color: '#A1A1A6' }}>({items.length})</span>
+                  <span style={{ fontSize: 11, color: '#A1A1A6', marginLeft: 'auto' }}>{isOpen ? '▲' : '▼'}</span>
                 </button>
                 {isOpen && (
                   <div style={{ paddingLeft: 16 }}>
@@ -185,15 +185,15 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
                         }}
                       >
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 13, color: '#FAFAFA' }}>{item.title}</div>
-                          <div style={{ fontSize: 11, color: '#B8B6B0', marginTop: 2 }}>
+                          <div style={{ fontSize: 13, color: '#F5F5F7' }}>{item.title}</div>
+                          <div style={{ fontSize: 11, color: '#A1A1A6', marginTop: 2 }}>
                             {item.domain} · {new Date(item.completedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                           </div>
-                          {item.impact && <div style={{ fontSize: 11, color: '#6BE3A4', marginTop: 1 }}>→ {item.impact}</div>}
+                          {item.impact && <div style={{ fontSize: 11, color: '#30D158', marginTop: 1 }}>→ {item.impact}</div>}
                         </div>
                         <button
                           onClick={() => handleDelete(item.id)}
-                          style={{ background: 'none', border: 'none', color: '#FF6B6B', cursor: 'pointer', fontSize: 12, padding: '2px 6px', flexShrink: 0 }}
+                          style={{ background: 'none', border: 'none', color: '#FF453A', cursor: 'pointer', fontSize: 12, padding: '2px 6px', flexShrink: 0 }}
                         >
                           ✕
                         </button>
@@ -208,7 +208,7 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
       )}
 
       {!hasManual && !formOpen && (
-        <div style={{ fontSize: 12, color: '#76746E', marginTop: 8, fontStyle: 'italic' }}>
+        <div style={{ fontSize: 12, color: '#6E6E73', marginTop: 8, fontStyle: 'italic' }}>
           No manual items. Use the form above if you need to add context not captured automatically.
         </div>
       )}

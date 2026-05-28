@@ -138,12 +138,12 @@ function renderPlanBlock(label: string, plan: PlanBlock | null, icon: string): R
   }
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: 8, padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'flex-start' }}>
-      <div style={{ fontSize: 11, fontWeight: 700, color: '#76746E', paddingTop: 2 }}>{icon} {label}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: '#6E6E73', paddingTop: 2 }}>{icon} {label}</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {bullets.map((b, i) => (
           <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
             <span style={{ fontSize: 9, color: '#4A8A6E', flexShrink: 0, marginTop: 3, fontWeight: 700 }}>•</span>
-            <span style={{ fontSize: 12, color: '#B8B6B0', lineHeight: 1.4 }}>{b}</span>
+            <span style={{ fontSize: 12, color: '#A1A1A6', lineHeight: 1.4 }}>{b}</span>
           </div>
         ))}
       </div>
@@ -237,12 +237,12 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
   if (!strategy) {
     return (
       <div className="card" style={{ borderLeft: '2px solid rgba(107,227,164,0.2)' }}>
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: 10 }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
           Current Quarterly Fitness Regime
         </div>
-        <div style={{ fontSize: 13, color: '#76746E', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: '#6E6E73', fontStyle: 'italic' }}>
           No active fitness strategy.{' '}
-          <a href="/fitness/strategy" style={{ color: '#6BE3A4', textDecoration: 'none' }}>
+          <a href="/fitness/strategy" style={{ color: '#30D158', textDecoration: 'none' }}>
             Generate one at Fitness Strategy page.
           </a>
         </div>
@@ -259,19 +259,19 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
     <div className="card" style={{ borderLeft: `2px solid ${isDraft ? 'rgba(242,192,99,0.4)' : 'rgba(107,227,164,0.3)'}` }}>
       {isDraft && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', marginBottom: 14, borderRadius: 8, background: 'rgba(242,192,99,0.07)', border: '1px solid rgba(242,192,99,0.2)' }}>
-          <span style={{ fontSize: 12, color: '#F2C063' }}>⚠ Draft strategy — review and activate to make it operational</span>
-          <a href="/fitness/strategy" style={{ fontSize: 12, color: '#F2C063', textDecoration: 'none', fontWeight: 700, flexShrink: 0 }}>Review & Activate →</a>
+          <span style={{ fontSize: 12, color: '#FFD60A' }}>⚠ Draft strategy — review and activate to make it operational</span>
+          <a href="/fitness/strategy" style={{ fontSize: 12, color: '#FFD60A', textDecoration: 'none', fontWeight: 700, flexShrink: 0 }}>Review & Activate →</a>
         </div>
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
         <div>
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: isDraft ? '#F2C063' : '#76746E', marginBottom: 4 }}>
+          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: isDraft ? '#FFD60A' : '#6E6E73', marginBottom: 4 }}>
             {isDraft ? 'Draft Fitness Strategy' : 'Current Quarterly Fitness Regime'}
           </div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA' }}>{strategy.mainObjective}</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7' }}>{strategy.mainObjective}</div>
         </div>
-        <a href="/fitness/strategy" style={{ fontSize: 11, color: isDraft ? '#F2C063' : '#6BE3A4', textDecoration: 'none', padding: '4px 10px', border: `1px solid ${isDraft ? 'rgba(242,192,99,0.2)' : 'rgba(107,227,164,0.2)'}`, borderRadius: 6, flexShrink: 0 }}>
+        <a href="/fitness/strategy" style={{ fontSize: 11, color: isDraft ? '#FFD60A' : '#30D158', textDecoration: 'none', padding: '4px 10px', border: `1px solid ${isDraft ? 'rgba(242,192,99,0.2)' : 'rgba(107,227,164,0.2)'}`, borderRadius: 6, flexShrink: 0 }}>
           Full Strategy →
         </a>
       </div>
@@ -291,16 +291,16 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
           background: feedback.type === 'warn' ? 'rgba(242,192,99,0.08)' : feedback.type === 'protect' ? 'rgba(107,227,164,0.06)' : 'rgba(255,255,255,0.04)',
           border: `1px solid ${feedback.type === 'warn' ? 'rgba(242,192,99,0.2)' : feedback.type === 'protect' ? 'rgba(107,227,164,0.2)' : 'rgba(255,255,255,0.08)'}`,
         }}>
-          <span style={{ fontSize: 12, color: feedback.type === 'warn' ? '#F2C063' : feedback.type === 'protect' ? '#6BE3A4' : '#B8B6B0' }}>
+          <span style={{ fontSize: 12, color: feedback.type === 'warn' ? '#FFD60A' : feedback.type === 'protect' ? '#30D158' : '#A1A1A6' }}>
             {feedback.text}
           </span>
           <div style={{ display: 'flex', gap: 8, flexShrink: 0, marginLeft: 12 }}>
             {undoState && (
-              <button onClick={handleUndo} style={{ fontSize: 11, color: '#6BE3A4', background: 'none', border: '1px solid rgba(107,227,164,0.3)', borderRadius: 5, padding: '2px 8px', cursor: 'pointer' }}>
+              <button onClick={handleUndo} style={{ fontSize: 11, color: '#30D158', background: 'none', border: '1px solid rgba(107,227,164,0.3)', borderRadius: 5, padding: '2px 8px', cursor: 'pointer' }}>
                 Undo
               </button>
             )}
-            <button onClick={() => setFeedback(null)} style={{ fontSize: 11, color: '#76746E', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px' }}>✕</button>
+            <button onClick={() => setFeedback(null)} style={{ fontSize: 11, color: '#6E6E73', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px' }}>✕</button>
           </div>
         </div>
       )}
@@ -309,11 +309,11 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
       {schedule.length > 0 && (
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#76746E' }}>
+            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73' }}>
               Weekly Schedule
             </div>
             {removedKeys.size > 0 && (
-              <span style={{ fontSize: 10, color: '#76746E' }}>
+              <span style={{ fontSize: 10, color: '#6E6E73' }}>
                 {removedKeys.size} removed this week
               </span>
             )}
@@ -321,7 +321,7 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 6 }}>
             {schedule.slice(0, 7).map((s, di) => (
               <div key={di} style={{ padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.05)' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#6BE3A4', marginBottom: 6 }}>{s.day?.slice(0, 3).toUpperCase()}</div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#30D158', marginBottom: 6 }}>{s.day?.slice(0, 3).toUpperCase()}</div>
                 {s.sessionList.length > 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                     {s.sessionList.map((session, si) => {
@@ -334,8 +334,8 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                       if (isRemoved) {
                         return (
                           <div key={si} style={{ display: 'flex', gap: 5, alignItems: 'center', opacity: 0.35 }}>
-                            <span style={{ fontSize: 9, color: '#76746E', flexShrink: 0, fontWeight: 700 }}>—</span>
-                            <span style={{ fontSize: 11, color: '#76746E', textDecoration: 'line-through', lineHeight: 1.3 }}>{parsed.activity}</span>
+                            <span style={{ fontSize: 9, color: '#6E6E73', flexShrink: 0, fontWeight: 700 }}>—</span>
+                            <span style={{ fontSize: 11, color: '#6E6E73', textDecoration: 'line-through', lineHeight: 1.3 }}>{parsed.activity}</span>
                           </div>
                         )
                       }
@@ -347,10 +347,10 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                           onMouseEnter={() => setHoverKey(itemKey)}
                           onMouseLeave={() => setHoverKey(null)}
                         >
-                          <span style={{ fontSize: 9, color: '#6BE3A4', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
+                          <span style={{ fontSize: 9, color: '#30D158', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 11, color: '#B8B6B0', lineHeight: 1.3 }}>{parsed.activity}</div>
-                            {parsed.detail && <div style={{ fontSize: 10, color: '#76746E', marginTop: 1 }}>{parsed.detail}</div>}
+                            <div style={{ fontSize: 11, color: '#A1A1A6', lineHeight: 1.3 }}>{parsed.activity}</div>
+                            {parsed.detail && <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 1 }}>{parsed.detail}</div>}
                           </div>
                           {/* × remove button — visible on hover */}
                           {isHovered && (
@@ -361,7 +361,7 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                                 position: 'absolute', right: -6, top: -2,
                                 width: 16, height: 16, borderRadius: '50%',
                                 background: 'rgba(255,100,100,0.15)', border: '1px solid rgba(255,100,100,0.3)',
-                                color: '#FF6B6B', fontSize: 9, fontWeight: 700,
+                                color: '#FF453A', fontSize: 9, fontWeight: 700,
                                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 lineHeight: 1, padding: 0, flexShrink: 0,
                               }}
@@ -391,11 +391,11 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
         >
           <div style={{ background: '#1A1916', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 24, maxWidth: 420, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.6)' }}>
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 12, color: '#76746E', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>Remove Session</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA' }}>{parseSessionText(removeTarget.session).activity}</div>
-              <div style={{ fontSize: 12, color: '#76746E', marginTop: 2 }}>{removeTarget.day}</div>
+              <div style={{ fontSize: 12, color: '#6E6E73', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>Remove Session</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7' }}>{parseSessionText(removeTarget.session).activity}</div>
+              <div style={{ fontSize: 12, color: '#6E6E73', marginTop: 2 }}>{removeTarget.day}</div>
             </div>
-            <div style={{ fontSize: 12, color: '#B8B6B0', marginBottom: 12 }}>Why are you removing this?</div>
+            <div style={{ fontSize: 12, color: '#A1A1A6', marginBottom: 12 }}>Why are you removing this?</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {REMOVE_REASONS.map(r => (
                 <button
@@ -409,12 +409,12 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                   }}
                 >
                   <span style={{ fontSize: 14 }}>{r.emoji}</span>
-                  <span style={{ fontSize: 12, color: selectedReason === r.value ? '#6BE3A4' : '#B8B6B0' }}>{r.label}</span>
+                  <span style={{ fontSize: 12, color: selectedReason === r.value ? '#30D158' : '#A1A1A6' }}>{r.label}</span>
                 </button>
               ))}
             </div>
             <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-              <button onClick={() => setRemoveTarget(null)} style={{ flex: 1, padding: '9px 0', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#76746E', fontSize: 13, cursor: 'pointer' }}>
+              <button onClick={() => setRemoveTarget(null)} style={{ flex: 1, padding: '9px 0', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#6E6E73', fontSize: 13, cursor: 'pointer' }}>
                 Cancel
               </button>
               <button

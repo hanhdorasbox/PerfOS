@@ -61,15 +61,15 @@ function computeStatus(
 }
 
 const statusConfig = {
-  compounding: { label: 'Compounding', color: '#6BE3A4', border: '3px solid #6BE3A4', bg: 'rgba(107,227,164,0.08)' },
-  maintaining: { label: 'Maintaining', color: '#F2C063', border: '3px solid #F2C063', bg: 'rgba(242,192,99,0.08)' },
-  declining: { label: 'Declining', color: '#FF6B6B', border: '3px solid #FF6B6B', bg: 'rgba(255,107,107,0.08)' },
+  compounding: { label: 'Compounding', color: '#30D158', border: '3px solid #6BE3A4', bg: 'rgba(107,227,164,0.08)' },
+  maintaining: { label: 'Maintaining', color: '#FFD60A', border: '3px solid #F2C063', bg: 'rgba(242,192,99,0.08)' },
+  declining: { label: 'Declining', color: '#FF453A', border: '3px solid #FF6B6B', bg: 'rgba(255,107,107,0.08)' },
 }
 
 const insightColors = {
-  positive: '#6BE3A4',
-  warning: '#F2C063',
-  critical: '#FF6B6B',
+  positive: '#30D158',
+  warning: '#FFD60A',
+  critical: '#FF453A',
 }
 
 export default function CareerScorecard({
@@ -150,7 +150,7 @@ export default function CareerScorecard({
         >
           {cfg.label}
         </div>
-        <div style={{ color: '#B8B6B0', fontSize: 14 }}>
+        <div style={{ color: '#A1A1A6', fontSize: 14 }}>
           Career Capital Status — {quarterName}
         </div>
       </div>
@@ -168,8 +168,8 @@ export default function CareerScorecard({
               minWidth: 120,
             }}
           >
-            <div style={{ color: '#FAFAFA', fontSize: 22, fontWeight: 700 }}>{chip.value}</div>
-            <div style={{ color: '#76746E', fontSize: 11, marginTop: 2 }}>{chip.label}</div>
+            <div style={{ color: '#F5F5F7', fontSize: 22, fontWeight: 700 }}>{chip.value}</div>
+            <div style={{ color: '#6E6E73', fontSize: 11, marginTop: 2 }}>{chip.label}</div>
           </div>
         ))}
       </div>
@@ -182,7 +182,7 @@ export default function CareerScorecard({
           background: loading ? 'rgba(180,167,229,0.2)' : 'rgba(180,167,229,0.15)',
           border: '1px solid rgba(180,167,229,0.4)',
           borderRadius: 8,
-          color: '#B4A7E5',
+          color: '#BF5AF2',
           padding: '8px 18px',
           fontSize: 13,
           fontWeight: 600,
@@ -209,16 +209,16 @@ export default function CareerScorecard({
       </button>
 
       {error && (
-        <div style={{ color: '#FF6B6B', fontSize: 13, marginTop: 12 }}>{error}</div>
+        <div style={{ color: '#FF453A', fontSize: 13, marginTop: 12 }}>{error}</div>
       )}
 
       {/* AI Analysis */}
       {scorecard && (
         <div style={{ marginTop: 20 }}>
-          <div style={{ color: '#76746E', fontSize: 12, fontWeight: 600, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 }}>
+          <div style={{ color: '#6E6E73', fontSize: 12, fontWeight: 600, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 }}>
             AI Analysis
           </div>
-          <div style={{ color: '#B8B6B0', fontSize: 13, marginBottom: 12, fontStyle: 'italic' }}>
+          <div style={{ color: '#A1A1A6', fontSize: 13, marginBottom: 12, fontStyle: 'italic' }}>
             {scorecard.statusReason}
           </div>
 
@@ -239,14 +239,14 @@ export default function CareerScorecard({
                 <span style={{ color: insightColors[insight.type], fontSize: 14, marginTop: 1 }}>
                   {insight.type === 'positive' ? '✓' : insight.type === 'warning' ? '⚠' : '✗'}
                 </span>
-                <span style={{ color: '#FAFAFA', fontSize: 13 }}>{insight.text}</span>
+                <span style={{ color: '#F5F5F7', fontSize: 13 }}>{insight.text}</span>
               </div>
             ))}
           </div>
 
           {scorecard.recommendations.length > 0 && (
             <div style={{ marginTop: 14 }}>
-              <div style={{ color: '#76746E', fontSize: 12, fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>
+              <div style={{ color: '#6E6E73', fontSize: 12, fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>
                 Recommendations
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -255,7 +255,7 @@ export default function CareerScorecard({
                     <span
                       style={{
                         background: rec.priority === 'high' ? 'rgba(255,107,107,0.2)' : 'rgba(242,192,99,0.2)',
-                        color: rec.priority === 'high' ? '#FF6B6B' : '#F2C063',
+                        color: rec.priority === 'high' ? '#FF453A' : '#FFD60A',
                         fontSize: 10,
                         padding: '2px 7px',
                         borderRadius: 4,
@@ -267,7 +267,7 @@ export default function CareerScorecard({
                     >
                       {rec.priority}
                     </span>
-                    <span style={{ color: '#B8B6B0', fontSize: 13 }}>{rec.text}</span>
+                    <span style={{ color: '#A1A1A6', fontSize: 13 }}>{rec.text}</span>
                   </div>
                 ))}
               </div>

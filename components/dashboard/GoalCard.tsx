@@ -9,107 +9,194 @@ interface Props {
 }
 
 const statusColors: Record<string, string> = {
-  ahead: '#6BE3A4', on_track: '#60A5FA', watch: '#F2C063', at_risk: '#FB923C', critical: '#FF6B6B', completed: '#6BE3A4'
+  ahead:     '#30D158',
+  on_track:  '#0A84FF',
+  watch:     '#FFD60A',
+  at_risk:   '#FF9F0A',
+  critical:  '#FF453A',
+  completed: '#30D158',
+}
+
+// Progress fill color: blue as default, status color only for off-track states
+function progressColor(status: string): string {
+  if (status === 'ahead' || status === 'on_track' || status === 'completed') return '#0A84FF'
+  return statusColors[status] ?? '#0A84FF'
 }
 
 export default function GoalCard({ goal, metrics }: Props) {
-  const color = statusColors[metrics.status] || '#B8B6B0'
+  const accentColor = statusColors[metrics.status] || '#A1A1A6'
+  const fillColor   = progressColor(metrics.status)
 
-  // Build chart data from progress updates
   const chartData = goal.progressUpdates?.map((u: any) => ({
     date: new Date(u.loggedAt).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' }),
     actual: goal.trackingType === 'QUANTITATIVE' && goal.startValue != null && goal.targetValue != null
       ? Math.round((u.value - goal.startValue) / (goal.targetValue - goal.startValue) * 100)
       : u.value,
-    expected: Math.round(((new Date(u.loggedAt).getTime() - new Date(goal.createdAt).getTime()) / (new Date(goal.deadline).getTime() - new Date(goal.createdAt).getTime())) * 100),
+    expected: Math.round(
+      ((new Date(u.loggedAt).getTime() - new Date(goal.createdAt).getTime()) /
+       (new Date(goal.deadline).getTime() - new Date(goal.createdAt).getTime())) * 100
+    ),
   })) || []
 
   return (
-    <div className="card card-interactive" style={{ borderLeft: `3px solid ${color}` }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
-        <div>
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#76746E', marginBottom: '4px' }}>
+    <div className="card card-interactive" style={{ padding: '22px 24px' }}>
+
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, gap: 12 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            fontSize: 11, fontWeight: 500, letterSpacing: '0.06em',
+            textTransform: 'uppercase', color: '#6E6E73', marginBottom: 5,
+          }}>
             {goal.category}
           </div>
-          <Link href={`/goals/${goal.id}`} style={{ fontSize: '16px', fontWeight: 700, color: '#FAFAFA', textDecoration: 'none' }}>
+          <Link href={`/goals/${goal.id}`} style={{
+            fontSize: 17, fontWeight: 600, color: '#F5F5F7',
+            textDecoration: 'none', letterSpacing: '-0.02em', lineHeight: 1.3,
+            display: 'block',
+          }}>
             {goal.title}
           </Link>
         </div>
         <span className={`badge-${metrics.status}`}>{metrics.statusLabel}</span>
       </div>
 
-      <div style={{ display: 'flex', gap: '24px', marginBottom: '14px', flexWrap: 'wrap' }}>
+      {/* Metrics row */}
+      <div style={{ display: 'flex', gap: 28, marginBottom: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
         <div>
-          <div style={{ fontSize: '32px', fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: '#FAFAFA', lineHeight: 1 }}>
+          <div style={{
+            fontSize: 34, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
+            color: '#F5F5F7', lineHeight: 1, letterSpacing: '-0.03em',
+          }}>
             {Math.round(metrics.progressPct)}%
           </div>
-          <div style={{ fontSize: '11px', color: '#76746E', marginTop: '2px' }}>complete</div>
+          <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 3, letterSpacing: '0.02em' }}>complete</div>
         </div>
+
         {goal.trackingType === 'QUANTITATIVE' && goal.currentValue != null && (
           <div>
-            <div style={{ fontSize: '20px', fontWeight: 700, color: '#B8B6B0', lineHeight: 1 }}>
+            <div style={{ fontSize: 20, fontWeight: 600, color: '#A1A1A6', lineHeight: 1, letterSpacing: '-0.02em' }}>
               {goal.currentValue} {goal.unit}
             </div>
-            <div style={{ fontSize: '11px', color: '#76746E', marginTop: '2px' }}>
+            <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 3 }}>
               {goal.startValue} → {goal.targetValue} {goal.unit}
             </div>
           </div>
         )}
+
         <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-          <div style={{ fontSize: '12px', color: '#76746E' }}>Expected today</div>
-          <div style={{ fontSize: '16px', fontWeight: 700, color: '#B8B6B0' }}>{Math.round(metrics.expectedPct)}%</div>
-          <div style={{ fontSize: '11px', color: metrics.gap >= 0 ? '#6BE3A4' : '#FF6B6B', fontWeight: 700 }}>
+          <div style={{ fontSize: 11, color: '#6E6E73', marginBottom: 2 }}>Expected today</div>
+          <div style={{ fontSize: 17, fontWeight: 600, color: '#A1A1A6', letterSpacing: '-0.02em' }}>
+            {Math.round(metrics.expectedPct)}%
+          </div>
+          <div style={{
+            fontSize: 12, fontWeight: 600, marginTop: 2,
+            color: metrics.gap >= 0 ? '#30D158' : '#FF453A',
+          }}>
             {metrics.gap >= 0 ? '+' : ''}{Math.round(metrics.gap)}% gap
           </div>
         </div>
       </div>
 
       {/* Progress bar */}
-      <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '12px' }}>
-        <div style={{ flex: 1, height: '5px', borderRadius: '3px', background: 'rgba(255,255,255,0.07)', overflow: 'hidden', position: 'relative' }}>
+      <div style={{ marginBottom: 16 }}>
+        <div style={{
+          height: 5, borderRadius: 999, background: 'rgba(255,255,255,0.07)',
+          overflow: 'hidden', position: 'relative',
+        }}>
           {/* Expected marker */}
-          <div style={{ position: 'absolute', top: 0, left: `${metrics.expectedPct}%`, width: '2px', height: '100%', background: 'rgba(255,255,255,0.25)', zIndex: 2 }} />
+          <div style={{
+            position: 'absolute', top: 0, left: `${Math.min(99, metrics.expectedPct)}%`,
+            width: 2, height: '100%', background: 'rgba(255,255,255,0.2)', zIndex: 2,
+          }} />
           {/* Actual fill */}
-          <div className="progress-fill" style={{ height: '100%', width: `${metrics.progressPct}%`, borderRadius: '3px', background: color }} />
+          <div className="progress-fill" style={{
+            height: '100%', width: `${metrics.progressPct}%`,
+            borderRadius: 999, background: fillColor,
+          }} />
         </div>
       </div>
 
-      {/* Mini chart if we have data */}
+      {/* Mini sparkline */}
       {chartData.length > 2 && (
-        <div style={{ height: '60px', marginBottom: '12px' }}>
+        <div style={{ height: 52, marginBottom: 14 }}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
-              <Line type="monotone" dataKey="actual" stroke={color} strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="expected" stroke="rgba(255,255,255,0.2)" strokeWidth={1} strokeDasharray="3 3" dot={false} />
-              <Tooltip contentStyle={{ background: '#0A0A0B', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '11px' }} />
+              <Line
+                type="monotone" dataKey="actual"
+                stroke={fillColor} strokeWidth={2} dot={false}
+              />
+              <Line
+                type="monotone" dataKey="expected"
+                stroke="rgba(255,255,255,0.15)" strokeWidth={1}
+                strokeDasharray="3 3" dot={false}
+              />
+              <Tooltip contentStyle={{
+                background: '#1C1C1E', border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 10, fontSize: 11, color: '#F5F5F7',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+              }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
       )}
 
-      {/* Recommendation */}
-      <div style={{ fontSize: '12px', color: '#76746E', padding: '10px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', lineHeight: 1.5 }}>
+      {/* Recommendation note */}
+      <div style={{
+        fontSize: 13, color: '#A1A1A6', lineHeight: 1.55,
+        padding: '10px 14px',
+        background: 'rgba(255,255,255,0.03)',
+        borderRadius: 12,
+        border: '1px solid rgba(255,255,255,0.06)',
+      }}>
         {metrics.recommendation}
       </div>
 
       {metrics.forecastedCompletionDate && (
-        <div style={{ marginTop: '8px', fontSize: '11px', color: '#76746E' }}>
-          Forecasted completion: <span style={{ color: metrics.forecastedCompletionDate > new Date(goal.deadline) ? '#FF6B6B' : '#6BE3A4', fontWeight: 600 }}>
+        <div style={{ marginTop: 10, fontSize: 12, color: '#6E6E73' }}>
+          Forecast{' '}
+          <span style={{
+            color: metrics.forecastedCompletionDate > new Date(goal.deadline) ? '#FF453A' : '#30D158',
+            fontWeight: 600,
+          }}>
             {metrics.forecastedCompletionDate.toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
           </span>
-          {' '}(deadline: {new Date(goal.deadline).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })})
+          {' · '}deadline {new Date(goal.deadline).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
         </div>
       )}
 
-      {/* Milestones if any */}
+      {/* Milestones */}
       {goal.milestones?.length > 0 && (
-        <div style={{ marginTop: '12px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px' }}>
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#76746E', marginBottom: '8px' }}>Milestones</div>
+        <div style={{ marginTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14 }}>
+          <div style={{
+            fontSize: 10, fontWeight: 600, letterSpacing: '0.08em',
+            textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10,
+          }}>
+            Milestones
+          </div>
           {goal.milestones.map((m: any) => (
-            <div key={m.id} style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-              <span style={{ fontSize: '12px' }}>{m.completed ? '✓' : '○'}</span>
-              <span style={{ fontSize: '12px', color: m.completed ? '#76746E' : '#B8B6B0', textDecoration: m.completed ? 'line-through' : 'none', flex: 1 }}>{m.title}</span>
-              <span style={{ fontSize: '10px', color: '#76746E' }}>{m.weight}%</span>
+            <div key={m.id} style={{
+              display: 'flex', gap: 10, alignItems: 'center',
+              padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)',
+            }}>
+              <div style={{
+                width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
+                background: m.completed ? '#30D158' : 'transparent',
+                border: `2px solid ${m.completed ? '#30D158' : 'rgba(255,255,255,0.2)'}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                {m.completed && (
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                    <path d="M1.5 4L3.5 6L6.5 2" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </div>
+              <span style={{
+                fontSize: 13, flex: 1,
+                color: m.completed ? '#6E6E73' : '#A1A1A6',
+                textDecoration: m.completed ? 'line-through' : 'none',
+              }}>{m.title}</span>
+              <span style={{ fontSize: 11, color: '#48484A' }}>{m.weight}%</span>
             </div>
           ))}
         </div>

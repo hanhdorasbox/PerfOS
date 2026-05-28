@@ -12,13 +12,13 @@ function inlineFormat(text: string): React.ReactNode {
     <>
       {parts.map((part, i) => {
         if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={i} style={{ color: '#FAFAFA', fontWeight: 700 }}>{part.slice(2, -2)}</strong>
+          return <strong key={i} style={{ color: '#F5F5F7', fontWeight: 700 }}>{part.slice(2, -2)}</strong>
         }
         if (part.startsWith('*') && part.endsWith('*')) {
-          return <em key={i} style={{ color: '#B8B6B0' }}>{part.slice(1, -1)}</em>
+          return <em key={i} style={{ color: '#A1A1A6' }}>{part.slice(1, -1)}</em>
         }
         if (part.startsWith('`') && part.endsWith('`')) {
-          return <code key={i} style={{ fontSize: 11, background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 4, color: '#B4A7E5' }}>{part.slice(1, -1)}</code>
+          return <code key={i} style={{ fontSize: 11, background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 4, color: '#BF5AF2' }}>{part.slice(1, -1)}</code>
         }
         return part
       })}
@@ -54,11 +54,11 @@ function MarkdownText({ content }: { content: string }) {
       elements.push(
         <div key={`code-${i}`} style={{ margin: '6px 0', borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
           {lang && (
-            <div style={{ padding: '3px 10px', background: 'rgba(255,255,255,0.06)', fontSize: 10, color: '#76746E', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+            <div style={{ padding: '3px 10px', background: 'rgba(255,255,255,0.06)', fontSize: 10, color: '#6E6E73', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
               {lang}
             </div>
           )}
-          <pre style={{ margin: 0, padding: '10px 12px', background: 'rgba(255,255,255,0.04)', overflowX: 'auto', fontSize: 11, color: '#B4A7E5', lineHeight: 1.6, fontFamily: 'monospace' }}>
+          <pre style={{ margin: 0, padding: '10px 12px', background: 'rgba(255,255,255,0.04)', overflowX: 'auto', fontSize: 11, color: '#BF5AF2', lineHeight: 1.6, fontFamily: 'monospace' }}>
             {codeLines.join('\n')}
           </pre>
         </div>
@@ -76,7 +76,7 @@ function MarkdownText({ content }: { content: string }) {
       elements.push(
         <div key={`bq-${i}`} style={{ margin: '4px 0', paddingLeft: 12, borderLeft: '3px solid rgba(180,167,229,0.4)', display: 'flex', flexDirection: 'column', gap: 2 }}>
           {items.map((item, ii) => (
-            <div key={ii} style={{ fontSize: 13, color: '#76746E', lineHeight: 1.6, fontStyle: 'italic' }}>{inlineFormat(item)}</div>
+            <div key={ii} style={{ fontSize: 13, color: '#6E6E73', lineHeight: 1.6, fontStyle: 'italic' }}>{inlineFormat(item)}</div>
           ))}
         </div>
       )
@@ -86,7 +86,7 @@ function MarkdownText({ content }: { content: string }) {
     // Heading 3: ###
     if (/^###\s+/.test(line)) {
       elements.push(
-        <div key={i} style={{ fontSize: 12, fontWeight: 700, color: '#B4A7E5', marginTop: 8, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <div key={i} style={{ fontSize: 12, fontWeight: 700, color: '#BF5AF2', marginTop: 8, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           {inlineFormat(line.replace(/^###\s+/, ''))}
         </div>
       )
@@ -96,7 +96,7 @@ function MarkdownText({ content }: { content: string }) {
     // Heading 2: ##
     if (/^##\s+/.test(line)) {
       elements.push(
-        <div key={i} style={{ fontSize: 13, fontWeight: 800, color: '#FAFAFA', marginTop: 10, marginBottom: 4, letterSpacing: '0.04em' }}>
+        <div key={i} style={{ fontSize: 13, fontWeight: 800, color: '#F5F5F7', marginTop: 10, marginBottom: 4, letterSpacing: '0.04em' }}>
           {inlineFormat(line.replace(/^##\s+/, ''))}
         </div>
       )
@@ -106,7 +106,7 @@ function MarkdownText({ content }: { content: string }) {
     // Heading 1: #
     if (/^#\s+/.test(line)) {
       elements.push(
-        <div key={i} style={{ fontSize: 15, fontWeight: 800, color: '#FAFAFA', marginTop: 12, marginBottom: 6 }}>
+        <div key={i} style={{ fontSize: 15, fontWeight: 800, color: '#F5F5F7', marginTop: 12, marginBottom: 6 }}>
           {inlineFormat(line.replace(/^#\s+/, ''))}
         </div>
       )
@@ -123,8 +123,8 @@ function MarkdownText({ content }: { content: string }) {
       elements.push(
         <ul key={`ul-${i}`} style={{ margin: '4px 0', paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 3 }}>
           {items.map((item, ii) => (
-            <li key={ii} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 13, color: '#B8B6B0', lineHeight: 1.55 }}>
-              <span style={{ color: '#B4A7E5', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
+            <li key={ii} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 13, color: '#A1A1A6', lineHeight: 1.55 }}>
+              <span style={{ color: '#BF5AF2', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
               <span>{inlineFormat(item)}</span>
             </li>
           ))}
@@ -143,8 +143,8 @@ function MarkdownText({ content }: { content: string }) {
       elements.push(
         <ol key={`ol-${i}`} style={{ margin: '4px 0', paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 3 }}>
           {items.map((item, ii) => (
-            <li key={ii} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 13, color: '#B8B6B0', lineHeight: 1.55 }}>
-              <span style={{ color: '#B4A7E5', flexShrink: 0, fontWeight: 700, minWidth: 18, fontSize: 11 }}>{ii + 1}.</span>
+            <li key={ii} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 13, color: '#A1A1A6', lineHeight: 1.55 }}>
+              <span style={{ color: '#BF5AF2', flexShrink: 0, fontWeight: 700, minWidth: 18, fontSize: 11 }}>{ii + 1}.</span>
               <span>{inlineFormat(item)}</span>
             </li>
           ))}
@@ -161,7 +161,7 @@ function MarkdownText({ content }: { content: string }) {
 
     // Regular paragraph line
     elements.push(
-      <div key={i} style={{ fontSize: 13, color: '#B8B6B0', lineHeight: 1.65 }}>
+      <div key={i} style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.65 }}>
         {inlineFormat(line)}
       </div>
     )
@@ -210,24 +210,24 @@ export default function AIAdvisor() {
                 border: `1px solid ${m.role === 'user' ? 'rgba(180,167,229,0.25)' : 'rgba(255,255,255,0.08)'}`,
               }}>
                 {m.role === 'user'
-                  ? <div style={{ fontSize: '13px', color: '#FAFAFA', lineHeight: 1.6 }}>{m.content}</div>
+                  ? <div style={{ fontSize: '13px', color: '#F5F5F7', lineHeight: 1.6 }}>{m.content}</div>
                   : <MarkdownText content={m.content} />
                 }
               </div>
             </div>
           ))}
-          {loading && <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}><span>🤖</span><div style={{ fontSize: '13px', color: '#76746E' }}>Thinking…</div></div>}
+          {loading && <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}><span>🤖</span><div style={{ fontSize: '13px', color: '#6E6E73' }}>Thinking…</div></div>}
           <div ref={bottomRef} />
         </div>
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: '14px', marginTop: '14px', display: 'flex', gap: '8px' }}>
           <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
             placeholder="Am I on track this quarter? What should I focus on today?" disabled={loading}
-            style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#FAFAFA', fontSize: '13px', outline: 'none' }} />
-          <button onClick={send} disabled={loading || !input.trim()} style={{ padding: '10px 18px', borderRadius: '10px', background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#B4A7E5', fontWeight: 700, cursor: 'pointer', fontSize: '13px', opacity: loading || !input.trim() ? 0.5 : 1 }}>Send</button>
+            style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#F5F5F7', fontSize: '13px', outline: 'none' }} />
+          <button onClick={send} disabled={loading || !input.trim()} style={{ padding: '10px 18px', borderRadius: '10px', background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#BF5AF2', fontWeight: 700, cursor: 'pointer', fontSize: '13px', opacity: loading || !input.trim() ? 0.5 : 1 }}>Send</button>
         </div>
         <div style={{ marginTop: '10px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           {['Am I on track this quarter?', "What's most at risk?", 'What should I focus on today?', 'Is my quarter overloaded?'].map(q => (
-            <button key={q} onClick={() => { setInput(q); }} style={{ padding: '5px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#76746E', fontSize: '11px', cursor: 'pointer' }}>{q}</button>
+            <button key={q} onClick={() => { setInput(q); }} style={{ padding: '5px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#6E6E73', fontSize: '11px', cursor: 'pointer' }}>{q}</button>
           ))}
         </div>
       </div>
