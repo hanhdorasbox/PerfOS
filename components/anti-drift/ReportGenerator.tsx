@@ -25,11 +25,11 @@ interface Props {
 }
 
 const MOMENTUM_COLORS: Record<string, string> = {
-  forward_strongly: '#6BE3A4',
-  forward_slowly: '#60A5FA',
-  stagnant: '#F2C063',
-  fragmented: '#F2C063',
-  overloaded: '#FF6B6B',
+  forward_strongly: '#30D158',
+  forward_slowly: '#0A84FF',
+  stagnant: '#FFD60A',
+  fragmented: '#FFD60A',
+  overloaded: '#FF453A',
 }
 
 const MOMENTUM_LABELS: Record<string, string> = {
@@ -88,20 +88,20 @@ export default function ReportGenerator({ userId, pastReports: initPastReports }
   function renderReport(report: AntiDriftReport) {
     const analysis = parseAnalysis(report.aiAnalysis)
     const assets = (() => { try { return JSON.parse(report.durableAssets || '[]') } catch { return [] } })()
-    const color = MOMENTUM_COLORS[report.momentum] || '#B8B6B0'
+    const color = MOMENTUM_COLORS[report.momentum] || '#A1A1A6'
 
     return (
       <div style={{ padding: '16px 0' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
           {[
-            { label: 'Advancement', value: `${Math.round(report.advancementPct)}%`, color: '#6BE3A4' },
-            { label: 'Maintenance', value: `${Math.round(report.maintenancePct)}%`, color: '#60A5FA' },
-            { label: 'Reactive', value: `${Math.round(report.reactivePct)}%`, color: '#F2C063' },
-            { label: 'Busywork', value: `${Math.round(report.busyworkPct)}%`, color: '#FF6B6B' },
+            { label: 'Advancement', value: `${Math.round(report.advancementPct)}%`, color: '#30D158' },
+            { label: 'Maintenance', value: `${Math.round(report.maintenancePct)}%`, color: '#0A84FF' },
+            { label: 'Reactive', value: `${Math.round(report.reactivePct)}%`, color: '#FFD60A' },
+            { label: 'Busywork', value: `${Math.round(report.busyworkPct)}%`, color: '#FF453A' },
           ].map(stat => (
             <div key={stat.label} style={{ textAlign: 'center', padding: '8px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: 8 }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: stat.color }}>{stat.value}</div>
-              <div style={{ fontSize: 10, color: '#B8B6B0' }}>{stat.label}</div>
+              <div style={{ fontSize: 10, color: '#A1A1A6' }}>{stat.label}</div>
             </div>
           ))}
         </div>
@@ -110,9 +110,9 @@ export default function ReportGenerator({ userId, pastReports: initPastReports }
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {analysis.insights?.length > 0 && (
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#B8B6B0', marginBottom: 6 }}>INSIGHTS</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#A1A1A6', marginBottom: 6 }}>INSIGHTS</div>
                 {analysis.insights.map((ins: string, i: number) => (
-                  <div key={i} style={{ fontSize: 13, color: '#FAFAFA', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <div key={i} style={{ fontSize: 13, color: '#F5F5F7', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     {ins}
                   </div>
                 ))}
@@ -120,9 +120,9 @@ export default function ReportGenerator({ userId, pastReports: initPastReports }
             )}
             {analysis.recommendations?.length > 0 && (
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#B8B6B0', marginBottom: 6 }}>RECOMMENDATIONS</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#A1A1A6', marginBottom: 6 }}>RECOMMENDATIONS</div>
                 {analysis.recommendations.map((rec: string, i: number) => (
-                  <div key={i} style={{ fontSize: 13, color: '#B8B6B0', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <div key={i} style={{ fontSize: 13, color: '#A1A1A6', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     → {rec}
                   </div>
                 ))}
@@ -130,9 +130,9 @@ export default function ReportGenerator({ userId, pastReports: initPastReports }
             )}
             {assets.length > 0 && (
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#B8B6B0', marginBottom: 6 }}>DURABLE ASSETS CREATED</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#A1A1A6', marginBottom: 6 }}>DURABLE ASSETS CREATED</div>
                 {assets.map((asset: string, i: number) => (
-                  <div key={i} style={{ fontSize: 13, color: '#6BE3A4', padding: '2px 0' }}>✓ {asset}</div>
+                  <div key={i} style={{ fontSize: 13, color: '#30D158', padding: '2px 0' }}>✓ {asset}</div>
                 ))}
               </div>
             )}
@@ -144,35 +144,35 @@ export default function ReportGenerator({ userId, pastReports: initPastReports }
 
   return (
     <div className="card">
-      <h2 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA', marginBottom: 16 }}>Generate Report</h2>
+      <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', marginBottom: 16 }}>Generate Report</h2>
 
       <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
         <button
           onClick={() => generate('monthly')}
           disabled={loading !== null}
           className="btn-motion"
-          style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#B4A7E5', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 7 }}
+          style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#BF5AF2', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 7 }}
         >
-          {loading === 'monthly' && <Spinner size={13} color="#B4A7E5" strokeWidth={1.5} />}
+          {loading === 'monthly' && <Spinner size={13} color="#BF5AF2" strokeWidth={1.5} />}
           {loading === 'monthly' ? 'Generating…' : 'Generate Monthly Report'}
         </button>
         <button
           onClick={() => generate('quarterly')}
           disabled={loading !== null}
           className="btn-motion"
-          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#B8B6B0', borderRadius: 8, padding: '8px 16px', fontSize: 13, cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 7 }}
+          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#A1A1A6', borderRadius: 8, padding: '8px 16px', fontSize: 13, cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 7 }}
         >
-          {loading === 'quarterly' && <Spinner size={13} color="#B8B6B0" strokeWidth={1.5} />}
+          {loading === 'quarterly' && <Spinner size={13} color="#A1A1A6" strokeWidth={1.5} />}
           {loading === 'quarterly' ? 'Generating…' : 'Generate Quarterly Report'}
         </button>
       </div>
 
-      {error && <div style={{ fontSize: 12, color: '#FF6B6B', marginBottom: 12 }}>{error}</div>}
+      {error && <div style={{ fontSize: 12, color: '#FF453A', marginBottom: 12 }}>{error}</div>}
 
       {latestReport && (
         <div style={{ marginBottom: 20, padding: 16, background: 'rgba(107,227,164,0.06)', border: '1px solid rgba(107,227,164,0.2)', borderRadius: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#FAFAFA' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7' }}>
               {latestReport.periodType === 'monthly' ? 'Monthly' : 'Quarterly'} Report
             </div>
             <span style={{
@@ -190,10 +190,10 @@ export default function ReportGenerator({ userId, pastReports: initPastReports }
 
       {pastReports.length > 0 && (
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#B8B6B0', marginBottom: 10 }}>Past Reports</div>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A1A1A6', marginBottom: 10 }}>Past Reports</div>
           {pastReports.map(report => {
             const isOpen = expandedId === report.id
-            const color = MOMENTUM_COLORS[report.momentum] || '#B8B6B0'
+            const color = MOMENTUM_COLORS[report.momentum] || '#A1A1A6'
             return (
               <div key={report.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 4, opacity: deleting === report.id ? 0.4 : 1, transition: 'opacity 0.15s ease' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -202,17 +202,17 @@ export default function ReportGenerator({ userId, pastReports: initPastReports }
                     style={{ background: 'none', border: 'none', cursor: 'pointer', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0' }}
                   >
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                      <span style={{ fontSize: 13, color: '#FAFAFA', textTransform: 'capitalize' }}>{report.periodType} — {new Date(report.periodStart).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</span>
+                      <span style={{ fontSize: 13, color: '#F5F5F7', textTransform: 'capitalize' }}>{report.periodType} — {new Date(report.periodStart).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</span>
                       <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 99, background: `${color}22`, color, border: `1px solid ${color}44` }}>
                         {MOMENTUM_LABELS[report.momentum] || report.momentum}
                       </span>
                     </div>
-                    <span style={{ fontSize: 11, color: '#B8B6B0' }}>{isOpen ? '▲' : '▼'}</span>
+                    <span style={{ fontSize: 11, color: '#A1A1A6' }}>{isOpen ? '▲' : '▼'}</span>
                   </button>
                   <button
                     onClick={() => deleteReport(report.id)}
                     disabled={deleting === report.id}
-                    style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 13, padding: '0 8px', flexShrink: 0 }}
+                    style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 13, padding: '0 8px', flexShrink: 0 }}
                     title="Delete"
                   >✕</button>
                 </div>

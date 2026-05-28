@@ -8,44 +8,104 @@ interface Props {
 export default function QuarterOverview({ quarter, qProgress, weightedCompletion, goalCount }: Props) {
   const gap = weightedCompletion - qProgress.pct
   const onTrack = gap >= -5
+  const statusColor = onTrack ? '#30D158' : '#FFD60A'
+
   return (
-    <div className="card" style={{ background: 'rgba(255,255,255,0.035)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+    <div className="card" style={{ padding: '24px 26px' }}>
+
+      {/* Top row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 22 }}>
         <div>
-          <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: '6px' }}>
+          <div style={{
+            fontSize: 11, fontWeight: 500, letterSpacing: '0.06em',
+            textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6,
+          }}>
             Active Quarter
           </div>
-          <div style={{ fontSize: '22px', fontWeight: 800, color: '#FAFAFA' }}>{quarter.name}</div>
-          <div style={{ fontSize: '12px', color: '#76746E', marginTop: '3px' }}>
-            {new Date(quarter.startDate).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })} – {new Date(quarter.endDate).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })} · {goalCount} goals
+          <div style={{
+            fontSize: 22, fontWeight: 700, color: '#F5F5F7', letterSpacing: '-0.025em',
+          }}>
+            {quarter.name}
+          </div>
+          <div style={{ fontSize: 13, color: '#6E6E73', marginTop: 4, letterSpacing: '-0.01em' }}>
+            {new Date(quarter.startDate).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
+            {' – '}
+            {new Date(quarter.endDate).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
+            {' · '}{goalCount} goal{goalCount !== 1 ? 's' : ''}
           </div>
         </div>
+
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '36px', fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: onTrack ? '#6BE3A4' : '#F2C063' }}>
+          <div style={{
+            fontSize: 38, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
+            color: statusColor, lineHeight: 1, letterSpacing: '-0.04em',
+          }}>
             {Math.round(weightedCompletion)}%
           </div>
-          <div style={{ fontSize: '11px', color: '#76746E' }}>weighted completion</div>
+          <div style={{ fontSize: 12, color: '#6E6E73', marginTop: 4 }}>weighted completion</div>
         </div>
       </div>
 
-      {/* Quarter progress bar */}
-      <div style={{ margin: '16px 0 8px' }}>
-        <div style={{ height: '4px', background: 'rgba(255,255,255,0.07)', borderRadius: '2px', position: 'relative', overflow: 'visible' }}>
-          <div className="progress-fill" style={{ height: '100%', width: `${qProgress.pct}%`, background: 'rgba(255,255,255,0.25)', borderRadius: '2px' }} />
-          <div style={{ position: 'absolute', top: '-3px', left: `${Math.round(weightedCompletion)}%`, width: '10px', height: '10px', borderRadius: '50%', background: onTrack ? '#6BE3A4' : '#F2C063', transform: 'translateX(-50%)', boxShadow: `0 0 8px ${onTrack ? '#6BE3A4' : '#F2C063'}66` }} />
+      {/* Dual progress track */}
+      <div style={{ marginBottom: 18 }}>
+        {/* Quarter elapsed track */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6E6E73', marginBottom: 5 }}>
+          <span>Quarter elapsed</span>
+          <span>{Math.round(qProgress.pct)}%</span>
+        </div>
+        <div style={{ height: 4, borderRadius: 999, background: 'rgba(255,255,255,0.07)', overflow: 'hidden', marginBottom: 8 }}>
+          <div className="progress-fill" style={{
+            height: '100%', width: `${qProgress.pct}%`,
+            borderRadius: 999, background: 'rgba(255,255,255,0.2)',
+          }} />
+        </div>
+
+        {/* Goals completion track */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6E6E73', marginBottom: 5 }}>
+          <span>Goals completion</span>
+          <span>{Math.round(weightedCompletion)}%</span>
+        </div>
+        <div style={{ height: 6, borderRadius: 999, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+          <div className="progress-fill" style={{
+            height: '100%', width: `${weightedCompletion}%`,
+            borderRadius: 999, background: statusColor,
+          }} />
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '24px', fontSize: '12px', color: '#76746E' }}>
-        <span>Quarter: <b style={{ color: '#B8B6B0' }}>{Math.round(qProgress.pct)}%</b> elapsed</span>
-        <span>Goals: <b style={{ color: '#B8B6B0' }}>{Math.round(weightedCompletion)}%</b> done</span>
-        <span>Gap: <b style={{ color: gap >= 0 ? '#6BE3A4' : '#F2C063' }}>{gap >= 0 ? '+' : ''}{Math.round(gap)}%</b></span>
-        <span><b style={{ color: '#B8B6B0' }}>{qProgress.daysRemaining}d</b> remaining</span>
+      {/* Stats row */}
+      <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+        <StatItem label="Days remaining" value={`${qProgress.daysRemaining}d`} />
+        <StatItem
+          label="Progress gap"
+          value={`${gap >= 0 ? '+' : ''}${Math.round(gap)}%`}
+          valueColor={gap >= 0 ? '#30D158' : '#FFD60A'}
+        />
+        <div style={{ flex: 1, minWidth: 180 }}>
+          <div style={{
+            fontSize: 13, color: '#A1A1A6', lineHeight: 1.55,
+            padding: '9px 13px',
+            background: onTrack ? 'rgba(48,209,88,0.06)' : 'rgba(255,214,10,0.06)',
+            borderRadius: 12,
+            border: `1px solid ${onTrack ? 'rgba(48,209,88,0.15)' : 'rgba(255,214,10,0.15)'}`,
+          }}>
+            {Math.round(qProgress.pct)}% of the quarter has passed.{' '}
+            {onTrack
+              ? <span style={{ color: '#30D158', fontWeight: 600 }}>On track.</span>
+              : <span style={{ color: '#FFD60A', fontWeight: 600 }}>Behind by {Math.round(Math.abs(gap))}%.</span>
+            }
+          </div>
+        </div>
       </div>
+    </div>
+  )
+}
 
-      <div style={{ marginTop: '12px', fontSize: '12px', color: '#B8B6B0', padding: '10px 12px', background: onTrack ? 'rgba(107,227,164,0.05)' : 'rgba(242,192,99,0.05)', borderRadius: '8px', border: `1px solid ${onTrack ? 'rgba(107,227,164,0.15)' : 'rgba(242,192,99,0.15)'}` }}>
-        {Math.round(qProgress.pct)}% of the quarter has passed. Weighted goal completion is {Math.round(weightedCompletion)}%. You are {onTrack ? 'on track' : `behind by ${Math.round(Math.abs(gap))}%`}.
-      </div>
+function StatItem({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6E6E73', marginBottom: 2 }}>{label}</div>
+      <div style={{ fontSize: 17, fontWeight: 600, color: valueColor ?? '#F5F5F7', letterSpacing: '-0.02em' }}>{value}</div>
     </div>
   )
 }

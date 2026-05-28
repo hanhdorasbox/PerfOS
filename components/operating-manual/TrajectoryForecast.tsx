@@ -19,10 +19,10 @@ interface Props {
 }
 
 const RISK_META: Record<string, { label: string; color: string; bg: string }> = {
-  high:   { label: 'HIGH RISK', color: '#FF6B6B', bg: 'rgba(255,107,107,0.1)' },
-  medium: { label: 'AT RISK',   color: '#F2C063', bg: 'rgba(242,192,99,0.1)' },
-  low:    { label: 'ON TRACK',  color: '#6BE3A4', bg: 'rgba(107,227,164,0.1)' },
-  stable: { label: 'STABLE',    color: '#60A5FA', bg: 'rgba(96,165,250,0.1)'  },
+  high:   { label: 'HIGH RISK', color: '#FF453A', bg: 'rgba(255,107,107,0.1)' },
+  medium: { label: 'AT RISK',   color: '#FFD60A', bg: 'rgba(242,192,99,0.1)' },
+  low:    { label: 'ON TRACK',  color: '#30D158', bg: 'rgba(107,227,164,0.1)' },
+  stable: { label: 'STABLE',    color: '#0A84FF', bg: 'rgba(96,165,250,0.1)'  },
 }
 
 const DOMAIN_ICON: Record<string, string> = {
@@ -70,11 +70,11 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
             <div style={{ width: 3, height: 22, background: 'linear-gradient(180deg,#B4A7E5,#60A5FA)', borderRadius: 2 }} />
-            <h2 style={{ fontSize: 18, fontWeight: 800, color: '#FAFAFA', letterSpacing: '-0.02em' }}>
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: '#F5F5F7', letterSpacing: '-0.02em' }}>
               Trajectory Forecast
             </h2>
           </div>
-          <p style={{ fontSize: 13, color: '#76746E', marginLeft: 13 }}>
+          <p style={{ fontSize: 13, color: '#6E6E73', marginLeft: 13 }}>
             If current patterns continue — where are you headed?
           </p>
         </div>
@@ -88,7 +88,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
             cursor: (loading || !hasPatterns) ? 'not-allowed' : 'pointer',
             background: loading ? 'rgba(180,167,229,0.08)' : 'rgba(180,167,229,0.12)',
             border: '1px solid rgba(180,167,229,0.25)',
-            color: '#B4A7E5',
+            color: '#BF5AF2',
             opacity: !hasPatterns ? 0.5 : 1,
             transition: 'all 0.15s',
             flexShrink: 0,
@@ -110,13 +110,13 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
       <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>
 
       {!hasPatterns && !data && (
-        <div style={{ padding: '20px 0', textAlign: 'center', color: '#76746E', fontSize: 13, fontStyle: 'italic' }}>
+        <div style={{ padding: '20px 0', textAlign: 'center', color: '#6E6E73', fontSize: 13, fontStyle: 'italic' }}>
           Run a pattern analysis first to enable trajectory forecasting.
         </div>
       )}
 
       {error && (
-        <div style={{ padding: '12px 16px', background: 'rgba(255,107,107,0.08)', border: '1px solid rgba(255,107,107,0.2)', borderRadius: 10, color: '#FF6B6B', fontSize: 13, marginBottom: 16 }}>
+        <div style={{ padding: '12px 16px', background: 'rgba(255,107,107,0.08)', border: '1px solid rgba(255,107,107,0.2)', borderRadius: 10, color: '#FF453A', fontSize: 13, marginBottom: 16 }}>
           {error}
         </div>
       )}
@@ -140,7 +140,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
 
           {/* A. Domain-by-domain outlook */}
           <div>
-            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: 14 }}>
+            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 14 }}>
               Domain Outlook
             </div>
             <div style={{
@@ -165,7 +165,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#FAFAFA' }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#F5F5F7' }}>
                         {icon} {domain.name}
                       </div>
                       <span style={{
@@ -178,7 +178,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
                         {risk.label}
                       </span>
                     </div>
-                    <div style={{ fontSize: 12, color: '#B8B6B0', lineHeight: 1.6 }}>
+                    <div style={{ fontSize: 12, color: '#A1A1A6', lineHeight: 1.6 }}>
                       {domain.outlook}
                     </div>
                   </div>
@@ -194,10 +194,10 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
             border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: 14,
           }}>
-            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: 10 }}>
+            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
               Overall Trajectory
             </div>
-            <p style={{ fontSize: 14, color: '#FAFAFA', lineHeight: 1.7, fontWeight: 500 }}>
+            <p style={{ fontSize: 14, color: '#F5F5F7', lineHeight: 1.7, fontWeight: 500 }}>
               {data.overallTrajectory}
             </p>
           </div>
@@ -210,7 +210,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
               border: '1px solid rgba(107,227,164,0.12)',
               borderRadius: 14,
             }}>
-              <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6BE3A4', marginBottom: 12 }}>
+              <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#30D158', marginBottom: 12 }}>
                 What Changes the Forecast Most
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -218,7 +218,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
                   <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                     <span style={{
                       fontSize: 10, fontWeight: 800,
-                      color: '#6BE3A4',
+                      color: '#30D158',
                       background: 'rgba(107,227,164,0.12)',
                       border: '1px solid rgba(107,227,164,0.2)',
                       borderRadius: 5,
@@ -229,7 +229,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
                     }}>
                       {i + 1}
                     </span>
-                    <span style={{ fontSize: 13, color: '#B8B6B0', lineHeight: 1.6 }}>{item}</span>
+                    <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.6 }}>{item}</span>
                   </div>
                 ))}
               </div>

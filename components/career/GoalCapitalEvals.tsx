@@ -31,7 +31,7 @@ function ReusabilityDots({ value }: { value: number }) {
             width: 7,
             height: 7,
             borderRadius: '50%',
-            background: i <= value ? '#B4A7E5' : 'rgba(180,167,229,0.2)',
+            background: i <= value ? '#BF5AF2' : 'rgba(180,167,229,0.2)',
           }}
         />
       ))}
@@ -89,12 +89,12 @@ function EvalForm({
         gap: 10,
       }}
     >
-      <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#B8B6B0', fontSize: 13, cursor: 'pointer' }}>
+      <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#A1A1A6', fontSize: 13, cursor: 'pointer' }}>
         <input
           type="checkbox"
           checked={form.increasesCapital}
           onChange={e => setForm(f => ({ ...f, increasesCapital: e.target.checked }))}
-          style={{ accentColor: '#6BE3A4' }}
+          style={{ accentColor: '#30D158' }}
         />
         Increases Career Capital
       </label>
@@ -112,7 +112,7 @@ function EvalForm({
         style={inputStyle}
       />
       <div>
-        <label style={{ color: '#B8B6B0', fontSize: 12, display: 'block', marginBottom: 4 }}>
+        <label style={{ color: '#A1A1A6', fontSize: 12, display: 'block', marginBottom: 4 }}>
           Reusability Score: {form.reusabilityScore}/5
         </label>
         <input
@@ -121,7 +121,7 @@ function EvalForm({
           max={5}
           value={form.reusabilityScore}
           onChange={e => setForm(f => ({ ...f, reusabilityScore: Number(e.target.value) }))}
-          style={{ width: '100%', accentColor: '#B4A7E5' }}
+          style={{ width: '100%', accentColor: '#BF5AF2' }}
         />
       </div>
       <input
@@ -130,12 +130,12 @@ function EvalForm({
         onChange={e => setForm(f => ({ ...f, leveragePotential: e.target.value }))}
         style={inputStyle}
       />
-      <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#B8B6B0', fontSize: 13, cursor: 'pointer' }}>
+      <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#A1A1A6', fontSize: 13, cursor: 'pointer' }}>
         <input
           type="checkbox"
           checked={form.proofAttached}
           onChange={e => setForm(f => ({ ...f, proofAttached: e.target.checked }))}
-          style={{ accentColor: '#6BE3A4' }}
+          style={{ accentColor: '#30D158' }}
         />
         Proof of Work attached
       </label>
@@ -144,7 +144,7 @@ function EvalForm({
           type="submit"
           disabled={submitting}
           style={{
-            background: '#B4A7E5',
+            background: '#BF5AF2',
             border: 'none',
             borderRadius: 7,
             color: '#1A1916',
@@ -163,7 +163,7 @@ function EvalForm({
             background: 'transparent',
             border: '1px solid rgba(255,255,255,0.12)',
             borderRadius: 7,
-            color: '#76746E',
+            color: '#6E6E73',
             padding: '7px 14px',
             fontSize: 13,
             cursor: 'pointer',
@@ -191,8 +191,8 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div>
-          <div style={{ color: '#FAFAFA', fontSize: 14, fontWeight: 600 }}>{goal.title}</div>
-          <div style={{ color: '#76746E', fontSize: 11, marginTop: 2 }}>{goal.category}</div>
+          <div style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600 }}>{goal.title}</div>
+          <div style={{ color: '#6E6E73', fontSize: 11, marginTop: 2 }}>{goal.category}</div>
         </div>
         {ev ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -201,7 +201,7 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
                 style={{
                   background: 'rgba(107,227,164,0.15)',
                   border: '1px solid rgba(107,227,164,0.3)',
-                  color: '#6BE3A4',
+                  color: '#30D158',
                   fontSize: 11,
                   padding: '3px 9px',
                   borderRadius: 5,
@@ -216,7 +216,7 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
                 style={{
                   background: 'rgba(242,192,99,0.12)',
                   border: '1px solid rgba(242,192,99,0.3)',
-                  color: '#F2C063',
+                  color: '#FFD60A',
                   fontSize: 11,
                   padding: '3px 9px',
                   borderRadius: 5,
@@ -233,7 +233,7 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
                 background: 'rgba(255,255,255,0.06)',
                 border: '1px solid rgba(255,255,255,0.12)',
                 borderRadius: 6,
-                color: '#B8B6B0',
+                color: '#A1A1A6',
                 padding: '3px 10px',
                 fontSize: 11,
                 cursor: 'pointer',
@@ -249,7 +249,7 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
               background: 'rgba(180,167,229,0.12)',
               border: '1px solid rgba(180,167,229,0.3)',
               borderRadius: 6,
-              color: '#B4A7E5',
+              color: '#BF5AF2',
               padding: '4px 12px',
               fontSize: 12,
               fontWeight: 600,
@@ -264,22 +264,22 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
       {ev && !editing && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {ev.howExactly && (
-            <div style={{ color: '#B8B6B0', fontSize: 12 }}>{ev.howExactly}</div>
+            <div style={{ color: '#A1A1A6', fontSize: 12 }}>{ev.howExactly}</div>
           )}
           {ev.newAsset && (
             <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
-              <span style={{ color: '#76746E', fontSize: 11, flexShrink: 0, marginTop: 1 }}>New asset:</span>
-              <span style={{ color: '#B8B6B0', fontSize: 12 }}>{ev.newAsset}</span>
+              <span style={{ color: '#6E6E73', fontSize: 11, flexShrink: 0, marginTop: 1 }}>New asset:</span>
+              <span style={{ color: '#A1A1A6', fontSize: 12 }}>{ev.newAsset}</span>
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ color: '#76746E', fontSize: 11 }}>Reusability:</span>
+            <span style={{ color: '#6E6E73', fontSize: 11 }}>Reusability:</span>
             <ReusabilityDots value={ev.reusabilityScore} />
           </div>
           {ev.leveragePotential && (
             <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
-              <span style={{ color: '#76746E', fontSize: 11, flexShrink: 0, marginTop: 1 }}>Leverage:</span>
-              <span style={{ color: '#B8B6B0', fontSize: 12 }}>{ev.leveragePotential}</span>
+              <span style={{ color: '#6E6E73', fontSize: 11, flexShrink: 0, marginTop: 1 }}>Leverage:</span>
+              <span style={{ color: '#A1A1A6', fontSize: 12 }}>{ev.leveragePotential}</span>
             </div>
           )}
           {!ev.proofAttached && ev.increasesCapital && (
@@ -289,7 +289,7 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
                 border: '1px solid rgba(242,192,99,0.25)',
                 borderRadius: 7,
                 padding: '7px 12px',
-                color: '#F2C063',
+                color: '#FFD60A',
                 fontSize: 12,
                 marginTop: 4,
               }}
@@ -301,7 +301,7 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
       )}
 
       {!ev && !editing && (
-        <div style={{ color: '#76746E', fontSize: 12, fontStyle: 'italic' }}>Not evaluated yet.</div>
+        <div style={{ color: '#6E6E73', fontSize: 12, fontStyle: 'italic' }}>Not evaluated yet.</div>
       )}
 
       {editing && (
@@ -326,11 +326,11 @@ export default function GoalCapitalEvals({ goals }: { goals: Goal[] }) {
         padding: 20,
       }}
     >
-      <h2 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA', margin: '0 0 16px 0' }}>
+      <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', margin: '0 0 16px 0' }}>
         Goal Capital Evaluations
       </h2>
       {goals.length === 0 ? (
-        <div style={{ color: '#76746E', fontSize: 13 }}>No goals in the active quarter.</div>
+        <div style={{ color: '#6E6E73', fontSize: 13 }}>No goals in the active quarter.</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {goals.map(goal => (
@@ -346,7 +346,7 @@ const inputStyle: React.CSSProperties = {
   background: 'rgba(255,255,255,0.06)',
   border: '1px solid rgba(255,255,255,0.12)',
   borderRadius: 7,
-  color: '#FAFAFA',
+  color: '#F5F5F7',
   padding: '8px 12px',
   fontSize: 13,
   width: '100%',

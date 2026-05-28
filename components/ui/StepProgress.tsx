@@ -52,20 +52,20 @@ export default function StepProgress({ steps, compact = false }: StepProgressPro
               : 'rgba(255,255,255,0.08)'}`,
               transition: 'background 0.3s ease, border-color 0.3s ease',
             }}>
-              {isDone    && <span className="check-pop" style={{ fontSize: 10, color: '#6BE3A4', lineHeight: 1 }}>✓</span>}
-              {isActive  && <Spinner size={compact ? 10 : 12} color="#B4A7E5" strokeWidth={1.5} />}
-              {isError   && <span style={{ fontSize: 10, color: '#FF6B6B', lineHeight: 1 }}>✕</span>}
-              {isPending && <span style={{ fontSize: 9, color: '#76746E', fontWeight: 700, lineHeight: 1 }}>{i + 1}</span>}
+              {isDone    && <span className="check-pop" style={{ fontSize: 10, color: '#30D158', lineHeight: 1 }}>✓</span>}
+              {isActive  && <Spinner size={compact ? 10 : 12} color="#BF5AF2" strokeWidth={1.5} />}
+              {isError   && <span style={{ fontSize: 10, color: '#FF453A', lineHeight: 1 }}>✕</span>}
+              {isPending && <span style={{ fontSize: 9, color: '#6E6E73', fontWeight: 700, lineHeight: 1 }}>{i + 1}</span>}
             </div>
 
             {/* Label */}
             <span style={{
               fontSize: compact ? 12 : 13,
               fontWeight: isActive ? 600 : 400,
-              color: isDone   ? '#6BE3A4'
-                   : isActive ? '#B4A7E5'
-                   : isError  ? '#FF6B6B'
-                   : '#76746E',
+              color: isDone   ? '#30D158'
+                   : isActive ? '#BF5AF2'
+                   : isError  ? '#FF453A'
+                   : '#6E6E73',
               transition: 'color 0.3s ease',
               lineHeight: 1.3,
             }}>

@@ -11,17 +11,36 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body style={{ background: '#050506', minHeight: '100vh' }}>
+      <body style={{ background: '#000000', minHeight: '100vh' }}>
         <nav style={{
-          position: 'sticky', top: 0, zIndex: 100,
-          background: 'rgba(5,5,6,0.9)', backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          padding: '0 24px', display: 'flex', alignItems: 'center', gap: '4px', height: '52px', overflow: 'visible'
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+          height: 56,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+          padding: '0 28px',
+          overflow: 'visible',
+          background: 'rgba(11, 11, 15, 0.85)',
+          backdropFilter: 'blur(28px) saturate(1.8)',
+          WebkitBackdropFilter: 'blur(28px) saturate(1.8)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.07)',
+          boxShadow: '0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.3)',
         }}>
-          <Link href="/" style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '-0.03em', marginRight: '16px', color: '#FAFAFA', textDecoration: 'none' }}>Project Hanh</Link>
+          <Link href="/" style={{
+            fontWeight: 700,
+            fontSize: 15,
+            letterSpacing: '-0.025em',
+            marginRight: 20,
+            color: '#F5F5F7',
+            textDecoration: 'none',
+          }}>
+            Project Hanh
+          </Link>
           <NavLinks />
         </nav>
-        <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px 80px' }}>
+        <main style={{ maxWidth: 1200, margin: '0 auto', padding: '36px 28px 100px' }}>
           {children}
         </main>
       </body>

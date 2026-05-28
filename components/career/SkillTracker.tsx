@@ -31,7 +31,7 @@ function ProficiencyDots({ value }: { value: number }) {
             width: 8,
             height: 8,
             borderRadius: '50%',
-            background: i <= value ? '#B4A7E5' : 'rgba(180,167,229,0.2)',
+            background: i <= value ? '#BF5AF2' : 'rgba(180,167,229,0.2)',
           }}
         />
       ))}
@@ -103,14 +103,14 @@ export default function SkillTracker({
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA', margin: 0 }}>Skills</h2>
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', margin: 0 }}>Skills</h2>
         <button
           onClick={() => setShowForm(v => !v)}
           style={{
             background: 'rgba(180,167,229,0.15)',
             border: '1px solid rgba(180,167,229,0.3)',
             borderRadius: 7,
-            color: '#B4A7E5',
+            color: '#BF5AF2',
             padding: '5px 12px',
             fontSize: 12,
             fontWeight: 600,
@@ -152,7 +152,7 @@ export default function SkillTracker({
             ))}
           </select>
           <div>
-            <label style={{ color: '#B8B6B0', fontSize: 12, display: 'block', marginBottom: 4 }}>
+            <label style={{ color: '#A1A1A6', fontSize: 12, display: 'block', marginBottom: 4 }}>
               Proficiency: {form.proficiency}/5
             </label>
             <input
@@ -161,7 +161,7 @@ export default function SkillTracker({
               max={5}
               value={form.proficiency}
               onChange={e => setForm(f => ({ ...f, proficiency: Number(e.target.value) }))}
-              style={{ width: '100%', accentColor: '#B4A7E5' }}
+              style={{ width: '100%', accentColor: '#BF5AF2' }}
             />
           </div>
           <textarea
@@ -171,12 +171,12 @@ export default function SkillTracker({
             rows={2}
             style={{ ...inputStyle, resize: 'vertical' }}
           />
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#B8B6B0', fontSize: 13, cursor: 'pointer' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#A1A1A6', fontSize: 13, cursor: 'pointer' }}>
             <input
               type="checkbox"
               checked={form.inUse}
               onChange={e => setForm(f => ({ ...f, inUse: e.target.checked }))}
-              style={{ accentColor: '#6BE3A4' }}
+              style={{ accentColor: '#30D158' }}
             />
             Currently in use
           </label>
@@ -185,7 +185,7 @@ export default function SkillTracker({
               type="submit"
               disabled={submitting}
               style={{
-                background: '#B4A7E5',
+                background: '#BF5AF2',
                 border: 'none',
                 borderRadius: 7,
                 color: '#1A1916',
@@ -204,7 +204,7 @@ export default function SkillTracker({
                 background: 'transparent',
                 border: '1px solid rgba(255,255,255,0.12)',
                 borderRadius: 7,
-                color: '#76746E',
+                color: '#6E6E73',
                 padding: '7px 14px',
                 fontSize: 13,
                 cursor: 'pointer',
@@ -219,7 +219,7 @@ export default function SkillTracker({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {CATEGORIES.filter(cat => grouped[cat].length > 0).map(cat => (
           <div key={cat}>
-            <div style={{ color: '#76746E', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+            <div style={{ color: '#6E6E73', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
               {categoryConfig[cat].icon} {categoryConfig[cat].label}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -236,24 +236,24 @@ export default function SkillTracker({
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                    <span style={{ color: '#FAFAFA', fontSize: 13, fontWeight: 600 }}>{skill.title}</span>
+                    <span style={{ color: '#F5F5F7', fontSize: 13, fontWeight: 600 }}>{skill.title}</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       {skill.inUse && (
-                        <span style={{ background: 'rgba(107,227,164,0.15)', border: '1px solid rgba(107,227,164,0.3)', color: '#6BE3A4', fontSize: 10, padding: '2px 7px', borderRadius: 4, fontWeight: 700 }}>
+                        <span style={{ background: 'rgba(107,227,164,0.15)', border: '1px solid rgba(107,227,164,0.3)', color: '#30D158', fontSize: 10, padding: '2px 7px', borderRadius: 4, fontWeight: 700 }}>
                           In use ✓
                         </span>
                       )}
                       <button
                         onClick={() => deleteSkill(skill.id)}
                         disabled={deleting === skill.id}
-                        style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 12, padding: '0 2px', lineHeight: 1 }}
+                        style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 12, padding: '0 2px', lineHeight: 1 }}
                         title="Delete"
                       >✕</button>
                     </div>
                   </div>
                   <ProficiencyDots value={skill.proficiency} />
                   {skill.evidenceNotes && (
-                    <div style={{ color: '#76746E', fontSize: 11, marginTop: 6, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                    <div style={{ color: '#6E6E73', fontSize: 11, marginTop: 6, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                       {skill.evidenceNotes}
                     </div>
                   )}
@@ -263,7 +263,7 @@ export default function SkillTracker({
           </div>
         ))}
         {skills.length === 0 && (
-          <div style={{ color: '#76746E', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>
+          <div style={{ color: '#6E6E73', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>
             No skills added yet. Add your first skill.
           </div>
         )}
@@ -276,7 +276,7 @@ const inputStyle: React.CSSProperties = {
   background: 'rgba(255,255,255,0.06)',
   border: '1px solid rgba(255,255,255,0.12)',
   borderRadius: 7,
-  color: '#FAFAFA',
+  color: '#F5F5F7',
   padding: '8px 12px',
   fontSize: 13,
   width: '100%',

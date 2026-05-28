@@ -18,7 +18,7 @@ function getWeekStart() {
 
 export default async function MealsPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF6B6B', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#FF453A', padding: 40 }}>No user found.</div>
 
   const weekStart = getWeekStart()
   const weekEnd = new Date(weekStart)
@@ -61,14 +61,14 @@ export default async function MealsPage() {
       <div style={{ marginBottom: 28 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#FAFAFA' }}>Weekly Meal Planning</h1>
-            <p style={{ color: '#B8B6B0', fontSize: 14, marginTop: 4 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7' }}>Weekly Meal Planning</h1>
+            <p style={{ color: '#A1A1A6', fontSize: 14, marginTop: 4 }}>
               High-protein, minimal-variety meals aligned with your fitness goals.
             </p>
           </div>
           <a
             href="/meals/recipes"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(107,227,164,0.08)', border: '1px solid rgba(107,227,164,0.2)', borderRadius: 8, color: '#6BE3A4', fontSize: 13, textDecoration: 'none', fontWeight: 600, flexShrink: 0 }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(107,227,164,0.08)', border: '1px solid rgba(107,227,164,0.2)', borderRadius: 8, color: '#30D158', fontSize: 13, textDecoration: 'none', fontWeight: 600, flexShrink: 0 }}
           >
             📖 Recipe Library
           </a>

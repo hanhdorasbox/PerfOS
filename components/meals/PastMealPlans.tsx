@@ -41,12 +41,12 @@ export default function PastMealPlans({ plans: initPlans }: { plans: PastPlan[] 
 
   return (
     <div style={{ marginTop: 24 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#B8B6B0', marginBottom: 12 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A1A1A6', marginBottom: 12 }}>
         Past Approved Plans
       </div>
 
       {error && (
-        <div style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 12 }}>
+        <div style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF453A', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 12 }}>
           {error}
         </div>
       )}
@@ -62,10 +62,10 @@ export default function PastMealPlans({ plans: initPlans }: { plans: PastPlan[] 
             }}
           >
             <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#FAFAFA', marginBottom: 4 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#F5F5F7', marginBottom: 4 }}>
                 Week of {new Date(plan.weekStart).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
               </div>
-              <div style={{ fontSize: 12, color: '#B8B6B0' }}>
+              <div style={{ fontSize: 12, color: '#A1A1A6' }}>
                 {plan.mealCount} meals
                 {plan.targetCalories ? ` · ${plan.targetCalories} kcal` : ''}
                 {plan.targetProtein ? ` · ${plan.targetProtein}g protein` : ''}
@@ -77,7 +77,7 @@ export default function PastMealPlans({ plans: initPlans }: { plans: PastPlan[] 
               style={{
                 background: 'none',
                 border: '1px solid rgba(255,107,107,0.2)',
-                color: '#FF6B6B',
+                color: '#FF453A',
                 borderRadius: 7,
                 padding: '5px 12px',
                 fontSize: 12,

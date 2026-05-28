@@ -12,7 +12,7 @@ interface Props {
 export default async function RoadmapDetailPage({ params }: Props) {
   const { id } = await params
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF6B6B' }}>No user found</div>
+  if (!user) return <div style={{ color: '#FF453A' }}>No user found</div>
 
   const goal = await prisma.capabilityGoal.findUnique({
     where: { id },
@@ -32,7 +32,7 @@ export default async function RoadmapDetailPage({ params }: Props) {
       <div style={{ marginBottom: 20 }}>
         <Link
           href="/learning"
-          style={{ color: '#76746E', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+          style={{ color: '#6E6E73', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}
         >
           ← Back to Learning
         </Link>

@@ -34,7 +34,7 @@ export default function MilestoneList({ milestones }: { milestones: Milestone[] 
               border: m.completed ? '2px solid #6BE3A4' : '2px solid rgba(255,255,255,0.2)',
               background: m.completed ? 'rgba(107,227,164,0.15)' : 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 12, color: '#6BE3A4',
+              fontSize: 12, color: '#30D158',
               transition: 'all 0.15s',
               opacity: toggling === m.id ? 0.5 : 1,
             }}
@@ -44,18 +44,18 @@ export default function MilestoneList({ milestones }: { milestones: Milestone[] 
           <div style={{ flex: 1 }}>
             <div style={{
               fontSize: '13px', fontWeight: 600,
-              color: m.completed ? '#76746E' : '#FAFAFA',
+              color: m.completed ? '#6E6E73' : '#F5F5F7',
               textDecoration: m.completed ? 'line-through' : 'none',
             }}>
               {m.title}
             </div>
             {m.dueDate && (
-              <div style={{ fontSize: '11px', color: '#76746E', marginTop: '2px' }}>
+              <div style={{ fontSize: '11px', color: '#6E6E73', marginTop: '2px' }}>
                 Due: {new Date(m.dueDate).toLocaleDateString('cs-CZ')}
               </div>
             )}
           </div>
-          <span style={{ fontSize: '11px', color: '#76746E', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '999px' }}>
+          <span style={{ fontSize: '11px', color: '#6E6E73', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '999px' }}>
             {m.weight}%
           </span>
         </div>

@@ -29,10 +29,10 @@ export default function AutoTrackedItems({ items: initItems }: { items: WorkItem
   }
 
   const CATEGORY_COLORS: Record<string, string> = {
-    advancement: '#6BE3A4',
-    maintenance: '#60A5FA',
-    reactive: '#F2C063',
-    busywork: '#FF6B6B',
+    advancement: '#30D158',
+    maintenance: '#0A84FF',
+    reactive: '#FFD60A',
+    busywork: '#FF453A',
   }
 
   return (
@@ -46,10 +46,10 @@ export default function AutoTrackedItems({ items: initItems }: { items: WorkItem
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6BE3A4' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#30D158' }}>
           Auto-Tracked from Completed Tasks &amp; Milestones
         </div>
-        <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(107,227,164,0.15)', color: '#6BE3A4', fontWeight: 700 }}>
+        <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(107,227,164,0.15)', color: '#30D158', fontWeight: 700 }}>
           {items.length} items
         </span>
       </div>
@@ -73,7 +73,7 @@ export default function AutoTrackedItems({ items: initItems }: { items: WorkItem
                 padding: '1px 5px',
                 borderRadius: 3,
                 background: 'rgba(107,227,164,0.12)',
-                color: '#6BE3A4',
+                color: '#30D158',
                 fontWeight: 700,
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
@@ -88,21 +88,21 @@ export default function AutoTrackedItems({ items: initItems }: { items: WorkItem
                 padding: '1px 6px',
                 borderRadius: 3,
                 background: item.category === 'advancement' ? 'rgba(107,227,164,0.08)' : 'rgba(96,165,250,0.08)',
-                color: CATEGORY_COLORS[item.category] ?? '#B8B6B0',
+                color: CATEGORY_COLORS[item.category] ?? '#A1A1A6',
                 fontWeight: 600,
                 flexShrink: 0,
               }}
             >
               {item.category}
             </span>
-            <span style={{ fontSize: 12, color: '#FAFAFA', flex: 1 }}>{item.title}</span>
-            <span style={{ fontSize: 10, color: '#76746E', flexShrink: 0 }}>
+            <span style={{ fontSize: 12, color: '#F5F5F7', flex: 1 }}>{item.title}</span>
+            <span style={{ fontSize: 10, color: '#6E6E73', flexShrink: 0 }}>
               {new Date(item.completedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
             </span>
             <button
               onClick={() => deleteItem(item.id)}
               disabled={deleting === item.id}
-              style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 13, padding: '0 4px', flexShrink: 0, lineHeight: 1 }}
+              style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 13, padding: '0 4px', flexShrink: 0, lineHeight: 1 }}
               title="Delete"
             >
               ✕
@@ -110,7 +110,7 @@ export default function AutoTrackedItems({ items: initItems }: { items: WorkItem
           </div>
         ))}
         {items.length > 8 && (
-          <div style={{ fontSize: 11, color: '#76746E', marginTop: 4 }}>
+          <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 4 }}>
             +{items.length - 8} more auto-tracked items
           </div>
         )}

@@ -13,27 +13,27 @@ import CreateQuarterForm from '@/components/quarterly/CreateQuarterForm'
 export const dynamic = 'force-dynamic'
 
 const ROLE_META: Record<string, { label: string; color: string; bg: string }> = {
-  career_capital: { label: 'Career Capital', color: '#B4A7E5', bg: 'rgba(180,167,229,0.12)' },
-  learning: { label: 'Learning', color: '#60A5FA', bg: 'rgba(96,165,250,0.12)' },
-  fitness: { label: 'Fitness', color: '#6BE3A4', bg: 'rgba(107,227,164,0.12)' },
-  finance: { label: 'Finance', color: '#F2C063', bg: 'rgba(242,192,99,0.12)' },
+  career_capital: { label: 'Career Capital', color: '#BF5AF2', bg: 'rgba(180,167,229,0.12)' },
+  learning: { label: 'Learning', color: '#0A84FF', bg: 'rgba(96,165,250,0.12)' },
+  fitness: { label: 'Fitness', color: '#30D158', bg: 'rgba(107,227,164,0.12)' },
+  finance: { label: 'Finance', color: '#FFD60A', bg: 'rgba(242,192,99,0.12)' },
   high_upside_bet: { label: 'High-Upside Bet', color: '#FF9F6B', bg: 'rgba(255,159,107,0.12)' },
   long_term: { label: 'Long-Term', color: '#4DD9D9', bg: 'rgba(77,217,217,0.12)' },
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  ahead: '#6BE3A4',
-  on_track: '#6BE3A4',
-  watch: '#F2C063',
+  ahead: '#30D158',
+  on_track: '#30D158',
+  watch: '#FFD60A',
   at_risk: '#FF9F6B',
-  critical: '#FF6B6B',
-  completed: '#B4A7E5',
-  paused: '#76746E',
+  critical: '#FF453A',
+  completed: '#BF5AF2',
+  paused: '#6E6E73',
 }
 
 export default async function QuarterlyPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF6B6B', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#FF453A', padding: 40 }}>No user found.</div>
 
   // Fetch all quarters with goals
   const quarters = await prisma.quarter.findMany({
@@ -54,8 +54,8 @@ export default async function QuarterlyPage() {
   if (!activeQuarter) {
     return (
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 20px' }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: '#FAFAFA' }}>Quarterly Plans</h1>
-        <p style={{ color: '#76746E', marginTop: 8, fontSize: 14 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: '#F5F5F7' }}>Quarterly Plans</h1>
+        <p style={{ color: '#6E6E73', marginTop: 8, fontSize: 14 }}>
           Start by creating a quarter, then add your goals.
         </p>
         <CreateQuarterForm />
@@ -117,13 +117,13 @@ export default async function QuarterlyPage() {
   )
 
   const portfolioBuckets = [
-    { label: 'Core Commitments', goals: coreCommitments, color: '#FAFAFA' },
-    { label: 'Growth Investments', goals: growthInvestments, color: '#B4A7E5' },
+    { label: 'Core Commitments', goals: coreCommitments, color: '#F5F5F7' },
+    { label: 'Growth Investments', goals: growthInvestments, color: '#BF5AF2' },
     { label: 'High-Upside Bets', goals: highUpsideBets, color: '#FF9F6B' },
-    { label: 'Maintenance Systems', goals: maintenanceSystems, color: '#6BE3A4' },
+    { label: 'Maintenance Systems', goals: maintenanceSystems, color: '#30D158' },
   ]
 
-  const gapColor = gap >= 0 ? '#6BE3A4' : gap >= -10 ? '#F2C063' : '#FF6B6B'
+  const gapColor = gap >= 0 ? '#30D158' : gap >= -10 ? '#FFD60A' : '#FF453A'
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px', display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -134,7 +134,7 @@ export default async function QuarterlyPage() {
           <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', background: 'linear-gradient(180deg,#FFFFFF,#C7C4BC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             {activeQuarter.name} — Strategic Control
           </h1>
-          <p style={{ color: '#76746E', fontSize: 13, marginTop: 4 }}>
+          <p style={{ color: '#6E6E73', fontSize: 13, marginTop: 4 }}>
             {new Date(activeQuarter.startDate).toLocaleDateString('cs-CZ')} –{' '}
             {new Date(activeQuarter.endDate).toLocaleDateString('cs-CZ')}
             {' '}·{' '}{Math.round(qProgress.pct)}% elapsed{' '}·{' '}{qProgress.daysRemaining}d remaining
@@ -173,7 +173,7 @@ export default async function QuarterlyPage() {
                   fontWeight: 600,
                   background: q.id === activeQuarter.id ? 'rgba(180,167,229,0.15)' : 'rgba(255,255,255,0.04)',
                   border: `1px solid ${q.id === activeQuarter.id ? 'rgba(180,167,229,0.3)' : 'rgba(255,255,255,0.08)'}`,
-                  color: q.id === activeQuarter.id ? '#B4A7E5' : '#76746E',
+                  color: q.id === activeQuarter.id ? '#BF5AF2' : '#6E6E73',
                 }}
               >
                 {q.name}
@@ -185,37 +185,37 @@ export default async function QuarterlyPage() {
 
       {/* Quarter Health */}
       <div className="card">
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: 16 }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 16 }}>
           Quarter Health
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 11, color: '#76746E', marginBottom: 4 }}>Weighted Progress</div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: '#FAFAFA' }}>{Math.round(weightedCompletion)}%</div>
+            <div style={{ fontSize: 11, color: '#6E6E73', marginBottom: 4 }}>Weighted Progress</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: '#F5F5F7' }}>{Math.round(weightedCompletion)}%</div>
           </div>
           <div>
-            <div style={{ fontSize: 11, color: '#76746E', marginBottom: 4 }}>Expected</div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: '#B8B6B0' }}>{Math.round(expectedPct)}%</div>
+            <div style={{ fontSize: 11, color: '#6E6E73', marginBottom: 4 }}>Expected</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: '#A1A1A6' }}>{Math.round(expectedPct)}%</div>
           </div>
           <div>
-            <div style={{ fontSize: 11, color: '#76746E', marginBottom: 4 }}>Gap</div>
+            <div style={{ fontSize: 11, color: '#6E6E73', marginBottom: 4 }}>Gap</div>
             <div style={{ fontSize: 28, fontWeight: 800, color: gapColor }}>
               {gap >= 0 ? '+' : ''}{Math.round(gap)}%
             </div>
           </div>
           <div>
-            <div style={{ fontSize: 11, color: '#76746E', marginBottom: 4 }}>Goals</div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: '#FAFAFA' }}>{goalsWithMetrics.length}</div>
+            <div style={{ fontSize: 11, color: '#6E6E73', marginBottom: 4 }}>Goals</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: '#F5F5F7' }}>{goalsWithMetrics.length}</div>
           </div>
         </div>
 
         {/* Status badges */}
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           {[
-            { label: 'On Track', count: onTrackCount, color: '#6BE3A4', bg: 'rgba(107,227,164,0.1)' },
-            { label: 'Watch', count: watchCount, color: '#F2C063', bg: 'rgba(242,192,99,0.1)' },
+            { label: 'On Track', count: onTrackCount, color: '#30D158', bg: 'rgba(107,227,164,0.1)' },
+            { label: 'Watch', count: watchCount, color: '#FFD60A', bg: 'rgba(242,192,99,0.1)' },
             { label: 'At Risk', count: atRiskCount, color: '#FF9F6B', bg: 'rgba(255,159,107,0.1)' },
-            { label: 'Critical', count: criticalCount, color: '#FF6B6B', bg: 'rgba(255,107,107,0.1)' },
+            { label: 'Critical', count: criticalCount, color: '#FF453A', bg: 'rgba(255,107,107,0.1)' },
           ].map(s => (
             <div
               key={s.label}
@@ -238,15 +238,15 @@ export default async function QuarterlyPage() {
 
         {/* Progress bar */}
         <div style={{ marginTop: 16, position: 'relative', height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3 }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${Math.min(100, weightedCompletion)}%`, background: gap >= 0 ? '#6BE3A4' : gap >= -10 ? '#F2C063' : '#FF6B6B', borderRadius: 3, transition: 'width 0.5s ease' }} />
+          <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${Math.min(100, weightedCompletion)}%`, background: gap >= 0 ? '#30D158' : gap >= -10 ? '#FFD60A' : '#FF453A', borderRadius: 3, transition: 'width 0.5s ease' }} />
           {/* Expected marker */}
-          <div style={{ position: 'absolute', top: -3, left: `${Math.min(100, expectedPct)}%`, width: 2, height: 12, background: '#76746E', borderRadius: 1 }} />
+          <div style={{ position: 'absolute', top: -3, left: `${Math.min(100, expectedPct)}%`, width: 2, height: 12, background: '#6E6E73', borderRadius: 1 }} />
         </div>
       </div>
 
       {/* Portfolio Balance */}
       <div className="card">
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: 16 }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 16 }}>
           Portfolio Balance
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
@@ -261,14 +261,14 @@ export default async function QuarterlyPage() {
               }}
             >
               <div style={{ fontSize: 11, color: bucket.color, fontWeight: 700, marginBottom: 8 }}>{bucket.label}</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#FAFAFA', marginBottom: 6 }}>{bucket.goals.length}</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: '#F5F5F7', marginBottom: 6 }}>{bucket.goals.length}</div>
               {bucket.goals.slice(0, 3).map(g => (
-                <div key={g.id} style={{ fontSize: 11, color: '#76746E', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div key={g.id} style={{ fontSize: 11, color: '#6E6E73', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   · {g.title}
                 </div>
               ))}
               {bucket.goals.length > 3 && (
-                <div style={{ fontSize: 10, color: '#76746E' }}>+{bucket.goals.length - 3} more</div>
+                <div style={{ fontSize: 10, color: '#6E6E73' }}>+{bucket.goals.length - 3} more</div>
               )}
             </div>
           ))}
@@ -277,14 +277,14 @@ export default async function QuarterlyPage() {
 
       {/* Active Goals Table */}
       <div className="card">
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: 16 }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 16 }}>
           Active Goals
         </div>
 
         {/* Table header */}
         <div style={{ display: 'grid', gridTemplateColumns: '28px 1fr 120px 80px 60px 80px 80px 90px', gap: 8, padding: '4px 8px', marginBottom: 4 }}>
           {['', 'Goal', 'Role', 'Progress', 'Gap', 'Expected', 'Deadline', 'Action'].map((h, i) => (
-            <div key={i} style={{ fontSize: 10, color: '#76746E', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{h}</div>
+            <div key={i} style={{ fontSize: 10, color: '#6E6E73', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{h}</div>
           ))}
         </div>
 
@@ -314,7 +314,7 @@ export default async function QuarterlyPage() {
       {/* Historical quarters (collapsed) */}
       {quarters.filter(q => q.id !== activeQuarter.id).length > 0 && (
         <div className="card">
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: 12 }}>
+          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 12 }}>
             Past Quarters
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -334,8 +334,8 @@ export default async function QuarterlyPage() {
                   }}
                 >
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#B8B6B0' }}>{q.name}</div>
-                    <div style={{ fontSize: 11, color: '#76746E', marginTop: 2 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#A1A1A6' }}>{q.name}</div>
+                    <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 2 }}>
                       {new Date(q.startDate).toLocaleDateString('cs-CZ')} –{' '}
                       {new Date(q.endDate).toLocaleDateString('cs-CZ')}
                       {' '}· {q.goals.length} goals
@@ -348,7 +348,7 @@ export default async function QuarterlyPage() {
                       fontSize: 11,
                       fontWeight: 700,
                       background: 'rgba(255,255,255,0.05)',
-                      color: '#76746E',
+                      color: '#6E6E73',
                       border: '1px solid rgba(255,255,255,0.08)',
                     }}
                   >

@@ -24,20 +24,20 @@ const DOMAIN_NORMALIZE = (domain: string): string => {
 }
 
 const DISPLAY_META: Record<string, { color: string; icon: string }> = {
-  'Fitness':              { color: '#6BE3A4', icon: '💪' },
-  'Learning':             { color: '#60A5FA', icon: '🧠' },
-  'Meals':                { color: '#F2C063', icon: '🥗' },
-  'Planning & Execution': { color: '#B4A7E5', icon: '🗓️' },
+  'Fitness':              { color: '#30D158', icon: '💪' },
+  'Learning':             { color: '#0A84FF', icon: '🧠' },
+  'Meals':                { color: '#FFD60A', icon: '🥗' },
+  'Planning & Execution': { color: '#BF5AF2', icon: '🗓️' },
   'Time Use':             { color: '#FF9F6B', icon: '📅' },
 }
 
 function getMeta(displayDomain: string) {
-  return DISPLAY_META[displayDomain] ?? { color: '#76746E', icon: '◈' }
+  return DISPLAY_META[displayDomain] ?? { color: '#6E6E73', icon: '◈' }
 }
 
 // ─── Bullet text renderer ─────────────────────────────────────────────────────
 
-function BulletText({ text, color = '#B8B6B0', bulletColor = '#76746E' }: { text: string; color?: string; bulletColor?: string }) {
+function BulletText({ text, color = '#A1A1A6', bulletColor = '#6E6E73' }: { text: string; color?: string; bulletColor?: string }) {
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
   const bullets = lines.filter(l => l.startsWith('• ') || l.startsWith('- ') || l.startsWith('* '))
 
@@ -68,7 +68,7 @@ function ConfidenceDots({ confidence }: { confidence: number }) {
           key={i}
           style={{
             width: 7, height: 7, borderRadius: '50%',
-            background: i <= confidence ? '#B4A7E5' : 'rgba(255,255,255,0.1)',
+            background: i <= confidence ? '#BF5AF2' : 'rgba(255,255,255,0.1)',
           }}
         />
       ))}
@@ -84,7 +84,7 @@ function ConfidenceRing({ pct }: { pct: number }) {
   const SZ = (R + SW) * 2 + 4
   const CIRC = 2 * Math.PI * R
   const offset = CIRC * (1 - pct / 100)
-  const color = pct >= 70 ? '#6BE3A4' : pct >= 45 ? '#F2C063' : '#FF9F6B'
+  const color = pct >= 70 ? '#30D158' : pct >= 45 ? '#FFD60A' : '#FF9F6B'
 
   return (
     <div style={{ position: 'relative', width: SZ, height: SZ }}>
@@ -102,7 +102,7 @@ function ConfidenceRing({ pct }: { pct: number }) {
         textAlign: 'center', lineHeight: 1.2,
       }}>
         <div style={{ fontSize: 16, fontWeight: 800, color, fontVariantNumeric: 'tabular-nums' }}>{pct}%</div>
-        <div style={{ fontSize: 8, color: '#76746E', letterSpacing: '0.06em', textTransform: 'uppercase' }}>conf.</div>
+        <div style={{ fontSize: 8, color: '#6E6E73', letterSpacing: '0.06em', textTransform: 'uppercase' }}>conf.</div>
       </div>
     </div>
   )
@@ -119,10 +119,10 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
   if (patterns.length === 0) {
     return (
       <div className="card" style={{ padding: '20px 18px' }}>
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#76746E', marginBottom: 14 }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 14 }}>
           Operating Snapshot
         </div>
-        <p style={{ fontSize: 12, color: '#76746E', fontStyle: 'italic', lineHeight: 1.6 }}>
+        <p style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic', lineHeight: 1.6 }}>
           Run pattern analysis to populate the snapshot.
         </p>
       </div>
@@ -154,14 +154,14 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
 
       {/* A — Domain breakdown */}
       <div className="card" style={{ padding: '18px 16px' }}>
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#76746E', marginBottom: 14 }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 14 }}>
           Pattern Snapshot
         </div>
 
-        <div style={{ fontSize: 28, fontWeight: 800, color: '#FAFAFA', letterSpacing: '-0.03em', marginBottom: 2 }}>
+        <div style={{ fontSize: 28, fontWeight: 800, color: '#F5F5F7', letterSpacing: '-0.03em', marginBottom: 2 }}>
           {patterns.length}
         </div>
-        <div style={{ fontSize: 10, color: '#76746E', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <div style={{ fontSize: 10, color: '#6E6E73', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           identified patterns
         </div>
 
@@ -173,7 +173,7 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
             return (
               <div key={domain}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#B8B6B0' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#A1A1A6' }}>
                     {meta.icon} {domain}
                   </span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: meta.color, fontVariantNumeric: 'tabular-nums' }}>
@@ -191,20 +191,20 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
 
       {/* B — Strongest signal */}
       <div className="card" style={{ padding: '16px' }}>
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#76746E', marginBottom: 10 }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
           Strongest Signal
         </div>
-        <div style={{ fontSize: 12, color: '#FAFAFA', lineHeight: 1.6, fontWeight: 500 }}>
+        <div style={{ fontSize: 12, color: '#F5F5F7', lineHeight: 1.6, fontWeight: 500 }}>
           {strongest.pattern}
         </div>
         {strongest.implication && (
           <div style={{ marginTop: 8, padding: '7px 10px', background: 'rgba(180,167,229,0.07)', borderRadius: 8, border: '1px solid rgba(180,167,229,0.15)' }}>
-            <div style={{ fontSize: 11, color: '#B4A7E5', lineHeight: 1.5 }}>→ {strongest.implication}</div>
+            <div style={{ fontSize: 11, color: '#BF5AF2', lineHeight: 1.5 }}>→ {strongest.implication}</div>
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
           <ConfidenceDots confidence={strongest.confidence} />
-          <span style={{ fontSize: 10, color: '#76746E' }}>{strongest.confidence}/5 confidence</span>
+          <span style={{ fontSize: 10, color: '#6E6E73' }}>{strongest.confidence}/5 confidence</span>
         </div>
       </div>
 
@@ -212,13 +212,13 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
       <div className="card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: 14 }}>
         <ConfidenceRing pct={confidencePct} />
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#FAFAFA', marginBottom: 3 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#F5F5F7', marginBottom: 3 }}>
             Pattern Confidence
           </div>
-          <div style={{ fontSize: 11, color: '#76746E', lineHeight: 1.5 }}>
+          <div style={{ fontSize: 11, color: '#6E6E73', lineHeight: 1.5 }}>
             {confidencePct >= 70 ? 'Strong evidence base' : confidencePct >= 45 ? 'Moderate evidence' : 'Building evidence'}
           </div>
-          <div style={{ fontSize: 10, color: '#76746E', marginTop: 2 }}>
+          <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 2 }}>
             {patterns.length} patterns · avg {avgConf.toFixed(1)}/5
           </div>
         </div>
@@ -227,7 +227,7 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
       {/* D — Planning adjustments */}
       {adjustments.length > 0 && (
         <div className="card" style={{ padding: '16px' }}>
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#76746E', marginBottom: 12 }}>
+          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 12 }}>
             Active Planning Rules
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -236,12 +236,12 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
               return (
                 <div key={p.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                   <div style={{ width: 3, minHeight: 14, background: meta.color, borderRadius: 2, flexShrink: 0, marginTop: 3 }} />
-                  <div style={{ fontSize: 12, color: '#B8B6B0', lineHeight: 1.55 }}>{p.implication}</div>
+                  <div style={{ fontSize: 12, color: '#A1A1A6', lineHeight: 1.55 }}>{p.implication}</div>
                 </div>
               )
             })}
           </div>
-          <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: 10, color: '#76746E', fontStyle: 'italic' }}>
+          <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: 10, color: '#6E6E73', fontStyle: 'italic' }}>
             Derived from detected patterns — actively applied to future planning.
           </div>
         </div>
@@ -254,7 +254,7 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
 
 export default async function OperatingManualPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF6B6B' }}>No user found</div>
+  if (!user) return <div style={{ color: '#FF453A' }}>No user found</div>
 
   const twoQuartersAgo = new Date()
   twoQuartersAgo.setMonth(twoQuartersAgo.getMonth() - 6)
@@ -285,14 +285,14 @@ export default async function OperatingManualPage() {
     console.error('[OperatingManualPage] DB query failed — schema may not be migrated yet:', e)
     return (
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 20px' }}>
-        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#FAFAFA', letterSpacing: '-0.02em', marginBottom: 8 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#F5F5F7', letterSpacing: '-0.02em', marginBottom: 8 }}>
           Personal Operating Manual
         </h1>
         <div className="card" style={{ background: 'rgba(242,192,99,0.07)', border: '1px solid rgba(242,192,99,0.25)' }}>
-          <p style={{ color: '#F2C063', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
+          <p style={{ color: '#FFD60A', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
             ⚠ Database migration in progress
           </p>
-          <p style={{ color: '#76746E', fontSize: 13 }}>
+          <p style={{ color: '#6E6E73', fontSize: 13 }}>
             New schema columns are being applied. Please refresh the page in a few seconds.
           </p>
         </div>
@@ -321,10 +321,10 @@ export default async function OperatingManualPage() {
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#FAFAFA', letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#F5F5F7', letterSpacing: '-0.02em' }}>
               Personal Operating Manual
             </h1>
-            <p style={{ color: '#76746E', fontSize: 14, marginTop: 4 }}>
+            <p style={{ color: '#6E6E73', fontSize: 14, marginTop: 4 }}>
               Quietly learning how you work — adjusts future planning automatically.
             </p>
             <div style={{ marginTop: 8 }}>
@@ -336,16 +336,16 @@ export default async function OperatingManualPage() {
 
         <div className="card" style={{ textAlign: 'center', padding: '56px 24px', marginBottom: 24 }}>
           <div style={{ fontSize: 40, marginBottom: 14 }}>⚙️</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#FAFAFA', marginBottom: 8 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 8 }}>
             Analyzing your behavioral patterns…
           </div>
-          <p style={{ color: '#76746E', fontSize: 14, maxWidth: 440, margin: '0 auto 24px' }}>
+          <p style={{ color: '#6E6E73', fontSize: 14, maxWidth: 440, margin: '0 auto 24px' }}>
             The system is learning from your goals, tasks, fitness, and finance data. Patterns will appear here automatically — refresh in a moment.
           </p>
         </div>
 
         <div className="card">
-          <h3 style={{ fontSize: 15, fontWeight: 600, color: '#FAFAFA', marginBottom: 16 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 600, color: '#F5F5F7', marginBottom: 16 }}>
             Add Manual Observation
           </h3>
           <AddPatternForm userId={user.id} />
@@ -360,10 +360,10 @@ export default async function OperatingManualPage() {
       {/* ── Header ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: '#FAFAFA', letterSpacing: '-0.02em' }}>
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: '#F5F5F7', letterSpacing: '-0.02em' }}>
             Personal Operating Manual
           </h1>
-          <p style={{ color: '#76746E', fontSize: 14, marginTop: 4 }}>
+          <p style={{ color: '#6E6E73', fontSize: 14, marginTop: 4 }}>
             Quietly learning how you work — adjusts future planning automatically.
           </p>
           {/* Auto-refresh status chip — updates patterns in background */}
@@ -397,7 +397,7 @@ export default async function OperatingManualPage() {
 
           {/* Manual observation form */}
           <div className="card" style={{ marginTop: 8 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 600, color: '#FAFAFA', marginBottom: 16 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600, color: '#F5F5F7', marginBottom: 16 }}>
               Add Manual Observation
             </h3>
             <AddPatternForm userId={user.id} />

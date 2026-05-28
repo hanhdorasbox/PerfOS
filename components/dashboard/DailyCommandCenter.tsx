@@ -93,9 +93,9 @@ interface Props {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const PRIORITY_COLOR: Record<string, string> = {
-  must: '#FF6B6B',
-  should: '#F2C063',
-  optional: '#76746E',
+  must:     '#FF453A',
+  should:   '#FFD60A',
+  optional: '#6E6E73',
 }
 const PRIORITY_LABEL: Record<string, string> = {
   must: 'MUST',
@@ -105,11 +105,11 @@ const PRIORITY_LABEL: Record<string, string> = {
 const EFFORT_LABEL: Record<number, string> = { 1: 'Easy', 2: 'Medium', 3: 'Deep work' }
 const MEAL_ORDER: Record<string, number> = { breakfast: 0, lunch: 1, dinner: 2, snack: 3 }
 const CATEGORY_COLOR: Record<string, string> = {
-  geopolitics: '#FF9F6B',
-  business: '#F2C063',
-  tech: '#B4A7E5',
-  society: '#60A5FA',
-  science: '#6BE3A4',
+  geopolitics: '#FF9F0A',
+  business:    '#FFD60A',
+  tech:        '#BF5AF2',
+  society:     '#0A84FF',
+  science:     '#30D158',
 }
 
 function sortMeals(meals: PlannedMeal[]) {
@@ -182,7 +182,7 @@ function ActiveDayRing() {
   const SZ = (R + SW) * 2 + 4
   const CIRC = 2 * Math.PI * R
   const offset = CIRC * (1 - remainPct)
-  const ringColor = remainPct > 0.4 ? '#6BE3A4' : remainPct > 0.2 ? '#F2C063' : '#FF6B6B'
+  const ringColor = remainPct > 0.4 ? '#30D158' : remainPct > 0.2 ? '#FFD60A' : '#FF453A'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
@@ -225,14 +225,14 @@ function ActiveDayRing() {
               <div style={{ fontSize: 20, fontWeight: 800, color: ringColor, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em' }}>
                 {Math.round(remainPct * 100)}%
               </div>
-              <div style={{ fontSize: 9, color: '#76746E', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 1 }}>left</div>
+              <div style={{ fontSize: 9, color: '#6E6E73', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 1 }}>left</div>
             </>
           )}
           {phase === 'before' && (
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#B4A7E5', lineHeight: 1.5 }}>Starts<br />07:00</div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#BF5AF2', lineHeight: 1.5 }}>Starts<br />07:00</div>
           )}
           {phase === 'after' && (
-            <div style={{ fontSize: 10, color: '#76746E', lineHeight: 1.5 }}>Day<br />done</div>
+            <div style={{ fontSize: 10, color: '#6E6E73', lineHeight: 1.5 }}>Day<br />done</div>
           )}
         </div>
       </div>
@@ -241,15 +241,15 @@ function ActiveDayRing() {
       <div style={{ textAlign: 'center' }}>
         {phase === 'active' ? (
           <>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#FAFAFA', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}>
               {remH}h&nbsp;{String(remM).padStart(2, '0')}m
             </div>
-            <div style={{ fontSize: 9, color: '#76746E', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>remaining</div>
+            <div style={{ fontSize: 9, color: '#6E6E73', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>remaining</div>
           </>
         ) : phase === 'before' ? (
-          <div style={{ fontSize: 10, color: '#76746E' }}>07:00 – 22:00</div>
+          <div style={{ fontSize: 10, color: '#6E6E73' }}>07:00 – 22:00</div>
         ) : (
-          <div style={{ fontSize: 10, color: '#76746E' }}>Reset 07:00</div>
+          <div style={{ fontSize: 10, color: '#6E6E73' }}>Reset 07:00</div>
         )}
       </div>
     </div>
@@ -260,7 +260,7 @@ function ActiveDayRing() {
 
 function WorldBriefingItem({ item }: { item: WorldItem }) {
   const [open, setOpen] = useState(false)
-  const catColor = CATEGORY_COLOR[item.category?.toLowerCase()] ?? '#76746E'
+  const catColor = CATEGORY_COLOR[item.category?.toLowerCase()] ?? '#6E6E73'
 
   return (
     <div
@@ -277,16 +277,16 @@ function WorldBriefingItem({ item }: { item: WorldItem }) {
             {item.category}
           </span>
         )}
-        <span style={{ fontSize: 12, color: '#FAFAFA', lineHeight: 1.45, flex: 1 }}>{item.headline}</span>
+        <span style={{ fontSize: 12, color: '#F5F5F7', lineHeight: 1.45, flex: 1 }}>{item.headline}</span>
         {item.why && (
-          <span style={{ fontSize: 10, color: '#76746E', flexShrink: 0, marginTop: 2 }}>
+          <span style={{ fontSize: 10, color: '#6E6E73', flexShrink: 0, marginTop: 2 }}>
             {open ? '▲' : '▼'}
           </span>
         )}
       </div>
       {open && item.why && (
         <div style={{
-          fontSize: 11, color: '#B8B6B0', marginTop: 5,
+          fontSize: 11, color: '#A1A1A6', marginTop: 5,
           paddingLeft: item.category ? 48 : 0,
           lineHeight: 1.55, fontStyle: 'italic',
         }}>
@@ -302,10 +302,10 @@ function WorldBriefingItem({ item }: { item: WorldItem }) {
 function RelevantUpdateItem({ item }: { item: RelevantItem }) {
   return (
     <div style={{ padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-      <div style={{ fontSize: 9, fontWeight: 800, color: '#B4A7E5', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
+      <div style={{ fontSize: 9, fontWeight: 800, color: '#BF5AF2', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
         {item.topic}
       </div>
-      <div style={{ fontSize: 12, color: '#B8B6B0', lineHeight: 1.45 }}>{item.update}</div>
+      <div style={{ fontSize: 12, color: '#A1A1A6', lineHeight: 1.45 }}>{item.update}</div>
     </div>
   )
 }
@@ -404,14 +404,14 @@ function PriorityItem({
       </button>
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, color: '#FAFAFA', fontWeight: 600, lineHeight: 1.4 }}>{task.title}</div>
+        <div style={{ fontSize: 13, color: '#F5F5F7', fontWeight: 600, lineHeight: 1.4 }}>{task.title}</div>
         {task.goal && (
-          <div style={{ fontSize: 11, color: '#76746E', marginTop: 2 }}>→ {task.goal.title}</div>
+          <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 2 }}>→ {task.goal.title}</div>
         )}
         {briefItem?.whyToday ? (
-          <div style={{ fontSize: 11, color: '#76746E', fontStyle: 'italic', marginTop: 2, lineHeight: 1.4 }}>{briefItem.whyToday}</div>
+          <div style={{ fontSize: 11, color: '#6E6E73', fontStyle: 'italic', marginTop: 2, lineHeight: 1.4 }}>{briefItem.whyToday}</div>
         ) : task.effort > 0 ? (
-          <div style={{ fontSize: 10, color: '#76746E', marginTop: 2 }}>{EFFORT_LABEL[task.effort]}</div>
+          <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 2 }}>{EFFORT_LABEL[task.effort]}</div>
         ) : null}
       </div>
 
@@ -438,40 +438,40 @@ function FitnessSnapshot({ strategy, fitnessLog }: { strategy: FitnessStrategy |
 
   return (
     <div className="card">
-      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E', marginBottom: 10 }}>
+      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
         Today&apos;s Fitness
       </div>
       {todaySessions.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           {todaySessions.map((s, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 11, color: '#B4A7E5' }}>▸</span>
-              <span style={{ fontSize: 12, color: '#FAFAFA', fontWeight: 500 }}>{s}</span>
+              <span style={{ fontSize: 11, color: '#BF5AF2' }}>▸</span>
+              <span style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>{s}</span>
             </div>
           ))}
         </div>
       ) : (
-        <div style={{ fontSize: 12, color: '#76746E' }}>Rest day</div>
+        <div style={{ fontSize: 12, color: '#6E6E73' }}>Rest day</div>
       )}
 
       {(fitnessLog?.weight || targetProtein) && (
         <div style={{ display: 'flex', gap: 16, marginTop: 10, paddingTop: 9, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           {fitnessLog?.weight && (
             <div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: '#FAFAFA' }}>{fitnessLog.weight} kg</div>
-              <div style={{ fontSize: 10, color: '#76746E' }}>last weighed</div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: '#F5F5F7' }}>{fitnessLog.weight} kg</div>
+              <div style={{ fontSize: 10, color: '#6E6E73' }}>last weighed</div>
             </div>
           )}
           {targetProtein && (
             <div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: '#6BE3A4' }}>{targetProtein}g</div>
-              <div style={{ fontSize: 10, color: '#76746E' }}>protein target</div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: '#30D158' }}>{targetProtein}g</div>
+              <div style={{ fontSize: 10, color: '#6E6E73' }}>protein target</div>
             </div>
           )}
         </div>
       )}
 
-      <Link href="/fitness" style={{ display: 'block', marginTop: 9, fontSize: 11, color: '#76746E', textDecoration: 'none' }}>
+      <Link href="/fitness" style={{ display: 'block', marginTop: 9, fontSize: 11, color: '#6E6E73', textDecoration: 'none' }}>
         Fitness details →
       </Link>
     </div>
@@ -486,11 +486,11 @@ function MealPreview({ meals, label, href }: { meals: PlannedMeal[]; label: stri
   return (
     <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E' }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73' }}>
           {label}
         </div>
         {href && (
-          <Link href={href} style={{ fontSize: 11, color: '#B4A7E5', textDecoration: 'none' }}>Full plan →</Link>
+          <Link href={href} style={{ fontSize: 11, color: '#BF5AF2', textDecoration: 'none' }}>Full plan →</Link>
         )}
       </div>
 
@@ -498,13 +498,13 @@ function MealPreview({ meals, label, href }: { meals: PlannedMeal[]; label: stri
         <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
           {sorted.map(meal => (
             <div key={meal.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#76746E', minWidth: 60, paddingTop: 1 }}>
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', minWidth: 60, paddingTop: 1 }}>
                 {meal.mealType}
               </span>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, color: '#FAFAFA', fontWeight: 500 }}>{meal.title}</div>
+                <div style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>{meal.title}</div>
                 {(meal.calories || meal.protein) && (
-                  <div style={{ fontSize: 10, color: '#76746E', marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 2 }}>
                     {meal.calories ? `${meal.calories} kcal` : ''}
                     {meal.calories && meal.protein ? ' · ' : ''}
                     {meal.protein ? `${meal.protein}g protein` : ''}
@@ -515,9 +515,9 @@ function MealPreview({ meals, label, href }: { meals: PlannedMeal[]; label: stri
           ))}
         </div>
       ) : (
-        <div style={{ fontSize: 12, color: '#76746E' }}>
+        <div style={{ fontSize: 12, color: '#6E6E73' }}>
           No meal plan.{' '}
-          <Link href="/meals" style={{ color: '#B4A7E5', textDecoration: 'none' }}>Generate →</Link>
+          <Link href="/meals" style={{ color: '#BF5AF2', textDecoration: 'none' }}>Generate →</Link>
         </div>
       )}
     </div>
@@ -555,20 +555,20 @@ function BulletDirective({ text }: { text: string }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {sentences.filter(Boolean).map((s, i) => (
             <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-              <span style={{ color: '#B4A7E5', flexShrink: 0, fontSize: 11, marginTop: 2, fontWeight: 800 }}>→</span>
-              <span style={{ fontSize: 13, color: '#B8B6B0', lineHeight: 1.6 }}>{s.trim()}</span>
+              <span style={{ color: '#BF5AF2', flexShrink: 0, fontSize: 11, marginTop: 2, fontWeight: 800 }}>→</span>
+              <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.6 }}>{s.trim()}</span>
             </div>
           ))}
         </div>
       )
     }
-    return <div style={{ fontSize: 13, color: '#B8B6B0', lineHeight: 1.65 }}>{text}</div>
+    return <div style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.65 }}>{text}</div>
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       {framing.map((line, i) => (
-        <div key={`f${i}`} style={{ fontSize: 13, color: '#FAFAFA', fontWeight: 600, lineHeight: 1.5 }}>
+        <div key={`f${i}`} style={{ fontSize: 13, color: '#F5F5F7', fontWeight: 600, lineHeight: 1.5 }}>
           {line}
         </div>
       ))}
@@ -577,10 +577,10 @@ function BulletDirective({ text }: { text: string }) {
           {bullets.map((b, i) => (
             <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
               <span style={{
-                color: '#B4A7E5', flexShrink: 0, fontSize: 13, marginTop: 1,
+                color: '#BF5AF2', flexShrink: 0, fontSize: 13, marginTop: 1,
                 lineHeight: 1, fontWeight: 700,
               }}>•</span>
-              <span style={{ fontSize: 13, color: '#B8B6B0', lineHeight: 1.6 }}>{b}</span>
+              <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.6 }}>{b}</span>
             </div>
           ))}
         </div>
@@ -725,23 +725,23 @@ export default function DailyCommandCenter({
         {/* Bar header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
           <div>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#76746E' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73' }}>
               Daily Intelligence
             </span>
-            <span style={{ fontSize: 11, color: '#76746E', marginLeft: 12 }}>
+            <span style={{ fontSize: 11, color: '#6E6E73', marginLeft: 12 }}>
               {dateStr}
             </span>
             {quarterName && (
-              <span style={{ fontSize: 10, color: '#76746E', marginLeft: 10, opacity: 0.7 }}>· {quarterName}</span>
+              <span style={{ fontSize: 10, color: '#6E6E73', marginLeft: 10, opacity: 0.7 }}>· {quarterName}</span>
             )}
             {lastRefreshedAt && !loadingBrief && (
-              <span style={{ fontSize: 10, color: '#76746E', marginLeft: 10, opacity: 0.6 }}>
+              <span style={{ fontSize: 10, color: '#6E6E73', marginLeft: 10, opacity: 0.6 }}>
                 · {formatAge(Date.now() - lastRefreshedAt.getTime())}
               </span>
             )}
           </div>
           {loadingBrief && (
-            <Spinner size={14} color="#B4A7E5" strokeWidth={1.8} />
+            <Spinner size={14} color="#BF5AF2" strokeWidth={1.8} />
           )}
         </div>
 
@@ -766,7 +766,7 @@ export default function DailyCommandCenter({
 
               {/* World Briefing */}
               <div>
-                <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#76746E', marginBottom: 4 }}>
+                <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 4 }}>
                   🌍 World Briefing
                 </div>
                 {worldBriefing.length > 0 ? (
@@ -774,7 +774,7 @@ export default function DailyCommandCenter({
                     <WorldBriefingItem key={i} item={item} />
                   ))
                 ) : (
-                  <div style={{ fontSize: 12, color: '#76746E', fontStyle: 'italic', paddingTop: 8 }}>
+                  <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic', paddingTop: 8 }}>
                     Generate briefing to see today&apos;s world summary.
                   </div>
                 )}
@@ -787,7 +787,7 @@ export default function DailyCommandCenter({
                     background: 'rgba(242,192,99,0.05)',
                     border: '1px solid rgba(242,192,99,0.15)',
                     borderRadius: 8,
-                    fontSize: 11, color: '#F2C063', lineHeight: 1.5,
+                    fontSize: 11, color: '#FFD60A', lineHeight: 1.5,
                   }}>
                     ☀️ {externalContext}
                   </div>
@@ -796,7 +796,7 @@ export default function DailyCommandCenter({
 
               {/* Relevant to Your World */}
               <div>
-                <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#76746E', marginBottom: 4 }}>
+                <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 4 }}>
                   ⚡ Relevant to Your World
                 </div>
                 {relevantUpdates.length > 0 ? (
@@ -804,7 +804,7 @@ export default function DailyCommandCenter({
                     <RelevantUpdateItem key={i} item={item} />
                   ))
                 ) : (
-                  <div style={{ fontSize: 12, color: '#76746E', fontStyle: 'italic', paddingTop: 8 }}>
+                  <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic', paddingTop: 8 }}>
                     AI, analytics &amp; productivity updates will appear here.
                   </div>
                 )}
@@ -821,7 +821,7 @@ export default function DailyCommandCenter({
         <div className="card">
           {/* Strategic Directive — purple left border applies only to the directive text */}
           <div style={{ borderLeft: '3px solid #B4A7E5', paddingLeft: 14, marginBottom: briefing?.instruction ? 10 : 18 }}>
-            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#76746E', marginBottom: 6 }}>
+            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6 }}>
               This Week&apos;s Directive
             </div>
             {loadingBrief && !briefing ? (
@@ -833,7 +833,7 @@ export default function DailyCommandCenter({
             ) : briefing?.directive ? (
               <div className="animate-fade-in"><BulletDirective text={briefing.directive} /></div>
             ) : (
-              <div style={{ fontSize: 12, color: '#76746E', fontStyle: 'italic' }}>
+              <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic' }}>
                 Click ↻ above to generate today&apos;s briefing.
               </div>
             )}
@@ -842,43 +842,43 @@ export default function DailyCommandCenter({
           {/* Today block — OUTSIDE purple border, below directive */}
           {briefing?.instruction && (
             <div style={{ marginTop: 16, marginBottom: 18, padding: '8px 12px', background: 'rgba(107,227,164,0.05)', borderRadius: 8, border: '1px solid rgba(107,227,164,0.15)' }}>
-              <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6BE3A4', marginBottom: 4 }}>
+              <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#30D158', marginBottom: 4 }}>
                 Today
               </div>
-              <span style={{ fontSize: 12, color: '#B8B6B0', lineHeight: 1.6 }}>{briefing.instruction}</span>
+              <span style={{ fontSize: 12, color: '#A1A1A6', lineHeight: 1.6 }}>{briefing.instruction}</span>
             </div>
           )}
 
           {/* Today's Priorities */}
           <div>
-            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#76746E', marginBottom: 10 }}>
+            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
               Today&apos;s Priorities
             </div>
 
             {loadingBrief && incompleteTasks.length === 0 ? (
               <PrioritySkeleton />
             ) : incompleteTasks.length === 0 ? (
-              <div style={{ fontSize: 12, color: '#76746E', fontStyle: 'italic' }}>
+              <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic' }}>
                 No tasks this week.{' '}
-                <Link href="/quarterly" style={{ color: '#B4A7E5', textDecoration: 'none' }}>Set up a plan →</Link>
+                <Link href="/quarterly" style={{ color: '#BF5AF2', textDecoration: 'none' }}>Set up a plan →</Link>
               </div>
             ) : (
               <>
                 {mustDo.length > 0 && (
                   <div style={{ marginBottom: 10 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#FF6B6B', marginBottom: 2 }}>Must Do</div>
+                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#FF453A', marginBottom: 2 }}>Must Do</div>
                     {mustDo.map(t => <PriorityItem key={t.id} task={t} briefItem={findBriefItem(t)} onToggle={toggleTask} toggling={toggling} />)}
                   </div>
                 )}
                 {shouldDo.length > 0 && (
                   <div style={{ marginBottom: 10 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#F2C063', marginBottom: 2 }}>Should Do</div>
+                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#FFD60A', marginBottom: 2 }}>Should Do</div>
                     {shouldDo.map(t => <PriorityItem key={t.id} task={t} briefItem={findBriefItem(t)} onToggle={toggleTask} toggling={toggling} />)}
                   </div>
                 )}
                 {optional.length > 0 && (
                   <div>
-                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#76746E', marginBottom: 2 }}>Optional</div>
+                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 2 }}>Optional</div>
                     {optional.map(t => <PriorityItem key={t.id} task={t} briefItem={findBriefItem(t)} onToggle={toggleTask} toggling={toggling} />)}
                   </div>
                 )}

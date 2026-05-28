@@ -3,10 +3,10 @@ import type { Idea } from '@prisma/client'
 import IdeaCard from './IdeaCard'
 
 const COLUMNS: { status: string; label: string; color: string }[] = [
-  { status: 'inbox', label: 'Inbox', color: '#F2C063' },
-  { status: 'worth_exploring', label: 'Worth Exploring', color: '#6BE3A4' },
-  { status: 'hold', label: 'Hold', color: '#76746E' },
-  { status: 'convert_to_goal', label: 'Convert / Archive', color: '#B4A7E5' },
+  { status: 'inbox', label: 'Inbox', color: '#FFD60A' },
+  { status: 'worth_exploring', label: 'Worth Exploring', color: '#30D158' },
+  { status: 'hold', label: 'Hold', color: '#6E6E73' },
+  { status: 'convert_to_goal', label: 'Convert / Archive', color: '#BF5AF2' },
 ]
 
 interface Props {
@@ -37,7 +37,7 @@ export default function IdeaBoard({ ideas }: Props) {
               <span style={{ color: col.color, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 {col.label}
               </span>
-              <span style={{ color: '#76746E', fontSize: 12 }}>{colIdeas.length}</span>
+              <span style={{ color: '#6E6E73', fontSize: 12 }}>{colIdeas.length}</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minHeight: 120 }}>
               {colIdeas.map(idea => (

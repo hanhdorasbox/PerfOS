@@ -44,14 +44,14 @@ export default function AddPatternForm({ userId }: { userId: string }) {
 
   const inputStyle: React.CSSProperties = {
     background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: 8, padding: '8px 12px', color: '#FAFAFA', fontSize: 13, width: '100%',
+    borderRadius: 8, padding: '8px 12px', color: '#F5F5F7', fontSize: 13, width: '100%',
   }
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div>
-          <label style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Domain</label>
+          <label style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Domain</label>
           <select
             value={form.domain}
             onChange={e => setForm(f => ({ ...f, domain: e.target.value }))}
@@ -63,7 +63,7 @@ export default function AddPatternForm({ userId }: { userId: string }) {
           </select>
         </div>
         <div>
-          <label style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Confidence (1-5)</label>
+          <label style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Confidence (1-5)</label>
           <input
             type="number" min={1} max={5}
             value={form.confidence}
@@ -74,7 +74,7 @@ export default function AddPatternForm({ userId }: { userId: string }) {
       </div>
 
       <div>
-        <label style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Pattern *</label>
+        <label style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Pattern *</label>
         <textarea
           value={form.pattern}
           onChange={e => setForm(f => ({ ...f, pattern: e.target.value }))}
@@ -86,7 +86,7 @@ export default function AddPatternForm({ userId }: { userId: string }) {
       </div>
 
       <div>
-        <label style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Evidence</label>
+        <label style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Evidence</label>
         <input
           type="text"
           value={form.evidence}
@@ -97,7 +97,7 @@ export default function AddPatternForm({ userId }: { userId: string }) {
       </div>
 
       <div>
-        <label style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Implication</label>
+        <label style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Implication</label>
         <input
           type="text"
           value={form.implication}
@@ -107,14 +107,14 @@ export default function AddPatternForm({ userId }: { userId: string }) {
         />
       </div>
 
-      {error && <p style={{ color: '#FF6B6B', fontSize: 13 }}>{error}</p>}
+      {error && <p style={{ color: '#FF453A', fontSize: 13 }}>{error}</p>}
 
       <button
         type="submit"
         disabled={saving || !form.pattern.trim()}
         style={{
           background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-          color: '#FAFAFA', padding: '8px 20px', borderRadius: 10,
+          color: '#F5F5F7', padding: '8px 20px', borderRadius: 10,
           fontSize: 13, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer',
           alignSelf: 'flex-start',
         }}

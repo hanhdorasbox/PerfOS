@@ -4,19 +4,19 @@ import { useRouter } from 'next/navigation'
 import type { Idea } from '@prisma/client'
 
 const domainColors: Record<string, string> = {
-  work_improvement: '#60A5FA',
-  automation: '#B4A7E5',
-  product: '#6BE3A4',
-  content: '#F2C063',
-  research: '#FB923C',
-  project: '#FF6B6B',
-  other: '#76746E',
+  work_improvement: '#0A84FF',
+  automation: '#BF5AF2',
+  product: '#30D158',
+  content: '#FFD60A',
+  research: '#FF9F0A',
+  project: '#FF453A',
+  other: '#6E6E73',
 }
 
 const effortColors: Record<string, string> = {
-  low: '#6BE3A4',
-  medium: '#F2C063',
-  high: '#FF6B6B',
+  low: '#30D158',
+  medium: '#FFD60A',
+  high: '#FF453A',
 }
 
 const STATUS_TRANSITIONS: Record<string, { label: string; nextStatus: string }> = {
@@ -85,13 +85,13 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
   }
 
   const transition = STATUS_TRANSITIONS[idea.status]
-  const domainColor = domainColors[idea.domain ?? 'other'] ?? '#76746E'
+  const domainColor = domainColors[idea.domain ?? 'other'] ?? '#6E6E73'
 
   return (
     <div className="card" style={{ padding: '14px 16px' }}>
       <div style={{ marginBottom: 8 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-          <p style={{ color: '#FAFAFA', fontSize: 14, fontWeight: 600, flex: 1, paddingRight: 8 }}>
+          <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, flex: 1, paddingRight: 8 }}>
             {idea.isTimeSensitive && '⏰ '}
             {idea.isHighUpsideBet && '⭐ '}
             {idea.title}
@@ -99,7 +99,7 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
         </div>
 
         {idea.description && (
-          <p style={{ color: '#B8B6B0', fontSize: 12, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <p style={{ color: '#A1A1A6', fontSize: 12, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
             {idea.description}
           </p>
         )}
@@ -117,9 +117,9 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
         )}
         {idea.effortEstimate && (
           <span style={{
-            background: `${effortColors[idea.effortEstimate] ?? '#76746E'}15`,
-            color: effortColors[idea.effortEstimate] ?? '#76746E',
-            border: `1px solid ${effortColors[idea.effortEstimate] ?? '#76746E'}30`,
+            background: `${effortColors[idea.effortEstimate] ?? '#6E6E73'}15`,
+            color: effortColors[idea.effortEstimate] ?? '#6E6E73',
+            border: `1px solid ${effortColors[idea.effortEstimate] ?? '#6E6E73'}30`,
             padding: '1px 7px', borderRadius: 999, fontSize: 10, fontWeight: 700,
           }}>
             {idea.effortEstimate} effort
@@ -128,7 +128,7 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
       </div>
 
       {idea.nextStep && (
-        <p style={{ color: '#B4A7E5', fontSize: 11, marginBottom: 8 }}>
+        <p style={{ color: '#BF5AF2', fontSize: 11, marginBottom: 8 }}>
           → {idea.nextStep}
         </p>
       )}
@@ -139,26 +139,26 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
           borderRadius: 8, padding: '8px 10px', marginBottom: 8,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-            <span style={{ color: evalData.isStrategicRelevant ? '#6BE3A4' : '#FF6B6B', fontSize: 11, fontWeight: 700 }}>
+            <span style={{ color: evalData.isStrategicRelevant ? '#30D158' : '#FF453A', fontSize: 11, fontWeight: 700 }}>
               {evalData.isStrategicRelevant ? '✓ Strategic' : '✗ Not strategic'}
             </span>
-            <span style={{ color: '#76746E', fontSize: 11 }}>Timing: {evalData.timing}</span>
+            <span style={{ color: '#6E6E73', fontSize: 11 }}>Timing: {evalData.timing}</span>
           </div>
-          <p style={{ color: '#FAFAFA', fontSize: 12, marginBottom: 4 }}>{evalData.recommendation}</p>
-          <p style={{ color: '#B8B6B0', fontSize: 11 }}>Next step: {evalData.smallestNextStep}</p>
+          <p style={{ color: '#F5F5F7', fontSize: 12, marginBottom: 4 }}>{evalData.recommendation}</p>
+          <p style={{ color: '#A1A1A6', fontSize: 11 }}>Next step: {evalData.smallestNextStep}</p>
         </div>
       )}
 
       {evalData && !showEval && (
         <button
           onClick={() => setShowEval(true)}
-          style={{ background: 'none', border: 'none', color: '#B4A7E5', fontSize: 11, cursor: 'pointer', padding: '0 0 8px 0', display: 'block' }}
+          style={{ background: 'none', border: 'none', color: '#BF5AF2', fontSize: 11, cursor: 'pointer', padding: '0 0 8px 0', display: 'block' }}
         >
           Show AI evaluation ▼
         </button>
       )}
 
-      {error && <p style={{ color: '#FF6B6B', fontSize: 11, marginBottom: 6 }}>{error}</p>}
+      {error && <p style={{ color: '#FF453A', fontSize: 11, marginBottom: 6 }}>{error}</p>}
 
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
         {!idea.aiEvaluation && (
@@ -167,7 +167,7 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
             disabled={evaluating}
             style={{
               background: 'rgba(180,167,229,0.1)', border: '1px solid rgba(180,167,229,0.25)',
-              color: '#B4A7E5', padding: '4px 8px', borderRadius: 6,
+              color: '#BF5AF2', padding: '4px 8px', borderRadius: 6,
               fontSize: 11, fontWeight: 600, cursor: evaluating ? 'not-allowed' : 'pointer',
             }}
           >
@@ -179,7 +179,7 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
             onClick={advanceStatus}
             style={{
               background: 'rgba(107,227,164,0.08)', border: '1px solid rgba(107,227,164,0.2)',
-              color: '#6BE3A4', padding: '4px 8px', borderRadius: 6,
+              color: '#30D158', padding: '4px 8px', borderRadius: 6,
               fontSize: 11, fontWeight: 600, cursor: 'pointer',
             }}
           >
@@ -191,7 +191,7 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
             onClick={moveToHold}
             style={{
               background: 'rgba(118,116,110,0.1)', border: '1px solid rgba(118,116,110,0.2)',
-              color: '#76746E', padding: '4px 8px', borderRadius: 6,
+              color: '#6E6E73', padding: '4px 8px', borderRadius: 6,
               fontSize: 11, fontWeight: 600, cursor: 'pointer',
             }}
           >

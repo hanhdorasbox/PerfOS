@@ -43,10 +43,10 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
 
   const inputStyle: React.CSSProperties = {
     background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: 8, padding: '8px 12px', color: '#FAFAFA', fontSize: 13, width: '100%',
+    borderRadius: 8, padding: '8px 12px', color: '#F5F5F7', fontSize: 13, width: '100%',
   }
   const labelStyle: React.CSSProperties = {
-    color: '#76746E', fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+    color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
     letterSpacing: '0.08em', display: 'block', marginBottom: 6,
   }
 
@@ -97,7 +97,7 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
         onClick={() => setOpen(true)}
         style={{
           background: 'rgba(180,167,229,0.1)', border: '1px solid rgba(180,167,229,0.3)',
-          color: '#B4A7E5', padding: '9px 20px', borderRadius: 9,
+          color: '#BF5AF2', padding: '9px 20px', borderRadius: 9,
           fontSize: 13, fontWeight: 600, cursor: 'pointer',
         }}
       >
@@ -109,11 +109,11 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
   return (
     <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <p style={{ color: '#B4A7E5', fontSize: 14, fontWeight: 600 }}>New Learning Roadmap</p>
+        <p style={{ color: '#BF5AF2', fontSize: 14, fontWeight: 600 }}>New Learning Roadmap</p>
         <button
           type="button"
           onClick={() => setOpen(false)}
-          style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 18 }}
+          style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 18 }}
         >✕</button>
       </div>
 
@@ -131,7 +131,7 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
                 padding: '5px 12px', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer',
                 background: form.roadmapType === t.value ? 'rgba(180,167,229,0.15)' : 'rgba(255,255,255,0.04)',
                 border: form.roadmapType === t.value ? '1px solid rgba(180,167,229,0.4)' : '1px solid rgba(255,255,255,0.08)',
-                color: form.roadmapType === t.value ? '#B4A7E5' : '#76746E',
+                color: form.roadmapType === t.value ? '#BF5AF2' : '#6E6E73',
               }}
             >
               {t.label}
@@ -239,7 +239,7 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
               flex: 1, padding: '8px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
               background: form.detailLevel === 'standard' ? 'rgba(180,167,229,0.12)' : 'rgba(255,255,255,0.03)',
               border: form.detailLevel === 'standard' ? '1px solid rgba(180,167,229,0.35)' : '1px solid rgba(255,255,255,0.08)',
-              color: form.detailLevel === 'standard' ? '#B4A7E5' : '#76746E',
+              color: form.detailLevel === 'standard' ? '#BF5AF2' : '#6E6E73',
             }}
           >
             Standard — 20-60 min steps
@@ -251,7 +251,7 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
               flex: 1, padding: '8px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
               background: form.detailLevel === 'eli5' ? 'rgba(242,192,99,0.12)' : 'rgba(255,255,255,0.03)',
               border: form.detailLevel === 'eli5' ? '1px solid rgba(242,192,99,0.35)' : '1px solid rgba(255,255,255,0.08)',
-              color: form.detailLevel === 'eli5' ? '#F2C063' : '#76746E',
+              color: form.detailLevel === 'eli5' ? '#FFD60A' : '#6E6E73',
             }}
           >
             ELI5 Mode — ultra-concrete 15-45 min steps
@@ -282,12 +282,12 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
           onChange={e => setGenerateRoadmap(e.target.checked)}
           style={{ width: 16, height: 16 }}
         />
-        <span style={{ color: '#B8B6B0', fontSize: 13 }}>
+        <span style={{ color: '#A1A1A6', fontSize: 13 }}>
           ✨ Generate AI roadmap with phases, milestones & concrete steps
         </span>
       </label>
 
-      {error && <p style={{ color: '#FF6B6B', fontSize: 13 }}>{error}</p>}
+      {error && <p style={{ color: '#FF453A', fontSize: 13 }}>{error}</p>}
 
       <div style={{ display: 'flex', gap: 10 }}>
         <button
@@ -296,7 +296,7 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
           style={{
             background: saving ? 'rgba(180,167,229,0.08)' : 'rgba(180,167,229,0.15)',
             border: '1px solid rgba(180,167,229,0.4)',
-            color: '#B4A7E5', padding: '9px 22px', borderRadius: 9,
+            color: '#BF5AF2', padding: '9px 22px', borderRadius: 9,
             fontSize: 13, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer',
           }}
         >
@@ -309,7 +309,7 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
           onClick={() => setOpen(false)}
           style={{
             background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-            color: '#76746E', padding: '9px 16px', borderRadius: 9,
+            color: '#6E6E73', padding: '9px 16px', borderRadius: 9,
             fontSize: 13, fontWeight: 600, cursor: 'pointer',
           }}
         >

@@ -41,15 +41,15 @@ function ItemCard({ item, onDelete, isDeleting }: { item: CareerCapitalItem; onD
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
         <span style={{ fontSize: 16, flexShrink: 0 }}>{TYPE_ICONS[item.type] ?? '•'}</span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ color: '#FAFAFA', fontSize: 13, fontWeight: 600 }}>{item.title}</div>
+          <div style={{ color: '#F5F5F7', fontSize: 13, fontWeight: 600 }}>{item.title}</div>
           {item.impact && (
-            <div style={{ color: '#B8B6B0', fontSize: 11, marginTop: 3 }}>{item.impact}</div>
+            <div style={{ color: '#A1A1A6', fontSize: 11, marginTop: 3 }}>{item.impact}</div>
           )}
         </div>
         <button
           onClick={() => onDelete(item.id)}
           disabled={isDeleting}
-          style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 12, padding: '0 2px', flexShrink: 0, lineHeight: 1 }}
+          style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 12, padding: '0 2px', flexShrink: 0, lineHeight: 1 }}
           title="Delete"
         >✕</button>
       </div>
@@ -120,14 +120,14 @@ export default function CareerCapitalItems({
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA', margin: 0 }}>Career Capital Items</h2>
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', margin: 0 }}>Career Capital Items</h2>
         <button
           onClick={() => setShowForm(v => !v)}
           style={{
             background: 'rgba(107,227,164,0.12)',
             border: '1px solid rgba(107,227,164,0.3)',
             borderRadius: 7,
-            color: '#6BE3A4',
+            color: '#30D158',
             padding: '5px 12px',
             fontSize: 12,
             fontWeight: 600,
@@ -197,7 +197,7 @@ export default function CareerCapitalItems({
               type="submit"
               disabled={submitting}
               style={{
-                background: '#6BE3A4',
+                background: '#30D158',
                 border: 'none',
                 borderRadius: 7,
                 color: '#1A1916',
@@ -216,7 +216,7 @@ export default function CareerCapitalItems({
                 background: 'transparent',
                 border: '1px solid rgba(255,255,255,0.12)',
                 borderRadius: 7,
-                color: '#76746E',
+                color: '#6E6E73',
                 padding: '7px 14px',
                 fontSize: 13,
                 cursor: 'pointer',
@@ -230,21 +230,21 @@ export default function CareerCapitalItems({
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <div>
-          <div style={{ color: '#76746E', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>
+          <div style={{ color: '#6E6E73', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>
             Internal Capital
           </div>
           {internal.length === 0 ? (
-            <div style={{ color: '#76746E', fontSize: 12 }}>No internal items yet.</div>
+            <div style={{ color: '#6E6E73', fontSize: 12 }}>No internal items yet.</div>
           ) : (
             internal.map(item => <ItemCard key={item.id} item={item} onDelete={deleteItem} isDeleting={deleting === item.id} />)
           )}
         </div>
         <div>
-          <div style={{ color: '#76746E', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>
+          <div style={{ color: '#6E6E73', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>
             External Capital
           </div>
           {external.length === 0 ? (
-            <div style={{ color: '#76746E', fontSize: 12 }}>No external items yet.</div>
+            <div style={{ color: '#6E6E73', fontSize: 12 }}>No external items yet.</div>
           ) : (
             external.map(item => <ItemCard key={item.id} item={item} onDelete={deleteItem} isDeleting={deleting === item.id} />)
           )}
@@ -258,7 +258,7 @@ const inputStyle: React.CSSProperties = {
   background: 'rgba(255,255,255,0.06)',
   border: '1px solid rgba(255,255,255,0.12)',
   borderRadius: 7,
-  color: '#FAFAFA',
+  color: '#F5F5F7',
   padding: '8px 12px',
   fontSize: 13,
   width: '100%',

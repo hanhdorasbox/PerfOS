@@ -38,25 +38,25 @@ const stepTypeIcon: Record<string, string> = {
   read: '📖', watch: '▶️', practice: '⚡', build: '🔨', reflect: '💭', exercise: '💪',
 }
 const stepTypeColor: Record<string, string> = {
-  read: '#60A5FA', watch: '#F472B6', practice: '#6BE3A4', build: '#B4A7E5', reflect: '#F2C063', exercise: '#FB923C',
+  read: '#0A84FF', watch: '#F472B6', practice: '#30D158', build: '#BF5AF2', reflect: '#FFD60A', exercise: '#FF9F0A',
 }
 const milestoneTypeColors: Record<string, string> = {
-  knowledge: '#60A5FA', practice: '#6BE3A4', output: '#B4A7E5',
+  knowledge: '#0A84FF', practice: '#30D158', output: '#BF5AF2',
 }
 const healthColors: Record<string, { color: string; bg: string; label: string }> = {
-  not_started: { color: '#76746E', bg: 'rgba(118,116,110,0.1)', label: 'Not Started' },
-  on_track:    { color: '#6BE3A4', bg: 'rgba(107,227,164,0.1)', label: 'On Track' },
-  at_risk:     { color: '#F2C063', bg: 'rgba(242,192,99,0.1)',  label: 'At Risk' },
-  behind:      { color: '#FB923C', bg: 'rgba(251,146,60,0.1)',  label: 'Behind' },
-  stalled:     { color: '#FF6B6B', bg: 'rgba(255,107,107,0.1)', label: 'Stalled' },
-  completed:   { color: '#6BE3A4', bg: 'rgba(107,227,164,0.1)', label: 'Completed' },
+  not_started: { color: '#6E6E73', bg: 'rgba(118,116,110,0.1)', label: 'Not Started' },
+  on_track:    { color: '#30D158', bg: 'rgba(107,227,164,0.1)', label: 'On Track' },
+  at_risk:     { color: '#FFD60A', bg: 'rgba(242,192,99,0.1)',  label: 'At Risk' },
+  behind:      { color: '#FF9F0A', bg: 'rgba(251,146,60,0.1)',  label: 'Behind' },
+  stalled:     { color: '#FF453A', bg: 'rgba(255,107,107,0.1)', label: 'Stalled' },
+  completed:   { color: '#30D158', bg: 'rgba(107,227,164,0.1)', label: 'Completed' },
 }
 const capitalColors: Record<string, { color: string; bg: string; border: string }> = {
-  high:   { color: '#6BE3A4', bg: 'rgba(107,227,164,0.1)',  border: 'rgba(107,227,164,0.3)' },
-  medium: { color: '#F2C063', bg: 'rgba(242,192,99,0.1)',   border: 'rgba(242,192,99,0.3)' },
-  low:    { color: '#76746E', bg: 'rgba(118,116,110,0.1)',  border: 'rgba(118,116,110,0.3)' },
+  high:   { color: '#30D158', bg: 'rgba(107,227,164,0.1)',  border: 'rgba(107,227,164,0.3)' },
+  medium: { color: '#FFD60A', bg: 'rgba(242,192,99,0.1)',   border: 'rgba(242,192,99,0.3)' },
+  low:    { color: '#6E6E73', bg: 'rgba(118,116,110,0.1)',  border: 'rgba(118,116,110,0.3)' },
 }
-const phaseColors = ['#B4A7E5', '#6BE3A4', '#F2C063', '#60A5FA', '#FB923C', '#F472B6']
+const phaseColors = ['#BF5AF2', '#30D158', '#FFD60A', '#0A84FF', '#FF9F0A', '#F472B6']
 
 type Tab = 'overview' | 'roadmap' | 'plan' | 'health' | 'capital'
 
@@ -172,7 +172,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
 
   const btnStyle: React.CSSProperties = {
     background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-    color: '#B8B6B0', padding: '5px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+    color: '#A1A1A6', padding: '5px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer',
   }
 
   return (
@@ -184,7 +184,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
             {/* Chips row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
               {goal.roadmapType && (
-                <span style={{ background: 'rgba(180,167,229,0.1)', color: '#B4A7E5', border: '1px solid rgba(180,167,229,0.25)', padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700, textTransform: 'uppercase' }}>
+                <span style={{ background: 'rgba(180,167,229,0.1)', color: '#BF5AF2', border: '1px solid rgba(180,167,229,0.25)', padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700, textTransform: 'uppercase' }}>
                   {goal.roadmapType}
                 </span>
               )}
@@ -197,39 +197,39 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
                 </span>
               )}
               {goal.detailLevel === 'eli5' && (
-                <span style={{ background: 'rgba(242,192,99,0.1)', color: '#F2C063', border: '1px solid rgba(242,192,99,0.25)', padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700 }}>ELI5</span>
+                <span style={{ background: 'rgba(242,192,99,0.1)', color: '#FFD60A', border: '1px solid rgba(242,192,99,0.25)', padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700 }}>ELI5</span>
               )}
             </div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: '#FAFAFA', marginBottom: 5 }}>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: '#F5F5F7', marginBottom: 5 }}>
               {strategicRoadmap?.title || goal.title}
             </h1>
-            <p style={{ color: '#B8B6B0', fontSize: 14 }}>{goal.capabilityStatement}</p>
+            <p style={{ color: '#A1A1A6', fontSize: 14 }}>{goal.capabilityStatement}</p>
           </div>
 
           {/* Action buttons */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end', flexShrink: 0 }}>
-            {regenError && <p style={{ color: '#FF6B6B', fontSize: 12, maxWidth: 280, textAlign: 'right' }}>⚠ {regenError}</p>}
+            {regenError && <p style={{ color: '#FF453A', fontSize: 12, maxWidth: 280, textAlign: 'right' }}>⚠ {regenError}</p>}
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
               {goal.status === 'active' && (
                 <>
-                  <button onClick={completeGoal} style={{ ...btnStyle, color: '#6BE3A4', border: '1px solid rgba(107,227,164,0.3)' }}>✓ Complete</button>
+                  <button onClick={completeGoal} style={{ ...btnStyle, color: '#30D158', border: '1px solid rgba(107,227,164,0.3)' }}>✓ Complete</button>
                   <button onClick={archiveGoal} style={btnStyle}>📦 Archive</button>
                   <button
                     onClick={regenerateRoadmap}
                     disabled={regenerating}
-                    style={{ ...btnStyle, color: '#B4A7E5', border: '1px solid rgba(180,167,229,0.3)', display: 'flex', alignItems: 'center', gap: 6 }}
+                    style={{ ...btnStyle, color: '#BF5AF2', border: '1px solid rgba(180,167,229,0.3)', display: 'flex', alignItems: 'center', gap: 6 }}
                   >
-                    {regenerating && <Spinner size={11} color="#B4A7E5" strokeWidth={2} />}
+                    {regenerating && <Spinner size={11} color="#BF5AF2" strokeWidth={2} />}
                     {regenerating ? 'Regenerating…' : '✨ Regenerate'}
                   </button>
                 </>
               )}
               {!confirmDelete ? (
-                <button onClick={() => setConfirmDelete(true)} style={{ ...btnStyle, color: '#FF6B6B', border: '1px solid rgba(255,107,107,0.3)' }}>🗑 Delete</button>
+                <button onClick={() => setConfirmDelete(true)} style={{ ...btnStyle, color: '#FF453A', border: '1px solid rgba(255,107,107,0.3)' }}>🗑 Delete</button>
               ) : (
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                  <span style={{ color: '#FF6B6B', fontSize: 12 }}>Sure?</span>
-                  <button onClick={deleteGoal} disabled={deleting} style={{ ...btnStyle, background: 'rgba(255,107,107,0.15)', color: '#FF6B6B', border: '1px solid rgba(255,107,107,0.4)' }}>
+                  <span style={{ color: '#FF453A', fontSize: 12 }}>Sure?</span>
+                  <button onClick={deleteGoal} disabled={deleting} style={{ ...btnStyle, background: 'rgba(255,107,107,0.15)', color: '#FF453A', border: '1px solid rgba(255,107,107,0.4)' }}>
                     {deleting ? '…' : 'Yes, delete'}
                   </button>
                   <button onClick={() => setConfirmDelete(false)} style={btnStyle}>Cancel</button>
@@ -243,11 +243,11 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
         {totalSteps > 0 && (
           <div style={{ marginTop: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-              <span style={{ color: '#76746E', fontSize: 12 }}>{completedSteps}/{totalSteps} steps · {completedMilestones}/{goal.milestones.length} milestones</span>
-              <span style={{ color: '#B4A7E5', fontSize: 12, fontWeight: 600 }}>{overallProgress}%</span>
+              <span style={{ color: '#6E6E73', fontSize: 12 }}>{completedSteps}/{totalSteps} steps · {completedMilestones}/{goal.milestones.length} milestones</span>
+              <span style={{ color: '#BF5AF2', fontSize: 12, fontWeight: 600 }}>{overallProgress}%</span>
             </div>
             <div style={{ height: 6, background: 'rgba(255,255,255,0.08)', borderRadius: 3 }}>
-              <div style={{ height: '100%', width: `${overallProgress}%`, background: overallProgress === 100 ? '#6BE3A4' : 'linear-gradient(90deg, #B4A7E5, #6BE3A4)', borderRadius: 3, transition: 'width 0.4s' }} />
+              <div style={{ height: '100%', width: `${overallProgress}%`, background: overallProgress === 100 ? '#30D158' : 'linear-gradient(90deg, #B4A7E5, #6BE3A4)', borderRadius: 3, transition: 'width 0.4s' }} />
             </div>
           </div>
         )}
@@ -255,22 +255,22 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 16, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <div>
-            <p style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Level</p>
-            <p style={{ color: '#FAFAFA', fontSize: 14, fontWeight: 600, marginTop: 3 }}>{goal.startingLevel} → {goal.targetLevel}</p>
+            <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Level</p>
+            <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, marginTop: 3 }}>{goal.startingLevel} → {goal.targetLevel}</p>
           </div>
           <div>
-            <p style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Hours left</p>
-            <p style={{ color: '#FAFAFA', fontSize: 14, fontWeight: 600, marginTop: 3 }}>
+            <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Hours left</p>
+            <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, marginTop: 3 }}>
               {totalEstHours > 0 ? `${(totalEstHours - completedHours).toFixed(0)}h` : '—'}
             </p>
           </div>
           <div>
-            <p style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Weekly</p>
-            <p style={{ color: '#FAFAFA', fontSize: 14, fontWeight: 600, marginTop: 3 }}>{goal.weeklyHours ? `${goal.weeklyHours}h` : '—'}</p>
+            <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Weekly</p>
+            <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, marginTop: 3 }}>{goal.weeklyHours ? `${goal.weeklyHours}h` : '—'}</p>
           </div>
           <div>
-            <p style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Deadline</p>
-            <p style={{ color: '#FAFAFA', fontSize: 14, fontWeight: 600, marginTop: 3 }}>
+            <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Deadline</p>
+            <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, marginTop: 3 }}>
               {goal.deadline ? new Date(goal.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—'}
             </p>
           </div>
@@ -281,8 +281,8 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
           <div style={{ marginTop: 14, background: 'rgba(107,227,164,0.06)', border: '1px solid rgba(107,227,164,0.2)', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 16 }}>🎯</span>
             <div>
-              <p style={{ color: '#6BE3A4', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Best Action</p>
-              <p style={{ color: '#FAFAFA', fontSize: 13, marginTop: 2 }}>{goal.nextBestAction}</p>
+              <p style={{ color: '#30D158', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Best Action</p>
+              <p style={{ color: '#F5F5F7', fontSize: 13, marginTop: 2 }}>{goal.nextBestAction}</p>
             </div>
           </div>
         )}
@@ -298,7 +298,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
               padding: '7px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer',
               border: activeTab === tab.id ? '1px solid rgba(180,167,229,0.4)' : '1px solid transparent',
               background: activeTab === tab.id ? 'rgba(180,167,229,0.1)' : 'transparent',
-              color: activeTab === tab.id ? '#B4A7E5' : '#76746E',
+              color: activeTab === tab.id ? '#BF5AF2' : '#6E6E73',
             }}
           >
             {tab.label}
@@ -311,27 +311,27 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
         <div className="card" style={{ display: 'grid', gap: 16 }}>
           {strategicRoadmap?.summary && (
             <div style={{ padding: '12px 14px', background: 'rgba(180,167,229,0.05)', borderRadius: 8, border: '1px solid rgba(180,167,229,0.15)' }}>
-              <p style={{ color: '#B4A7E5', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Strategic Summary</p>
-              <p style={{ color: '#FAFAFA', fontSize: 13, lineHeight: 1.6 }}>{strategicRoadmap.summary}</p>
+              <p style={{ color: '#BF5AF2', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Strategic Summary</p>
+              <p style={{ color: '#F5F5F7', fontSize: 13, lineHeight: 1.6 }}>{strategicRoadmap.summary}</p>
             </div>
           )}
           {goal.whyItMatters && (
             <div>
-              <p style={{ color: '#76746E', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Why It Matters</p>
-              <p style={{ color: '#FAFAFA', fontSize: 14 }}>{goal.whyItMatters}</p>
+              <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Why It Matters</p>
+              <p style={{ color: '#F5F5F7', fontSize: 14 }}>{goal.whyItMatters}</p>
             </div>
           )}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {goal.evidenceOfMastery && (
               <div style={{ background: 'rgba(107,227,164,0.06)', border: '1px solid rgba(107,227,164,0.15)', borderRadius: 8, padding: '12px 14px' }}>
-                <p style={{ color: '#6BE3A4', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Evidence of Mastery</p>
-                <p style={{ color: '#FAFAFA', fontSize: 13 }}>{goal.evidenceOfMastery}</p>
+                <p style={{ color: '#30D158', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Evidence of Mastery</p>
+                <p style={{ color: '#F5F5F7', fontSize: 13 }}>{goal.evidenceOfMastery}</p>
               </div>
             )}
             {goal.finalOutput && (
               <div style={{ background: 'rgba(180,167,229,0.06)', border: '1px solid rgba(180,167,229,0.15)', borderRadius: 8, padding: '12px 14px' }}>
-                <p style={{ color: '#B4A7E5', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Final Output</p>
-                <p style={{ color: '#FAFAFA', fontSize: 13 }}>{goal.finalOutput}</p>
+                <p style={{ color: '#BF5AF2', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Final Output</p>
+                <p style={{ color: '#F5F5F7', fontSize: 13 }}>{goal.finalOutput}</p>
               </div>
             )}
           </div>
@@ -339,7 +339,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
           {/* Phase summary chips */}
           {strategicRoadmap?.phases && strategicRoadmap.phases.length > 0 && (
             <div>
-              <p style={{ color: '#76746E', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Phases</p>
+              <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Phases</p>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {strategicRoadmap.phases.map((p, i) => (
                   <button
@@ -369,14 +369,14 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
         <div>
           {!strategicRoadmap ? (
             <div className="card" style={{ textAlign: 'center', padding: '40px 24px' }}>
-              <p style={{ color: '#76746E', fontSize: 15, marginBottom: 8 }}>No strategic roadmap yet.</p>
+              <p style={{ color: '#6E6E73', fontSize: 15, marginBottom: 8 }}>No strategic roadmap yet.</p>
               <p style={{ color: '#4A4845', fontSize: 13, marginBottom: 20 }}>Generate a roadmap to see the full strategic picture — phases, milestones, resources and deliverables.</p>
               <button
                 onClick={regenerateRoadmap}
                 disabled={regenerating}
-                style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.4)', color: '#B4A7E5', padding: '10px 24px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+                style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.4)', color: '#BF5AF2', padding: '10px 24px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
               >
-                {regenerating && <Spinner size={13} color="#B4A7E5" strokeWidth={2} />}
+                {regenerating && <Spinner size={13} color="#BF5AF2" strokeWidth={2} />}
                 {regenerating ? 'Generating…' : '✨ Generate AI Roadmap'}
               </button>
             </div>
@@ -384,7 +384,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
             <div>
               {/* Summary + phase chips */}
               <div className="card" style={{ marginBottom: 12 }}>
-                <p style={{ color: '#B8B6B0', fontSize: 14, lineHeight: 1.6, marginBottom: 14 }}>{strategicRoadmap.summary}</p>
+                <p style={{ color: '#A1A1A6', fontSize: 14, lineHeight: 1.6, marginBottom: 14 }}>{strategicRoadmap.summary}</p>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {strategicRoadmap.phases.map((p, i) => (
                     <span key={i} style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: `${phaseColors[i % phaseColors.length]}18`, color: phaseColors[i % phaseColors.length], border: `1px solid ${phaseColors[i % phaseColors.length]}30` }}>
@@ -408,13 +408,13 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
         <div>
           {goal.milestones.length === 0 ? (
             <div className="card" style={{ textAlign: 'center', padding: '40px 24px' }}>
-              <p style={{ color: '#76746E', fontSize: 15, marginBottom: 16 }}>No execution plan yet.</p>
+              <p style={{ color: '#6E6E73', fontSize: 15, marginBottom: 16 }}>No execution plan yet.</p>
               <button
                 onClick={regenerateRoadmap}
                 disabled={regenerating}
-                style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.4)', color: '#B4A7E5', padding: '8px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+                style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.4)', color: '#BF5AF2', padding: '8px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
               >
-                {regenerating && <Spinner size={13} color="#B4A7E5" strokeWidth={2} />}
+                {regenerating && <Spinner size={13} color="#BF5AF2" strokeWidth={2} />}
                 {regenerating ? 'Generating…' : '✨ Generate with AI'}
               </button>
             </div>
@@ -479,23 +479,23 @@ function StrategicPhaseCard({ phase, index, color }: { phase: StrategicPhase; in
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <span style={{ fontSize: 15, fontWeight: 700, color }}>{phase.name}</span>
-            <span style={{ fontSize: 11, color: '#76746E', marginLeft: 10 }}>{phase.timeline}</span>
+            <span style={{ fontSize: 11, color: '#6E6E73', marginLeft: 10 }}>{phase.timeline}</span>
           </div>
-          <span style={{ color: '#76746E', fontSize: 12 }}>{open ? '▲' : '▼'}</span>
+          <span style={{ color: '#6E6E73', fontSize: 12 }}>{open ? '▲' : '▼'}</span>
         </div>
-        <p style={{ fontSize: 13, color: '#B8B6B0', marginTop: 3, lineHeight: 1.5 }}>{phase.phasePurpose}</p>
+        <p style={{ fontSize: 13, color: '#A1A1A6', marginTop: 3, lineHeight: 1.5 }}>{phase.phasePurpose}</p>
       </button>
 
       {open && (
         <div style={{ paddingBottom: 16, display: 'grid', gap: 14 }}>
           {phase.milestones?.length > 0 && (
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#76746E', marginBottom: 7 }}>Milestones</div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 7 }}>Milestones</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {phase.milestones.map((m, i) => (
                   <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                     <span style={{ color, fontSize: 11, flexShrink: 0, marginTop: 2 }}>◆</span>
-                    <span style={{ fontSize: 13, color: '#FAFAFA', lineHeight: 1.5 }}>{m}</span>
+                    <span style={{ fontSize: 13, color: '#F5F5F7', lineHeight: 1.5 }}>{m}</span>
                   </div>
                 ))}
               </div>
@@ -504,12 +504,12 @@ function StrategicPhaseCard({ phase, index, color }: { phase: StrategicPhase; in
 
           {phase.weeklyTasks?.length > 0 && (
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#76746E', marginBottom: 7 }}>Weekly Tasks</div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 7 }}>Weekly Tasks</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {phase.weeklyTasks.map((t, i) => (
                   <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                    <span style={{ color: '#76746E', flexShrink: 0, marginTop: 1 }}>→</span>
-                    <span style={{ fontSize: 13, color: '#B8B6B0', lineHeight: 1.5 }}>{t}</span>
+                    <span style={{ color: '#6E6E73', flexShrink: 0, marginTop: 1 }}>→</span>
+                    <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.5 }}>{t}</span>
                   </div>
                 ))}
               </div>
@@ -518,10 +518,10 @@ function StrategicPhaseCard({ phase, index, color }: { phase: StrategicPhase; in
 
           {phase.resources?.length > 0 && (
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#76746E', marginBottom: 7 }}>Resources</div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 7 }}>Resources</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {phase.resources.map((r, i) => (
-                  <div key={i} style={{ fontSize: 12, color: '#76746E' }}>📖 {r}</div>
+                  <div key={i} style={{ fontSize: 12, color: '#6E6E73' }}>📖 {r}</div>
                 ))}
               </div>
             </div>
@@ -531,13 +531,13 @@ function StrategicPhaseCard({ phase, index, color }: { phase: StrategicPhase; in
             {phase.deliverable && (
               <div style={{ padding: '10px 12px', background: `${color}08`, borderRadius: 8, border: `1px solid ${color}20` }}>
                 <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>Deliverable</div>
-                <p style={{ fontSize: 12, color: '#B8B6B0', margin: 0, lineHeight: 1.5 }}>{phase.deliverable}</p>
+                <p style={{ fontSize: 12, color: '#A1A1A6', margin: 0, lineHeight: 1.5 }}>{phase.deliverable}</p>
               </div>
             )}
             {phase.successLook && (
               <div style={{ padding: '10px 12px', background: 'rgba(107,227,164,0.05)', borderRadius: 8, border: '1px solid rgba(107,227,164,0.15)' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#6BE3A4', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>Done when</div>
-                <p style={{ fontSize: 12, color: '#B8B6B0', margin: 0, lineHeight: 1.5 }}>{phase.successLook}</p>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#30D158', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>Done when</div>
+                <p style={{ fontSize: 12, color: '#A1A1A6', margin: 0, lineHeight: 1.5 }}>{phase.successLook}</p>
               </div>
             )}
           </div>
@@ -566,33 +566,33 @@ function MilestoneCard({
   const completedSteps = milestone.steps.filter(s => s.completed).length
   const totalSteps = milestone.steps.length
   const stepProgress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0
-  const typeColor = milestoneTypeColors[milestone.type] ?? '#76746E'
+  const typeColor = milestoneTypeColors[milestone.type] ?? '#6E6E73'
 
   return (
     <div className="card" style={{ marginBottom: 8, padding: '14px 18px', opacity: milestone.completed ? 0.7 : 1 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', cursor: 'pointer', gap: 12 }} onClick={onToggle}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, flex: 1 }}>
-          <div style={{ width: 22, height: 22, borderRadius: 999, flexShrink: 0, background: milestone.completed ? 'rgba(107,227,164,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${milestone.completed ? 'rgba(107,227,164,0.4)' : 'rgba(255,255,255,0.1)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: milestone.completed ? '#6BE3A4' : '#76746E' }}>
+          <div style={{ width: 22, height: 22, borderRadius: 999, flexShrink: 0, background: milestone.completed ? 'rgba(107,227,164,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${milestone.completed ? 'rgba(107,227,164,0.4)' : 'rgba(255,255,255,0.1)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: milestone.completed ? '#30D158' : '#6E6E73' }}>
             {milestone.completed ? '✓' : '○'}
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3, flexWrap: 'wrap' }}>
-              <span style={{ color: milestone.completed ? '#6BE3A4' : '#FAFAFA', fontSize: 14, fontWeight: 600 }}>{milestone.title}</span>
+              <span style={{ color: milestone.completed ? '#30D158' : '#F5F5F7', fontSize: 14, fontWeight: 600 }}>{milestone.title}</span>
               <span style={{ background: `${typeColor}20`, color: typeColor, border: `1px solid ${typeColor}40`, padding: '1px 7px', borderRadius: 999, fontSize: 10, fontWeight: 700 }}>{milestone.type}</span>
             </div>
-            {milestone.description && <p style={{ color: '#76746E', fontSize: 12 }}>{milestone.description}</p>}
+            {milestone.description && <p style={{ color: '#6E6E73', fontSize: 12 }}>{milestone.description}</p>}
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-          {totalSteps > 0 && <span style={{ color: '#76746E', fontSize: 12 }}>{completedSteps}/{totalSteps}</span>}
-          {milestone.estimatedHours && <span style={{ color: '#76746E', fontSize: 11 }}>~{milestone.estimatedHours}h</span>}
-          <span style={{ color: '#76746E', fontSize: 12 }}>{isExpanded ? '▲' : '▼'}</span>
+          {totalSteps > 0 && <span style={{ color: '#6E6E73', fontSize: 12 }}>{completedSteps}/{totalSteps}</span>}
+          {milestone.estimatedHours && <span style={{ color: '#6E6E73', fontSize: 11 }}>~{milestone.estimatedHours}h</span>}
+          <span style={{ color: '#6E6E73', fontSize: 12 }}>{isExpanded ? '▲' : '▼'}</span>
         </div>
       </div>
 
       {totalSteps > 0 && (
         <div style={{ marginTop: 8, height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
-          <div style={{ height: '100%', width: `${stepProgress}%`, background: stepProgress === 100 ? '#6BE3A4' : phaseColor, borderRadius: 2, transition: 'width 0.3s' }} />
+          <div style={{ height: '100%', width: `${stepProgress}%`, background: stepProgress === 100 ? '#30D158' : phaseColor, borderRadius: 2, transition: 'width 0.3s' }} />
         </div>
       )}
 
@@ -606,16 +606,16 @@ function MilestoneCard({
             </div>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ color: '#76746E', fontSize: 12 }}>No steps yet.</span>
+              <span style={{ color: '#6E6E73', fontSize: 12 }}>No steps yet.</span>
               {onRegenerate && (
-                <button onClick={onRegenerate} disabled={regenerating} style={{ background: 'rgba(180,167,229,0.1)', border: '1px solid rgba(180,167,229,0.25)', color: '#B4A7E5', padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: regenerating ? 'not-allowed' : 'pointer' }}>
+                <button onClick={onRegenerate} disabled={regenerating} style={{ background: 'rgba(180,167,229,0.1)', border: '1px solid rgba(180,167,229,0.25)', color: '#BF5AF2', padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: regenerating ? 'not-allowed' : 'pointer' }}>
                   {regenerating ? '⏳ Generating…' : '⚡ Generate steps'}
                 </button>
               )}
             </div>
           )}
           {!milestone.completed && !isGoalCompleted && completedSteps === totalSteps && totalSteps > 0 && (
-            <button onClick={() => onCompleteMilestone(milestone.id)} style={{ marginTop: 12, background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.25)', color: '#6BE3A4', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', width: '100%' }}>
+            <button onClick={() => onCompleteMilestone(milestone.id)} style={{ marginTop: 12, background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.25)', color: '#30D158', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', width: '100%' }}>
               ✓ Mark Milestone Complete
             </button>
           )}
@@ -630,33 +630,33 @@ function MilestoneCard({
 function StepRow({ step, onComplete, isGoalCompleted }: { step: StepFull; onComplete: () => void; isGoalCompleted: boolean }) {
   const [showCriteria, setShowCriteria] = useState(false)
   const icon = stepTypeIcon[step.stepType] ?? '⚡'
-  const color = stepTypeColor[step.stepType] ?? '#6BE3A4'
+  const color = stepTypeColor[step.stepType] ?? '#30D158'
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '9px 12px', background: step.completed ? 'rgba(107,227,164,0.04)' : 'rgba(255,255,255,0.02)', borderRadius: 8, border: `1px solid ${step.completed ? 'rgba(107,227,164,0.15)' : 'rgba(255,255,255,0.05)'}` }}>
       <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>{icon}</span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
           <div style={{ flex: 1 }}>
-            <span style={{ color: step.completed ? '#76746E' : '#FAFAFA', fontSize: 13, textDecoration: step.completed ? 'line-through' : 'none' }}>{step.title}</span>
-            {step.description && <p style={{ color: '#76746E', fontSize: 12, marginTop: 3 }}>{step.description}</p>}
+            <span style={{ color: step.completed ? '#6E6E73' : '#F5F5F7', fontSize: 13, textDecoration: step.completed ? 'line-through' : 'none' }}>{step.title}</span>
+            {step.description && <p style={{ color: '#6E6E73', fontSize: 12, marginTop: 3 }}>{step.description}</p>}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
               <span style={{ background: `${color}15`, color, border: `1px solid ${color}30`, padding: '1px 7px', borderRadius: 999, fontSize: 10, fontWeight: 600 }}>{step.stepType}</span>
-              <span style={{ color: '#76746E', fontSize: 11 }}>~{step.estimatedMinutes} min</span>
-              {step.suggestedDay && <span style={{ color: '#76746E', fontSize: 11 }}>📅 {step.suggestedDay}</span>}
+              <span style={{ color: '#6E6E73', fontSize: 11 }}>~{step.estimatedMinutes} min</span>
+              {step.suggestedDay && <span style={{ color: '#6E6E73', fontSize: 11 }}>📅 {step.suggestedDay}</span>}
               {step.completionCriteria && (
-                <button onClick={() => setShowCriteria(v => !v)} style={{ background: 'none', border: 'none', color: '#76746E', fontSize: 11, cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
+                <button onClick={() => setShowCriteria(v => !v)} style={{ background: 'none', border: 'none', color: '#6E6E73', fontSize: 11, cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
                   {showCriteria ? 'hide criteria' : 'done when?'}
                 </button>
               )}
             </div>
             {showCriteria && step.completionCriteria && (
               <div style={{ marginTop: 6, padding: '6px 10px', background: 'rgba(107,227,164,0.06)', borderRadius: 6, border: '1px solid rgba(107,227,164,0.15)' }}>
-                <p style={{ color: '#6BE3A4', fontSize: 11 }}>✓ {step.completionCriteria}</p>
+                <p style={{ color: '#30D158', fontSize: 11 }}>✓ {step.completionCriteria}</p>
               </div>
             )}
           </div>
           {!step.completed && !isGoalCompleted && (
-            <button onClick={onComplete} style={{ background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.25)', color: '#6BE3A4', padding: '3px 10px', borderRadius: 5, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+            <button onClick={onComplete} style={{ background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.25)', color: '#30D158', padding: '3px 10px', borderRadius: 5, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
               Done
             </button>
           )}
@@ -694,25 +694,25 @@ function HealthTab({ goal, onUpdateHealth }: { goal: GoalFull; onUpdateHealth: (
   return (
     <div className="card" style={{ display: 'grid', gap: 16 }}>
       <div>
-        <p style={{ color: '#76746E', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Progress Summary</p>
+        <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Progress Summary</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
           <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 14px' }}>
-            <p style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Steps Done</p>
-            <p style={{ color: '#FAFAFA', fontSize: 20, fontWeight: 700, marginTop: 4 }}>{completedSteps}<span style={{ color: '#76746E', fontSize: 13 }}>/{totalSteps}</span></p>
+            <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Steps Done</p>
+            <p style={{ color: '#F5F5F7', fontSize: 20, fontWeight: 700, marginTop: 4 }}>{completedSteps}<span style={{ color: '#6E6E73', fontSize: 13 }}>/{totalSteps}</span></p>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 14px' }}>
-            <p style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Milestones Done</p>
-            <p style={{ color: '#FAFAFA', fontSize: 20, fontWeight: 700, marginTop: 4 }}>{completedMilestones}<span style={{ color: '#76746E', fontSize: 13 }}>/{totalMilestones}</span></p>
+            <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Milestones Done</p>
+            <p style={{ color: '#F5F5F7', fontSize: 20, fontWeight: 700, marginTop: 4 }}>{completedMilestones}<span style={{ color: '#6E6E73', fontSize: 13 }}>/{totalMilestones}</span></p>
           </div>
         </div>
         {suggestedHealth !== goal.healthStatus && (
           <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(242,192,99,0.06)', border: '1px solid rgba(242,192,99,0.2)', borderRadius: 7 }}>
-            <p style={{ color: '#F2C063', fontSize: 12 }}>💡 Based on {Math.round(pct * 100)}% completion, suggested: <strong>{suggestedHealth.replace('_', ' ')}</strong></p>
+            <p style={{ color: '#FFD60A', fontSize: 12 }}>💡 Based on {Math.round(pct * 100)}% completion, suggested: <strong>{suggestedHealth.replace('_', ' ')}</strong></p>
           </div>
         )}
       </div>
       <div>
-        <p style={{ color: '#76746E', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Set Health Status</p>
+        <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Set Health Status</p>
         <div style={{ display: 'grid', gap: 6 }}>
           {healthOptions.map(opt => {
             const hc = healthColors[opt.value]
@@ -721,8 +721,8 @@ function HealthTab({ goal, onUpdateHealth }: { goal: GoalFull; onUpdateHealth: (
               <button key={opt.value} onClick={() => setHealth(opt.value)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: isActive ? hc.bg : 'rgba(255,255,255,0.02)', border: `1px solid ${isActive ? `${hc.color}40` : 'rgba(255,255,255,0.06)'}`, borderRadius: 8, cursor: 'pointer', textAlign: 'left' }}>
                 <div style={{ width: 10, height: 10, borderRadius: 999, background: hc.color, flexShrink: 0 }} />
                 <div>
-                  <p style={{ color: isActive ? hc.color : '#FAFAFA', fontSize: 13, fontWeight: isActive ? 700 : 400 }}>{opt.label}</p>
-                  <p style={{ color: '#76746E', fontSize: 11, marginTop: 1 }}>{opt.desc}</p>
+                  <p style={{ color: isActive ? hc.color : '#F5F5F7', fontSize: 13, fontWeight: isActive ? 700 : 400 }}>{opt.label}</p>
+                  <p style={{ color: '#6E6E73', fontSize: 11, marginTop: 1 }}>{opt.desc}</p>
                 </div>
                 {isActive && <span style={{ marginLeft: 'auto', color: hc.color, fontSize: 12 }}>✓</span>}
               </button>
@@ -786,24 +786,24 @@ function CapitalizationTab({ goal, strategicRoadmap }: { goal: GoalFull; strateg
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
             <span style={{ fontSize: 24 }}>{capPotential === 'high' ? '💎' : capPotential === 'medium' ? '⭐' : '·'}</span>
             <div>
-              <p style={{ color: '#76746E', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Capital Potential</p>
+              <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Capital Potential</p>
               <span style={{ ...capStyle, padding: '3px 12px', borderRadius: 999, fontSize: 13, fontWeight: 700, border: `1px solid ${capStyle.border}`, display: 'inline-block', marginTop: 4 }}>
                 {capPotential.charAt(0).toUpperCase() + capPotential.slice(1)}
               </span>
             </div>
           </div>
           {capPotential === 'high' && (
-            <p style={{ color: '#B8B6B0', fontSize: 13, lineHeight: 1.6 }}>
+            <p style={{ color: '#A1A1A6', fontSize: 13, lineHeight: 1.6 }}>
               This learning can create reusable, verifiable proof that others can see — portfolio items, certifications, or demonstrated skills with evidence.
             </p>
           )}
           {capPotential === 'medium' && (
-            <p style={{ color: '#B8B6B0', fontSize: 13, lineHeight: 1.6 }}>
+            <p style={{ color: '#A1A1A6', fontSize: 13, lineHeight: 1.6 }}>
               This learning improves your capabilities but has limited external proof. Creating an output or case study will increase the capital value.
             </p>
           )}
           {capPotential === 'low' && (
-            <p style={{ color: '#B8B6B0', fontSize: 13, lineHeight: 1.6 }}>
+            <p style={{ color: '#A1A1A6', fontSize: 13, lineHeight: 1.6 }}>
               This is primarily internal knowledge. To create career capital, you&apos;ll need to produce a tangible output or evidence of the skill.
             </p>
           )}
@@ -813,25 +813,25 @@ function CapitalizationTab({ goal, strategicRoadmap }: { goal: GoalFull; strateg
       {/* Career capital outputs */}
       {(capitalOutputs.length > 0 || goal.finalOutput || goal.evidenceOfMastery) && (
         <div className="card">
-          <p style={{ color: '#76746E', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>What This Learning Can Create</p>
+          <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>What This Learning Can Create</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {capitalOutputs.map((output, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.07)' }}>
-                <span style={{ color: '#6BE3A4', fontSize: 14, flexShrink: 0, marginTop: 1 }}>◆</span>
-                <span style={{ fontSize: 13, color: '#FAFAFA' }}>{output}</span>
+                <span style={{ color: '#30D158', fontSize: 14, flexShrink: 0, marginTop: 1 }}>◆</span>
+                <span style={{ fontSize: 13, color: '#F5F5F7' }}>{output}</span>
               </div>
             ))}
             {capitalOutputs.length === 0 && goal.finalOutput && (
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.07)' }}>
-                <span style={{ color: '#B4A7E5', fontSize: 14, flexShrink: 0, marginTop: 1 }}>◆</span>
-                <span style={{ fontSize: 13, color: '#FAFAFA' }}>{goal.finalOutput}</span>
+                <span style={{ color: '#BF5AF2', fontSize: 14, flexShrink: 0, marginTop: 1 }}>◆</span>
+                <span style={{ fontSize: 13, color: '#F5F5F7' }}>{goal.finalOutput}</span>
               </div>
             )}
           </div>
 
           {/* Important note */}
           <div style={{ marginTop: 14, padding: '10px 12px', background: 'rgba(242,192,99,0.06)', border: '1px solid rgba(242,192,99,0.15)', borderRadius: 8 }}>
-            <p style={{ color: '#F2C063', fontSize: 12, lineHeight: 1.5 }}>
+            <p style={{ color: '#FFD60A', fontSize: 12, lineHeight: 1.5 }}>
               ⚠ Passive learning alone does not create career capital. Capital is created only when there is evidence, output, or demonstrated skill that others can verify.
             </p>
           </div>
@@ -841,24 +841,24 @@ function CapitalizationTab({ goal, strategicRoadmap }: { goal: GoalFull; strateg
       {/* Proof required */}
       {goal.evidenceOfMastery && (
         <div className="card">
-          <p style={{ color: '#76746E', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Proof Required to Close Gap</p>
+          <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Proof Required to Close Gap</p>
           <div style={{ padding: '10px 12px', background: 'rgba(107,227,164,0.05)', borderRadius: 8, border: '1px solid rgba(107,227,164,0.15)' }}>
-            <p style={{ color: '#FAFAFA', fontSize: 13 }}>{goal.evidenceOfMastery}</p>
+            <p style={{ color: '#F5F5F7', fontSize: 13 }}>{goal.evidenceOfMastery}</p>
           </div>
         </div>
       )}
 
       {/* Convert button */}
       <div className="card">
-        <p style={{ color: '#76746E', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Convert Output to Career Capital</p>
-        <p style={{ color: '#B8B6B0', fontSize: 13, marginBottom: 14, lineHeight: 1.5 }}>
+        <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Convert Output to Career Capital</p>
+        <p style={{ color: '#A1A1A6', fontSize: 13, marginBottom: 14, lineHeight: 1.5 }}>
           When you have produced proof or a tangible output, add it to your Career Capital inventory.
         </p>
 
         {converted.length > 0 ? (
           <div style={{ padding: '12px 14px', background: 'rgba(107,227,164,0.08)', border: '1px solid rgba(107,227,164,0.2)', borderRadius: 8 }}>
-            <p style={{ color: '#6BE3A4', fontSize: 13, fontWeight: 600 }}>✓ Added {converted.length} item{converted.length !== 1 ? 's' : ''} to Career Capital</p>
-            {converted.map((c, i) => <p key={i} style={{ color: '#B8B6B0', fontSize: 12, marginTop: 4 }}>· {c}</p>)}
+            <p style={{ color: '#30D158', fontSize: 13, fontWeight: 600 }}>✓ Added {converted.length} item{converted.length !== 1 ? 's' : ''} to Career Capital</p>
+            {converted.map((c, i) => <p key={i} style={{ color: '#A1A1A6', fontSize: 12, marginTop: 4 }}>· {c}</p>)}
           </div>
         ) : (
           <button
@@ -866,15 +866,15 @@ function CapitalizationTab({ goal, strategicRoadmap }: { goal: GoalFull; strateg
             disabled={converting || capitalOutputs.length === 0 && !goal.finalOutput}
             style={{
               padding: '10px 20px', borderRadius: 9, fontSize: 13, fontWeight: 700, cursor: 'pointer',
-              background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.3)', color: '#6BE3A4',
+              background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.3)', color: '#30D158',
               opacity: converting ? 0.6 : 1, display: 'inline-flex', alignItems: 'center', gap: 8,
             }}
           >
-            {converting && <Spinner size={13} color="#6BE3A4" strokeWidth={2} />}
+            {converting && <Spinner size={13} color="#30D158" strokeWidth={2} />}
             {converting ? 'Adding…' : '💎 Convert Output to Career Capital'}
           </button>
         )}
-        {convertError && <p style={{ color: '#FF6B6B', fontSize: 12, marginTop: 8 }}>{convertError}</p>}
+        {convertError && <p style={{ color: '#FF453A', fontSize: 12, marginTop: 8 }}>{convertError}</p>}
       </div>
     </div>
   )
@@ -897,8 +897,8 @@ function EditGoalForm({ goal, onSave }: { goal: GoalFull; onSave: (data: Partial
     detailLevel: goal.detailLevel || 'standard',
   })
 
-  const inputStyle: React.CSSProperties = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '6px 10px', color: '#FAFAFA', fontSize: 13, width: '100%' }
-  const labelStyle: React.CSSProperties = { color: '#76746E', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }
+  const inputStyle: React.CSSProperties = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '6px 10px', color: '#F5F5F7', fontSize: 13, width: '100%' }
+  const labelStyle: React.CSSProperties = { color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 5 }
 
   async function save() {
     setSaving(true)
@@ -913,7 +913,7 @@ function EditGoalForm({ goal, onSave }: { goal: GoalFull; onSave: (data: Partial
 
   if (!editing) {
     return (
-      <button onClick={() => setEditing(true)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#76746E', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+      <button onClick={() => setEditing(true)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
         ✏️ Edit Goal Details
       </button>
     )
@@ -921,7 +921,7 @@ function EditGoalForm({ goal, onSave }: { goal: GoalFull; onSave: (data: Partial
 
   return (
     <div style={{ display: 'grid', gap: 12, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-      <p style={{ color: '#B4A7E5', fontSize: 13, fontWeight: 600 }}>Edit Goal Details</p>
+      <p style={{ color: '#BF5AF2', fontSize: 13, fontWeight: 600 }}>Edit Goal Details</p>
       <div><label style={labelStyle}>Title</label><input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} style={inputStyle} /></div>
       <div><label style={labelStyle}>Capability Statement</label><input value={form.capabilityStatement} onChange={e => setForm(f => ({ ...f, capabilityStatement: e.target.value }))} style={inputStyle} /></div>
       <div><label style={labelStyle}>Why It Matters</label><input value={form.whyItMatters} onChange={e => setForm(f => ({ ...f, whyItMatters: e.target.value }))} style={inputStyle} /></div>
@@ -946,10 +946,10 @@ function EditGoalForm({ goal, onSave }: { goal: GoalFull; onSave: (data: Partial
       <div><label style={labelStyle}>Evidence of Mastery</label><input value={form.evidenceOfMastery} onChange={e => setForm(f => ({ ...f, evidenceOfMastery: e.target.value }))} style={inputStyle} /></div>
       <div><label style={labelStyle}>Final Output</label><input value={form.finalOutput} onChange={e => setForm(f => ({ ...f, finalOutput: e.target.value }))} style={inputStyle} /></div>
       <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={save} disabled={saving} style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.4)', color: '#B4A7E5', padding: '7px 16px', borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>
+        <button onClick={save} disabled={saving} style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.4)', color: '#BF5AF2', padding: '7px 16px', borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>
           {saving ? 'Saving…' : 'Save Changes'}
         </button>
-        <button onClick={() => setEditing(false)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#76746E', padding: '7px 16px', borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+        <button onClick={() => setEditing(false)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', padding: '7px 16px', borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
           Cancel
         </button>
       </div>

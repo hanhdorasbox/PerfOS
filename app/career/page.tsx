@@ -32,8 +32,8 @@ export default async function CareerPage() {
   return (
     <main className="animate-entrance" style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#FAFAFA' }}>Career Capital</h1>
-        <p style={{ color: '#B8B6B0', fontSize: 14, marginTop: 4 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7' }}>Career Capital</h1>
+        <p style={{ color: '#A1A1A6', fontSize: 14, marginTop: 4 }}>
           Am I becoming more valuable, differentiated, and harder to replace?
         </p>
       </div>
@@ -61,7 +61,7 @@ export default async function CareerPage() {
 
       <div style={{ marginTop: 20 }}>
         <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#76746E', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Planning Sandbox</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#6E6E73', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Planning Sandbox</span>
           <span style={{ fontSize: 11, color: '#4A4845', padding: '2px 8px', borderRadius: 6, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
             Draft only — convert to a Learning Roadmap to make it operational
           </span>

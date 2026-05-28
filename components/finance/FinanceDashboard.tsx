@@ -273,8 +273,8 @@ export default function FinanceDashboard({ userId }: Props) {
 
   if (loading) {
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: '#76746E', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-        <Spinner size={18} color="#76746E" strokeWidth={2} />
+      <div style={{ padding: 40, textAlign: 'center', color: '#6E6E73', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+        <Spinner size={18} color="#6E6E73" strokeWidth={2} />
         <span>Loading…</span>
       </div>
     )
@@ -286,15 +286,15 @@ export default function FinanceDashboard({ userId }: Props) {
       <div className="animate-entrance">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#FAFAFA' }}>Finance</h1>
-            <p style={{ color: '#B8B6B0', fontSize: 14, marginTop: 4 }}>Your Excel financial dashboard, connected.</p>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7' }}>Finance</h1>
+            <p style={{ color: '#A1A1A6', fontSize: 14, marginTop: 4 }}>Your Excel financial dashboard, connected.</p>
           </div>
         </div>
 
         {error && (
           <div style={{
             background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.3)',
-            color: '#FF6B6B', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
+            color: '#FF453A', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
           }}>
             {error}
           </div>
@@ -315,7 +315,7 @@ export default function FinanceDashboard({ userId }: Props) {
             style={{
               background: 'rgba(180,167,229,0.15)',
               border: '1px solid rgba(180,167,229,0.4)',
-              color: '#B4A7E5',
+              color: '#BF5AF2',
               padding: '12px 24px',
               borderRadius: 10,
               fontSize: 15,
@@ -332,7 +332,7 @@ export default function FinanceDashboard({ userId }: Props) {
               style={{
                 background: 'rgba(107,227,164,0.1)',
                 border: '1px solid rgba(107,227,164,0.3)',
-                color: '#6BE3A4',
+                color: '#30D158',
                 padding: '12px 24px',
                 borderRadius: 10,
                 fontSize: 15,
@@ -354,27 +354,27 @@ export default function FinanceDashboard({ userId }: Props) {
             background: 'rgba(242,192,99,0.05)',
           }}>
             <div>
-              <p style={{ color: '#F2C063', fontWeight: 600, fontSize: 14 }}>
+              <p style={{ color: '#FFD60A', fontWeight: 600, fontSize: 14 }}>
                 Pending review — {status.pendingImport.statementMonth}
               </p>
-              <p style={{ color: '#76746E', fontSize: 12, marginTop: 2 }}>
+              <p style={{ color: '#6E6E73', fontSize: 12, marginTop: 2 }}>
                 You have an import waiting for review
               </p>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
               {confirmDeleteId === status.pendingImport.id ? (
                 <>
-                  <span style={{ fontSize: 12, color: '#F2C063' }}>Discard import?</span>
+                  <span style={{ fontSize: 12, color: '#FFD60A' }}>Discard import?</span>
                   <button
                     onClick={() => deleteImport(status.pendingImport!.id)}
                     disabled={deletingImport === status.pendingImport.id}
                     className="btn-motion"
-                    style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: 'rgba(255,107,107,0.15)', border: '1px solid rgba(255,107,107,0.4)', color: '#FF6B6B', display: 'flex', alignItems: 'center', gap: 6 }}
+                    style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: 'rgba(255,107,107,0.15)', border: '1px solid rgba(255,107,107,0.4)', color: '#FF453A', display: 'flex', alignItems: 'center', gap: 6 }}
                   >
-                    {deletingImport === status.pendingImport.id ? <Spinner size={12} color="#FF6B6B" strokeWidth={2} /> : null}
+                    {deletingImport === status.pendingImport.id ? <Spinner size={12} color="#FF453A" strokeWidth={2} /> : null}
                     Yes, discard
                   </button>
-                  <button onClick={() => setConfirmDeleteId(null)} className="btn-motion" style={{ padding: '7px 12px', borderRadius: 8, fontSize: 12, cursor: 'pointer', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#76746E' }}>
+                  <button onClick={() => setConfirmDeleteId(null)} className="btn-motion" style={{ padding: '7px 12px', borderRadius: 8, fontSize: 12, cursor: 'pointer', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73' }}>
                     Cancel
                   </button>
                 </>
@@ -383,14 +383,14 @@ export default function FinanceDashboard({ userId }: Props) {
                   <button
                     onClick={() => resumePendingImport(status.pendingImport!)}
                     className="btn-motion"
-                    style={{ background: 'rgba(242,192,99,0.15)', border: '1px solid rgba(242,192,99,0.4)', color: '#F2C063', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                    style={{ background: 'rgba(242,192,99,0.15)', border: '1px solid rgba(242,192,99,0.4)', color: '#FFD60A', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                   >
                     Resume Review
                   </button>
                   <button
                     onClick={() => setConfirmDeleteId(status.pendingImport!.id)}
                     className="btn-motion"
-                    style={{ padding: '8px 12px', borderRadius: 8, fontSize: 12, cursor: 'pointer', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#76746E' }}
+                    style={{ padding: '8px 12px', borderRadius: 8, fontSize: 12, cursor: 'pointer', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#6E6E73' }}
                   >
                     Discard
                   </button>
@@ -403,7 +403,7 @@ export default function FinanceDashboard({ userId }: Props) {
         {/* Import history */}
         {pastImports.length > 0 && (
           <div style={{ marginTop: 28 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#76746E', marginBottom: 12 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 12 }}>
               — Import History
             </div>
             <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
@@ -423,7 +423,7 @@ export default function FinanceDashboard({ userId }: Props) {
                   >
                     {/* Month badge */}
                     <div style={{
-                      fontSize: 12, fontWeight: 700, color: '#B4A7E5',
+                      fontSize: 12, fontWeight: 700, color: '#BF5AF2',
                       background: 'rgba(180,167,229,0.1)', border: '1px solid rgba(180,167,229,0.2)',
                       borderRadius: 6, padding: '3px 10px', flexShrink: 0, minWidth: 68, textAlign: 'center',
                     }}>
@@ -432,10 +432,10 @@ export default function FinanceDashboard({ userId }: Props) {
 
                     {/* Info */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, color: '#FAFAFA', fontWeight: 500 }}>
+                      <div style={{ fontSize: 13, color: '#F5F5F7', fontWeight: 500 }}>
                         {imp.sourceFileName || 'Bank statement'}
                       </div>
-                      <div style={{ fontSize: 11, color: '#76746E', marginTop: 1 }}>
+                      <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 1 }}>
                         {txCount} transaction{txCount !== 1 ? 's' : ''}
                         {imp.createdAt && ` · ${new Date(imp.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'short', year: 'numeric' })}`}
                       </div>
@@ -446,7 +446,7 @@ export default function FinanceDashboard({ userId }: Props) {
                       fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, flexShrink: 0,
                       background: imp.status === 'written' ? 'rgba(107,227,164,0.1)' : 'rgba(96,165,250,0.1)',
                       border: `1px solid ${imp.status === 'written' ? 'rgba(107,227,164,0.25)' : 'rgba(96,165,250,0.25)'}`,
-                      color: imp.status === 'written' ? '#6BE3A4' : '#60A5FA',
+                      color: imp.status === 'written' ? '#30D158' : '#0A84FF',
                       textTransform: 'uppercase',
                     }}>
                       {imp.status === 'written' ? 'Written' : 'Approved'}
@@ -460,11 +460,11 @@ export default function FinanceDashboard({ userId }: Props) {
                       title="Delete this import"
                       style={{
                         background: 'none', border: 'none', cursor: 'pointer',
-                        color: '#76746E', fontSize: 14, padding: '4px 6px', flexShrink: 0,
+                        color: '#6E6E73', fontSize: 14, padding: '4px 6px', flexShrink: 0,
                         borderRadius: 6, lineHeight: 1,
                       }}
                     >
-                      {isDeleting ? <Spinner size={13} color="#76746E" strokeWidth={1.5} /> : '✕'}
+                      {isDeleting ? <Spinner size={13} color="#6E6E73" strokeWidth={1.5} /> : '✕'}
                     </button>
                   </div>
                 )
@@ -488,17 +488,17 @@ export default function FinanceDashboard({ userId }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
           <button
             onClick={() => setStep('overview')}
-            style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 13 }}
+            style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 13 }}
           >
             ← Back
           </button>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: '#FAFAFA' }}>Import Bank Statement</h1>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: '#F5F5F7' }}>Import Bank Statement</h1>
         </div>
 
         {error && (
           <div style={{
             background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.3)',
-            color: '#FF6B6B', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
+            color: '#FF453A', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
           }}>
             {error}
           </div>
@@ -534,8 +534,8 @@ export default function FinanceDashboard({ userId }: Props) {
           {uploading ? (
             <div style={{ textAlign: 'left' }} onClick={e => e.stopPropagation()}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-                <Spinner size={18} color="#B4A7E5" strokeWidth={2} />
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#B4A7E5' }}>Processing your statement…</span>
+                <Spinner size={18} color="#BF5AF2" strokeWidth={2} />
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#BF5AF2' }}>Processing your statement…</span>
               </div>
               <StepProgress
                 compact
@@ -550,12 +550,12 @@ export default function FinanceDashboard({ userId }: Props) {
           ) : (
             <div>
               <div style={{ fontSize: 40, marginBottom: 12 }}>📂</div>
-              <p style={{ color: '#FAFAFA', fontSize: 16, fontWeight: 600 }}>Drop your bank statement here</p>
-              <p style={{ color: '#76746E', fontSize: 13, marginTop: 8 }}>or click to browse — PDF or CSV</p>
-              <p style={{ color: '#76746E', fontSize: 11, marginTop: 16 }}>
+              <p style={{ color: '#F5F5F7', fontSize: 16, fontWeight: 600 }}>Drop your bank statement here</p>
+              <p style={{ color: '#6E6E73', fontSize: 13, marginTop: 8 }}>or click to browse — PDF or CSV</p>
+              <p style={{ color: '#6E6E73', fontSize: 11, marginTop: 16 }}>
                 Supports PDF and CSV exports from Czech banks (ČSOB, Komerční banka, Fio, Moneta, Raiffeisen)
               </p>
-              <p style={{ color: '#76746E', fontSize: 11, marginTop: 4 }}>
+              <p style={{ color: '#6E6E73', fontSize: 11, marginTop: 4 }}>
                 PDF files are read by AI — transactions are extracted automatically
               </p>
             </div>
@@ -572,7 +572,7 @@ export default function FinanceDashboard({ userId }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
           <button
             onClick={() => setStep('overview')}
-            style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 13 }}
+            style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 13 }}
           >
             ← Back
           </button>
@@ -581,7 +581,7 @@ export default function FinanceDashboard({ userId }: Props) {
         {error && (
           <div style={{
             background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.3)',
-            color: '#FF6B6B', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
+            color: '#FF453A', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
           }}>
             {error}
           </div>
@@ -604,10 +604,10 @@ export default function FinanceDashboard({ userId }: Props) {
     return (
       <div style={{ textAlign: 'center', padding: '60px 32px' }}>
         <div style={{ fontSize: 48, marginBottom: 16 }}>{excelFailed ? '✅' : '✅'}</div>
-        <h2 style={{ color: '#6BE3A4', fontSize: 24, fontWeight: 700 }}>
+        <h2 style={{ color: '#30D158', fontSize: 24, fontWeight: 700 }}>
           {approvedCount} transactions approved
         </h2>
-        <p style={{ color: '#76746E', fontSize: 14, marginTop: 8 }}>
+        <p style={{ color: '#6E6E73', fontSize: 14, marginTop: 8 }}>
           {excelFailed ? 'Saved to database — Excel update pending' : 'Transactions saved to database and Excel workbook'}
         </p>
         {excelFailed && error && (
@@ -616,12 +616,12 @@ export default function FinanceDashboard({ userId }: Props) {
             background: 'rgba(242,192,99,0.08)', border: '1px solid rgba(242,192,99,0.25)',
             borderRadius: 8, padding: '10px 16px', textAlign: 'left',
           }}>
-            <p style={{ color: '#F2C063', fontSize: 12 }}>{error}</p>
+            <p style={{ color: '#FFD60A', fontSize: 12 }}>{error}</p>
           </div>
         )}
 
         {saving && (
-          <p style={{ color: '#B4A7E5', fontSize: 14, marginTop: 24 }}>Generating financial report...</p>
+          <p style={{ color: '#BF5AF2', fontSize: 14, marginTop: 24 }}>Generating financial report...</p>
         )}
 
         {reportData && !saving && (
@@ -631,7 +631,7 @@ export default function FinanceDashboard({ userId }: Props) {
               marginTop: 28,
               background: 'rgba(180,167,229,0.15)',
               border: '1px solid rgba(180,167,229,0.4)',
-              color: '#B4A7E5',
+              color: '#BF5AF2',
               padding: '12px 28px',
               borderRadius: 10,
               fontSize: 15,
@@ -649,7 +649,7 @@ export default function FinanceDashboard({ userId }: Props) {
             marginTop: 16,
             background: 'none',
             border: 'none',
-            color: '#76746E',
+            color: '#6E6E73',
             cursor: 'pointer',
             fontSize: 13,
             display: 'block',
@@ -669,7 +669,7 @@ export default function FinanceDashboard({ userId }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
           <button
             onClick={() => setStep('overview')}
-            style={{ background: 'none', border: 'none', color: '#76746E', cursor: 'pointer', fontSize: 13 }}
+            style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 13 }}
           >
             ← Back to overview
           </button>

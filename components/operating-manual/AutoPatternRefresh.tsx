@@ -68,25 +68,25 @@ export default function AutoPatternRefresh({ userId, lastPatternAt }: Props) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       {state === 'refreshing' && (
         <span style={{
-          fontSize: 11, color: '#B4A7E5',
+          fontSize: 11, color: '#BF5AF2',
           display: 'flex', alignItems: 'center', gap: 5,
         }}>
           <span style={{
             display: 'inline-block', width: 7, height: 7, borderRadius: 99,
-            background: '#B4A7E5',
+            background: '#BF5AF2',
             animation: 'patternPulse 1s ease-in-out infinite',
           }} />
           Learning from your data…
         </span>
       )}
       {(state === 'done' || state === 'skipped') && (
-        <span style={{ fontSize: 11, color: '#76746E' }}>
+        <span style={{ fontSize: 11, color: '#6E6E73' }}>
           ✓ Up to date
           {lastUpdatedLabel && ` · ${lastUpdatedLabel}`}
         </span>
       )}
       {state === 'error' && (
-        <span style={{ fontSize: 11, color: '#76746E' }}>Auto-learn unavailable</span>
+        <span style={{ fontSize: 11, color: '#6E6E73' }}>Auto-learn unavailable</span>
       )}
       <style>{`
         @keyframes patternPulse {

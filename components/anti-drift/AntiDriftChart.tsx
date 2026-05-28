@@ -15,10 +15,10 @@ interface Props {
 }
 
 const CATEGORIES = [
-  { key: 'advancement', label: 'Advancement', color: '#6BE3A4', description: 'Creates lasting value' },
-  { key: 'maintenance', label: 'Maintenance', color: '#60A5FA', description: 'Keeps things running' },
-  { key: 'reactive', label: 'Reactive', color: '#F2C063', description: 'Response to external demands' },
-  { key: 'busywork', label: 'Busywork', color: '#FF6B6B', description: 'Low-leverage activity' },
+  { key: 'advancement', label: 'Advancement', color: '#30D158', description: 'Creates lasting value' },
+  { key: 'maintenance', label: 'Maintenance', color: '#0A84FF', description: 'Keeps things running' },
+  { key: 'reactive', label: 'Reactive', color: '#FFD60A', description: 'Response to external demands' },
+  { key: 'busywork', label: 'Busywork', color: '#FF453A', description: 'Low-leverage activity' },
 ]
 
 export default function AntiDriftChart({ workItems }: Props) {
@@ -39,10 +39,10 @@ export default function AntiDriftChart({ workItems }: Props) {
 
   return (
     <div className="card" style={{ marginBottom: 16 }}>
-      <h2 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA', marginBottom: 4 }}>
+      <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', marginBottom: 4 }}>
         Effort Distribution — Last 30 Days
       </h2>
-      <p style={{ fontSize: 12, color: '#B8B6B0', marginBottom: 16 }}>
+      <p style={{ fontSize: 12, color: '#A1A1A6', marginBottom: 16 }}>
         {total} work items logged
       </p>
 
@@ -54,7 +54,7 @@ export default function AntiDriftChart({ workItems }: Props) {
           padding: '10px 14px',
           marginBottom: 16,
           fontSize: 13,
-          color: '#FF6B6B',
+          color: '#FF453A',
           fontWeight: 600,
         }}>
           ⚠ Less than 30% of your effort this period created lasting advancement.
@@ -70,11 +70,11 @@ export default function AntiDriftChart({ workItems }: Props) {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <div style={{ width: 10, height: 10, borderRadius: 2, background: cat.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, color: '#FAFAFA', fontWeight: 600 }}>{cat.label}</span>
-                  <span style={{ fontSize: 11, color: '#B8B6B0' }}>{cat.description}</span>
+                  <span style={{ fontSize: 13, color: '#F5F5F7', fontWeight: 600 }}>{cat.label}</span>
+                  <span style={{ fontSize: 11, color: '#A1A1A6' }}>{cat.description}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                  <span style={{ fontSize: 12, color: '#B8B6B0' }}>{count} items</span>
+                  <span style={{ fontSize: 12, color: '#A1A1A6' }}>{count} items</span>
                   <span style={{ fontSize: 14, fontWeight: 700, color: cat.color, minWidth: 36, textAlign: 'right' }}>{pct}%</span>
                 </div>
               </div>
@@ -99,20 +99,20 @@ export default function AntiDriftChart({ workItems }: Props) {
         border: '1px solid rgba(107,227,164,0.15)',
         borderRadius: 10,
       }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#6BE3A4', marginBottom: 8 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#30D158', marginBottom: 8 }}>
           What changed permanently this week?
         </div>
         {thisWeekAdvancement.length === 0 ? (
-          <p style={{ fontSize: 12, color: '#B8B6B0', fontStyle: 'italic' }}>
+          <p style={{ fontSize: 12, color: '#A1A1A6', fontStyle: 'italic' }}>
             No advancement items logged this week. Log work items to track durable progress.
           </p>
         ) : (
           <ul style={{ margin: 0, padding: '0 0 0 16px' }}>
             {thisWeekAdvancement.slice(0, 5).map(item => (
-              <li key={item.id} style={{ fontSize: 13, color: '#B8B6B0', marginBottom: 4 }}>
-                <span style={{ color: '#FAFAFA' }}>{item.title}</span>
+              <li key={item.id} style={{ fontSize: 13, color: '#A1A1A6', marginBottom: 4 }}>
+                <span style={{ color: '#F5F5F7' }}>{item.title}</span>
                 {item.impact && (
-                  <span style={{ color: '#6BE3A4', marginLeft: 6, fontSize: 11 }}>→ {item.impact}</span>
+                  <span style={{ color: '#30D158', marginLeft: 6, fontSize: 11 }}>→ {item.impact}</span>
                 )}
               </li>
             ))}

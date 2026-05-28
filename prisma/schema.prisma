@@ -60,6 +60,9 @@ model User {
   recipes          Recipe[]
   // Career Roadmaps
   careerRoadmaps   CareerRoadmap[]
+  // Habit Breaker
+  alcoholLogs      AlcoholLog[]
+  alcoholSettings  AlcoholSettings?
 }
 
 model LongTermGoal {
@@ -807,4 +810,41 @@ model CareerRoadmap {
   context   String?
   roadmap   String   // JSON: { title, summary, phases }
   createdAt DateTime @default(now())
+}
+
+// ─── MODULE 29: Habit Breaker ─────────────────────────────────────────────────
+
+model AlcoholLog {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  date             DateTime
+  drinks           Float                        // standard drinks
+  occasion         String?                      // social|work|stress|habit|celebration|other
+  afterWorkout     Boolean  @default(false)
+  beforeWorkoutDay Boolean  @default(false)     // next day has a workout scheduled
+  sleepHours       Float?
+  sleepQuality     Int?                         // 1-5
+  nextDayEnergy    Int?                         // 1-5
+  missedWorkout    Boolean  @default(false)
+  missedSteps      Boolean  @default(false)
+  proteinHit       Boolean?                     // null = not tracked
+  calorieOverage   Int?                         // estimated kcal over target
+  hadCravings      Boolean  @default(false)
+  moodScore        Int?                         // 1-5
+  recoveryRating   Int?                         // 1-5
+  notes            String?
+  createdAt        DateTime @default(now())
+}
+
+model AlcoholSettings {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id])
+  budgetType           String   @default("flexible")  // strict|flexible|custom
+  weeklyBudget         Int      @default(2)
+  goal                 String   @default("fat_loss")  // fat_loss|performance|general
+  damageControlEnabled Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 }

@@ -112,8 +112,8 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
       <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div>
-            <p style={{ color: '#FF6B6B', fontSize: 13, fontWeight: 600 }}>No workbook connected</p>
-            <p style={{ color: '#76746E', fontSize: 12, marginTop: 4 }}>Upload your Finance Tracker .xlsx to connect it</p>
+            <p style={{ color: '#FF453A', fontSize: 13, fontWeight: 600 }}>No workbook connected</p>
+            <p style={{ color: '#6E6E73', fontSize: 12, marginTop: 4 }}>Upload your Finance Tracker .xlsx to connect it</p>
           </div>
           <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
             {/* Upload to Vercel Blob */}
@@ -132,7 +132,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 background: 'rgba(180,167,229,0.15)',
                 border: '1px solid rgba(180,167,229,0.4)',
-                color: '#B4A7E5', padding: '10px 22px', borderRadius: 8,
+                color: '#BF5AF2', padding: '10px 22px', borderRadius: 8,
                 fontSize: 13, fontWeight: 600, cursor: uploading ? 'not-allowed' : 'pointer',
                 opacity: uploading ? 0.9 : 1, minWidth: 160,
               }}
@@ -165,7 +165,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
         {uploadErr && (
           <div style={{
             background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.3)',
-            color: '#FF6B6B', padding: '8px 12px', borderRadius: 6, fontSize: 12, marginTop: 4,
+            color: '#FF453A', padding: '8px 12px', borderRadius: 6, fontSize: 12, marginTop: 4,
           }}>
             {uploadErr}
           </div>
@@ -190,8 +190,8 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
             {isCloud ? '☁️' : '📊'}
           </div>
           <div>
-            <p style={{ color: '#FAFAFA', fontWeight: 600, fontSize: 15 }}>{workbook.fileName}</p>
-            <p style={{ color: '#76746E', fontSize: 12, marginTop: 2 }}>
+            <p style={{ color: '#F5F5F7', fontWeight: 600, fontSize: 15 }}>{workbook.fileName}</p>
+            <p style={{ color: '#6E6E73', fontSize: 12, marginTop: 2 }}>
               {isCloud ? 'Cloud storage' : 'Local file'} · Connected {formatDate(workbook.connectedAt)}
             </p>
           </div>
@@ -200,7 +200,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
           <div style={{
             background: 'rgba(107,227,164,0.1)',
             border: '1px solid rgba(107,227,164,0.25)',
-            color: '#6BE3A4',
+            color: '#30D158',
             padding: '3px 10px',
             borderRadius: 999,
             fontSize: 11,
@@ -224,7 +224,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
               background: 'rgba(255,255,255,0.05)',
               border: '1px solid rgba(255,255,255,0.1)',
-              color: '#76746E', padding: '4px 10px', borderRadius: 6,
+              color: '#6E6E73', padding: '4px 10px', borderRadius: 6,
               fontSize: 11, cursor: uploading ? 'not-allowed' : 'pointer', minWidth: 80,
             }}
           >
@@ -245,7 +245,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
       {uploadErr && (
         <div style={{
           background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.3)',
-          color: '#FF6B6B', padding: '8px 12px', borderRadius: 6, fontSize: 12, marginTop: 12,
+          color: '#FF453A', padding: '8px 12px', borderRadius: 6, fontSize: 12, marginTop: 12,
         }}>
           {uploadErr}
         </div>
@@ -258,16 +258,16 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
         borderTop: '1px solid rgba(255,255,255,0.06)',
       }}>
         <div>
-          <p style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Last Import</p>
-          <p style={{ color: '#FAFAFA', fontSize: 14, fontWeight: 600, marginTop: 4 }}>{formatDate(workbook.lastImportAt)}</p>
+          <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Last Import</p>
+          <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, marginTop: 4 }}>{formatDate(workbook.lastImportAt)}</p>
         </div>
         <div>
-          <p style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Last Month</p>
-          <p style={{ color: '#FAFAFA', fontSize: 14, fontWeight: 600, marginTop: 4 }}>{workbook.lastImportMonth || '—'}</p>
+          <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Last Month</p>
+          <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, marginTop: 4 }}>{workbook.lastImportMonth || '—'}</p>
         </div>
         <div>
-          <p style={{ color: '#76746E', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Auto-rules</p>
-          <p style={{ color: '#FAFAFA', fontSize: 14, fontWeight: 600, marginTop: 4 }}>{ruleCount}</p>
+          <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Auto-rules</p>
+          <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, marginTop: 4 }}>{ruleCount}</p>
         </div>
       </div>
     </div>

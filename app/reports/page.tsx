@@ -40,7 +40,7 @@ interface ArchiveRow {
 
 export default async function ReportsPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF6B6B', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#FF453A', padding: 40 }}>No user found.</div>
 
   const { weekStart, weekEnd } = getWeekBounds()
 
@@ -79,8 +79,8 @@ export default async function ReportsPage() {
   return (
     <main className="animate-entrance" style={{ maxWidth: 1000, margin: '0 auto', padding: '32px 20px' }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#FAFAFA' }}>Weekly Command Brief</h1>
-        <p style={{ color: '#B8B6B0', fontSize: 14, marginTop: 4 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7' }}>Weekly Command Brief</h1>
+        <p style={{ color: '#A1A1A6', fontSize: 14, marginTop: 4 }}>
           Live performance snapshot · auto-updates as data comes in
         </p>
       </div>
@@ -95,7 +95,7 @@ export default async function ReportsPage() {
       {archivedReports.length > 0 && (
         <div style={{ marginTop: 40 }}>
           <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: 28 }} />
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: '#FAFAFA', marginBottom: 16 }}>Past Reports</h2>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 16 }}>Past Reports</h2>
           <ReportArchive
             reports={archivedReports.map(r => ({
               id: r.id,

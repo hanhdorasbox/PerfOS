@@ -12,12 +12,12 @@ interface Props {
 }
 
 const healthColors: Record<string, { color: string; bg: string; border: string; label: string }> = {
-  not_started: { color: '#76746E', bg: 'rgba(118,116,110,0.08)', border: 'rgba(118,116,110,0.2)', label: 'Not Started' },
-  on_track: { color: '#6BE3A4', bg: 'rgba(107,227,164,0.08)', border: 'rgba(107,227,164,0.2)', label: 'On Track' },
-  at_risk: { color: '#F2C063', bg: 'rgba(242,192,99,0.08)', border: 'rgba(242,192,99,0.2)', label: 'At Risk' },
-  behind: { color: '#FB923C', bg: 'rgba(251,146,60,0.08)', border: 'rgba(251,146,60,0.2)', label: 'Behind' },
-  stalled: { color: '#FF6B6B', bg: 'rgba(255,107,107,0.08)', border: 'rgba(255,107,107,0.2)', label: 'Stalled' },
-  completed: { color: '#6BE3A4', bg: 'rgba(107,227,164,0.08)', border: 'rgba(107,227,164,0.2)', label: 'Completed' },
+  not_started: { color: '#6E6E73', bg: 'rgba(118,116,110,0.08)', border: 'rgba(118,116,110,0.2)', label: 'Not Started' },
+  on_track: { color: '#30D158', bg: 'rgba(107,227,164,0.08)', border: 'rgba(107,227,164,0.2)', label: 'On Track' },
+  at_risk: { color: '#FFD60A', bg: 'rgba(242,192,99,0.08)', border: 'rgba(242,192,99,0.2)', label: 'At Risk' },
+  behind: { color: '#FF9F0A', bg: 'rgba(251,146,60,0.08)', border: 'rgba(251,146,60,0.2)', label: 'Behind' },
+  stalled: { color: '#FF453A', bg: 'rgba(255,107,107,0.08)', border: 'rgba(255,107,107,0.2)', label: 'Stalled' },
+  completed: { color: '#30D158', bg: 'rgba(107,227,164,0.08)', border: 'rgba(107,227,164,0.2)', label: 'Completed' },
 }
 
 const roadmapTypeIcon: Record<string, string> = {
@@ -109,14 +109,14 @@ export default function CapabilityGoalCard({ goal }: Props) {
             )}
             {(isCompleted) && (
               <span style={{
-                background: 'rgba(107,227,164,0.12)', color: '#6BE3A4',
+                background: 'rgba(107,227,164,0.12)', color: '#30D158',
                 border: '1px solid rgba(107,227,164,0.25)',
                 padding: '1px 8px', borderRadius: 999, fontSize: 10, fontWeight: 700,
               }}>✓ COMPLETED</span>
             )}
             {isArchived && (
               <span style={{
-                background: 'rgba(118,116,110,0.12)', color: '#76746E',
+                background: 'rgba(118,116,110,0.12)', color: '#6E6E73',
                 border: '1px solid rgba(118,116,110,0.25)',
                 padding: '1px 8px', borderRadius: 999, fontSize: 10, fontWeight: 700,
               }}>ARCHIVED</span>
@@ -129,7 +129,7 @@ export default function CapabilityGoalCard({ goal }: Props) {
             )}
             {goal.detailLevel === 'eli5' && !isCompleted && !isArchived && (
               <span style={{
-                background: 'rgba(242,192,99,0.08)', color: '#F2C063',
+                background: 'rgba(242,192,99,0.08)', color: '#FFD60A',
                 border: '1px solid rgba(242,192,99,0.2)',
                 padding: '1px 8px', borderRadius: 999, fontSize: 10, fontWeight: 700,
               }}>ELI5</span>
@@ -139,11 +139,11 @@ export default function CapabilityGoalCard({ goal }: Props) {
             href={`/learning/${goal.id}`}
             style={{ textDecoration: 'none' }}
           >
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#FAFAFA', cursor: 'pointer' }}>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', cursor: 'pointer' }}>
               {goal.title}
             </h3>
           </Link>
-          <p style={{ color: '#B8B6B0', fontSize: 13, marginTop: 3 }}>{goal.capabilityStatement}</p>
+          <p style={{ color: '#A1A1A6', fontSize: 13, marginTop: 3 }}>{goal.capabilityStatement}</p>
         </div>
 
         {/* Controls */}
@@ -152,7 +152,7 @@ export default function CapabilityGoalCard({ goal }: Props) {
             href={`/learning/${goal.id}`}
             style={{
               background: 'rgba(180,167,229,0.1)', border: '1px solid rgba(180,167,229,0.25)',
-              color: '#B4A7E5', padding: '4px 10px', borderRadius: 6,
+              color: '#BF5AF2', padding: '4px 10px', borderRadius: 6,
               fontSize: 11, fontWeight: 600, textDecoration: 'none', display: 'block',
             }}
           >
@@ -163,7 +163,7 @@ export default function CapabilityGoalCard({ goal }: Props) {
               onClick={restoreGoal}
               style={{
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                color: '#76746E', padding: '4px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                color: '#6E6E73', padding: '4px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
               }}
             >
               Restore
@@ -176,7 +176,7 @@ export default function CapabilityGoalCard({ goal }: Props) {
                 title="Archive"
                 style={{
                   background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                  color: '#76746E', padding: '4px 8px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
+                  color: '#6E6E73', padding: '4px 8px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
                 }}
               >
                 📦
@@ -189,7 +189,7 @@ export default function CapabilityGoalCard({ goal }: Props) {
               title="Delete"
               style={{
                 background: 'rgba(255,107,107,0.06)', border: '1px solid rgba(255,107,107,0.15)',
-                color: '#FF6B6B', padding: '4px 8px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
+                color: '#FF453A', padding: '4px 8px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
               }}
             >
               🗑
@@ -201,7 +201,7 @@ export default function CapabilityGoalCard({ goal }: Props) {
                 disabled={deleting}
                 style={{
                   background: 'rgba(255,107,107,0.12)', border: '1px solid rgba(255,107,107,0.3)',
-                  color: '#FF6B6B', padding: '4px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                  color: '#FF453A', padding: '4px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer',
                 }}
               >
                 {deleting ? '...' : 'Delete?'}
@@ -210,7 +210,7 @@ export default function CapabilityGoalCard({ goal }: Props) {
                 onClick={() => setConfirmDelete(false)}
                 style={{
                   background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                  color: '#76746E', padding: '4px 8px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
+                  color: '#6E6E73', padding: '4px 8px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
                 }}
               >
                 ✕
@@ -222,37 +222,37 @@ export default function CapabilityGoalCard({ goal }: Props) {
 
       {/* Level progress bar */}
       <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span style={{ color: '#76746E', fontSize: 11 }}>L{goal.startingLevel}</span>
+        <span style={{ color: '#6E6E73', fontSize: 11 }}>L{goal.startingLevel}</span>
         <div style={{ flex: 1, display: 'flex', gap: 3 }}>
           {[1, 2, 3, 4, 5].map(i => (
             <div key={i} style={{
               flex: 1, height: 5, borderRadius: 3,
               background: i <= goal.startingLevel
-                ? '#76746E'
+                ? '#6E6E73'
                 : i <= goal.targetLevel
-                ? '#B4A7E5'
+                ? '#BF5AF2'
                 : 'rgba(255,255,255,0.06)',
             }} />
           ))}
         </div>
-        <span style={{ color: '#B4A7E5', fontSize: 11 }}>L{goal.targetLevel}</span>
+        <span style={{ color: '#BF5AF2', fontSize: 11 }}>L{goal.targetLevel}</span>
       </div>
 
       {/* Overall progress */}
       {(totalSteps > 0 || totalMilestones > 0) && (
         <div style={{ marginTop: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-            <span style={{ color: '#76746E', fontSize: 11 }}>
+            <span style={{ color: '#6E6E73', fontSize: 11 }}>
               {totalSteps > 0
                 ? `${completedSteps}/${totalSteps} steps`
                 : `${completedMilestones}/${totalMilestones} milestones`}
             </span>
-            <span style={{ color: '#76746E', fontSize: 11 }}>{progress}%</span>
+            <span style={{ color: '#6E6E73', fontSize: 11 }}>{progress}%</span>
           </div>
           <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
             <div style={{
               height: '100%', width: `${progress}%`,
-              background: progress === 100 ? '#6BE3A4' : '#B4A7E5',
+              background: progress === 100 ? '#30D158' : '#BF5AF2',
               borderRadius: 2, transition: 'width 0.3s ease',
             }} />
           </div>
@@ -271,8 +271,8 @@ export default function CapabilityGoalCard({ goal }: Props) {
         }}>
           <span style={{ fontSize: 12, flexShrink: 0, marginTop: 1 }}>🎯</span>
           <div>
-            <p style={{ color: '#76746E', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Next Action</p>
-            <p style={{ color: '#B8B6B0', fontSize: 12, marginTop: 2 }}>
+            <p style={{ color: '#6E6E73', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Next Action</p>
+            <p style={{ color: '#A1A1A6', fontSize: 12, marginTop: 2 }}>
               {goal.nextBestAction || (nextStep ? `${nextStep.title}` : nextMilestone ? nextMilestone.title : '')}
             </p>
           </div>
@@ -282,15 +282,15 @@ export default function CapabilityGoalCard({ goal }: Props) {
       {/* Meta info row */}
       <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
         {goal.weeklyHours && (
-          <span style={{ color: '#76746E', fontSize: 11 }}>⏱ {goal.weeklyHours}h/week</span>
+          <span style={{ color: '#6E6E73', fontSize: 11 }}>⏱ {goal.weeklyHours}h/week</span>
         )}
         {goal.deadline && (
-          <span style={{ color: '#76746E', fontSize: 11 }}>
+          <span style={{ color: '#6E6E73', fontSize: 11 }}>
             📅 {new Date(goal.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
           </span>
         )}
         {goal.milestones.length === 0 && !isCompleted && !isArchived && (
-          <span style={{ color: '#76746E', fontSize: 11 }}>No roadmap — open to generate →</span>
+          <span style={{ color: '#6E6E73', fontSize: 11 }}>No roadmap — open to generate →</span>
         )}
       </div>
 
@@ -301,7 +301,7 @@ export default function CapabilityGoalCard({ goal }: Props) {
           background: 'rgba(242,192,99,0.06)', border: '1px solid rgba(242,192,99,0.15)',
           borderRadius: 7, padding: '7px 11px',
         }}>
-          <p style={{ color: '#F2C063', fontSize: 12 }}>
+          <p style={{ color: '#FFD60A', fontSize: 12 }}>
             ⚠️ No 'output' milestone — add one to produce something tangible.
           </p>
         </div>
