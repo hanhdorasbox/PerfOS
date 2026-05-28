@@ -15,10 +15,10 @@ interface Props {
 }
 
 const CATEGORIES = [
-  { key: 'advancement', label: 'Advancement', color: '#30D158', description: 'Creates lasting value' },
-  { key: 'maintenance', label: 'Maintenance', color: '#0A84FF', description: 'Keeps things running' },
-  { key: 'reactive', label: 'Reactive', color: '#FFD60A', description: 'Response to external demands' },
-  { key: 'busywork', label: 'Busywork', color: '#FF453A', description: 'Low-leverage activity' },
+  { key: 'advancement', label: 'Advancement', color: '#9FE7C0', description: 'Creates lasting value' },
+  { key: 'maintenance', label: 'Maintenance', color: '#9FCBFF', description: 'Keeps things running' },
+  { key: 'reactive', label: 'Reactive', color: '#F3D58A', description: 'Response to external demands' },
+  { key: 'busywork', label: 'Busywork', color: '#FFB4A8', description: 'Low-leverage activity' },
 ]
 
 export default function AntiDriftChart({ workItems }: Props) {
@@ -48,13 +48,13 @@ export default function AntiDriftChart({ workItems }: Props) {
 
       {advancementPct < 30 && total > 1 && (
         <div style={{
-          background: 'rgba(255,107,107,0.12)',
-          border: '1px solid rgba(255,107,107,0.3)',
+          background: 'rgba(255,180,168,0.12)',
+          border: '1px solid rgba(255,180,168,0.3)',
           borderRadius: 8,
           padding: '10px 14px',
           marginBottom: 16,
           fontSize: 13,
-          color: '#FF453A',
+          color: '#FFB4A8',
           fontWeight: 600,
         }}>
           ⚠ Less than 30% of your effort this period created lasting advancement.
@@ -95,11 +95,11 @@ export default function AntiDriftChart({ workItems }: Props) {
       <div style={{
         marginTop: 20,
         padding: '14px 16px',
-        background: 'rgba(107,227,164,0.06)',
-        border: '1px solid rgba(107,227,164,0.15)',
+        background: 'rgba(159,231,192,0.06)',
+        border: '1px solid rgba(159,231,192,0.15)',
         borderRadius: 10,
       }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#30D158', marginBottom: 8 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#9FE7C0', marginBottom: 8 }}>
           What changed permanently this week?
         </div>
         {thisWeekAdvancement.length === 0 ? (
@@ -112,7 +112,7 @@ export default function AntiDriftChart({ workItems }: Props) {
               <li key={item.id} style={{ fontSize: 13, color: '#A1A1A6', marginBottom: 4 }}>
                 <span style={{ color: '#F5F5F7' }}>{item.title}</span>
                 {item.impact && (
-                  <span style={{ color: '#30D158', marginLeft: 6, fontSize: 11 }}>→ {item.impact}</span>
+                  <span style={{ color: '#9FE7C0', marginLeft: 6, fontSize: 11 }}>→ {item.impact}</span>
                 )}
               </li>
             ))}

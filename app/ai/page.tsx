@@ -18,7 +18,7 @@ function inlineFormat(text: string): React.ReactNode {
           return <em key={i} style={{ color: '#A1A1A6' }}>{part.slice(1, -1)}</em>
         }
         if (part.startsWith('`') && part.endsWith('`')) {
-          return <code key={i} style={{ fontSize: 11, background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 4, color: '#BF5AF2' }}>{part.slice(1, -1)}</code>
+          return <code key={i} style={{ fontSize: 11, background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 4, color: '#C9B8FF' }}>{part.slice(1, -1)}</code>
         }
         return part
       })}
@@ -58,7 +58,7 @@ function MarkdownText({ content }: { content: string }) {
               {lang}
             </div>
           )}
-          <pre style={{ margin: 0, padding: '10px 12px', background: 'rgba(255,255,255,0.04)', overflowX: 'auto', fontSize: 11, color: '#BF5AF2', lineHeight: 1.6, fontFamily: 'monospace' }}>
+          <pre style={{ margin: 0, padding: '10px 12px', background: 'rgba(255,255,255,0.04)', overflowX: 'auto', fontSize: 11, color: '#C9B8FF', lineHeight: 1.6, fontFamily: 'monospace' }}>
             {codeLines.join('\n')}
           </pre>
         </div>
@@ -74,7 +74,7 @@ function MarkdownText({ content }: { content: string }) {
         i++
       }
       elements.push(
-        <div key={`bq-${i}`} style={{ margin: '4px 0', paddingLeft: 12, borderLeft: '3px solid rgba(180,167,229,0.4)', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div key={`bq-${i}`} style={{ margin: '4px 0', paddingLeft: 12, borderLeft: '3px solid rgba(201,184,255,0.4)', display: 'flex', flexDirection: 'column', gap: 2 }}>
           {items.map((item, ii) => (
             <div key={ii} style={{ fontSize: 13, color: '#6E6E73', lineHeight: 1.6, fontStyle: 'italic' }}>{inlineFormat(item)}</div>
           ))}
@@ -86,7 +86,7 @@ function MarkdownText({ content }: { content: string }) {
     // Heading 3: ###
     if (/^###\s+/.test(line)) {
       elements.push(
-        <div key={i} style={{ fontSize: 12, fontWeight: 700, color: '#BF5AF2', marginTop: 8, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <div key={i} style={{ fontSize: 12, fontWeight: 700, color: '#C9B8FF', marginTop: 8, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           {inlineFormat(line.replace(/^###\s+/, ''))}
         </div>
       )
@@ -124,7 +124,7 @@ function MarkdownText({ content }: { content: string }) {
         <ul key={`ul-${i}`} style={{ margin: '4px 0', paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 3 }}>
           {items.map((item, ii) => (
             <li key={ii} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 13, color: '#A1A1A6', lineHeight: 1.55 }}>
-              <span style={{ color: '#BF5AF2', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
+              <span style={{ color: '#C9B8FF', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
               <span>{inlineFormat(item)}</span>
             </li>
           ))}
@@ -144,7 +144,7 @@ function MarkdownText({ content }: { content: string }) {
         <ol key={`ol-${i}`} style={{ margin: '4px 0', paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 3 }}>
           {items.map((item, ii) => (
             <li key={ii} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 13, color: '#A1A1A6', lineHeight: 1.55 }}>
-              <span style={{ color: '#BF5AF2', flexShrink: 0, fontWeight: 700, minWidth: 18, fontSize: 11 }}>{ii + 1}.</span>
+              <span style={{ color: '#C9B8FF', flexShrink: 0, fontWeight: 700, minWidth: 18, fontSize: 11 }}>{ii + 1}.</span>
               <span>{inlineFormat(item)}</span>
             </li>
           ))}
@@ -206,8 +206,8 @@ export default function AIAdvisor() {
               {m.role === 'assistant' && <span style={{ fontSize: '16px', flexShrink: 0, marginTop: '2px' }}>🤖</span>}
               <div style={{
                 maxWidth: '75%', padding: '10px 14px', borderRadius: m.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-                background: m.role === 'user' ? 'rgba(180,167,229,0.12)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${m.role === 'user' ? 'rgba(180,167,229,0.25)' : 'rgba(255,255,255,0.08)'}`,
+                background: m.role === 'user' ? 'rgba(201,184,255,0.12)' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${m.role === 'user' ? 'rgba(201,184,255,0.25)' : 'rgba(255,255,255,0.08)'}`,
               }}>
                 {m.role === 'user'
                   ? <div style={{ fontSize: '13px', color: '#F5F5F7', lineHeight: 1.6 }}>{m.content}</div>
@@ -223,7 +223,7 @@ export default function AIAdvisor() {
           <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
             placeholder="Am I on track this quarter? What should I focus on today?" disabled={loading}
             style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#F5F5F7', fontSize: '13px', outline: 'none' }} />
-          <button onClick={send} disabled={loading || !input.trim()} style={{ padding: '10px 18px', borderRadius: '10px', background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)', color: '#BF5AF2', fontWeight: 700, cursor: 'pointer', fontSize: '13px', opacity: loading || !input.trim() ? 0.5 : 1 }}>Send</button>
+          <button onClick={send} disabled={loading || !input.trim()} style={{ padding: '10px 18px', borderRadius: '10px', background: 'rgba(201,184,255,0.15)', border: '1px solid rgba(201,184,255,0.3)', color: '#C9B8FF', fontWeight: 700, cursor: 'pointer', fontSize: '13px', opacity: loading || !input.trim() ? 0.5 : 1 }}>Send</button>
         </div>
         <div style={{ marginTop: '10px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           {['Am I on track this quarter?', "What's most at risk?", 'What should I focus on today?', 'Is my quarter overloaded?'].map(q => (

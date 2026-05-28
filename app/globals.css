@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
-/* ─── Apple-inspired dark design system ────────────────────────────────────── */
+/* ─── Muted pastel Apple dark design system ─────────────────────────────────── */
 
 :root {
-  /* Surfaces */
+  /* ── Surfaces ── */
   --bg-app:          #000000;
   --bg-base:         #0B0B0F;
   --bg-elevated:     #111116;
@@ -11,43 +11,71 @@
   --bg-card-2:       #2C2C2E;
   --bg-glass:        rgba(28, 28, 30, 0.72);
 
-  /* Text */
+  /* ── Text ── */
   --text-primary:    #F5F5F7;
   --text-secondary:  #A1A1A6;
-  --text-muted:      #6E6E73;
+  --text-muted:      #7D7D85;
   --text-disabled:   #48484A;
 
-  /* Borders */
+  /* ── Borders ── */
   --border:          rgba(255, 255, 255, 0.08);
   --border-strong:   rgba(255, 255, 255, 0.13);
   --border-inset:    rgba(0, 0, 0, 0.35);
 
-  /* Apple system accent palette */
-  --blue:    #0A84FF;
-  --green:   #30D158;
-  --yellow:  #FFD60A;
-  --orange:  #FF9F0A;
-  --red:     #FF453A;
-  --purple:  #BF5AF2;
-  --teal:    #5AC8FA;
+  /* ── Pastel accent palette ── */
+  --purple-text:   #C9B8FF;
+  --purple-bg:     rgba(201, 184, 255, 0.10);
+  --purple-border: rgba(201, 184, 255, 0.22);
 
-  /* Semantic aliases */
-  --accent:          var(--blue);
-  --success:         var(--green);
-  --warning:         var(--yellow);
-  --danger:          var(--red);
+  --blue-text:     #9FCBFF;
+  --blue-bg:       rgba(159, 203, 255, 0.10);
+  --blue-border:   rgba(159, 203, 255, 0.22);
 
-  /* Radius */
+  --mint-text:     #9FE7C0;
+  --mint-bg:       rgba(159, 231, 192, 0.09);
+  --mint-border:   rgba(159, 231, 192, 0.20);
+
+  --amber-text:    #F3D58A;
+  --amber-bg:      rgba(243, 213, 138, 0.10);
+  --amber-border:  rgba(243, 213, 138, 0.20);
+
+  --peach-text:    #F7B98E;
+  --peach-bg:      rgba(247, 185, 142, 0.10);
+  --peach-border:  rgba(247, 185, 142, 0.20);
+
+  --rose-text:     #F4A7B9;
+  --rose-bg:       rgba(244, 167, 185, 0.10);
+  --rose-border:   rgba(244, 167, 185, 0.20);
+
+  --red-text:      #FFB4A8;
+  --red-bg:        rgba(255, 180, 168, 0.10);
+  --red-border:    rgba(255, 180, 168, 0.22);
+
+  /* ── Semantic shorthand (pastel) ── */
+  --accent:   var(--blue-text);
+  --success:  var(--mint-text);
+  --warning:  var(--amber-text);
+  --danger:   var(--red-text);
+
+  /* Kept for gradient references */
+  --blue:    #9FCBFF;
+  --green:   #9FE7C0;
+  --yellow:  #F3D58A;
+  --orange:  #F7B98E;
+  --red:     #FFB4A8;
+  --purple:  #C9B8FF;
+
+  /* ── Radius ── */
   --r-sm:   10px;
   --r-md:   14px;
   --r-lg:   20px;
   --r-xl:   26px;
 
-  /* Shadows */
-  --shadow-card:     0 2px 20px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-raised:   0 8px 40px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-float:    0 20px 60px rgba(0, 0, 0, 0.55), 0 4px 16px rgba(0, 0, 0, 0.35);
-  --shadow-panel:    0 32px 80px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
+  /* ── Shadows ── */
+  --shadow-card:   0 2px 20px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-raised: 0 8px 40px rgba(0, 0, 0, 0.5),  0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-float:  0 20px 60px rgba(0, 0, 0, 0.55), 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-panel:  0 32px 80px rgba(0, 0, 0, 0.6),  0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 /* ─── Reset ──────────────────────────────────────────────────────────────────── */
@@ -74,11 +102,11 @@ body {
 /* Subtle scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
 
 /* Selection */
-::selection { background: rgba(10, 132, 255, 0.35); color: var(--text-primary); }
+::selection { background: rgba(159, 203, 255, 0.25); color: var(--text-primary); }
 
 /* ─── Card ───────────────────────────────────────────────────────────────────── */
 
@@ -117,38 +145,39 @@ body {
   transition: transform 0.08s ease;
 }
 
-/* ─── Status chips / badges ───────────────────────────────────────────────────── */
+/* ─── Status chips / badges (all muted pastel) ────────────────────────────────── */
 
-.badge-ahead     { background: rgba(48,  209, 88,  0.12); color: #30D158; border: 1px solid rgba(48,  209, 88,  0.22); padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.01em; }
-.badge-on_track  { background: rgba(10,  132, 255, 0.12); color: #0A84FF; border: 1px solid rgba(10,  132, 255, 0.22); padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.01em; }
-.badge-watch     { background: rgba(255, 214, 10,  0.12); color: #FFD60A; border: 1px solid rgba(255, 214, 10,  0.22); padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.01em; }
-.badge-at_risk   { background: rgba(255, 159, 10,  0.12); color: #FF9F0A; border: 1px solid rgba(255, 159, 10,  0.22); padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.01em; }
-.badge-critical  { background: rgba(255, 69,  58,  0.12); color: #FF453A; border: 1px solid rgba(255, 69,  58,  0.22); padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.01em; }
-.badge-completed { background: rgba(48,  209, 88,  0.10); color: #30D158; border: 1px solid rgba(48,  209, 88,  0.18); padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.01em; }
+.badge-ahead     { background: var(--mint-bg);   color: var(--mint-text);   border: 1px solid var(--mint-border);   padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; }
+.badge-on_track  { background: var(--blue-bg);   color: var(--blue-text);   border: 1px solid var(--blue-border);   padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; }
+.badge-watch     { background: var(--amber-bg);  color: var(--amber-text);  border: 1px solid var(--amber-border);  padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; }
+.badge-at_risk   { background: var(--peach-bg);  color: var(--peach-text);  border: 1px solid var(--peach-border);  padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; }
+.badge-critical  { background: var(--red-bg);    color: var(--red-text);    border: 1px solid var(--red-border);    padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; }
+.badge-completed { background: var(--mint-bg);   color: var(--mint-text);   border: 1px solid var(--mint-border);   padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; }
 
-/* ─── Apple-style buttons ─────────────────────────────────────────────────────── */
+/* ─── Buttons ─────────────────────────────────────────────────────────────────── */
 
+/* Primary — pastel blue, clearly a CTA but not aggressive */
 .btn-primary {
-  background: var(--blue);
-  color: #ffffff;
-  border: none;
+  background: rgba(159, 203, 255, 0.12);
+  color: #CFE4FF;
+  border: 1px solid rgba(159, 203, 255, 0.28);
   border-radius: var(--r-md);
   padding: 9px 18px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   letter-spacing: -0.01em;
-  box-shadow: 0 2px 12px rgba(10, 132, 255, 0.3);
-  transition: filter 0.14s ease, transform 0.1s ease, box-shadow 0.14s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
-.btn-primary:hover  { filter: brightness(1.1); box-shadow: 0 4px 18px rgba(10, 132, 255, 0.4); }
-.btn-primary:active { transform: scale(0.97); filter: brightness(0.95); }
-.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary:hover  { background: rgba(159, 203, 255, 0.2); border-color: rgba(159, 203, 255, 0.42); }
+.btn-primary:active { transform: scale(0.97); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* Secondary — neutral surface */
 .btn-secondary {
-  background: var(--bg-card-2);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-primary);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: var(--r-md);
   padding: 9px 18px;
   font-size: 14px;
@@ -156,10 +185,11 @@ body {
   cursor: pointer;
   transition: background 0.14s ease, border-color 0.14s ease, transform 0.1s ease;
 }
-.btn-secondary:hover  { background: #3A3A3C; border-color: var(--border-strong); }
+.btn-secondary:hover  { background: rgba(255, 255, 255, 0.10); border-color: rgba(255,255,255,0.16); }
 .btn-secondary:active { transform: scale(0.97); }
-.btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* Ghost */
 .btn-ghost {
   background: transparent;
   color: var(--text-secondary);
@@ -171,12 +201,13 @@ body {
   cursor: pointer;
   transition: background 0.14s ease, color 0.14s ease;
 }
-.btn-ghost:hover { background: rgba(255,255,255,0.07); color: var(--text-primary); }
+.btn-ghost:hover { background: rgba(255,255,255,0.06); color: var(--text-primary); }
 
+/* Destructive — muted rose, not aggressive */
 .btn-destructive {
-  background: rgba(255, 69, 58, 0.12);
-  color: var(--red);
-  border: 1px solid rgba(255, 69, 58, 0.2);
+  background: var(--red-bg);
+  color: var(--red-text);
+  border: 1px solid var(--red-border);
   border-radius: var(--r-md);
   padding: 9px 18px;
   font-size: 14px;
@@ -184,15 +215,15 @@ body {
   cursor: pointer;
   transition: background 0.14s ease, border-color 0.14s ease;
 }
-.btn-destructive:hover { background: rgba(255, 69, 58, 0.2); border-color: rgba(255, 69, 58, 0.35); }
+.btn-destructive:hover { background: rgba(255,180,168,0.18); border-color: rgba(255,180,168,0.35); }
 
-/* Legacy — keep for components that still use it */
+/* Legacy motion helper */
 .btn-motion {
   transition: background 0.14s ease, border-color 0.14s ease,
               opacity 0.14s ease, transform 0.1s ease, box-shadow 0.14s ease;
 }
 .btn-motion:active:not(:disabled) { transform: scale(0.97); }
-.btn-motion:disabled               { cursor: not-allowed; opacity: 0.45; }
+.btn-motion:disabled               { cursor: not-allowed; opacity: 0.4; }
 
 /* ─── Inputs ──────────────────────────────────────────────────────────────────── */
 
@@ -209,8 +240,8 @@ body {
 }
 .input-apple::placeholder { color: var(--text-muted); }
 .input-apple:focus {
-  border-color: rgba(10, 132, 255, 0.6);
-  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15);
+  border-color: rgba(159, 203, 255, 0.35);
+  box-shadow: 0 0 0 3px rgba(159, 203, 255, 0.12);
 }
 
 /* ─── Progress bar ────────────────────────────────────────────────────────────── */
@@ -232,7 +263,7 @@ body {
 
 .section-label {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -290,7 +321,7 @@ body {
   background: linear-gradient(
     90deg,
     rgba(255,255,255,0.03) 25%,
-    rgba(255,255,255,0.07) 50%,
+    rgba(255,255,255,0.06) 50%,
     rgba(255,255,255,0.03) 75%
   );
   background-size: 200% 100%;
@@ -327,12 +358,11 @@ body {
   background: rgba(30, 30, 32, 0.94);
   backdrop-filter: blur(28px) saturate(1.8);
   -webkit-backdrop-filter: blur(28px) saturate(1.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 16px;
   padding: 6px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.65), 0 4px 16px rgba(0,0,0,0.4);
   z-index: 200;
-  /* closed state */
   opacity: 0;
   transform: translateY(-6px) scale(0.97);
   pointer-events: none;
@@ -403,7 +433,7 @@ body {
   .scroll-mobile { overflow-x: auto; }
 }
 
-/* ─── Background ambient glow (subtle, not neon) ─────────────────────────────── */
+/* ─── Ambient background — very subtle, not neon ─────────────────────────────── */
 
 body::before {
   content: '';
@@ -411,7 +441,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 60% 40% at 25% 15%, rgba(10, 84, 160, 0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 30% at 80% 85%, rgba(48, 60, 100, 0.05) 0%, transparent 70%);
+    radial-gradient(ellipse 60% 40% at 25% 15%, rgba(100, 120, 180, 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 30% at 80% 85%, rgba(80,  100, 160, 0.03) 0%, transparent 70%);
   z-index: -1;
 }

@@ -236,13 +236,13 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
 
   if (!strategy) {
     return (
-      <div className="card" style={{ borderLeft: '2px solid rgba(107,227,164,0.2)' }}>
+      <div className="card" style={{ borderLeft: '2px solid rgba(159,231,192,0.2)' }}>
         <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
           Current Quarterly Fitness Regime
         </div>
         <div style={{ fontSize: 13, color: '#6E6E73', fontStyle: 'italic' }}>
           No active fitness strategy.{' '}
-          <a href="/fitness/strategy" style={{ color: '#30D158', textDecoration: 'none' }}>
+          <a href="/fitness/strategy" style={{ color: '#9FE7C0', textDecoration: 'none' }}>
             Generate one at Fitness Strategy page.
           </a>
         </div>
@@ -256,22 +256,22 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
   const nutritionPlan = parsePlan(strategy.nutritionDir)
 
   return (
-    <div className="card" style={{ borderLeft: `2px solid ${isDraft ? 'rgba(242,192,99,0.4)' : 'rgba(107,227,164,0.3)'}` }}>
+    <div className="card" style={{ borderLeft: `2px solid ${isDraft ? 'rgba(243,213,138,0.4)' : 'rgba(159,231,192,0.3)'}` }}>
       {isDraft && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', marginBottom: 14, borderRadius: 8, background: 'rgba(242,192,99,0.07)', border: '1px solid rgba(242,192,99,0.2)' }}>
-          <span style={{ fontSize: 12, color: '#FFD60A' }}>⚠ Draft strategy — review and activate to make it operational</span>
-          <a href="/fitness/strategy" style={{ fontSize: 12, color: '#FFD60A', textDecoration: 'none', fontWeight: 700, flexShrink: 0 }}>Review & Activate →</a>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', marginBottom: 14, borderRadius: 8, background: 'rgba(243,213,138,0.07)', border: '1px solid rgba(243,213,138,0.2)' }}>
+          <span style={{ fontSize: 12, color: '#F3D58A' }}>⚠ Draft strategy — review and activate to make it operational</span>
+          <a href="/fitness/strategy" style={{ fontSize: 12, color: '#F3D58A', textDecoration: 'none', fontWeight: 700, flexShrink: 0 }}>Review & Activate →</a>
         </div>
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
         <div>
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: isDraft ? '#FFD60A' : '#6E6E73', marginBottom: 4 }}>
+          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: isDraft ? '#F3D58A' : '#6E6E73', marginBottom: 4 }}>
             {isDraft ? 'Draft Fitness Strategy' : 'Current Quarterly Fitness Regime'}
           </div>
           <div style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7' }}>{strategy.mainObjective}</div>
         </div>
-        <a href="/fitness/strategy" style={{ fontSize: 11, color: isDraft ? '#FFD60A' : '#30D158', textDecoration: 'none', padding: '4px 10px', border: `1px solid ${isDraft ? 'rgba(242,192,99,0.2)' : 'rgba(107,227,164,0.2)'}`, borderRadius: 6, flexShrink: 0 }}>
+        <a href="/fitness/strategy" style={{ fontSize: 11, color: isDraft ? '#F3D58A' : '#9FE7C0', textDecoration: 'none', padding: '4px 10px', border: `1px solid ${isDraft ? 'rgba(243,213,138,0.2)' : 'rgba(159,231,192,0.2)'}`, borderRadius: 6, flexShrink: 0 }}>
           Full Strategy →
         </a>
       </div>
@@ -288,15 +288,15 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '8px 12px', marginBottom: 10, borderRadius: 8,
-          background: feedback.type === 'warn' ? 'rgba(242,192,99,0.08)' : feedback.type === 'protect' ? 'rgba(107,227,164,0.06)' : 'rgba(255,255,255,0.04)',
-          border: `1px solid ${feedback.type === 'warn' ? 'rgba(242,192,99,0.2)' : feedback.type === 'protect' ? 'rgba(107,227,164,0.2)' : 'rgba(255,255,255,0.08)'}`,
+          background: feedback.type === 'warn' ? 'rgba(243,213,138,0.08)' : feedback.type === 'protect' ? 'rgba(159,231,192,0.06)' : 'rgba(255,255,255,0.04)',
+          border: `1px solid ${feedback.type === 'warn' ? 'rgba(243,213,138,0.2)' : feedback.type === 'protect' ? 'rgba(159,231,192,0.2)' : 'rgba(255,255,255,0.08)'}`,
         }}>
-          <span style={{ fontSize: 12, color: feedback.type === 'warn' ? '#FFD60A' : feedback.type === 'protect' ? '#30D158' : '#A1A1A6' }}>
+          <span style={{ fontSize: 12, color: feedback.type === 'warn' ? '#F3D58A' : feedback.type === 'protect' ? '#9FE7C0' : '#A1A1A6' }}>
             {feedback.text}
           </span>
           <div style={{ display: 'flex', gap: 8, flexShrink: 0, marginLeft: 12 }}>
             {undoState && (
-              <button onClick={handleUndo} style={{ fontSize: 11, color: '#30D158', background: 'none', border: '1px solid rgba(107,227,164,0.3)', borderRadius: 5, padding: '2px 8px', cursor: 'pointer' }}>
+              <button onClick={handleUndo} style={{ fontSize: 11, color: '#9FE7C0', background: 'none', border: '1px solid rgba(159,231,192,0.3)', borderRadius: 5, padding: '2px 8px', cursor: 'pointer' }}>
                 Undo
               </button>
             )}
@@ -321,7 +321,7 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 6 }}>
             {schedule.slice(0, 7).map((s, di) => (
               <div key={di} style={{ padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.05)' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#30D158', marginBottom: 6 }}>{s.day?.slice(0, 3).toUpperCase()}</div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#9FE7C0', marginBottom: 6 }}>{s.day?.slice(0, 3).toUpperCase()}</div>
                 {s.sessionList.length > 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                     {s.sessionList.map((session, si) => {
@@ -347,7 +347,7 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                           onMouseEnter={() => setHoverKey(itemKey)}
                           onMouseLeave={() => setHoverKey(null)}
                         >
-                          <span style={{ fontSize: 9, color: '#30D158', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
+                          <span style={{ fontSize: 9, color: '#9FE7C0', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontSize: 11, color: '#A1A1A6', lineHeight: 1.3 }}>{parsed.activity}</div>
                             {parsed.detail && <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 1 }}>{parsed.detail}</div>}
@@ -360,8 +360,8 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                               style={{
                                 position: 'absolute', right: -6, top: -2,
                                 width: 16, height: 16, borderRadius: '50%',
-                                background: 'rgba(255,100,100,0.15)', border: '1px solid rgba(255,100,100,0.3)',
-                                color: '#FF453A', fontSize: 9, fontWeight: 700,
+                                background: 'rgba(255,180,168,0.15)', border: '1px solid rgba(255,180,168,0.3)',
+                                color: '#FFB4A8', fontSize: 9, fontWeight: 700,
                                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 lineHeight: 1, padding: 0, flexShrink: 0,
                               }}
@@ -403,13 +403,13 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                   onClick={() => setSelectedReason(prev => prev === r.value ? '' : r.value)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', textAlign: 'left',
-                    background: selectedReason === r.value ? 'rgba(107,227,164,0.1)' : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${selectedReason === r.value ? 'rgba(107,227,164,0.35)' : 'rgba(255,255,255,0.06)'}`,
+                    background: selectedReason === r.value ? 'rgba(159,231,192,0.1)' : 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${selectedReason === r.value ? 'rgba(159,231,192,0.35)' : 'rgba(255,255,255,0.06)'}`,
                     transition: 'all 0.15s',
                   }}
                 >
                   <span style={{ fontSize: 14 }}>{r.emoji}</span>
-                  <span style={{ fontSize: 12, color: selectedReason === r.value ? '#30D158' : '#A1A1A6' }}>{r.label}</span>
+                  <span style={{ fontSize: 12, color: selectedReason === r.value ? '#9FE7C0' : '#A1A1A6' }}>{r.label}</span>
                 </button>
               ))}
             </div>
@@ -421,9 +421,9 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                 onClick={handleConfirmRemove}
                 disabled={!selectedReason || saving}
                 style={{
-                  flex: 1, padding: '9px 0', background: selectedReason ? 'rgba(255,100,100,0.15)' : 'rgba(255,255,255,0.04)',
-                  border: `1px solid ${selectedReason ? 'rgba(255,100,100,0.3)' : 'rgba(255,255,255,0.06)'}`,
-                  borderRadius: 8, color: selectedReason ? '#FF8A8A' : '#4A4845', fontSize: 13, cursor: selectedReason ? 'pointer' : 'default',
+                  flex: 1, padding: '9px 0', background: selectedReason ? 'rgba(255,180,168,0.15)' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${selectedReason ? 'rgba(255,180,168,0.3)' : 'rgba(255,255,255,0.06)'}`,
+                  borderRadius: 8, color: selectedReason ? '#FFB4A8' : '#4A4845', fontSize: 13, cursor: selectedReason ? 'pointer' : 'default',
                   fontWeight: 600,
                 }}
               >

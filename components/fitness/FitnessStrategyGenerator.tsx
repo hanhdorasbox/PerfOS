@@ -47,9 +47,9 @@ function ChoiceButton({ label, selected, onClick }: { label: string; selected: b
       onClick={onClick}
       style={{
         padding: '9px 14px', borderRadius: 8, fontSize: 13, cursor: 'pointer',
-        border: `1px solid ${selected ? 'rgba(180,167,229,0.45)' : 'rgba(255,255,255,0.1)'}`,
-        background: selected ? 'rgba(180,167,229,0.15)' : 'rgba(255,255,255,0.04)',
-        color: selected ? '#BF5AF2' : '#A1A1A6',
+        border: `1px solid ${selected ? 'rgba(201,184,255,0.45)' : 'rgba(255,255,255,0.1)'}`,
+        background: selected ? 'rgba(201,184,255,0.15)' : 'rgba(255,255,255,0.04)',
+        color: selected ? '#C9B8FF' : '#A1A1A6',
         fontWeight: selected ? 600 : 400,
         textAlign: 'left' as const,
       }}
@@ -473,14 +473,14 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               fontSize: 11, fontWeight: 600,
-              color: i === step ? '#BF5AF2' : i < step ? '#30D158' : '#6E6E73',
+              color: i === step ? '#C9B8FF' : i < step ? '#9FE7C0' : '#6E6E73',
             }}
           >
             <div style={{
               width: 20, height: 20, borderRadius: '50%', fontSize: 10, fontWeight: 800,
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-              background: i === step ? 'rgba(180,167,229,0.2)' : i < step ? 'rgba(107,227,164,0.15)' : 'rgba(255,255,255,0.05)',
-              border: `1px solid ${i === step ? 'rgba(180,167,229,0.4)' : i < step ? 'rgba(107,227,164,0.3)' : 'rgba(255,255,255,0.08)'}`,
+              background: i === step ? 'rgba(201,184,255,0.2)' : i < step ? 'rgba(159,231,192,0.15)' : 'rgba(255,255,255,0.05)',
+              border: `1px solid ${i === step ? 'rgba(201,184,255,0.4)' : i < step ? 'rgba(159,231,192,0.3)' : 'rgba(255,255,255,0.08)'}`,
             }}>
               {i < step ? '✓' : i + 1}
             </div>
@@ -501,7 +501,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
 
       {sectionContent[step]}
 
-      {error && <div style={{ fontSize: 12, color: '#FF453A', marginTop: 12 }}>{error}</div>}
+      {error && <div style={{ fontSize: 12, color: '#FFB4A8', marginTop: 12 }}>{error}</div>}
 
       {/* Generation loading panel (replaces nav when running) */}
       {loading ? (
@@ -510,14 +510,14 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
           style={{
             marginTop: 24,
             padding: '20px 22px',
-            background: 'rgba(107,227,164,0.04)',
-            border: '1px solid rgba(107,227,164,0.14)',
+            background: 'rgba(159,231,192,0.04)',
+            border: '1px solid rgba(159,231,192,0.14)',
             borderRadius: 12,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
-            <Spinner size={18} color="#30D158" strokeWidth={2} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#30D158' }}>Generating your Fitness Strategy…</span>
+            <Spinner size={18} color="#9FE7C0" strokeWidth={2} />
+            <span style={{ fontSize: 14, fontWeight: 600, color: '#9FE7C0' }}>Generating your Fitness Strategy…</span>
           </div>
           <StepProgress
             compact
@@ -547,8 +547,8 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
               onClick={() => setStep(step + 1)}
               className="btn-motion"
               style={{
-                background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.3)',
-                color: '#BF5AF2', borderRadius: 8, padding: '9px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                background: 'rgba(201,184,255,0.15)', border: '1px solid rgba(201,184,255,0.3)',
+                color: '#C9B8FF', borderRadius: 8, padding: '9px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
               }}
             >
               Continue →
@@ -559,9 +559,9 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
               disabled={loading}
               className="btn-motion"
               style={{
-                background: 'rgba(107,227,164,0.15)',
-                border: '1px solid rgba(107,227,164,0.3)',
-                color: '#30D158', borderRadius: 8, padding: '9px 24px',
+                background: 'rgba(159,231,192,0.15)',
+                border: '1px solid rgba(159,231,192,0.3)',
+                color: '#9FE7C0', borderRadius: 8, padding: '9px 24px',
                 fontSize: 13, fontWeight: 700, cursor: 'pointer',
               }}
             >

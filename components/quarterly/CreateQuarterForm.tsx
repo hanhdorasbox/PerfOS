@@ -128,15 +128,15 @@ export default function CreateQuarterForm() {
           </div>
         </div>
 
-        {error && <p style={{ color: '#FF453A', fontSize: 13 }}>{error}</p>}
+        {error && <p style={{ color: '#FFB4A8', fontSize: 13 }}>{error}</p>}
 
         <button
           type="submit"
           disabled={saving}
           style={{
-            background: saving ? 'rgba(180,167,229,0.1)' : 'rgba(180,167,229,0.2)',
-            border: '1px solid rgba(180,167,229,0.4)',
-            color: '#BF5AF2',
+            background: saving ? 'rgba(201,184,255,0.1)' : 'rgba(201,184,255,0.2)',
+            border: '1px solid rgba(201,184,255,0.4)',
+            color: '#C9B8FF',
             padding: '12px 24px',
             borderRadius: 8,
             fontSize: 14,

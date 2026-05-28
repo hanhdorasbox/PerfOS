@@ -38,25 +38,25 @@ const stepTypeIcon: Record<string, string> = {
   read: '📖', watch: '▶️', practice: '⚡', build: '🔨', reflect: '💭', exercise: '💪',
 }
 const stepTypeColor: Record<string, string> = {
-  read: '#0A84FF', watch: '#F472B6', practice: '#30D158', build: '#BF5AF2', reflect: '#FFD60A', exercise: '#FF9F0A',
+  read: '#9FCBFF', watch: '#F4A7B9', practice: '#9FE7C0', build: '#C9B8FF', reflect: '#F3D58A', exercise: '#F7B98E',
 }
 const milestoneTypeColors: Record<string, string> = {
-  knowledge: '#0A84FF', practice: '#30D158', output: '#BF5AF2',
+  knowledge: '#9FCBFF', practice: '#9FE7C0', output: '#C9B8FF',
 }
 const healthColors: Record<string, { color: string; bg: string; label: string }> = {
   not_started: { color: '#6E6E73', bg: 'rgba(118,116,110,0.1)', label: 'Not Started' },
-  on_track:    { color: '#30D158', bg: 'rgba(107,227,164,0.1)', label: 'On Track' },
-  at_risk:     { color: '#FFD60A', bg: 'rgba(242,192,99,0.1)',  label: 'At Risk' },
-  behind:      { color: '#FF9F0A', bg: 'rgba(251,146,60,0.1)',  label: 'Behind' },
-  stalled:     { color: '#FF453A', bg: 'rgba(255,107,107,0.1)', label: 'Stalled' },
-  completed:   { color: '#30D158', bg: 'rgba(107,227,164,0.1)', label: 'Completed' },
+  on_track:    { color: '#9FE7C0', bg: 'rgba(159,231,192,0.1)', label: 'On Track' },
+  at_risk:     { color: '#F3D58A', bg: 'rgba(243,213,138,0.1)',  label: 'At Risk' },
+  behind:      { color: '#F7B98E', bg: 'rgba(247,185,142,0.1)',  label: 'Behind' },
+  stalled:     { color: '#FFB4A8', bg: 'rgba(255,180,168,0.1)', label: 'Stalled' },
+  completed:   { color: '#9FE7C0', bg: 'rgba(159,231,192,0.1)', label: 'Completed' },
 }
 const capitalColors: Record<string, { color: string; bg: string; border: string }> = {
-  high:   { color: '#30D158', bg: 'rgba(107,227,164,0.1)',  border: 'rgba(107,227,164,0.3)' },
-  medium: { color: '#FFD60A', bg: 'rgba(242,192,99,0.1)',   border: 'rgba(242,192,99,0.3)' },
+  high:   { color: '#9FE7C0', bg: 'rgba(159,231,192,0.1)',  border: 'rgba(159,231,192,0.3)' },
+  medium: { color: '#F3D58A', bg: 'rgba(243,213,138,0.1)',   border: 'rgba(243,213,138,0.3)' },
   low:    { color: '#6E6E73', bg: 'rgba(118,116,110,0.1)',  border: 'rgba(118,116,110,0.3)' },
 }
-const phaseColors = ['#BF5AF2', '#30D158', '#FFD60A', '#0A84FF', '#FF9F0A', '#F472B6']
+const phaseColors = ['#C9B8FF', '#9FE7C0', '#F3D58A', '#9FCBFF', '#F7B98E', '#F4A7B9']
 
 type Tab = 'overview' | 'roadmap' | 'plan' | 'health' | 'capital'
 
@@ -184,7 +184,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
             {/* Chips row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
               {goal.roadmapType && (
-                <span style={{ background: 'rgba(180,167,229,0.1)', color: '#BF5AF2', border: '1px solid rgba(180,167,229,0.25)', padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700, textTransform: 'uppercase' }}>
+                <span style={{ background: 'rgba(201,184,255,0.1)', color: '#C9B8FF', border: '1px solid rgba(201,184,255,0.25)', padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700, textTransform: 'uppercase' }}>
                   {goal.roadmapType}
                 </span>
               )}
@@ -197,7 +197,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
                 </span>
               )}
               {goal.detailLevel === 'eli5' && (
-                <span style={{ background: 'rgba(242,192,99,0.1)', color: '#FFD60A', border: '1px solid rgba(242,192,99,0.25)', padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700 }}>ELI5</span>
+                <span style={{ background: 'rgba(243,213,138,0.1)', color: '#F3D58A', border: '1px solid rgba(243,213,138,0.25)', padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700 }}>ELI5</span>
               )}
             </div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: '#F5F5F7', marginBottom: 5 }}>
@@ -208,28 +208,28 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
 
           {/* Action buttons */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end', flexShrink: 0 }}>
-            {regenError && <p style={{ color: '#FF453A', fontSize: 12, maxWidth: 280, textAlign: 'right' }}>⚠ {regenError}</p>}
+            {regenError && <p style={{ color: '#FFB4A8', fontSize: 12, maxWidth: 280, textAlign: 'right' }}>⚠ {regenError}</p>}
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
               {goal.status === 'active' && (
                 <>
-                  <button onClick={completeGoal} style={{ ...btnStyle, color: '#30D158', border: '1px solid rgba(107,227,164,0.3)' }}>✓ Complete</button>
+                  <button onClick={completeGoal} style={{ ...btnStyle, color: '#9FE7C0', border: '1px solid rgba(159,231,192,0.3)' }}>✓ Complete</button>
                   <button onClick={archiveGoal} style={btnStyle}>📦 Archive</button>
                   <button
                     onClick={regenerateRoadmap}
                     disabled={regenerating}
-                    style={{ ...btnStyle, color: '#BF5AF2', border: '1px solid rgba(180,167,229,0.3)', display: 'flex', alignItems: 'center', gap: 6 }}
+                    style={{ ...btnStyle, color: '#C9B8FF', border: '1px solid rgba(201,184,255,0.3)', display: 'flex', alignItems: 'center', gap: 6 }}
                   >
-                    {regenerating && <Spinner size={11} color="#BF5AF2" strokeWidth={2} />}
+                    {regenerating && <Spinner size={11} color="#C9B8FF" strokeWidth={2} />}
                     {regenerating ? 'Regenerating…' : '✨ Regenerate'}
                   </button>
                 </>
               )}
               {!confirmDelete ? (
-                <button onClick={() => setConfirmDelete(true)} style={{ ...btnStyle, color: '#FF453A', border: '1px solid rgba(255,107,107,0.3)' }}>🗑 Delete</button>
+                <button onClick={() => setConfirmDelete(true)} style={{ ...btnStyle, color: '#FFB4A8', border: '1px solid rgba(255,180,168,0.3)' }}>🗑 Delete</button>
               ) : (
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                  <span style={{ color: '#FF453A', fontSize: 12 }}>Sure?</span>
-                  <button onClick={deleteGoal} disabled={deleting} style={{ ...btnStyle, background: 'rgba(255,107,107,0.15)', color: '#FF453A', border: '1px solid rgba(255,107,107,0.4)' }}>
+                  <span style={{ color: '#FFB4A8', fontSize: 12 }}>Sure?</span>
+                  <button onClick={deleteGoal} disabled={deleting} style={{ ...btnStyle, background: 'rgba(255,180,168,0.15)', color: '#FFB4A8', border: '1px solid rgba(255,180,168,0.4)' }}>
                     {deleting ? '…' : 'Yes, delete'}
                   </button>
                   <button onClick={() => setConfirmDelete(false)} style={btnStyle}>Cancel</button>
@@ -244,10 +244,10 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
           <div style={{ marginTop: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
               <span style={{ color: '#6E6E73', fontSize: 12 }}>{completedSteps}/{totalSteps} steps · {completedMilestones}/{goal.milestones.length} milestones</span>
-              <span style={{ color: '#BF5AF2', fontSize: 12, fontWeight: 600 }}>{overallProgress}%</span>
+              <span style={{ color: '#C9B8FF', fontSize: 12, fontWeight: 600 }}>{overallProgress}%</span>
             </div>
             <div style={{ height: 6, background: 'rgba(255,255,255,0.08)', borderRadius: 3 }}>
-              <div style={{ height: '100%', width: `${overallProgress}%`, background: overallProgress === 100 ? '#30D158' : 'linear-gradient(90deg, #B4A7E5, #6BE3A4)', borderRadius: 3, transition: 'width 0.4s' }} />
+              <div style={{ height: '100%', width: `${overallProgress}%`, background: overallProgress === 100 ? '#9FE7C0' : 'linear-gradient(90deg, #C9B8FF, #9FE7C0)', borderRadius: 3, transition: 'width 0.4s' }} />
             </div>
           </div>
         )}
@@ -278,10 +278,10 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
 
         {/* Next Best Action */}
         {goal.nextBestAction && (
-          <div style={{ marginTop: 14, background: 'rgba(107,227,164,0.06)', border: '1px solid rgba(107,227,164,0.2)', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ marginTop: 14, background: 'rgba(159,231,192,0.06)', border: '1px solid rgba(159,231,192,0.2)', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 16 }}>🎯</span>
             <div>
-              <p style={{ color: '#30D158', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Best Action</p>
+              <p style={{ color: '#9FE7C0', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Best Action</p>
               <p style={{ color: '#F5F5F7', fontSize: 13, marginTop: 2 }}>{goal.nextBestAction}</p>
             </div>
           </div>
@@ -296,9 +296,9 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
             onClick={() => setActiveTab(tab.id)}
             style={{
               padding: '7px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              border: activeTab === tab.id ? '1px solid rgba(180,167,229,0.4)' : '1px solid transparent',
-              background: activeTab === tab.id ? 'rgba(180,167,229,0.1)' : 'transparent',
-              color: activeTab === tab.id ? '#BF5AF2' : '#6E6E73',
+              border: activeTab === tab.id ? '1px solid rgba(201,184,255,0.4)' : '1px solid transparent',
+              background: activeTab === tab.id ? 'rgba(201,184,255,0.1)' : 'transparent',
+              color: activeTab === tab.id ? '#C9B8FF' : '#6E6E73',
             }}
           >
             {tab.label}
@@ -310,8 +310,8 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
       {activeTab === 'overview' && (
         <div className="card" style={{ display: 'grid', gap: 16 }}>
           {strategicRoadmap?.summary && (
-            <div style={{ padding: '12px 14px', background: 'rgba(180,167,229,0.05)', borderRadius: 8, border: '1px solid rgba(180,167,229,0.15)' }}>
-              <p style={{ color: '#BF5AF2', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Strategic Summary</p>
+            <div style={{ padding: '12px 14px', background: 'rgba(201,184,255,0.05)', borderRadius: 8, border: '1px solid rgba(201,184,255,0.15)' }}>
+              <p style={{ color: '#C9B8FF', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Strategic Summary</p>
               <p style={{ color: '#F5F5F7', fontSize: 13, lineHeight: 1.6 }}>{strategicRoadmap.summary}</p>
             </div>
           )}
@@ -323,14 +323,14 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
           )}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {goal.evidenceOfMastery && (
-              <div style={{ background: 'rgba(107,227,164,0.06)', border: '1px solid rgba(107,227,164,0.15)', borderRadius: 8, padding: '12px 14px' }}>
-                <p style={{ color: '#30D158', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Evidence of Mastery</p>
+              <div style={{ background: 'rgba(159,231,192,0.06)', border: '1px solid rgba(159,231,192,0.15)', borderRadius: 8, padding: '12px 14px' }}>
+                <p style={{ color: '#9FE7C0', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Evidence of Mastery</p>
                 <p style={{ color: '#F5F5F7', fontSize: 13 }}>{goal.evidenceOfMastery}</p>
               </div>
             )}
             {goal.finalOutput && (
-              <div style={{ background: 'rgba(180,167,229,0.06)', border: '1px solid rgba(180,167,229,0.15)', borderRadius: 8, padding: '12px 14px' }}>
-                <p style={{ color: '#BF5AF2', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Final Output</p>
+              <div style={{ background: 'rgba(201,184,255,0.06)', border: '1px solid rgba(201,184,255,0.15)', borderRadius: 8, padding: '12px 14px' }}>
+                <p style={{ color: '#C9B8FF', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Final Output</p>
                 <p style={{ color: '#F5F5F7', fontSize: 13 }}>{goal.finalOutput}</p>
               </div>
             )}
@@ -374,9 +374,9 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
               <button
                 onClick={regenerateRoadmap}
                 disabled={regenerating}
-                style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.4)', color: '#BF5AF2', padding: '10px 24px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+                style={{ background: 'rgba(201,184,255,0.15)', border: '1px solid rgba(201,184,255,0.4)', color: '#C9B8FF', padding: '10px 24px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
               >
-                {regenerating && <Spinner size={13} color="#BF5AF2" strokeWidth={2} />}
+                {regenerating && <Spinner size={13} color="#C9B8FF" strokeWidth={2} />}
                 {regenerating ? 'Generating…' : '✨ Generate AI Roadmap'}
               </button>
             </div>
@@ -412,9 +412,9 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
               <button
                 onClick={regenerateRoadmap}
                 disabled={regenerating}
-                style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.4)', color: '#BF5AF2', padding: '8px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+                style={{ background: 'rgba(201,184,255,0.15)', border: '1px solid rgba(201,184,255,0.4)', color: '#C9B8FF', padding: '8px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
               >
-                {regenerating && <Spinner size={13} color="#BF5AF2" strokeWidth={2} />}
+                {regenerating && <Spinner size={13} color="#C9B8FF" strokeWidth={2} />}
                 {regenerating ? 'Generating…' : '✨ Generate with AI'}
               </button>
             </div>
@@ -535,8 +535,8 @@ function StrategicPhaseCard({ phase, index, color }: { phase: StrategicPhase; in
               </div>
             )}
             {phase.successLook && (
-              <div style={{ padding: '10px 12px', background: 'rgba(107,227,164,0.05)', borderRadius: 8, border: '1px solid rgba(107,227,164,0.15)' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#30D158', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>Done when</div>
+              <div style={{ padding: '10px 12px', background: 'rgba(159,231,192,0.05)', borderRadius: 8, border: '1px solid rgba(159,231,192,0.15)' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#9FE7C0', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>Done when</div>
                 <p style={{ fontSize: 12, color: '#A1A1A6', margin: 0, lineHeight: 1.5 }}>{phase.successLook}</p>
               </div>
             )}
@@ -572,12 +572,12 @@ function MilestoneCard({
     <div className="card" style={{ marginBottom: 8, padding: '14px 18px', opacity: milestone.completed ? 0.7 : 1 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', cursor: 'pointer', gap: 12 }} onClick={onToggle}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, flex: 1 }}>
-          <div style={{ width: 22, height: 22, borderRadius: 999, flexShrink: 0, background: milestone.completed ? 'rgba(107,227,164,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${milestone.completed ? 'rgba(107,227,164,0.4)' : 'rgba(255,255,255,0.1)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: milestone.completed ? '#30D158' : '#6E6E73' }}>
+          <div style={{ width: 22, height: 22, borderRadius: 999, flexShrink: 0, background: milestone.completed ? 'rgba(159,231,192,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${milestone.completed ? 'rgba(159,231,192,0.4)' : 'rgba(255,255,255,0.1)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: milestone.completed ? '#9FE7C0' : '#6E6E73' }}>
             {milestone.completed ? '✓' : '○'}
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3, flexWrap: 'wrap' }}>
-              <span style={{ color: milestone.completed ? '#30D158' : '#F5F5F7', fontSize: 14, fontWeight: 600 }}>{milestone.title}</span>
+              <span style={{ color: milestone.completed ? '#9FE7C0' : '#F5F5F7', fontSize: 14, fontWeight: 600 }}>{milestone.title}</span>
               <span style={{ background: `${typeColor}20`, color: typeColor, border: `1px solid ${typeColor}40`, padding: '1px 7px', borderRadius: 999, fontSize: 10, fontWeight: 700 }}>{milestone.type}</span>
             </div>
             {milestone.description && <p style={{ color: '#6E6E73', fontSize: 12 }}>{milestone.description}</p>}
@@ -592,7 +592,7 @@ function MilestoneCard({
 
       {totalSteps > 0 && (
         <div style={{ marginTop: 8, height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
-          <div style={{ height: '100%', width: `${stepProgress}%`, background: stepProgress === 100 ? '#30D158' : phaseColor, borderRadius: 2, transition: 'width 0.3s' }} />
+          <div style={{ height: '100%', width: `${stepProgress}%`, background: stepProgress === 100 ? '#9FE7C0' : phaseColor, borderRadius: 2, transition: 'width 0.3s' }} />
         </div>
       )}
 
@@ -608,14 +608,14 @@ function MilestoneCard({
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ color: '#6E6E73', fontSize: 12 }}>No steps yet.</span>
               {onRegenerate && (
-                <button onClick={onRegenerate} disabled={regenerating} style={{ background: 'rgba(180,167,229,0.1)', border: '1px solid rgba(180,167,229,0.25)', color: '#BF5AF2', padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: regenerating ? 'not-allowed' : 'pointer' }}>
+                <button onClick={onRegenerate} disabled={regenerating} style={{ background: 'rgba(201,184,255,0.1)', border: '1px solid rgba(201,184,255,0.25)', color: '#C9B8FF', padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: regenerating ? 'not-allowed' : 'pointer' }}>
                   {regenerating ? '⏳ Generating…' : '⚡ Generate steps'}
                 </button>
               )}
             </div>
           )}
           {!milestone.completed && !isGoalCompleted && completedSteps === totalSteps && totalSteps > 0 && (
-            <button onClick={() => onCompleteMilestone(milestone.id)} style={{ marginTop: 12, background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.25)', color: '#30D158', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', width: '100%' }}>
+            <button onClick={() => onCompleteMilestone(milestone.id)} style={{ marginTop: 12, background: 'rgba(159,231,192,0.1)', border: '1px solid rgba(159,231,192,0.25)', color: '#9FE7C0', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', width: '100%' }}>
               ✓ Mark Milestone Complete
             </button>
           )}
@@ -630,9 +630,9 @@ function MilestoneCard({
 function StepRow({ step, onComplete, isGoalCompleted }: { step: StepFull; onComplete: () => void; isGoalCompleted: boolean }) {
   const [showCriteria, setShowCriteria] = useState(false)
   const icon = stepTypeIcon[step.stepType] ?? '⚡'
-  const color = stepTypeColor[step.stepType] ?? '#30D158'
+  const color = stepTypeColor[step.stepType] ?? '#9FE7C0'
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '9px 12px', background: step.completed ? 'rgba(107,227,164,0.04)' : 'rgba(255,255,255,0.02)', borderRadius: 8, border: `1px solid ${step.completed ? 'rgba(107,227,164,0.15)' : 'rgba(255,255,255,0.05)'}` }}>
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '9px 12px', background: step.completed ? 'rgba(159,231,192,0.04)' : 'rgba(255,255,255,0.02)', borderRadius: 8, border: `1px solid ${step.completed ? 'rgba(159,231,192,0.15)' : 'rgba(255,255,255,0.05)'}` }}>
       <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>{icon}</span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
@@ -650,13 +650,13 @@ function StepRow({ step, onComplete, isGoalCompleted }: { step: StepFull; onComp
               )}
             </div>
             {showCriteria && step.completionCriteria && (
-              <div style={{ marginTop: 6, padding: '6px 10px', background: 'rgba(107,227,164,0.06)', borderRadius: 6, border: '1px solid rgba(107,227,164,0.15)' }}>
-                <p style={{ color: '#30D158', fontSize: 11 }}>✓ {step.completionCriteria}</p>
+              <div style={{ marginTop: 6, padding: '6px 10px', background: 'rgba(159,231,192,0.06)', borderRadius: 6, border: '1px solid rgba(159,231,192,0.15)' }}>
+                <p style={{ color: '#9FE7C0', fontSize: 11 }}>✓ {step.completionCriteria}</p>
               </div>
             )}
           </div>
           {!step.completed && !isGoalCompleted && (
-            <button onClick={onComplete} style={{ background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.25)', color: '#30D158', padding: '3px 10px', borderRadius: 5, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+            <button onClick={onComplete} style={{ background: 'rgba(159,231,192,0.1)', border: '1px solid rgba(159,231,192,0.25)', color: '#9FE7C0', padding: '3px 10px', borderRadius: 5, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
               Done
             </button>
           )}
@@ -706,8 +706,8 @@ function HealthTab({ goal, onUpdateHealth }: { goal: GoalFull; onUpdateHealth: (
           </div>
         </div>
         {suggestedHealth !== goal.healthStatus && (
-          <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(242,192,99,0.06)', border: '1px solid rgba(242,192,99,0.2)', borderRadius: 7 }}>
-            <p style={{ color: '#FFD60A', fontSize: 12 }}>💡 Based on {Math.round(pct * 100)}% completion, suggested: <strong>{suggestedHealth.replace('_', ' ')}</strong></p>
+          <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(243,213,138,0.06)', border: '1px solid rgba(243,213,138,0.2)', borderRadius: 7 }}>
+            <p style={{ color: '#F3D58A', fontSize: 12 }}>💡 Based on {Math.round(pct * 100)}% completion, suggested: <strong>{suggestedHealth.replace('_', ' ')}</strong></p>
           </div>
         )}
       </div>
@@ -817,21 +817,21 @@ function CapitalizationTab({ goal, strategicRoadmap }: { goal: GoalFull; strateg
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {capitalOutputs.map((output, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.07)' }}>
-                <span style={{ color: '#30D158', fontSize: 14, flexShrink: 0, marginTop: 1 }}>◆</span>
+                <span style={{ color: '#9FE7C0', fontSize: 14, flexShrink: 0, marginTop: 1 }}>◆</span>
                 <span style={{ fontSize: 13, color: '#F5F5F7' }}>{output}</span>
               </div>
             ))}
             {capitalOutputs.length === 0 && goal.finalOutput && (
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.07)' }}>
-                <span style={{ color: '#BF5AF2', fontSize: 14, flexShrink: 0, marginTop: 1 }}>◆</span>
+                <span style={{ color: '#C9B8FF', fontSize: 14, flexShrink: 0, marginTop: 1 }}>◆</span>
                 <span style={{ fontSize: 13, color: '#F5F5F7' }}>{goal.finalOutput}</span>
               </div>
             )}
           </div>
 
           {/* Important note */}
-          <div style={{ marginTop: 14, padding: '10px 12px', background: 'rgba(242,192,99,0.06)', border: '1px solid rgba(242,192,99,0.15)', borderRadius: 8 }}>
-            <p style={{ color: '#FFD60A', fontSize: 12, lineHeight: 1.5 }}>
+          <div style={{ marginTop: 14, padding: '10px 12px', background: 'rgba(243,213,138,0.06)', border: '1px solid rgba(243,213,138,0.15)', borderRadius: 8 }}>
+            <p style={{ color: '#F3D58A', fontSize: 12, lineHeight: 1.5 }}>
               ⚠ Passive learning alone does not create career capital. Capital is created only when there is evidence, output, or demonstrated skill that others can verify.
             </p>
           </div>
@@ -842,7 +842,7 @@ function CapitalizationTab({ goal, strategicRoadmap }: { goal: GoalFull; strateg
       {goal.evidenceOfMastery && (
         <div className="card">
           <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Proof Required to Close Gap</p>
-          <div style={{ padding: '10px 12px', background: 'rgba(107,227,164,0.05)', borderRadius: 8, border: '1px solid rgba(107,227,164,0.15)' }}>
+          <div style={{ padding: '10px 12px', background: 'rgba(159,231,192,0.05)', borderRadius: 8, border: '1px solid rgba(159,231,192,0.15)' }}>
             <p style={{ color: '#F5F5F7', fontSize: 13 }}>{goal.evidenceOfMastery}</p>
           </div>
         </div>
@@ -856,8 +856,8 @@ function CapitalizationTab({ goal, strategicRoadmap }: { goal: GoalFull; strateg
         </p>
 
         {converted.length > 0 ? (
-          <div style={{ padding: '12px 14px', background: 'rgba(107,227,164,0.08)', border: '1px solid rgba(107,227,164,0.2)', borderRadius: 8 }}>
-            <p style={{ color: '#30D158', fontSize: 13, fontWeight: 600 }}>✓ Added {converted.length} item{converted.length !== 1 ? 's' : ''} to Career Capital</p>
+          <div style={{ padding: '12px 14px', background: 'rgba(159,231,192,0.08)', border: '1px solid rgba(159,231,192,0.2)', borderRadius: 8 }}>
+            <p style={{ color: '#9FE7C0', fontSize: 13, fontWeight: 600 }}>✓ Added {converted.length} item{converted.length !== 1 ? 's' : ''} to Career Capital</p>
             {converted.map((c, i) => <p key={i} style={{ color: '#A1A1A6', fontSize: 12, marginTop: 4 }}>· {c}</p>)}
           </div>
         ) : (
@@ -866,15 +866,15 @@ function CapitalizationTab({ goal, strategicRoadmap }: { goal: GoalFull; strateg
             disabled={converting || capitalOutputs.length === 0 && !goal.finalOutput}
             style={{
               padding: '10px 20px', borderRadius: 9, fontSize: 13, fontWeight: 700, cursor: 'pointer',
-              background: 'rgba(107,227,164,0.1)', border: '1px solid rgba(107,227,164,0.3)', color: '#30D158',
+              background: 'rgba(159,231,192,0.1)', border: '1px solid rgba(159,231,192,0.3)', color: '#9FE7C0',
               opacity: converting ? 0.6 : 1, display: 'inline-flex', alignItems: 'center', gap: 8,
             }}
           >
-            {converting && <Spinner size={13} color="#30D158" strokeWidth={2} />}
+            {converting && <Spinner size={13} color="#9FE7C0" strokeWidth={2} />}
             {converting ? 'Adding…' : '💎 Convert Output to Career Capital'}
           </button>
         )}
-        {convertError && <p style={{ color: '#FF453A', fontSize: 12, marginTop: 8 }}>{convertError}</p>}
+        {convertError && <p style={{ color: '#FFB4A8', fontSize: 12, marginTop: 8 }}>{convertError}</p>}
       </div>
     </div>
   )
@@ -921,7 +921,7 @@ function EditGoalForm({ goal, onSave }: { goal: GoalFull; onSave: (data: Partial
 
   return (
     <div style={{ display: 'grid', gap: 12, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-      <p style={{ color: '#BF5AF2', fontSize: 13, fontWeight: 600 }}>Edit Goal Details</p>
+      <p style={{ color: '#C9B8FF', fontSize: 13, fontWeight: 600 }}>Edit Goal Details</p>
       <div><label style={labelStyle}>Title</label><input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} style={inputStyle} /></div>
       <div><label style={labelStyle}>Capability Statement</label><input value={form.capabilityStatement} onChange={e => setForm(f => ({ ...f, capabilityStatement: e.target.value }))} style={inputStyle} /></div>
       <div><label style={labelStyle}>Why It Matters</label><input value={form.whyItMatters} onChange={e => setForm(f => ({ ...f, whyItMatters: e.target.value }))} style={inputStyle} /></div>
@@ -946,7 +946,7 @@ function EditGoalForm({ goal, onSave }: { goal: GoalFull; onSave: (data: Partial
       <div><label style={labelStyle}>Evidence of Mastery</label><input value={form.evidenceOfMastery} onChange={e => setForm(f => ({ ...f, evidenceOfMastery: e.target.value }))} style={inputStyle} /></div>
       <div><label style={labelStyle}>Final Output</label><input value={form.finalOutput} onChange={e => setForm(f => ({ ...f, finalOutput: e.target.value }))} style={inputStyle} /></div>
       <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={save} disabled={saving} style={{ background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.4)', color: '#BF5AF2', padding: '7px 16px', borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>
+        <button onClick={save} disabled={saving} style={{ background: 'rgba(201,184,255,0.15)', border: '1px solid rgba(201,184,255,0.4)', color: '#C9B8FF', padding: '7px 16px', borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>
           {saving ? 'Saving…' : 'Save Changes'}
         </button>
         <button onClick={() => setEditing(false)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', padding: '7px 16px', borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>

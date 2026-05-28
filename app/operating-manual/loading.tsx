@@ -7,7 +7,7 @@ export default function OperatingManualLoading() {
         <div>
           <div style={{ height: 28, width: 260, background: 'rgba(255,255,255,0.07)', borderRadius: 6, marginBottom: 8, animation: 'sk 1.4s ease-in-out infinite' }} />
           <div style={{ height: 14, width: 340, background: 'rgba(255,255,255,0.04)', borderRadius: 4, marginBottom: 8 }} />
-          <div style={{ height: 12, width: 120, background: 'rgba(180,167,229,0.1)', borderRadius: 99 }} />
+          <div style={{ height: 12, width: 120, background: 'rgba(201,184,255,0.1)', borderRadius: 99 }} />
         </div>
         <div style={{ height: 36, width: 160, background: 'rgba(255,255,255,0.04)', borderRadius: 10 }} />
       </div>

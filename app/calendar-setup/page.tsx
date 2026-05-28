@@ -9,12 +9,12 @@ export default function CalendarSetupPage() {
           Google Calendar — Setup Required
         </h1>
         <p style={{ fontSize: 14, color: '#A1A1A6', lineHeight: 1.6 }}>
-          You&apos;re seeing a <strong style={{ color: '#FF453A' }}>redirect_uri_mismatch</strong> error because the callback URL isn&apos;t registered in Google Cloud Console.
+          You&apos;re seeing a <strong style={{ color: '#FFB4A8' }}>redirect_uri_mismatch</strong> error because the callback URL isn&apos;t registered in Google Cloud Console.
         </p>
       </div>
 
       <div className="card" style={{ marginBottom: 16 }}>
-        <h2 style={{ fontSize: 13, fontWeight: 700, color: '#FFD60A', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <h2 style={{ fontSize: 13, fontWeight: 700, color: '#F3D58A', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           How to fix
         </h2>
         <ol style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingLeft: 0, listStyle: 'none' }}>
@@ -26,7 +26,7 @@ export default function CalendarSetupPage() {
             'Click Save, then try connecting again',
           ].map((step, i) => (
             <li key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-              <span style={{ color: '#BF5AF2', fontWeight: 700, fontSize: 12, flexShrink: 0, minWidth: 20 }}>{i + 1}.</span>
+              <span style={{ color: '#C9B8FF', fontWeight: 700, fontSize: 12, flexShrink: 0, minWidth: 20 }}>{i + 1}.</span>
               <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.5 }}>{step}</span>
             </li>
           ))}
@@ -37,14 +37,14 @@ export default function CalendarSetupPage() {
         padding: '10px 14px', borderRadius: 8,
         background: 'rgba(255,255,255,0.04)',
         border: '1px solid rgba(255,255,255,0.08)',
-        fontFamily: 'monospace', fontSize: 12, color: '#30D158',
+        fontFamily: 'monospace', fontSize: 12, color: '#9FE7C0',
         marginBottom: 20,
         wordBreak: 'break-all',
       }}>
         {callbackUrl}
       </div>
 
-      <a href="/" style={{ fontSize: 13, color: '#BF5AF2', textDecoration: 'none' }}>← Back to dashboard</a>
+      <a href="/" style={{ fontSize: 13, color: '#C9B8FF', textDecoration: 'none' }}>← Back to dashboard</a>
     </main>
   )
 }

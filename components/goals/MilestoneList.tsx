@@ -31,10 +31,10 @@ export default function MilestoneList({ milestones }: { milestones: Milestone[] 
             disabled={toggling === m.id}
             style={{
               width: 22, height: 22, borderRadius: '50%', flexShrink: 0, cursor: 'pointer',
-              border: m.completed ? '2px solid #6BE3A4' : '2px solid rgba(255,255,255,0.2)',
-              background: m.completed ? 'rgba(107,227,164,0.15)' : 'transparent',
+              border: m.completed ? '2px solid #9FE7C0' : '2px solid rgba(255,255,255,0.2)',
+              background: m.completed ? 'rgba(159,231,192,0.15)' : 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 12, color: '#30D158',
+              fontSize: 12, color: '#9FE7C0',
               transition: 'all 0.15s',
               opacity: toggling === m.id ? 0.5 : 1,
             }}

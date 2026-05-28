@@ -116,11 +116,11 @@ function calcWeeklyImpact(logs: AlcoholLogRow[], budget: number): {
   if (poorSleep > 0) details.push(`${poorSleep} night${poorSleep !== 1 ? 's' : ''} poor sleep`)
   if (cravings > 0) details.push(`${cravings} craving episode${cravings !== 1 ? 's' : ''}`)
 
-  if (score === 0) return { label: 'Clean week',       color: '#30D158', score, details: ['No drinks logged this week'] }
-  if (score < 25) return { label: 'Low impact',        color: '#30D158', score, details }
-  if (score < 55) return { label: 'Moderate impact',   color: '#FFD60A', score, details }
-  if (score < 80) return { label: 'High impact',       color: '#FF9F0A', score, details }
-  return             { label: 'Progress blocker',    color: '#FF453A', score, details }
+  if (score === 0) return { label: 'Clean week',       color: '#9FE7C0', score, details: ['No drinks logged this week'] }
+  if (score < 25) return { label: 'Low impact',        color: '#9FE7C0', score, details }
+  if (score < 55) return { label: 'Moderate impact',   color: '#F3D58A', score, details }
+  if (score < 80) return { label: 'High impact',       color: '#F7B98E', score, details }
+  return             { label: 'Progress blocker',    color: '#FFB4A8', score, details }
 }
 
 function groupByWeek(logs: AlcoholLogRow[]): { weekLabel: string; logs: AlcoholLogRow[]; totalDrinks: number }[] {
@@ -191,7 +191,7 @@ function StarRating({ value, onChange, label }: { value: number | null; onChange
             style={{
               width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 13,
               background: (value ?? 0) >= n ? 'rgba(234,179,8,0.25)' : 'rgba(255,255,255,0.04)',
-              color: (value ?? 0) >= n ? '#FFD60A' : '#48484A',
+              color: (value ?? 0) >= n ? '#F3D58A' : '#48484A',
               transition: 'background 0.1s, color 0.1s',
             }}
           >★</button>
@@ -219,7 +219,7 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
         onClick={() => onChange(!checked)}
         style={{
           width: 36, height: 20, borderRadius: 10, position: 'relative',
-          background: checked ? '#3B82F6' : 'rgba(255,255,255,0.1)',
+          background: checked ? '#9FCBFF' : 'rgba(255,255,255,0.1)',
           transition: 'background 0.2s', flexShrink: 0,
         }}
       >
@@ -399,7 +399,7 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
           <div style={{
             height: '100%', borderRadius: 4, transition: 'width 0.6s ease',
             width: `${budgetPct}%`,
-            background: budgetPct >= 100 ? '#EF4444' : budgetPct >= 75 ? '#F97316' : budgetPct >= 50 ? '#FFD60A' : '#22C55E',
+            background: budgetPct >= 100 ? '#FFB4A8' : budgetPct >= 75 ? '#F7B98E' : budgetPct >= 50 ? '#F3D58A' : '#22C55E',
           }} />
         </div>
 
@@ -420,11 +420,11 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
       {showDamageControl && (
         <div style={{
           ...cardStyle,
-          borderColor: 'rgba(59,130,246,0.3)',
-          background: 'rgba(59,130,246,0.06)',
+          borderColor: 'rgba(159,203,255,0.3)',
+          background: 'rgba(159,203,255,0.06)',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#93C5FD' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#9FCBFF' }}>
               🛡️ Damage control protocol
             </div>
             <button
@@ -496,8 +496,8 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
                     onClick={() => setForm(f => ({ ...f, drinks: n }))}
                     style={{
                       flex: 1, padding: '8px 0', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12,
-                      background: form.drinks === n ? 'rgba(59,130,246,0.3)' : 'rgba(255,255,255,0.05)',
-                      color: form.drinks === n ? '#93C5FD' : '#6E6E73',
+                      background: form.drinks === n ? 'rgba(159,203,255,0.3)' : 'rgba(255,255,255,0.05)',
+                      color: form.drinks === n ? '#9FCBFF' : '#6E6E73',
                       fontWeight: form.drinks === n ? 700 : 400,
                     }}
                   >{n}</button>
@@ -516,8 +516,8 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
                   onClick={() => setForm(f => ({ ...f, occasion: f.occasion === o.value ? '' : o.value }))}
                   style={{
                     padding: '5px 12px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 12,
-                    background: form.occasion === o.value ? 'rgba(168,85,247,0.3)' : 'rgba(255,255,255,0.05)',
-                    color: form.occasion === o.value ? '#C084FC' : '#6E6E73',
+                    background: form.occasion === o.value ? 'rgba(201,184,255,0.3)' : 'rgba(255,255,255,0.05)',
+                    color: form.occasion === o.value ? '#C9B8FF' : '#6E6E73',
                     fontWeight: form.occasion === o.value ? 600 : 400,
                   }}
                 >{o.label}</button>
@@ -624,7 +624,7 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
             disabled={saving}
             style={{
               width: '100%', padding: '10px 0', borderRadius: 10, border: 'none', cursor: 'pointer',
-              background: saving ? 'rgba(59,130,246,0.2)' : 'rgba(59,130,246,0.8)',
+              background: saving ? 'rgba(159,203,255,0.2)' : 'rgba(159,203,255,0.8)',
               color: '#fff', fontSize: 13, fontWeight: 700,
               transition: 'background 0.15s',
             }}
@@ -670,7 +670,7 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {patterns.map((p, i) => (
                   <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.04)' }}>
-                    <span style={{ color: '#FFD60A', flexShrink: 0 }}>⚡</span>
+                    <span style={{ color: '#F3D58A', flexShrink: 0 }}>⚡</span>
                     <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.5 }}>{p}</span>
                   </div>
                 ))}
@@ -736,19 +736,19 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
                   style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     padding: '10px 14px', borderRadius: 10,
-                    background: settings.budgetType === opt.value ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.04)',
-                    border: `1px solid ${settings.budgetType === opt.value ? 'rgba(59,130,246,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                    background: settings.budgetType === opt.value ? 'rgba(159,203,255,0.15)' : 'rgba(255,255,255,0.04)',
+                    border: `1px solid ${settings.budgetType === opt.value ? 'rgba(159,203,255,0.4)' : 'rgba(255,255,255,0.08)'}`,
                     cursor: 'pointer', textAlign: 'left',
                   }}
                 >
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: settings.budgetType === opt.value ? '#93C5FD' : '#A1A1A6' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: settings.budgetType === opt.value ? '#9FCBFF' : '#A1A1A6' }}>
                       {opt.label}
                     </div>
                     <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 2 }}>{opt.description}</div>
                   </div>
                   {settings.budgetType === opt.value && (
-                    <span style={{ color: '#3B82F6', fontSize: 16 }}>✓</span>
+                    <span style={{ color: '#9FCBFF', fontSize: 16 }}>✓</span>
                   )}
                 </button>
               ))}
@@ -766,8 +766,8 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
                     onClick={() => handleSaveSettings({ weeklyBudget: n })}
                     style={{
                       width: 40, height: 40, borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 13,
-                      background: settings.weeklyBudget === n ? 'rgba(59,130,246,0.3)' : 'rgba(255,255,255,0.05)',
-                      color: settings.weeklyBudget === n ? '#93C5FD' : '#6E6E73',
+                      background: settings.weeklyBudget === n ? 'rgba(159,203,255,0.3)' : 'rgba(255,255,255,0.05)',
+                      color: settings.weeklyBudget === n ? '#9FCBFF' : '#6E6E73',
                       fontWeight: settings.weeklyBudget === n ? 700 : 400,
                     }}
                   >{n}</button>
@@ -786,8 +786,8 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
                   onClick={() => handleSaveSettings({ goal: g.value })}
                   style={{
                     flex: 1, padding: '8px 0', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12,
-                    background: settings.goal === g.value ? 'rgba(168,85,247,0.25)' : 'rgba(255,255,255,0.05)',
-                    color: settings.goal === g.value ? '#C084FC' : '#6E6E73',
+                    background: settings.goal === g.value ? 'rgba(201,184,255,0.25)' : 'rgba(255,255,255,0.05)',
+                    color: settings.goal === g.value ? '#C9B8FF' : '#6E6E73',
                     fontWeight: settings.goal === g.value ? 600 : 400,
                   }}
                 >{g.label}</button>
@@ -851,7 +851,7 @@ function LogRow({ log, onDelete }: { log: AlcoholLogRow; onDelete: (id: string) 
         {impactFlags.length > 0 && (
           <div style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
             {impactFlags.slice(0, 2).map((f, i) => (
-              <span key={i} style={{ fontSize: 10, color: '#F97316', padding: '1px 6px', borderRadius: 10, background: 'rgba(249,115,22,0.1)' }}>{f}</span>
+              <span key={i} style={{ fontSize: 10, color: '#F7B98E', padding: '1px 6px', borderRadius: 10, background: 'rgba(247,185,142,0.1)' }}>{f}</span>
             ))}
           </div>
         )}
@@ -863,7 +863,7 @@ function LogRow({ log, onDelete }: { log: AlcoholLogRow; onDelete: (id: string) 
           {impactFlags.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8, marginBottom: 8 }}>
               {impactFlags.map((f, i) => (
-                <span key={i} style={{ fontSize: 11, color: '#F97316', padding: '2px 8px', borderRadius: 12, background: 'rgba(249,115,22,0.1)' }}>{f}</span>
+                <span key={i} style={{ fontSize: 11, color: '#F7B98E', padding: '2px 8px', borderRadius: 12, background: 'rgba(247,185,142,0.1)' }}>{f}</span>
               ))}
             </div>
           )}
@@ -889,7 +889,7 @@ function LogRow({ log, onDelete }: { log: AlcoholLogRow; onDelete: (id: string) 
                 <span style={{ fontSize: 12, color: '#6E6E73' }}>Remove this entry?</span>
                 <button
                   onClick={() => onDelete(log.id)}
-                  style={{ padding: '4px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'rgba(239,68,68,0.3)', color: '#FCA5A5', fontSize: 12 }}
+                  style={{ padding: '4px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'rgba(239,68,68,0.3)', color: '#FFB4A8', fontSize: 12 }}
                 >Remove</button>
                 <button
                   onClick={() => setConfirming(false)}

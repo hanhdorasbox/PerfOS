@@ -24,11 +24,11 @@ const DOMAIN_NORMALIZE = (domain: string): string => {
 }
 
 const DISPLAY_META: Record<string, { color: string; icon: string }> = {
-  'Fitness':              { color: '#30D158', icon: '💪' },
-  'Learning':             { color: '#0A84FF', icon: '🧠' },
-  'Meals':                { color: '#FFD60A', icon: '🥗' },
-  'Planning & Execution': { color: '#BF5AF2', icon: '🗓️' },
-  'Time Use':             { color: '#FF9F6B', icon: '📅' },
+  'Fitness':              { color: '#9FE7C0', icon: '💪' },
+  'Learning':             { color: '#9FCBFF', icon: '🧠' },
+  'Meals':                { color: '#F3D58A', icon: '🥗' },
+  'Planning & Execution': { color: '#C9B8FF', icon: '🗓️' },
+  'Time Use':             { color: '#F7B98E', icon: '📅' },
 }
 
 function getMeta(displayDomain: string) {
@@ -68,7 +68,7 @@ function ConfidenceDots({ confidence }: { confidence: number }) {
           key={i}
           style={{
             width: 7, height: 7, borderRadius: '50%',
-            background: i <= confidence ? '#BF5AF2' : 'rgba(255,255,255,0.1)',
+            background: i <= confidence ? '#C9B8FF' : 'rgba(255,255,255,0.1)',
           }}
         />
       ))}
@@ -84,7 +84,7 @@ function ConfidenceRing({ pct }: { pct: number }) {
   const SZ = (R + SW) * 2 + 4
   const CIRC = 2 * Math.PI * R
   const offset = CIRC * (1 - pct / 100)
-  const color = pct >= 70 ? '#30D158' : pct >= 45 ? '#FFD60A' : '#FF9F6B'
+  const color = pct >= 70 ? '#9FE7C0' : pct >= 45 ? '#F3D58A' : '#F7B98E'
 
   return (
     <div style={{ position: 'relative', width: SZ, height: SZ }}>
@@ -198,8 +198,8 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
           {strongest.pattern}
         </div>
         {strongest.implication && (
-          <div style={{ marginTop: 8, padding: '7px 10px', background: 'rgba(180,167,229,0.07)', borderRadius: 8, border: '1px solid rgba(180,167,229,0.15)' }}>
-            <div style={{ fontSize: 11, color: '#BF5AF2', lineHeight: 1.5 }}>→ {strongest.implication}</div>
+          <div style={{ marginTop: 8, padding: '7px 10px', background: 'rgba(201,184,255,0.07)', borderRadius: 8, border: '1px solid rgba(201,184,255,0.15)' }}>
+            <div style={{ fontSize: 11, color: '#C9B8FF', lineHeight: 1.5 }}>→ {strongest.implication}</div>
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
@@ -254,7 +254,7 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
 
 export default async function OperatingManualPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF453A' }}>No user found</div>
+  if (!user) return <div style={{ color: '#FFB4A8' }}>No user found</div>
 
   const twoQuartersAgo = new Date()
   twoQuartersAgo.setMonth(twoQuartersAgo.getMonth() - 6)
@@ -288,8 +288,8 @@ export default async function OperatingManualPage() {
         <h1 style={{ fontSize: 24, fontWeight: 800, color: '#F5F5F7', letterSpacing: '-0.02em', marginBottom: 8 }}>
           Personal Operating Manual
         </h1>
-        <div className="card" style={{ background: 'rgba(242,192,99,0.07)', border: '1px solid rgba(242,192,99,0.25)' }}>
-          <p style={{ color: '#FFD60A', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
+        <div className="card" style={{ background: 'rgba(243,213,138,0.07)', border: '1px solid rgba(243,213,138,0.25)' }}>
+          <p style={{ color: '#F3D58A', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
             ⚠ Database migration in progress
           </p>
           <p style={{ color: '#6E6E73', fontSize: 13 }}>
