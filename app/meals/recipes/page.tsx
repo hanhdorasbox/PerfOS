@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function RecipesPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF453A', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#FFB4A8', padding: 40 }}>No user found.</div>
 
   return (
     <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
@@ -14,7 +14,7 @@ export default async function RecipesPage() {
         <a href="/meals" style={{ fontSize: 12, color: '#6E6E73', textDecoration: 'none', padding: '5px 12px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.06)' }}>
           ← Meal Plan
         </a>
-        <span style={{ fontSize: 12, color: '#4A8A6E', padding: '5px 12px', borderRadius: 6, border: '1px solid rgba(107,227,164,0.2)', background: 'rgba(107,227,164,0.06)', fontWeight: 700 }}>
+        <span style={{ fontSize: 12, color: '#4A8A6E', padding: '5px 12px', borderRadius: 6, border: '1px solid rgba(159,231,192,0.2)', background: 'rgba(159,231,192,0.06)', fontWeight: 700 }}>
           📖 Recipes
         </span>
       </div>

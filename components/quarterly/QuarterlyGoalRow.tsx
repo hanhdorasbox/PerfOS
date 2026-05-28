@@ -31,21 +31,21 @@ const ROLE_OPTIONS = [
 ]
 
 const ROLE_META: Record<string, { label: string; color: string; bg: string }> = {
-  career_capital: { label: 'Career Capital', color: '#BF5AF2', bg: 'rgba(180,167,229,0.12)' },
-  learning: { label: 'Learning', color: '#0A84FF', bg: 'rgba(96,165,250,0.12)' },
-  fitness: { label: 'Fitness', color: '#30D158', bg: 'rgba(107,227,164,0.12)' },
-  finance: { label: 'Finance', color: '#FFD60A', bg: 'rgba(242,192,99,0.12)' },
-  high_upside_bet: { label: 'High-Upside Bet', color: '#FF9F6B', bg: 'rgba(255,159,107,0.12)' },
-  long_term: { label: 'Long-Term', color: '#4DD9D9', bg: 'rgba(77,217,217,0.12)' },
+  career_capital: { label: 'Career Capital', color: '#C9B8FF', bg: 'rgba(201,184,255,0.12)' },
+  learning: { label: 'Learning', color: '#9FCBFF', bg: 'rgba(159,203,255,0.12)' },
+  fitness: { label: 'Fitness', color: '#9FE7C0', bg: 'rgba(159,231,192,0.12)' },
+  finance: { label: 'Finance', color: '#F3D58A', bg: 'rgba(243,213,138,0.12)' },
+  high_upside_bet: { label: 'High-Upside Bet', color: '#F7B98E', bg: 'rgba(255,159,107,0.12)' },
+  long_term: { label: 'Long-Term', color: '#9FCBFF', bg: 'rgba(77,217,217,0.12)' },
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  ahead: '#30D158',
-  on_track: '#30D158',
-  watch: '#FFD60A',
-  at_risk: '#FF9F6B',
-  critical: '#FF453A',
-  completed: '#BF5AF2',
+  ahead: '#9FE7C0',
+  on_track: '#9FE7C0',
+  watch: '#F3D58A',
+  at_risk: '#F7B98E',
+  critical: '#FFB4A8',
+  completed: '#C9B8FF',
   paused: '#6E6E73',
 }
 
@@ -73,7 +73,7 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
 
   const statusColor = STATUS_COLORS[goal.metrics.status] || '#6E6E73'
   const roleMeta = role ? ROLE_META[role] : null
-  const gapColor = goal.metrics.gap >= 0 ? '#30D158' : goal.metrics.gap >= -10 ? '#FFD60A' : '#FF453A'
+  const gapColor = goal.metrics.gap >= 0 ? '#9FE7C0' : goal.metrics.gap >= -10 ? '#F3D58A' : '#FFB4A8'
 
   return (
     <div

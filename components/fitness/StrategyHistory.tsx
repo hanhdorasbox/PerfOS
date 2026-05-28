@@ -60,28 +60,28 @@ export default function StrategyHistory({ strategies }: Props) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
                 <span style={{
                   fontSize: 11, padding: '2px 8px', borderRadius: 99,
-                  background: s.status === 'active' ? 'rgba(107,227,164,0.15)' : 'rgba(255,255,255,0.06)',
-                  color: s.status === 'active' ? '#30D158' : '#A1A1A6',
-                  border: `1px solid ${s.status === 'active' ? 'rgba(107,227,164,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                  background: s.status === 'active' ? 'rgba(159,231,192,0.15)' : 'rgba(255,255,255,0.06)',
+                  color: s.status === 'active' ? '#9FE7C0' : '#A1A1A6',
+                  border: `1px solid ${s.status === 'active' ? 'rgba(159,231,192,0.3)' : 'rgba(255,255,255,0.1)'}`,
                 }}>
                   {s.status}
                 </span>
 
                 {confirmId === s.id ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 12, color: '#FFD60A' }}>Delete?</span>
+                    <span style={{ fontSize: 12, color: '#F3D58A' }}>Delete?</span>
                     <button
                       onClick={() => handleDelete(s.id)}
                       disabled={deleting === s.id}
                       className="btn-motion"
                       style={{
                         padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-                        cursor: 'pointer', background: 'rgba(255,107,107,0.15)',
-                        border: '1px solid rgba(255,107,107,0.4)', color: '#FF453A',
+                        cursor: 'pointer', background: 'rgba(255,180,168,0.15)',
+                        border: '1px solid rgba(255,180,168,0.4)', color: '#FFB4A8',
                         display: 'flex', alignItems: 'center', gap: 5,
                       }}
                     >
-                      {deleting === s.id ? <Spinner size={12} color="#FF453A" strokeWidth={2} /> : null}
+                      {deleting === s.id ? <Spinner size={12} color="#FFB4A8" strokeWidth={2} /> : null}
                       Yes, delete
                     </button>
                     <button

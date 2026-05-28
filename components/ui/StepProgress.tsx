@@ -41,20 +41,20 @@ export default function StepProgress({ steps, compact = false }: StepProgressPro
               borderRadius: '50%',
               flexShrink: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: isDone   ? 'rgba(107,227,164,0.18)'
-                        : isActive ? 'rgba(180,167,229,0.12)'
-                        : isError  ? 'rgba(255,107,107,0.12)'
+              background: isDone   ? 'rgba(159,231,192,0.18)'
+                        : isActive ? 'rgba(201,184,255,0.12)'
+                        : isError  ? 'rgba(255,180,168,0.12)'
                         : 'rgba(255,255,255,0.04)',
               border: `1px solid ${
-                isDone   ? 'rgba(107,227,164,0.4)'
-              : isActive ? 'rgba(180,167,229,0.35)'
-              : isError  ? 'rgba(255,107,107,0.4)'
+                isDone   ? 'rgba(159,231,192,0.4)'
+              : isActive ? 'rgba(201,184,255,0.35)'
+              : isError  ? 'rgba(255,180,168,0.4)'
               : 'rgba(255,255,255,0.08)'}`,
               transition: 'background 0.3s ease, border-color 0.3s ease',
             }}>
-              {isDone    && <span className="check-pop" style={{ fontSize: 10, color: '#30D158', lineHeight: 1 }}>✓</span>}
-              {isActive  && <Spinner size={compact ? 10 : 12} color="#BF5AF2" strokeWidth={1.5} />}
-              {isError   && <span style={{ fontSize: 10, color: '#FF453A', lineHeight: 1 }}>✕</span>}
+              {isDone    && <span className="check-pop" style={{ fontSize: 10, color: '#9FE7C0', lineHeight: 1 }}>✓</span>}
+              {isActive  && <Spinner size={compact ? 10 : 12} color="#C9B8FF" strokeWidth={1.5} />}
+              {isError   && <span style={{ fontSize: 10, color: '#FFB4A8', lineHeight: 1 }}>✕</span>}
               {isPending && <span style={{ fontSize: 9, color: '#6E6E73', fontWeight: 700, lineHeight: 1 }}>{i + 1}</span>}
             </div>
 
@@ -62,9 +62,9 @@ export default function StepProgress({ steps, compact = false }: StepProgressPro
             <span style={{
               fontSize: compact ? 12 : 13,
               fontWeight: isActive ? 600 : 400,
-              color: isDone   ? '#30D158'
-                   : isActive ? '#BF5AF2'
-                   : isError  ? '#FF453A'
+              color: isDone   ? '#9FE7C0'
+                   : isActive ? '#C9B8FF'
+                   : isError  ? '#FFB4A8'
                    : '#6E6E73',
               transition: 'color 0.3s ease',
               lineHeight: 1.3,

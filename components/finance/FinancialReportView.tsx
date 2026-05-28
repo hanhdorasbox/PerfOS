@@ -21,10 +21,10 @@ interface ParsedAnalysis {
 }
 
 const STATUS_CONFIG = {
-  positive: { label: 'Positive', color: '#30D158', bg: 'rgba(107,227,164,0.1)', border: 'rgba(107,227,164,0.25)' },
-  watch:    { label: 'Watch',    color: '#FFD60A', bg: 'rgba(242,192,99,0.1)',  border: 'rgba(242,192,99,0.25)' },
-  risk:     { label: 'Risk',     color: '#FF9F0A', bg: 'rgba(251,146,60,0.1)',  border: 'rgba(251,146,60,0.25)' },
-  critical: { label: 'Critical', color: '#FF453A', bg: 'rgba(255,107,107,0.1)', border: 'rgba(255,107,107,0.25)' },
+  positive: { label: 'Positive', color: '#9FE7C0', bg: 'rgba(159,231,192,0.1)', border: 'rgba(159,231,192,0.25)' },
+  watch:    { label: 'Watch',    color: '#F3D58A', bg: 'rgba(243,213,138,0.1)',  border: 'rgba(243,213,138,0.25)' },
+  risk:     { label: 'Risk',     color: '#F7B98E', bg: 'rgba(247,185,142,0.1)',  border: 'rgba(247,185,142,0.25)' },
+  critical: { label: 'Critical', color: '#FFB4A8', bg: 'rgba(255,180,168,0.1)', border: 'rgba(255,180,168,0.25)' },
 }
 
 function parseAnalysis(raw: string | null): ParsedAnalysis | null {
@@ -87,10 +87,10 @@ export default function FinancialReportView({ report, userId }: Props) {
       {/* KPI row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
         {[
-          { label: 'Income',      value: `+${fmt(report.totalIncome)}`,       color: '#30D158' },
-          { label: 'Expenses',    value: `-${fmt(Math.abs(report.totalExpenses))}`, color: '#FF453A' },
-          { label: 'Net Result',  value: `${report.netResult >= 0 ? '+' : ''}${fmt(report.netResult)}`, color: report.netResult >= 0 ? '#30D158' : '#FF453A' },
-          { label: 'Savings Rate', value: `${savingsRate.toFixed(1)}%`, color: '#BF5AF2' },
+          { label: 'Income',      value: `+${fmt(report.totalIncome)}`,       color: '#9FE7C0' },
+          { label: 'Expenses',    value: `-${fmt(Math.abs(report.totalExpenses))}`, color: '#FFB4A8' },
+          { label: 'Net Result',  value: `${report.netResult >= 0 ? '+' : ''}${fmt(report.netResult)}`, color: report.netResult >= 0 ? '#9FE7C0' : '#FFB4A8' },
+          { label: 'Savings Rate', value: `${savingsRate.toFixed(1)}%`, color: '#C9B8FF' },
         ].map(chip => (
           <div key={chip.label} style={{ background: `${chip.color}10`, border: `1px solid ${chip.color}25`, borderRadius: 12, padding: '12px 14px' }}>
             <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
@@ -103,20 +103,20 @@ export default function FinancialReportView({ report, userId }: Props) {
 
       {/* ── Old format detected → show regenerate prompt instead of raw text ── */}
       {!parsed && aiAnalysis && (
-        <div style={{ background: 'rgba(242,192,99,0.07)', border: '1px solid rgba(242,192,99,0.25)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
-          <p style={{ color: '#FFD60A', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+        <div style={{ background: 'rgba(243,213,138,0.07)', border: '1px solid rgba(243,213,138,0.25)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
+          <p style={{ color: '#F3D58A', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
             ⚠ This analysis was generated in the old format
           </p>
           <p style={{ color: '#6E6E73', fontSize: 12, marginBottom: 14 }}>
             Regenerate to get structured insights: status, key points, watch signals, and action items.
           </p>
-          {regenError && <p style={{ color: '#FF453A', fontSize: 12, marginBottom: 10 }}>{regenError}</p>}
+          {regenError && <p style={{ color: '#FFB4A8', fontSize: 12, marginBottom: 10 }}>{regenError}</p>}
           <button
             onClick={regenerate}
             disabled={regenerating}
             style={{
-              background: 'rgba(242,192,99,0.15)', border: '1px solid rgba(242,192,99,0.4)',
-              color: '#FFD60A', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+              background: 'rgba(243,213,138,0.15)', border: '1px solid rgba(243,213,138,0.4)',
+              color: '#F3D58A', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
               cursor: regenerating ? 'not-allowed' : 'pointer',
             }}
           >
@@ -127,15 +127,15 @@ export default function FinancialReportView({ report, userId }: Props) {
 
       {/* ── No analysis yet ─────────────────────────────────────────────────── */}
       {!aiAnalysis && (
-        <div style={{ background: 'rgba(180,167,229,0.07)', border: '1px solid rgba(180,167,229,0.2)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
+        <div style={{ background: 'rgba(201,184,255,0.07)', border: '1px solid rgba(201,184,255,0.2)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
           <p style={{ color: '#A1A1A6', fontSize: 13, marginBottom: 14 }}>No AI analysis yet.</p>
-          {regenError && <p style={{ color: '#FF453A', fontSize: 12, marginBottom: 10 }}>{regenError}</p>}
+          {regenError && <p style={{ color: '#FFB4A8', fontSize: 12, marginBottom: 10 }}>{regenError}</p>}
           <button
             onClick={regenerate}
             disabled={regenerating}
             style={{
-              background: 'rgba(180,167,229,0.15)', border: '1px solid rgba(180,167,229,0.4)',
-              color: '#BF5AF2', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+              background: 'rgba(201,184,255,0.15)', border: '1px solid rgba(201,184,255,0.4)',
+              color: '#C9B8FF', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
               cursor: regenerating ? 'not-allowed' : 'pointer',
             }}
           >
@@ -182,7 +182,7 @@ export default function FinancialReportView({ report, userId }: Props) {
                         </span>
                       </div>
                       <div style={{ height: 5, background: 'rgba(255,255,255,0.08)', borderRadius: 3 }}>
-                        <div style={{ height: '100%', width: `${(Math.abs(amount) / maxExpense) * 100}%`, background: amount > 0 ? '#30D158' : '#BF5AF2', borderRadius: 3, transition: 'width 0.3s ease' }} />
+                        <div style={{ height: '100%', width: `${(Math.abs(amount) / maxExpense) * 100}%`, background: amount > 0 ? '#9FE7C0' : '#C9B8FF', borderRadius: 3, transition: 'width 0.3s ease' }} />
                       </div>
                     </div>
                   ))}
@@ -195,13 +195,13 @@ export default function FinancialReportView({ report, userId }: Props) {
             <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '12px 14px', marginBottom: 16, display: 'flex', gap: 24 }}>
               <div>
                 <p style={{ color: '#6E6E73', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>vs Prev Income</p>
-                <p style={{ color: prevComp.incomeChange >= 0 ? '#30D158' : '#FF453A', fontSize: 14, fontWeight: 700 }}>
+                <p style={{ color: prevComp.incomeChange >= 0 ? '#9FE7C0' : '#FFB4A8', fontSize: 14, fontWeight: 700 }}>
                   {prevComp.incomeChange >= 0 ? '+' : ''}{fmt(prevComp.incomeChange)}
                 </p>
               </div>
               <div>
                 <p style={{ color: '#6E6E73', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>vs Prev Expenses</p>
-                <p style={{ color: prevComp.expensesChange <= 0 ? '#30D158' : '#FF453A', fontSize: 14, fontWeight: 700 }}>
+                <p style={{ color: prevComp.expensesChange <= 0 ? '#9FE7C0' : '#FFB4A8', fontSize: 14, fontWeight: 700 }}>
                   {prevComp.expensesChange >= 0 ? '+' : ''}{fmt(prevComp.expensesChange)}
                 </p>
               </div>
@@ -210,14 +210,14 @@ export default function FinancialReportView({ report, userId }: Props) {
 
           {/* Watch points */}
           {parsed.watchPoints && parsed.watchPoints.length > 0 && (
-            <div style={{ background: 'rgba(242,192,99,0.06)', border: '1px solid rgba(242,192,99,0.2)', borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
-              <p style={{ color: '#FFD60A', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
+            <div style={{ background: 'rgba(243,213,138,0.06)', border: '1px solid rgba(243,213,138,0.2)', borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
+              <p style={{ color: '#F3D58A', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
                 ⚠ Watch points
               </p>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {parsed.watchPoints.map((wp, i) => (
                   <li key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                    <span style={{ color: '#FFD60A', fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
+                    <span style={{ color: '#F3D58A', fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
                     <span style={{ color: '#F5F5F7', fontSize: 13, lineHeight: 1.5 }}>{wp}</span>
                   </li>
                 ))}
@@ -227,14 +227,14 @@ export default function FinancialReportView({ report, userId }: Props) {
 
           {/* Next actions */}
           {parsed.nextActions && parsed.nextActions.length > 0 && (
-            <div style={{ background: 'rgba(107,227,164,0.05)', border: '1px solid rgba(107,227,164,0.2)', borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
-              <p style={{ color: '#30D158', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
+            <div style={{ background: 'rgba(159,231,192,0.05)', border: '1px solid rgba(159,231,192,0.2)', borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
+              <p style={{ color: '#9FE7C0', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
                 Next actions
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {parsed.nextActions.map((action, i) => (
                   <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                    <span style={{ background: 'rgba(107,227,164,0.15)', color: '#30D158', fontSize: 11, fontWeight: 700, width: 20, height: 20, borderRadius: 99, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
+                    <span style={{ background: 'rgba(159,231,192,0.15)', color: '#9FE7C0', fontSize: 11, fontWeight: 700, width: 20, height: 20, borderRadius: 99, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
                     <div>
                       <span style={{ color: '#F5F5F7', fontSize: 13, fontWeight: 600 }}>{action.title}</span>
                       {action.why && <span style={{ color: '#6E6E73', fontSize: 12 }}> — {action.why}</span>}

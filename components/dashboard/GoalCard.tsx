@@ -9,18 +9,18 @@ interface Props {
 }
 
 const statusColors: Record<string, string> = {
-  ahead:     '#30D158',
-  on_track:  '#0A84FF',
-  watch:     '#FFD60A',
-  at_risk:   '#FF9F0A',
-  critical:  '#FF453A',
-  completed: '#30D158',
+  ahead:     '#9FE7C0',
+  on_track:  '#9FCBFF',
+  watch:     '#F3D58A',
+  at_risk:   '#F7B98E',
+  critical:  '#FFB4A8',
+  completed: '#9FE7C0',
 }
 
 // Progress fill color: blue as default, status color only for off-track states
 function progressColor(status: string): string {
-  if (status === 'ahead' || status === 'on_track' || status === 'completed') return '#0A84FF'
-  return statusColors[status] ?? '#0A84FF'
+  if (status === 'ahead' || status === 'on_track' || status === 'completed') return '#9FCBFF'
+  return statusColors[status] ?? '#9FCBFF'
 }
 
 export default function GoalCard({ goal, metrics }: Props) {
@@ -91,7 +91,7 @@ export default function GoalCard({ goal, metrics }: Props) {
           </div>
           <div style={{
             fontSize: 12, fontWeight: 600, marginTop: 2,
-            color: metrics.gap >= 0 ? '#30D158' : '#FF453A',
+            color: metrics.gap >= 0 ? '#9FE7C0' : '#FFB4A8',
           }}>
             {metrics.gap >= 0 ? '+' : ''}{Math.round(metrics.gap)}% gap
           </div>
@@ -156,7 +156,7 @@ export default function GoalCard({ goal, metrics }: Props) {
         <div style={{ marginTop: 10, fontSize: 12, color: '#6E6E73' }}>
           Forecast{' '}
           <span style={{
-            color: metrics.forecastedCompletionDate > new Date(goal.deadline) ? '#FF453A' : '#30D158',
+            color: metrics.forecastedCompletionDate > new Date(goal.deadline) ? '#FFB4A8' : '#9FE7C0',
             fontWeight: 600,
           }}>
             {metrics.forecastedCompletionDate.toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
@@ -181,8 +181,8 @@ export default function GoalCard({ goal, metrics }: Props) {
             }}>
               <div style={{
                 width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
-                background: m.completed ? '#30D158' : 'transparent',
-                border: `2px solid ${m.completed ? '#30D158' : 'rgba(255,255,255,0.2)'}`,
+                background: m.completed ? '#9FE7C0' : 'transparent',
+                border: `2px solid ${m.completed ? '#9FE7C0' : 'rgba(255,255,255,0.2)'}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 {m.completed && (

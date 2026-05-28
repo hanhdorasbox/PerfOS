@@ -80,7 +80,7 @@ export default function RoadmapGenerator({ userId }: { userId: string }) {
     } catch { /* silent */ }
   }
 
-  const phaseColors = ['#BF5AF2', '#30D158', '#FFD60A', '#0A84FF', '#FF9F0A']
+  const phaseColors = ['#C9B8FF', '#9FE7C0', '#F3D58A', '#9FCBFF', '#F7B98E']
 
   return (
     <div className="card">
@@ -108,15 +108,15 @@ export default function RoadmapGenerator({ userId }: { userId: string }) {
             className="btn-motion"
             style={{
               padding: '10px 20px', borderRadius: 8, fontSize: 13, fontWeight: 700,
-              background: loading ? 'rgba(180,167,229,0.1)' : 'rgba(180,167,229,0.15)',
-              border: '1px solid rgba(180,167,229,0.3)', color: '#BF5AF2',
+              background: loading ? 'rgba(201,184,255,0.1)' : 'rgba(201,184,255,0.15)',
+              border: '1px solid rgba(201,184,255,0.3)', color: '#C9B8FF',
               cursor: loading || !goal.trim() || !timeframe.trim() ? 'not-allowed' : 'pointer',
               opacity: !goal.trim() || !timeframe.trim() ? 0.5 : 1,
               whiteSpace: 'nowrap',
               display: 'flex', alignItems: 'center', gap: 7,
             }}
           >
-            {loading && <Spinner size={13} color="#BF5AF2" strokeWidth={2} />}
+            {loading && <Spinner size={13} color="#C9B8FF" strokeWidth={2} />}
             {loading ? 'Generating…' : '✦ Generate Roadmap'}
           </button>
         </div>
@@ -130,7 +130,7 @@ export default function RoadmapGenerator({ userId }: { userId: string }) {
       </div>
 
       {error && (
-        <div style={{ padding: '10px 14px', background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', borderRadius: 8, color: '#FF453A', fontSize: 13, marginBottom: 14 }}>
+        <div style={{ padding: '10px 14px', background: 'rgba(255,180,168,0.1)', border: '1px solid rgba(255,180,168,0.2)', borderRadius: 8, color: '#FFB4A8', fontSize: 13, marginBottom: 14 }}>
           {error}
         </div>
       )}
@@ -138,7 +138,7 @@ export default function RoadmapGenerator({ userId }: { userId: string }) {
       {roadmap && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontSize: 11, color: '#30D158' }}>✓ Saved to your roadmaps</span>
+            <span style={{ fontSize: 11, color: '#9FE7C0' }}>✓ Saved to your roadmaps</span>
             <button
               onClick={() => { setRoadmap(null); setActiveId(null) }}
               style={{ fontSize: 11, color: '#6E6E73', background: 'none', border: 'none', cursor: 'pointer' }}

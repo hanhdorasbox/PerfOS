@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function LearningPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF453A' }}>No user found</div>
+  if (!user) return <div style={{ color: '#FFB4A8' }}>No user found</div>
 
   const [capabilityGoalsRaw, activeGoals] = await Promise.all([
     // Try full query with new schema (steps + new columns)
@@ -87,10 +87,10 @@ export default async function LearningPage() {
           display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 20,
         }}>
           {[
-            { label: 'Active Roadmaps', value: activeGoalsList.length, color: '#BF5AF2' },
-            { label: 'Steps Complete', value: `${completedStepsAcrossAll.length}/${totalStepsAcrossAll.length}`, color: '#30D158' },
-            { label: 'Overall Progress', value: `${overallPct}%`, color: '#0A84FF' },
-            { label: 'At Risk', value: atRisk, color: atRisk > 0 ? '#FFD60A' : '#6E6E73' },
+            { label: 'Active Roadmaps', value: activeGoalsList.length, color: '#C9B8FF' },
+            { label: 'Steps Complete', value: `${completedStepsAcrossAll.length}/${totalStepsAcrossAll.length}`, color: '#9FE7C0' },
+            { label: 'Overall Progress', value: `${overallPct}%`, color: '#9FCBFF' },
+            { label: 'At Risk', value: atRisk, color: atRisk > 0 ? '#F3D58A' : '#6E6E73' },
           ].map(s => (
             <div key={s.label} className="card" style={{ padding: '12px 16px', textAlign: 'center' }}>
               <p style={{ color: '#6E6E73', fontSize: 10, textTransform: 'uppercase', letterSpacing: 1 }}>{s.label}</p>
@@ -112,7 +112,7 @@ export default async function LearningPage() {
             Active Roadmaps
             <span style={{ color: '#6E6E73', fontSize: 12, fontWeight: 400, marginLeft: 8 }}>{activeGoalsList.length}</span>
             {onTrack > 0 && (
-              <span style={{ color: '#30D158', fontSize: 11, fontWeight: 600, marginLeft: 8 }}>· {onTrack} on track</span>
+              <span style={{ color: '#9FE7C0', fontSize: 11, fontWeight: 600, marginLeft: 8 }}>· {onTrack} on track</span>
             )}
           </h3>
           <div style={{ display: 'grid', gap: 12 }}>
@@ -134,7 +134,7 @@ export default async function LearningPage() {
       {/* Completed */}
       {completedGoalsList.length > 0 && (
         <div style={{ marginBottom: 24 }}>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#30D158', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#9FE7C0', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Completed
             <span style={{ color: '#6E6E73', fontSize: 12, fontWeight: 400, marginLeft: 8 }}>{completedGoalsList.length}</span>
           </h3>

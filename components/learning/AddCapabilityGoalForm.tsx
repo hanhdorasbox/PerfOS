@@ -96,8 +96,8 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
       <button
         onClick={() => setOpen(true)}
         style={{
-          background: 'rgba(180,167,229,0.1)', border: '1px solid rgba(180,167,229,0.3)',
-          color: '#BF5AF2', padding: '9px 20px', borderRadius: 9,
+          background: 'rgba(201,184,255,0.1)', border: '1px solid rgba(201,184,255,0.3)',
+          color: '#C9B8FF', padding: '9px 20px', borderRadius: 9,
           fontSize: 13, fontWeight: 600, cursor: 'pointer',
         }}
       >
@@ -109,7 +109,7 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
   return (
     <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <p style={{ color: '#BF5AF2', fontSize: 14, fontWeight: 600 }}>New Learning Roadmap</p>
+        <p style={{ color: '#C9B8FF', fontSize: 14, fontWeight: 600 }}>New Learning Roadmap</p>
         <button
           type="button"
           onClick={() => setOpen(false)}
@@ -129,9 +129,9 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
               title={t.desc}
               style={{
                 padding: '5px 12px', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                background: form.roadmapType === t.value ? 'rgba(180,167,229,0.15)' : 'rgba(255,255,255,0.04)',
-                border: form.roadmapType === t.value ? '1px solid rgba(180,167,229,0.4)' : '1px solid rgba(255,255,255,0.08)',
-                color: form.roadmapType === t.value ? '#BF5AF2' : '#6E6E73',
+                background: form.roadmapType === t.value ? 'rgba(201,184,255,0.15)' : 'rgba(255,255,255,0.04)',
+                border: form.roadmapType === t.value ? '1px solid rgba(201,184,255,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                color: form.roadmapType === t.value ? '#C9B8FF' : '#6E6E73',
               }}
             >
               {t.label}
@@ -237,9 +237,9 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
             onClick={() => setForm(f => ({ ...f, detailLevel: 'standard' }))}
             style={{
               flex: 1, padding: '8px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              background: form.detailLevel === 'standard' ? 'rgba(180,167,229,0.12)' : 'rgba(255,255,255,0.03)',
-              border: form.detailLevel === 'standard' ? '1px solid rgba(180,167,229,0.35)' : '1px solid rgba(255,255,255,0.08)',
-              color: form.detailLevel === 'standard' ? '#BF5AF2' : '#6E6E73',
+              background: form.detailLevel === 'standard' ? 'rgba(201,184,255,0.12)' : 'rgba(255,255,255,0.03)',
+              border: form.detailLevel === 'standard' ? '1px solid rgba(201,184,255,0.35)' : '1px solid rgba(255,255,255,0.08)',
+              color: form.detailLevel === 'standard' ? '#C9B8FF' : '#6E6E73',
             }}
           >
             Standard — 20-60 min steps
@@ -249,9 +249,9 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
             onClick={() => setForm(f => ({ ...f, detailLevel: 'eli5' }))}
             style={{
               flex: 1, padding: '8px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              background: form.detailLevel === 'eli5' ? 'rgba(242,192,99,0.12)' : 'rgba(255,255,255,0.03)',
-              border: form.detailLevel === 'eli5' ? '1px solid rgba(242,192,99,0.35)' : '1px solid rgba(255,255,255,0.08)',
-              color: form.detailLevel === 'eli5' ? '#FFD60A' : '#6E6E73',
+              background: form.detailLevel === 'eli5' ? 'rgba(243,213,138,0.12)' : 'rgba(255,255,255,0.03)',
+              border: form.detailLevel === 'eli5' ? '1px solid rgba(243,213,138,0.35)' : '1px solid rgba(255,255,255,0.08)',
+              color: form.detailLevel === 'eli5' ? '#F3D58A' : '#6E6E73',
             }}
           >
             ELI5 Mode — ultra-concrete 15-45 min steps
@@ -287,16 +287,16 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
         </span>
       </label>
 
-      {error && <p style={{ color: '#FF453A', fontSize: 13 }}>{error}</p>}
+      {error && <p style={{ color: '#FFB4A8', fontSize: 13 }}>{error}</p>}
 
       <div style={{ display: 'flex', gap: 10 }}>
         <button
           type="submit"
           disabled={saving || !form.title.trim() || !form.capabilityStatement.trim()}
           style={{
-            background: saving ? 'rgba(180,167,229,0.08)' : 'rgba(180,167,229,0.15)',
-            border: '1px solid rgba(180,167,229,0.4)',
-            color: '#BF5AF2', padding: '9px 22px', borderRadius: 9,
+            background: saving ? 'rgba(201,184,255,0.08)' : 'rgba(201,184,255,0.15)',
+            border: '1px solid rgba(201,184,255,0.4)',
+            color: '#C9B8FF', padding: '9px 22px', borderRadius: 9,
             fontSize: 13, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer',
           }}
         >

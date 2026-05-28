@@ -14,14 +14,14 @@ interface Report {
 }
 
 const STATUS_CFG: Record<string, { color: string; label: string }> = {
-  thriving: { color: '#30D158', label: 'Thriving' },
-  stable:   { color: '#0A84FF', label: 'Stable'   },
-  watch:    { color: '#FFD60A', label: 'Watch'     },
-  risk:     { color: '#FF9F0A', label: 'Risk'      },
-  recovery: { color: '#FF453A', label: 'Recovery'  },
-  strong:   { color: '#30D158', label: 'Strong'    },
-  neutral:  { color: '#0A84FF', label: 'Neutral'   },
-  weak:     { color: '#FFD60A', label: 'Weak'      },
+  thriving: { color: '#9FE7C0', label: 'Thriving' },
+  stable:   { color: '#9FCBFF', label: 'Stable'   },
+  watch:    { color: '#F3D58A', label: 'Watch'     },
+  risk:     { color: '#F7B98E', label: 'Risk'      },
+  recovery: { color: '#FFB4A8', label: 'Recovery'  },
+  strong:   { color: '#9FE7C0', label: 'Strong'    },
+  neutral:  { color: '#9FCBFF', label: 'Neutral'   },
+  weak:     { color: '#F3D58A', label: 'Weak'      },
 }
 
 function deriveStatus(report: Report): string {
@@ -69,7 +69,7 @@ export default function ReportArchive({ reports: initReports }: { reports: Repor
   return (
     <div>
       {error && (
-        <div style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF453A', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 12 }}>
+        <div style={{ background: 'rgba(255,180,168,0.1)', border: '1px solid rgba(255,180,168,0.2)', color: '#FFB4A8', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 12 }}>
           {error}
         </div>
       )}
@@ -97,13 +97,13 @@ export default function ReportArchive({ reports: initReports }: { reports: Repor
                     </div>
                     <div style={{ display: 'flex', gap: 14 }}>
                       {metrics.taskRate !== null && (
-                        <span style={{ color: '#6E6E73', fontSize: 11 }}>Tasks: <span style={{ color: metrics.taskRate >= 70 ? '#30D158' : '#FFD60A' }}>{metrics.taskRate}%</span></span>
+                        <span style={{ color: '#6E6E73', fontSize: 11 }}>Tasks: <span style={{ color: metrics.taskRate >= 70 ? '#9FE7C0' : '#F3D58A' }}>{metrics.taskRate}%</span></span>
                       )}
                       {metrics.goalsOnTrack !== null && (
-                        <span style={{ color: '#6E6E73', fontSize: 11 }}>On track: <span style={{ color: '#0A84FF' }}>{metrics.goalsOnTrack}</span></span>
+                        <span style={{ color: '#6E6E73', fontSize: 11 }}>On track: <span style={{ color: '#9FCBFF' }}>{metrics.goalsOnTrack}</span></span>
                       )}
                       {metrics.xp !== null && (
-                        <span style={{ color: '#6E6E73', fontSize: 11 }}>XP: <span style={{ color: '#BF5AF2' }}>+{metrics.xp}</span></span>
+                        <span style={{ color: '#6E6E73', fontSize: 11 }}>XP: <span style={{ color: '#C9B8FF' }}>+{metrics.xp}</span></span>
                       )}
                     </div>
                   </div>
@@ -113,7 +113,7 @@ export default function ReportArchive({ reports: initReports }: { reports: Repor
               <button
                 onClick={() => deleteReport(report.id)}
                 disabled={deleting === report.id}
-                style={{ background: 'none', border: '1px solid rgba(255,107,107,0.2)', color: '#FF453A', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
+                style={{ background: 'none', border: '1px solid rgba(255,180,168,0.2)', color: '#FFB4A8', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
               >
                 {deleting === report.id ? '…' : 'Delete'}
               </button>

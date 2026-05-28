@@ -98,9 +98,9 @@ export default function WorkoutTracker({
               onClick={() => setSelectedType(t)}
               style={{
                 padding: '6px 12px', borderRadius: '999px',
-                border: `1px solid ${selectedType === t ? 'rgba(107,227,164,0.4)' : 'rgba(255,255,255,0.1)'}`,
-                background: selectedType === t ? 'rgba(107,227,164,0.1)' : 'none',
-                color: selectedType === t ? '#30D158' : '#A1A1A6',
+                border: `1px solid ${selectedType === t ? 'rgba(159,231,192,0.4)' : 'rgba(255,255,255,0.1)'}`,
+                background: selectedType === t ? 'rgba(159,231,192,0.1)' : 'none',
+                color: selectedType === t ? '#9FE7C0' : '#A1A1A6',
                 fontSize: '12px', cursor: 'pointer',
               }}
             >{t}</button>
@@ -115,11 +115,11 @@ export default function WorkoutTracker({
         <button
           onClick={logWorkout}
           disabled={!selectedType || saving}
-          style={{ width: '100%', padding: '9px', borderRadius: '8px', background: 'rgba(107,227,164,0.12)', border: '1px solid rgba(107,227,164,0.25)', color: '#30D158', fontWeight: 700, cursor: 'pointer', fontSize: '13px' }}
+          style={{ width: '100%', padding: '9px', borderRadius: '8px', background: 'rgba(159,231,192,0.12)', border: '1px solid rgba(159,231,192,0.25)', color: '#9FE7C0', fontWeight: 700, cursor: 'pointer', fontSize: '13px' }}
         >
           {saving ? 'Saving…' : '✓ Log Workout'}
         </button>
-        {workoutMsg && <div style={{ marginTop: '8px', fontSize: '12px', color: '#30D158' }}>{workoutMsg}</div>}
+        {workoutMsg && <div style={{ marginTop: '8px', fontSize: '12px', color: '#9FE7C0' }}>{workoutMsg}</div>}
 
         <div style={{ marginTop: '14px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px' }}>
           <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '8px' }}>Recent</div>
@@ -157,14 +157,14 @@ export default function WorkoutTracker({
           {proteinTotal}<span style={{ fontSize: '20px', color: '#6E6E73' }}>/ {proteinTarget}g</span>
         </div>
         <div style={{ height: '5px', background: 'rgba(255,255,255,0.07)', borderRadius: '3px', marginBottom: '16px', overflow: 'hidden' }}>
-          <div className="progress-fill" style={{ height: '100%', width: `${Math.min(100, proteinTotal / proteinTarget * 100)}%`, background: '#30D158', borderRadius: '3px' }} />
+          <div className="progress-fill" style={{ height: '100%', width: `${Math.min(100, proteinTotal / proteinTarget * 100)}%`, background: '#9FE7C0', borderRadius: '3px' }} />
         </div>
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
           {[25, 30, 40, 50].map(g => (
             <button
               key={g}
               onClick={() => addProtein(g)}
-              style={{ padding: '7px 14px', borderRadius: '999px', background: 'rgba(107,227,164,0.08)', border: '1px solid rgba(107,227,164,0.2)', color: '#30D158', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+              style={{ padding: '7px 14px', borderRadius: '999px', background: 'rgba(159,231,192,0.08)', border: '1px solid rgba(159,231,192,0.2)', color: '#9FE7C0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
             >+{g}g</button>
           ))}
         </div>
@@ -181,7 +181,7 @@ export default function WorkoutTracker({
             style={{ padding: '7px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#A1A1A6', cursor: 'pointer', fontSize: '12px' }}
           >+Add</button>
         </div>
-        {proteinMsg && <div style={{ marginTop: '8px', fontSize: '12px', color: '#30D158' }}>{proteinMsg}</div>}
+        {proteinMsg && <div style={{ marginTop: '8px', fontSize: '12px', color: '#9FE7C0' }}>{proteinMsg}</div>}
 
         {/* Today's entries */}
         {proteinLogs.length > 0 && (
@@ -196,7 +196,7 @@ export default function WorkoutTracker({
                   opacity: deletingProtein === p.id ? 0.4 : 1, transition: 'opacity 0.15s ease',
                 }}
               >
-                <span style={{ color: '#30D158', fontWeight: 600 }}>+{p.amount}g</span>
+                <span style={{ color: '#9FE7C0', fontWeight: 600 }}>+{p.amount}g</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ color: '#6E6E73', fontSize: 11 }}>
                     {new Date(p.date).toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' })}

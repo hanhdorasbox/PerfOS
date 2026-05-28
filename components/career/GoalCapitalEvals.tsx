@@ -31,7 +31,7 @@ function ReusabilityDots({ value }: { value: number }) {
             width: 7,
             height: 7,
             borderRadius: '50%',
-            background: i <= value ? '#BF5AF2' : 'rgba(180,167,229,0.2)',
+            background: i <= value ? '#C9B8FF' : 'rgba(201,184,255,0.2)',
           }}
         />
       ))}
@@ -94,7 +94,7 @@ function EvalForm({
           type="checkbox"
           checked={form.increasesCapital}
           onChange={e => setForm(f => ({ ...f, increasesCapital: e.target.checked }))}
-          style={{ accentColor: '#30D158' }}
+          style={{ accentColor: '#9FE7C0' }}
         />
         Increases Career Capital
       </label>
@@ -121,7 +121,7 @@ function EvalForm({
           max={5}
           value={form.reusabilityScore}
           onChange={e => setForm(f => ({ ...f, reusabilityScore: Number(e.target.value) }))}
-          style={{ width: '100%', accentColor: '#BF5AF2' }}
+          style={{ width: '100%', accentColor: '#C9B8FF' }}
         />
       </div>
       <input
@@ -135,7 +135,7 @@ function EvalForm({
           type="checkbox"
           checked={form.proofAttached}
           onChange={e => setForm(f => ({ ...f, proofAttached: e.target.checked }))}
-          style={{ accentColor: '#30D158' }}
+          style={{ accentColor: '#9FE7C0' }}
         />
         Proof of Work attached
       </label>
@@ -144,7 +144,7 @@ function EvalForm({
           type="submit"
           disabled={submitting}
           style={{
-            background: '#BF5AF2',
+            background: '#C9B8FF',
             border: 'none',
             borderRadius: 7,
             color: '#1A1916',
@@ -199,9 +199,9 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
             {ev.increasesCapital ? (
               <span
                 style={{
-                  background: 'rgba(107,227,164,0.15)',
-                  border: '1px solid rgba(107,227,164,0.3)',
-                  color: '#30D158',
+                  background: 'rgba(159,231,192,0.15)',
+                  border: '1px solid rgba(159,231,192,0.3)',
+                  color: '#9FE7C0',
                   fontSize: 11,
                   padding: '3px 9px',
                   borderRadius: 5,
@@ -214,9 +214,9 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
             ) : (
               <span
                 style={{
-                  background: 'rgba(242,192,99,0.12)',
-                  border: '1px solid rgba(242,192,99,0.3)',
-                  color: '#FFD60A',
+                  background: 'rgba(243,213,138,0.12)',
+                  border: '1px solid rgba(243,213,138,0.3)',
+                  color: '#F3D58A',
                   fontSize: 11,
                   padding: '3px 9px',
                   borderRadius: 5,
@@ -246,10 +246,10 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
           <button
             onClick={() => setEditing(v => !v)}
             style={{
-              background: 'rgba(180,167,229,0.12)',
-              border: '1px solid rgba(180,167,229,0.3)',
+              background: 'rgba(201,184,255,0.12)',
+              border: '1px solid rgba(201,184,255,0.3)',
               borderRadius: 6,
-              color: '#BF5AF2',
+              color: '#C9B8FF',
               padding: '4px 12px',
               fontSize: 12,
               fontWeight: 600,
@@ -285,11 +285,11 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
           {!ev.proofAttached && ev.increasesCapital && (
             <div
               style={{
-                background: 'rgba(242,192,99,0.10)',
-                border: '1px solid rgba(242,192,99,0.25)',
+                background: 'rgba(243,213,138,0.10)',
+                border: '1px solid rgba(243,213,138,0.25)',
                 borderRadius: 7,
                 padding: '7px 12px',
-                color: '#FFD60A',
+                color: '#F3D58A',
                 fontSize: 12,
                 marginTop: 4,
               }}

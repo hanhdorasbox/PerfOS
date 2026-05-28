@@ -22,7 +22,7 @@ export default function FitnessCharts({ fitnessLogs }: { fitnessLogs: FitnessLog
             <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#6E6E73' }} axisLine={false} tickLine={false} />
             <YAxis domain={['auto', 'auto']} tick={{ fontSize: 10, fill: '#6E6E73' }} axisLine={false} tickLine={false} />
             <Tooltip contentStyle={tooltipStyle} />
-            <Line type="monotone" dataKey="weight" stroke="#BF5AF2" strokeWidth={2} dot={{ fill: '#BF5AF2', r: 3 }} />
+            <Line type="monotone" dataKey="weight" stroke="#C9B8FF" strokeWidth={2} dot={{ fill: '#C9B8FF', r: 3 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -34,7 +34,7 @@ export default function FitnessCharts({ fitnessLogs }: { fitnessLogs: FitnessLog
             <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#6E6E73' }} axisLine={false} tickLine={false} />
             <YAxis domain={['auto', 'auto']} tick={{ fontSize: 10, fill: '#6E6E73' }} axisLine={false} tickLine={false} />
             <Tooltip contentStyle={tooltipStyle} />
-            <Line type="monotone" dataKey="waist" stroke="#30D158" strokeWidth={2} dot={{ fill: '#30D158', r: 3 }} />
+            <Line type="monotone" dataKey="waist" stroke="#9FE7C0" strokeWidth={2} dot={{ fill: '#9FE7C0', r: 3 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>

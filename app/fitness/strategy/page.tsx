@@ -28,7 +28,7 @@ interface SerializedStrategy {
 
 export default async function FitnessStrategyPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF453A', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#FFB4A8', padding: 40 }}>No user found.</div>
 
   const ninetyDaysAgo = new Date()
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90)

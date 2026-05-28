@@ -8,7 +8,7 @@ interface Props {
 export default function QuarterOverview({ quarter, qProgress, weightedCompletion, goalCount }: Props) {
   const gap = weightedCompletion - qProgress.pct
   const onTrack = gap >= -5
-  const statusColor = onTrack ? '#30D158' : '#FFD60A'
+  const statusColor = onTrack ? '#9FE7C0' : '#F3D58A'
 
   return (
     <div className="card" style={{ padding: '24px 26px' }}>
@@ -79,20 +79,20 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
         <StatItem
           label="Progress gap"
           value={`${gap >= 0 ? '+' : ''}${Math.round(gap)}%`}
-          valueColor={gap >= 0 ? '#30D158' : '#FFD60A'}
+          valueColor={gap >= 0 ? '#9FE7C0' : '#F3D58A'}
         />
         <div style={{ flex: 1, minWidth: 180 }}>
           <div style={{
             fontSize: 13, color: '#A1A1A6', lineHeight: 1.55,
             padding: '9px 13px',
-            background: onTrack ? 'rgba(48,209,88,0.06)' : 'rgba(255,214,10,0.06)',
+            background: onTrack ? 'rgba(159,231,192,0.06)' : 'rgba(243,213,138,0.06)',
             borderRadius: 12,
-            border: `1px solid ${onTrack ? 'rgba(48,209,88,0.15)' : 'rgba(255,214,10,0.15)'}`,
+            border: `1px solid ${onTrack ? 'rgba(159,231,192,0.15)' : 'rgba(243,213,138,0.15)'}`,
           }}>
             {Math.round(qProgress.pct)}% of the quarter has passed.{' '}
             {onTrack
-              ? <span style={{ color: '#30D158', fontWeight: 600 }}>On track.</span>
-              : <span style={{ color: '#FFD60A', fontWeight: 600 }}>Behind by {Math.round(Math.abs(gap))}%.</span>
+              ? <span style={{ color: '#9FE7C0', fontWeight: 600 }}>On track.</span>
+              : <span style={{ color: '#F3D58A', fontWeight: 600 }}>Behind by {Math.round(Math.abs(gap))}%.</span>
             }
           </div>
         </div>

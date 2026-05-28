@@ -165,13 +165,13 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
         <div style={{
           marginTop: 14,
           padding: '10px 14px',
-          background: height === null ? 'rgba(180,167,229,0.08)' : 'rgba(255,255,255,0.03)',
-          border: `1px solid ${height === null ? 'rgba(180,167,229,0.3)' : 'rgba(255,255,255,0.08)'}`,
+          background: height === null ? 'rgba(201,184,255,0.08)' : 'rgba(255,255,255,0.03)',
+          border: `1px solid ${height === null ? 'rgba(201,184,255,0.3)' : 'rgba(255,255,255,0.08)'}`,
           borderRadius: 8,
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
           {height === null && (
-            <span style={{ fontSize: 12, color: '#BF5AF2', flex: 1 }}>
+            <span style={{ fontSize: 12, color: '#C9B8FF', flex: 1 }}>
               Set your height to enable BMI tracking
             </span>
           )}
@@ -194,7 +194,7 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
           <button
             onClick={saveHeight}
             disabled={savingHeight || !heightInput}
-            style={{ background: 'rgba(107,227,164,0.12)', border: '1px solid rgba(107,227,164,0.3)', color: '#30D158', borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+            style={{ background: 'rgba(159,231,192,0.12)', border: '1px solid rgba(159,231,192,0.3)', color: '#9FE7C0', borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
           >
             {savingHeight ? '…' : 'Save'}
           </button>
@@ -252,9 +252,9 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
               type="submit"
               disabled={saving || (!weight && !waist && !hip)}
               style={{
-                background: 'rgba(107,227,164,0.12)',
-                border: '1px solid rgba(107,227,164,0.3)',
-                color: '#30D158',
+                background: 'rgba(159,231,192,0.12)',
+                border: '1px solid rgba(159,231,192,0.3)',
+                color: '#9FE7C0',
                 borderRadius: 8,
                 padding: '8px 18px',
                 fontSize: 13,
@@ -269,7 +269,7 @@ export default function BodyMetricLogger({ userId, logs: initLogs, userHeight: i
           </div>
 
           {msg && (
-            <div style={{ marginTop: 8, fontSize: 12, color: msgIsError ? '#FF453A' : '#30D158' }}>
+            <div style={{ marginTop: 8, fontSize: 12, color: msgIsError ? '#FFB4A8' : '#9FE7C0' }}>
               {msg}
             </div>
           )}

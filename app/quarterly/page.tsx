@@ -13,27 +13,27 @@ import CreateQuarterForm from '@/components/quarterly/CreateQuarterForm'
 export const dynamic = 'force-dynamic'
 
 const ROLE_META: Record<string, { label: string; color: string; bg: string }> = {
-  career_capital: { label: 'Career Capital', color: '#BF5AF2', bg: 'rgba(180,167,229,0.12)' },
-  learning: { label: 'Learning', color: '#0A84FF', bg: 'rgba(96,165,250,0.12)' },
-  fitness: { label: 'Fitness', color: '#30D158', bg: 'rgba(107,227,164,0.12)' },
-  finance: { label: 'Finance', color: '#FFD60A', bg: 'rgba(242,192,99,0.12)' },
-  high_upside_bet: { label: 'High-Upside Bet', color: '#FF9F6B', bg: 'rgba(255,159,107,0.12)' },
-  long_term: { label: 'Long-Term', color: '#4DD9D9', bg: 'rgba(77,217,217,0.12)' },
+  career_capital: { label: 'Career Capital', color: '#C9B8FF', bg: 'rgba(201,184,255,0.12)' },
+  learning: { label: 'Learning', color: '#9FCBFF', bg: 'rgba(159,203,255,0.12)' },
+  fitness: { label: 'Fitness', color: '#9FE7C0', bg: 'rgba(159,231,192,0.12)' },
+  finance: { label: 'Finance', color: '#F3D58A', bg: 'rgba(243,213,138,0.12)' },
+  high_upside_bet: { label: 'High-Upside Bet', color: '#F7B98E', bg: 'rgba(255,159,107,0.12)' },
+  long_term: { label: 'Long-Term', color: '#9FCBFF', bg: 'rgba(77,217,217,0.12)' },
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  ahead: '#30D158',
-  on_track: '#30D158',
-  watch: '#FFD60A',
-  at_risk: '#FF9F6B',
-  critical: '#FF453A',
-  completed: '#BF5AF2',
+  ahead: '#9FE7C0',
+  on_track: '#9FE7C0',
+  watch: '#F3D58A',
+  at_risk: '#F7B98E',
+  critical: '#FFB4A8',
+  completed: '#C9B8FF',
   paused: '#6E6E73',
 }
 
 export default async function QuarterlyPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF453A', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#FFB4A8', padding: 40 }}>No user found.</div>
 
   // Fetch all quarters with goals
   const quarters = await prisma.quarter.findMany({
@@ -118,12 +118,12 @@ export default async function QuarterlyPage() {
 
   const portfolioBuckets = [
     { label: 'Core Commitments', goals: coreCommitments, color: '#F5F5F7' },
-    { label: 'Growth Investments', goals: growthInvestments, color: '#BF5AF2' },
-    { label: 'High-Upside Bets', goals: highUpsideBets, color: '#FF9F6B' },
-    { label: 'Maintenance Systems', goals: maintenanceSystems, color: '#30D158' },
+    { label: 'Growth Investments', goals: growthInvestments, color: '#C9B8FF' },
+    { label: 'High-Upside Bets', goals: highUpsideBets, color: '#F7B98E' },
+    { label: 'Maintenance Systems', goals: maintenanceSystems, color: '#9FE7C0' },
   ]
 
-  const gapColor = gap >= 0 ? '#30D158' : gap >= -10 ? '#FFD60A' : '#FF453A'
+  const gapColor = gap >= 0 ? '#9FE7C0' : gap >= -10 ? '#F3D58A' : '#FFB4A8'
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px', display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -171,9 +171,9 @@ export default async function QuarterlyPage() {
                   borderRadius: 8,
                   fontSize: 11,
                   fontWeight: 600,
-                  background: q.id === activeQuarter.id ? 'rgba(180,167,229,0.15)' : 'rgba(255,255,255,0.04)',
-                  border: `1px solid ${q.id === activeQuarter.id ? 'rgba(180,167,229,0.3)' : 'rgba(255,255,255,0.08)'}`,
-                  color: q.id === activeQuarter.id ? '#BF5AF2' : '#6E6E73',
+                  background: q.id === activeQuarter.id ? 'rgba(201,184,255,0.15)' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${q.id === activeQuarter.id ? 'rgba(201,184,255,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                  color: q.id === activeQuarter.id ? '#C9B8FF' : '#6E6E73',
                 }}
               >
                 {q.name}
@@ -212,10 +212,10 @@ export default async function QuarterlyPage() {
         {/* Status badges */}
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           {[
-            { label: 'On Track', count: onTrackCount, color: '#30D158', bg: 'rgba(107,227,164,0.1)' },
-            { label: 'Watch', count: watchCount, color: '#FFD60A', bg: 'rgba(242,192,99,0.1)' },
-            { label: 'At Risk', count: atRiskCount, color: '#FF9F6B', bg: 'rgba(255,159,107,0.1)' },
-            { label: 'Critical', count: criticalCount, color: '#FF453A', bg: 'rgba(255,107,107,0.1)' },
+            { label: 'On Track', count: onTrackCount, color: '#9FE7C0', bg: 'rgba(159,231,192,0.1)' },
+            { label: 'Watch', count: watchCount, color: '#F3D58A', bg: 'rgba(243,213,138,0.1)' },
+            { label: 'At Risk', count: atRiskCount, color: '#F7B98E', bg: 'rgba(255,159,107,0.1)' },
+            { label: 'Critical', count: criticalCount, color: '#FFB4A8', bg: 'rgba(255,180,168,0.1)' },
           ].map(s => (
             <div
               key={s.label}
@@ -238,7 +238,7 @@ export default async function QuarterlyPage() {
 
         {/* Progress bar */}
         <div style={{ marginTop: 16, position: 'relative', height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3 }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${Math.min(100, weightedCompletion)}%`, background: gap >= 0 ? '#30D158' : gap >= -10 ? '#FFD60A' : '#FF453A', borderRadius: 3, transition: 'width 0.5s ease' }} />
+          <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${Math.min(100, weightedCompletion)}%`, background: gap >= 0 ? '#9FE7C0' : gap >= -10 ? '#F3D58A' : '#FFB4A8', borderRadius: 3, transition: 'width 0.5s ease' }} />
           {/* Expected marker */}
           <div style={{ position: 'absolute', top: -3, left: `${Math.min(100, expectedPct)}%`, width: 2, height: 12, background: '#6E6E73', borderRadius: 1 }} />
         </div>
