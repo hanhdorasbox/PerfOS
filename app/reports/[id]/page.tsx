@@ -5,17 +5,17 @@ import Link from 'next/link'
 export const dynamic = 'force-dynamic'
 
 const STATUS_COLORS: Record<string, string> = {
-  ahead: '#9FE7C0',
-  on_track: '#9FCBFF',
-  watch: '#F3D58A',
-  at_risk: '#F7B98E',
-  critical: '#FFB4A8',
+  ahead: '#7FD5AA',
+  on_track: '#80BDFF',
+  watch: '#ECC666',
+  at_risk: '#F5A56A',
+  critical: '#FF9B87',
 }
 
 const STRENGTH_CONFIG = {
-  strong:  { label: 'Strong week',  color: '#9FE7C0', bg: 'rgba(159,231,192,0.1)',  border: 'rgba(159,231,192,0.25)' },
-  neutral: { label: 'Neutral week', color: '#9FCBFF', bg: 'rgba(159,203,255,0.1)',   border: 'rgba(159,203,255,0.25)' },
-  weak:    { label: 'Weak week',    color: '#F3D58A', bg: 'rgba(243,213,138,0.1)',   border: 'rgba(243,213,138,0.25)' },
+  strong:  { label: 'Strong week',  color: '#7FD5AA', bg: 'rgba(127,213,170,0.1)',  border: 'rgba(127,213,170,0.25)' },
+  neutral: { label: 'Neutral week', color: '#80BDFF', bg: 'rgba(128,189,255,0.1)',   border: 'rgba(128,189,255,0.25)' },
+  weak:    { label: 'Weak week',    color: '#ECC666', bg: 'rgba(236,198,102,0.1)',   border: 'rgba(236,198,102,0.25)' },
 }
 
 /** Accept either a JSON array of strings or a plain string — always return string[] */
@@ -97,9 +97,9 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
       {goalBreakdown.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 20 }}>
           {[
-            { label: 'Goals tracked', value: goalBreakdown.length, color: '#C9B8FF' },
-            { label: 'On track',      value: onTrack,              color: '#9FE7C0' },
-            { label: 'At risk',       value: atRisk,               color: atRisk > 0 ? '#F3D58A' : '#6E6E73' },
+            { label: 'Goals tracked', value: goalBreakdown.length, color: '#B8A4FF' },
+            { label: 'On track',      value: onTrack,              color: '#7FD5AA' },
+            { label: 'At risk',       value: atRisk,               color: atRisk > 0 ? '#ECC666' : '#6E6E73' },
           ].map(s => (
             <div key={s.label} className="card" style={{ padding: '12px 16px', textAlign: 'center' }}>
               <p style={{ color: '#6E6E73', fontSize: 10, textTransform: 'uppercase', letterSpacing: 1 }}>{s.label}</p>
@@ -112,10 +112,10 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
       {/* Executive Summary */}
       {executiveBullets.length > 0 && (
         <div className="card" style={{ marginBottom: 16, padding: '16px 20px' }}>
-          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#C9B8FF', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#B8A4FF', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
             What happened this week
           </h2>
-          <BulletList items={executiveBullets} color="#C9B8FF" />
+          <BulletList items={executiveBullets} color="#B8A4FF" />
         </div>
       )}
 
@@ -146,7 +146,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
                     </div>
                     <div style={{ textAlign: 'center' }}>
                       <p style={{ color: '#6E6E73', fontSize: 9, textTransform: 'uppercase', letterSpacing: 1 }}>Delta</p>
-                      <p style={{ color: g.delta >= 0 ? '#9FE7C0' : '#FFB4A8', fontSize: 14, fontWeight: 700 }}>
+                      <p style={{ color: g.delta >= 0 ? '#7FD5AA' : '#FF9B87', fontSize: 14, fontWeight: 700 }}>
                         {g.delta != null ? `${g.delta >= 0 ? '+' : ''}${Math.round(g.delta)}%` : '—'}
                       </p>
                     </div>
@@ -161,13 +161,13 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
       {/* Strategic Wins */}
       {strategicWins.length > 0 && (
         <div className="card" style={{ marginBottom: 16, padding: '16px 20px' }}>
-          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#9FE7C0', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#7FD5AA', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
             Wins this week
           </h2>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
             {strategicWins.map((win, i) => (
               <li key={i} style={{ display: 'flex', gap: 8, padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'flex-start' }}>
-                <span style={{ color: '#9FE7C0', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                <span style={{ color: '#7FD5AA', fontWeight: 700, flexShrink: 0 }}>✓</span>
                 <span style={{ fontSize: 13, color: '#F5F5F7' }}>{win}</span>
               </li>
             ))}
@@ -177,21 +177,21 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
 
       {/* Slippage & Risk */}
       {slippageRisks.length > 0 && (
-        <div style={{ background: 'rgba(255,180,168,0.05)', border: '1px solid rgba(255,180,168,0.15)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
-          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#FFB4A8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+        <div style={{ background: 'rgba(255,155,135,0.05)', border: '1px solid rgba(255,155,135,0.15)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#FF9B87', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
             Slippage & Risk
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {slippageRisks.map((risk: any, i: number) => (
-              <div key={i} style={{ padding: '10px 12px', background: 'rgba(255,180,168,0.06)', border: '1px solid rgba(255,180,168,0.12)', borderRadius: 8 }}>
+              <div key={i} style={{ padding: '10px 12px', background: 'rgba(255,155,135,0.06)', border: '1px solid rgba(255,155,135,0.12)', borderRadius: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#F5F5F7' }}>{risk.goal}</span>
-                  <span style={{ fontSize: 11, color: risk.recoverable ? '#9FE7C0' : '#FFB4A8', fontWeight: 600 }}>
+                  <span style={{ fontSize: 11, color: risk.recoverable ? '#7FD5AA' : '#FF9B87', fontWeight: 600 }}>
                     {risk.recoverable ? 'Recoverable' : 'Critical'}
                   </span>
                 </div>
                 <span style={{ fontSize: 13, color: '#A1A1A6' }}>{risk.issue}</span>
-                {risk.pattern && <p style={{ fontSize: 11, color: '#F3D58A', marginTop: 4 }}>Pattern: {risk.pattern}</p>}
+                {risk.pattern && <p style={{ fontSize: 11, color: '#ECC666', marginTop: 4 }}>Pattern: {risk.pattern}</p>}
               </div>
             ))}
           </div>
@@ -206,7 +206,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
               <h2 style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
                 Fitness
               </h2>
-              <BulletList items={fitnessBullets} color="#9FE7C0" />
+              <BulletList items={fitnessBullets} color="#7FD5AA" />
             </div>
           )}
           {careerBullets.length > 0 && (
@@ -214,7 +214,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
               <h2 style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
                 Career Capital
               </h2>
-              <BulletList items={careerBullets} color="#9FCBFF" />
+              <BulletList items={careerBullets} color="#80BDFF" />
             </div>
           )}
         </div>
@@ -226,20 +226,20 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
           <h2 style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
             Drift Patterns
           </h2>
-          <BulletList items={antiDriftBullets} color="#F3D58A" />
+          <BulletList items={antiDriftBullets} color="#ECC666" />
         </div>
       )}
 
       {/* Next week actions */}
       {nextWeekBullets.length > 0 && (
-        <div style={{ background: 'rgba(159,231,192,0.05)', border: '1px solid rgba(159,231,192,0.2)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
-          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#9FE7C0', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+        <div style={{ background: 'rgba(127,213,170,0.05)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#7FD5AA', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
             Next week — do these
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {nextWeekBullets.map((action, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <span style={{ background: 'rgba(159,231,192,0.15)', color: '#9FE7C0', fontSize: 11, fontWeight: 700, width: 20, height: 20, borderRadius: 99, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
+                <span style={{ background: 'rgba(127,213,170,0.15)', color: '#7FD5AA', fontSize: 11, fontWeight: 700, width: 20, height: 20, borderRadius: 99, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
                 <span style={{ color: '#F5F5F7', fontSize: 13, lineHeight: 1.5 }}>{action}</span>
               </div>
             ))}
@@ -249,8 +249,8 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
 
       {/* Chief of Staff Message */}
       {report.chiefOfStaffMsg && (
-        <div style={{ padding: '20px 24px', background: 'rgba(201,184,255,0.08)', border: '1px solid rgba(201,184,255,0.25)', borderRadius: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9B8FF', marginBottom: 10 }}>
+        <div style={{ padding: '20px 24px', background: 'rgba(184,164,255,0.08)', border: '1px solid rgba(184,164,255,0.25)', borderRadius: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#B8A4FF', marginBottom: 10 }}>
             Chief of Staff
           </div>
           <p style={{ fontSize: 14, color: '#F5F5F7', lineHeight: 1.65, fontStyle: 'italic' }}>

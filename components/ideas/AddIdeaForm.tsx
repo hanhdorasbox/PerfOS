@@ -109,14 +109,14 @@ export default function AddIdeaForm({ userId }: { userId: string }) {
         </label>
       </div>
 
-      {error && <p style={{ color: '#FFB4A8', fontSize: 13 }}>{error}</p>}
+      {error && <p style={{ color: '#FF9B87', fontSize: 13 }}>{error}</p>}
 
       <button
         type="submit"
         disabled={saving || !form.title.trim()}
         style={{
-          background: 'rgba(243,213,138,0.12)', border: '1px solid rgba(243,213,138,0.3)',
-          color: '#F3D58A', padding: '8px 20px', borderRadius: 10,
+          background: 'rgba(236,198,102,0.12)', border: '1px solid rgba(236,198,102,0.3)',
+          color: '#ECC666', padding: '8px 20px', borderRadius: 10,
           fontSize: 13, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer',
           alignSelf: 'flex-start',
         }}

@@ -93,8 +93,8 @@ interface Props {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const PRIORITY_COLOR: Record<string, string> = {
-  must:     '#FFB4A8',
-  should:   '#F3D58A',
+  must:     '#FF9B87',
+  should:   '#ECC666',
   optional: '#6E6E73',
 }
 const PRIORITY_LABEL: Record<string, string> = {
@@ -105,11 +105,11 @@ const PRIORITY_LABEL: Record<string, string> = {
 const EFFORT_LABEL: Record<number, string> = { 1: 'Easy', 2: 'Medium', 3: 'Deep work' }
 const MEAL_ORDER: Record<string, number> = { breakfast: 0, lunch: 1, dinner: 2, snack: 3 }
 const CATEGORY_COLOR: Record<string, string> = {
-  geopolitics: '#F7B98E',
-  business:    '#F3D58A',
-  tech:        '#C9B8FF',
-  society:     '#9FCBFF',
-  science:     '#9FE7C0',
+  geopolitics: '#F5A56A',
+  business:    '#ECC666',
+  tech:        '#B8A4FF',
+  society:     '#80BDFF',
+  science:     '#7FD5AA',
 }
 
 function sortMeals(meals: PlannedMeal[]) {
@@ -182,7 +182,7 @@ function ActiveDayRing() {
   const SZ = (R + SW) * 2 + 4
   const CIRC = 2 * Math.PI * R
   const offset = CIRC * (1 - remainPct)
-  const ringColor = remainPct > 0.4 ? '#9FE7C0' : remainPct > 0.2 ? '#F3D58A' : '#FFB4A8'
+  const ringColor = remainPct > 0.4 ? '#7FD5AA' : remainPct > 0.2 ? '#ECC666' : '#FF9B87'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
@@ -229,7 +229,7 @@ function ActiveDayRing() {
             </>
           )}
           {phase === 'before' && (
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#C9B8FF', lineHeight: 1.5 }}>Starts<br />07:00</div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#B8A4FF', lineHeight: 1.5 }}>Starts<br />07:00</div>
           )}
           {phase === 'after' && (
             <div style={{ fontSize: 10, color: '#6E6E73', lineHeight: 1.5 }}>Day<br />done</div>
@@ -302,7 +302,7 @@ function WorldBriefingItem({ item }: { item: WorldItem }) {
 function RelevantUpdateItem({ item }: { item: RelevantItem }) {
   return (
     <div style={{ padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-      <div style={{ fontSize: 9, fontWeight: 800, color: '#C9B8FF', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
+      <div style={{ fontSize: 9, fontWeight: 800, color: '#B8A4FF', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
         {item.topic}
       </div>
       <div style={{ fontSize: 12, color: '#A1A1A6', lineHeight: 1.45 }}>{item.update}</div>
@@ -445,7 +445,7 @@ function FitnessSnapshot({ strategy, fitnessLog }: { strategy: FitnessStrategy |
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           {todaySessions.map((s, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 11, color: '#C9B8FF' }}>▸</span>
+              <span style={{ fontSize: 11, color: '#B8A4FF' }}>▸</span>
               <span style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>{s}</span>
             </div>
           ))}
@@ -464,7 +464,7 @@ function FitnessSnapshot({ strategy, fitnessLog }: { strategy: FitnessStrategy |
           )}
           {targetProtein && (
             <div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: '#9FE7C0' }}>{targetProtein}g</div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: '#7FD5AA' }}>{targetProtein}g</div>
               <div style={{ fontSize: 10, color: '#6E6E73' }}>protein target</div>
             </div>
           )}
@@ -490,7 +490,7 @@ function MealPreview({ meals, label, href }: { meals: PlannedMeal[]; label: stri
           {label}
         </div>
         {href && (
-          <Link href={href} style={{ fontSize: 11, color: '#C9B8FF', textDecoration: 'none' }}>Full plan →</Link>
+          <Link href={href} style={{ fontSize: 11, color: '#B8A4FF', textDecoration: 'none' }}>Full plan →</Link>
         )}
       </div>
 
@@ -517,7 +517,7 @@ function MealPreview({ meals, label, href }: { meals: PlannedMeal[]; label: stri
       ) : (
         <div style={{ fontSize: 12, color: '#6E6E73' }}>
           No meal plan.{' '}
-          <Link href="/meals" style={{ color: '#C9B8FF', textDecoration: 'none' }}>Generate →</Link>
+          <Link href="/meals" style={{ color: '#B8A4FF', textDecoration: 'none' }}>Generate →</Link>
         </div>
       )}
     </div>
@@ -555,7 +555,7 @@ function BulletDirective({ text }: { text: string }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {sentences.filter(Boolean).map((s, i) => (
             <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-              <span style={{ color: '#C9B8FF', flexShrink: 0, fontSize: 11, marginTop: 2, fontWeight: 800 }}>→</span>
+              <span style={{ color: '#B8A4FF', flexShrink: 0, fontSize: 11, marginTop: 2, fontWeight: 800 }}>→</span>
               <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.6 }}>{s.trim()}</span>
             </div>
           ))}
@@ -577,7 +577,7 @@ function BulletDirective({ text }: { text: string }) {
           {bullets.map((b, i) => (
             <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
               <span style={{
-                color: '#C9B8FF', flexShrink: 0, fontSize: 13, marginTop: 1,
+                color: '#B8A4FF', flexShrink: 0, fontSize: 13, marginTop: 1,
                 lineHeight: 1, fontWeight: 700,
               }}>•</span>
               <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.6 }}>{b}</span>
@@ -679,8 +679,13 @@ export default function DailyCommandCenter({
 
   // Parse briefing JSON fields
   const briefPriorities = parseSafeJson<BriefingPriority[]>(briefing?.priorities) ?? []
-  const worldBriefing   = parseSafeJson<WorldItem[]>(briefing?.worldBriefing) ?? []
-  const relevantUpdates = parseSafeJson<RelevantItem[]>(briefing?.relevantUpdates) ?? []
+  // One item per category — deduplicate defensively even if API returns more
+  const worldBriefingRaw = parseSafeJson<WorldItem[]>(briefing?.worldBriefing) ?? []
+  const worldBriefing = worldBriefingRaw.reduce((acc: WorldItem[], item) => {
+    const cat = item.category?.toLowerCase()
+    if (!acc.find(x => x.category?.toLowerCase() === cat)) acc.push(item)
+    return acc
+  }, [])
   const externalContext = briefing?.externalContext ?? null
 
   // Priority lists
@@ -716,9 +721,9 @@ export default function DailyCommandCenter({
 
       {/* ══ DAILY INTELLIGENCE BAR ══════════════════════════════════════════ */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(201,184,255,0.05), rgba(255,255,255,0.02))',
+        background: 'linear-gradient(135deg, rgba(184,164,255,0.05), rgba(255,255,255,0.02))',
         borderRadius: 20,
-        border: '1px solid rgba(201,184,255,0.1)',
+        border: '1px solid rgba(184,164,255,0.1)',
         padding: '20px 24px',
         marginBottom: 20,
       }}>
@@ -741,7 +746,7 @@ export default function DailyCommandCenter({
             )}
           </div>
           {loadingBrief && (
-            <Spinner size={14} color="#C9B8FF" strokeWidth={1.8} />
+            <Spinner size={14} color="#B8A4FF" strokeWidth={1.8} />
           )}
         </div>
 
@@ -762,13 +767,9 @@ export default function DailyCommandCenter({
           {loadingBrief && worldBriefing.length === 0 ? (
             <IntelligenceSkeleton />
           ) : (
-            <div key={briefing?.id ?? 'empty'} className="animate-fade-in r-grid-brief">
-
-              {/* World Briefing */}
-              <div>
-                <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 4 }}>
-                  🌍 World Briefing
-                </div>
+            <div key={briefing?.id ?? 'empty'} className="animate-fade-in">
+              {/* World Briefing — full width, one per category */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '0 24px' }}>
                 {worldBriefing.length > 0 ? (
                   worldBriefing.map((item, i) => (
                     <WorldBriefingItem key={i} item={item} />
@@ -778,37 +779,21 @@ export default function DailyCommandCenter({
                     Generate briefing to see today&apos;s world summary.
                   </div>
                 )}
-
-                {/* External context */}
-                {externalContext && (
-                  <div style={{
-                    marginTop: 10,
-                    padding: '7px 10px',
-                    background: 'rgba(243,213,138,0.05)',
-                    border: '1px solid rgba(243,213,138,0.15)',
-                    borderRadius: 8,
-                    fontSize: 11, color: '#F3D58A', lineHeight: 1.5,
-                  }}>
-                    ☀️ {externalContext}
-                  </div>
-                )}
               </div>
 
-              {/* Relevant to Your World */}
-              <div>
-                <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 4 }}>
-                  ⚡ Relevant to Your World
+              {/* External context */}
+              {externalContext && (
+                <div style={{
+                  marginTop: 10,
+                  padding: '7px 10px',
+                  background: 'rgba(236,198,102,0.06)',
+                  border: '1px solid rgba(236,198,102,0.18)',
+                  borderRadius: 8,
+                  fontSize: 11, color: '#ECC666', lineHeight: 1.5,
+                }}>
+                  ☀️ {externalContext}
                 </div>
-                {relevantUpdates.length > 0 ? (
-                  relevantUpdates.map((item, i) => (
-                    <RelevantUpdateItem key={i} item={item} />
-                  ))
-                ) : (
-                  <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic', paddingTop: 8 }}>
-                    AI, analytics &amp; productivity updates will appear here.
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           )}
         </div>
@@ -820,7 +805,7 @@ export default function DailyCommandCenter({
         {/* LEFT — Directive + Today's Priorities */}
         <div className="card">
           {/* Strategic Directive — purple left border applies only to the directive text */}
-          <div style={{ borderLeft: '3px solid #C9B8FF', paddingLeft: 14, marginBottom: briefing?.instruction ? 10 : 18 }}>
+          <div style={{ borderLeft: '3px solid #B8A4FF', paddingLeft: 14, marginBottom: briefing?.instruction ? 10 : 18 }}>
             <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6 }}>
               This Week&apos;s Directive
             </div>
@@ -841,8 +826,8 @@ export default function DailyCommandCenter({
 
           {/* Today block — OUTSIDE purple border, below directive */}
           {briefing?.instruction && (
-            <div style={{ marginTop: 16, marginBottom: 18, padding: '8px 12px', background: 'rgba(159,231,192,0.05)', borderRadius: 8, border: '1px solid rgba(159,231,192,0.15)' }}>
-              <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#9FE7C0', marginBottom: 4 }}>
+            <div style={{ marginTop: 16, marginBottom: 18, padding: '8px 12px', background: 'rgba(127,213,170,0.05)', borderRadius: 8, border: '1px solid rgba(127,213,170,0.15)' }}>
+              <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#7FD5AA', marginBottom: 4 }}>
                 Today
               </div>
               <span style={{ fontSize: 12, color: '#A1A1A6', lineHeight: 1.6 }}>{briefing.instruction}</span>
@@ -860,19 +845,19 @@ export default function DailyCommandCenter({
             ) : incompleteTasks.length === 0 ? (
               <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic' }}>
                 No tasks this week.{' '}
-                <Link href="/quarterly" style={{ color: '#C9B8FF', textDecoration: 'none' }}>Set up a plan →</Link>
+                <Link href="/quarterly" style={{ color: '#B8A4FF', textDecoration: 'none' }}>Set up a plan →</Link>
               </div>
             ) : (
               <>
                 {mustDo.length > 0 && (
                   <div style={{ marginBottom: 10 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#FFB4A8', marginBottom: 2 }}>Must Do</div>
+                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#FF9B87', marginBottom: 2 }}>Must Do</div>
                     {mustDo.map(t => <PriorityItem key={t.id} task={t} briefItem={findBriefItem(t)} onToggle={toggleTask} toggling={toggling} />)}
                   </div>
                 )}
                 {shouldDo.length > 0 && (
                   <div style={{ marginBottom: 10 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#F3D58A', marginBottom: 2 }}>Should Do</div>
+                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#ECC666', marginBottom: 2 }}>Should Do</div>
                     {shouldDo.map(t => <PriorityItem key={t.id} task={t} briefItem={findBriefItem(t)} onToggle={toggleTask} toggling={toggling} />)}
                   </div>
                 )}

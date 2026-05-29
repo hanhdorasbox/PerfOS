@@ -31,7 +31,7 @@ function ProficiencyDots({ value }: { value: number }) {
             width: 8,
             height: 8,
             borderRadius: '50%',
-            background: i <= value ? '#C9B8FF' : 'rgba(201,184,255,0.2)',
+            background: i <= value ? '#B8A4FF' : 'rgba(184,164,255,0.2)',
           }}
         />
       ))}
@@ -107,10 +107,10 @@ export default function SkillTracker({
         <button
           onClick={() => setShowForm(v => !v)}
           style={{
-            background: 'rgba(201,184,255,0.15)',
-            border: '1px solid rgba(201,184,255,0.3)',
+            background: 'rgba(184,164,255,0.15)',
+            border: '1px solid rgba(184,164,255,0.3)',
             borderRadius: 7,
-            color: '#C9B8FF',
+            color: '#B8A4FF',
             padding: '5px 12px',
             fontSize: 12,
             fontWeight: 600,
@@ -161,7 +161,7 @@ export default function SkillTracker({
               max={5}
               value={form.proficiency}
               onChange={e => setForm(f => ({ ...f, proficiency: Number(e.target.value) }))}
-              style={{ width: '100%', accentColor: '#C9B8FF' }}
+              style={{ width: '100%', accentColor: '#B8A4FF' }}
             />
           </div>
           <textarea
@@ -176,7 +176,7 @@ export default function SkillTracker({
               type="checkbox"
               checked={form.inUse}
               onChange={e => setForm(f => ({ ...f, inUse: e.target.checked }))}
-              style={{ accentColor: '#9FE7C0' }}
+              style={{ accentColor: '#7FD5AA' }}
             />
             Currently in use
           </label>
@@ -185,7 +185,7 @@ export default function SkillTracker({
               type="submit"
               disabled={submitting}
               style={{
-                background: '#C9B8FF',
+                background: '#B8A4FF',
                 border: 'none',
                 borderRadius: 7,
                 color: '#1A1916',
@@ -239,7 +239,7 @@ export default function SkillTracker({
                     <span style={{ color: '#F5F5F7', fontSize: 13, fontWeight: 600 }}>{skill.title}</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       {skill.inUse && (
-                        <span style={{ background: 'rgba(159,231,192,0.15)', border: '1px solid rgba(159,231,192,0.3)', color: '#9FE7C0', fontSize: 10, padding: '2px 7px', borderRadius: 4, fontWeight: 700 }}>
+                        <span style={{ background: 'rgba(127,213,170,0.15)', border: '1px solid rgba(127,213,170,0.3)', color: '#7FD5AA', fontSize: 10, padding: '2px 7px', borderRadius: 4, fontWeight: 700 }}>
                           In use ✓
                         </span>
                       )}

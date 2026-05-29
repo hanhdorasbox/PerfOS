@@ -20,23 +20,23 @@ interface Props {
 // ─── Colours ──────────────────────────────────────────────────────────────────
 
 const STATUS_CFG = {
-  thriving:  { label: 'Thriving',  color: '#9FE7C0', bg: 'rgba(159,231,192,0.12)',  border: 'rgba(159,231,192,0.3)',  icon: '⚡' },
-  stable:    { label: 'Stable',    color: '#9FCBFF', bg: 'rgba(159,203,255,0.12)',   border: 'rgba(159,203,255,0.3)',   icon: '●' },
-  watch:     { label: 'Watch',     color: '#F3D58A', bg: 'rgba(243,213,138,0.12)',   border: 'rgba(243,213,138,0.3)',   icon: '⚠' },
-  risk:      { label: 'Risk',      color: '#F7B98E', bg: 'rgba(247,185,142,0.12)',   border: 'rgba(247,185,142,0.3)',   icon: '▲' },
-  recovery:  { label: 'Recovery',  color: '#FFB4A8', bg: 'rgba(255,180,168,0.12)',  border: 'rgba(255,180,168,0.3)',  icon: '↻' },
+  thriving:  { label: 'Thriving',  color: '#7FD5AA', bg: 'rgba(127,213,170,0.12)',  border: 'rgba(127,213,170,0.3)',  icon: '⚡' },
+  stable:    { label: 'Stable',    color: '#80BDFF', bg: 'rgba(128,189,255,0.12)',   border: 'rgba(128,189,255,0.3)',   icon: '●' },
+  watch:     { label: 'Watch',     color: '#ECC666', bg: 'rgba(236,198,102,0.12)',   border: 'rgba(236,198,102,0.3)',   icon: '⚠' },
+  risk:      { label: 'Risk',      color: '#F5A56A', bg: 'rgba(245,165,106,0.12)',   border: 'rgba(245,165,106,0.3)',   icon: '▲' },
+  recovery:  { label: 'Recovery',  color: '#FF9B87', bg: 'rgba(255,155,135,0.12)',  border: 'rgba(255,155,135,0.3)',  icon: '↻' },
 } as const
 
 const GOAL_STATUS_COLOR: Record<string, string> = {
-  ahead: '#9FE7C0', on_track: '#9FCBFF', watch: '#F3D58A', at_risk: '#F7B98E', critical: '#FFB4A8', no_data: '#6E6E73',
+  ahead: '#7FD5AA', on_track: '#80BDFF', watch: '#ECC666', at_risk: '#F5A56A', critical: '#FF9B87', no_data: '#6E6E73',
 }
 
 const DOMAIN_STATUS_COLOR: Record<string, string> = {
-  thriving: '#9FE7C0', stable: '#9FCBFF', watch: '#F3D58A', risk: '#FFB4A8', inactive: '#6E6E73',
+  thriving: '#7FD5AA', stable: '#80BDFF', watch: '#ECC666', risk: '#FF9B87', inactive: '#6E6E73',
 }
 
 const FORECAST_COLOR: Record<string, string> = {
-  ahead: '#9FE7C0', on_track: '#9FCBFF', late: '#F3D58A', stalled: '#FFB4A8',
+  ahead: '#7FD5AA', on_track: '#80BDFF', late: '#ECC666', stalled: '#FF9B87',
 }
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
@@ -140,13 +140,13 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ height: 22, width: 140, background: 'rgba(255,255,255,0.06)', borderRadius: 6, animation: 'pulse 1.5s ease-in-out infinite' }} />
-            <div style={{ height: 20, width: 50, background: 'rgba(159,231,192,0.15)', borderRadius: 99 }} />
+            <div style={{ height: 20, width: 50, background: 'rgba(127,213,170,0.15)', borderRadius: 99 }} />
           </div>
           <div style={{ height: 28, width: 80, background: 'rgba(255,255,255,0.04)', borderRadius: 6 }} />
         </div>
         <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 16 }} />
         {/* Snapshot skeleton */}
-        <div style={{ background: 'rgba(159,203,255,0.06)', border: '1px solid rgba(159,203,255,0.15)', borderRadius: 14, padding: '18px 20px', marginBottom: 16 }}>
+        <div style={{ background: 'rgba(128,189,255,0.06)', border: '1px solid rgba(128,189,255,0.15)', borderRadius: 14, padding: '18px 20px', marginBottom: 16 }}>
           <div style={{ height: 14, width: 80, background: 'rgba(255,255,255,0.08)', borderRadius: 4, marginBottom: 14 }} />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             {[0, 1].map(i => (
@@ -179,9 +179,9 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
           ))}
         </div>
         {error && (
-          <div style={{ background: 'rgba(255,180,168,0.1)', border: '1px solid rgba(255,180,168,0.2)', color: '#FFB4A8', borderRadius: 8, padding: '8px 14px', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.2)', color: '#FF9B87', borderRadius: 8, padding: '8px 14px', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>{error}</span>
-            <button onClick={refresh} style={{ background: 'none', border: '1px solid rgba(255,180,168,0.4)', color: '#FFB4A8', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer' }}>Retry</button>
+            <button onClick={refresh} style={{ background: 'none', border: '1px solid rgba(255,155,135,0.4)', color: '#FF9B87', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer' }}>Retry</button>
           </div>
         )}
         <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
@@ -205,7 +205,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
           <h2 style={{ fontSize: 18, fontWeight: 700, color: '#F5F5F7' }}>
             Week of {weekStartFmt}–{weekEndFmt}
           </h2>
-          <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: 'rgba(159,231,192,0.15)', border: '1px solid rgba(159,231,192,0.3)', color: '#9FE7C0' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: 'rgba(127,213,170,0.15)', border: '1px solid rgba(127,213,170,0.3)', color: '#7FD5AA' }}>
             ● LIVE
           </span>
         </div>
@@ -232,7 +232,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
       </div>
 
       {error && (
-        <div style={{ background: 'rgba(255,180,168,0.1)', border: '1px solid rgba(255,180,168,0.2)', color: '#FFB4A8', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
+        <div style={{ background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.2)', color: '#FF9B87', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
           {error}
         </div>
       )}
@@ -247,14 +247,14 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {data.snapshot.wins.length > 0 && (
             <div>
-              <p style={{ color: '#9FE7C0', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>✓ Wins</p>
-              <BulletList items={data.snapshot.wins} color="#9FE7C0" />
+              <p style={{ color: '#7FD5AA', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>✓ Wins</p>
+              <BulletList items={data.snapshot.wins} color="#7FD5AA" />
             </div>
           )}
           {data.snapshot.risks.length > 0 && (
             <div>
-              <p style={{ color: '#F3D58A', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>⚠ Risks</p>
-              <BulletList items={data.snapshot.risks} color="#F3D58A" />
+              <p style={{ color: '#ECC666', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>⚠ Risks</p>
+              <BulletList items={data.snapshot.risks} color="#ECC666" />
             </div>
           )}
         </div>
@@ -277,10 +277,10 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
       {/* ── Avatar metrics row ────────────────────────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
         {[
-          { label: 'XP This Week', value: `+${data.avatar.xpThisWeek}`, color: '#C9B8FF' },
-          { label: 'Tasks Done', value: data.avatar.tasksCompleted, color: '#9FCBFF' },
-          { label: 'Goals Advanced', value: data.avatar.goalsAdvanced, color: '#9FE7C0' },
-          { label: 'Week Rating', value: `${data.avatar.weekRating}/5`, color: data.avatar.weekRating >= 4 ? '#9FE7C0' : data.avatar.weekRating >= 3 ? '#F3D58A' : '#FFB4A8' },
+          { label: 'XP This Week', value: `+${data.avatar.xpThisWeek}`, color: '#B8A4FF' },
+          { label: 'Tasks Done', value: data.avatar.tasksCompleted, color: '#80BDFF' },
+          { label: 'Goals Advanced', value: data.avatar.goalsAdvanced, color: '#7FD5AA' },
+          { label: 'Week Rating', value: `${data.avatar.weekRating}/5`, color: data.avatar.weekRating >= 4 ? '#7FD5AA' : data.avatar.weekRating >= 3 ? '#ECC666' : '#FF9B87' },
         ].map(m => (
           <div key={m.label} className="card" style={{ padding: '12px 14px', textAlign: 'center' }}>
             <p style={{ color: '#6E6E73', fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>{m.label}</p>
@@ -311,7 +311,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
                     <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 12 }}>
                       <p style={{ color, fontSize: 18, fontWeight: 700 }}>{g.currentPct}%</p>
                       <p style={{ color: '#6E6E73', fontSize: 11 }}>
-                        {g.gap >= 0 ? <span style={{ color: '#9FE7C0' }}>+{g.gap}% ahead</span> : <span style={{ color: '#F3D58A' }}>{g.gap}% behind</span>}
+                        {g.gap >= 0 ? <span style={{ color: '#7FD5AA' }}>+{g.gap}% ahead</span> : <span style={{ color: '#ECC666' }}>{g.gap}% behind</span>}
                       </p>
                     </div>
                   </div>
@@ -334,9 +334,9 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
           <SectionLabel>C · Task Execution</SectionLabel>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 14 }}>
             {[
-              { label: 'Completion', value: `${data.tasks.rate}%`, sub: `${data.tasks.completed}/${data.tasks.planned} done`, color: data.tasks.rate >= 70 ? '#9FE7C0' : data.tasks.rate >= 50 ? '#F3D58A' : '#FFB4A8' },
-              { label: 'Priority-1', value: `${data.tasks.p1Rate}%`, sub: `${data.tasks.p1Completed}/${data.tasks.p1Planned} must-do`, color: data.tasks.p1Rate >= 80 ? '#9FE7C0' : data.tasks.p1Rate >= 50 ? '#F3D58A' : '#FFB4A8' },
-              { label: 'Missed', value: data.tasks.missed, sub: `tasks not done`, color: data.tasks.missed === 0 ? '#9FE7C0' : data.tasks.missed <= 2 ? '#F3D58A' : '#FFB4A8' },
+              { label: 'Completion', value: `${data.tasks.rate}%`, sub: `${data.tasks.completed}/${data.tasks.planned} done`, color: data.tasks.rate >= 70 ? '#7FD5AA' : data.tasks.rate >= 50 ? '#ECC666' : '#FF9B87' },
+              { label: 'Priority-1', value: `${data.tasks.p1Rate}%`, sub: `${data.tasks.p1Completed}/${data.tasks.p1Planned} must-do`, color: data.tasks.p1Rate >= 80 ? '#7FD5AA' : data.tasks.p1Rate >= 50 ? '#ECC666' : '#FF9B87' },
+              { label: 'Missed', value: data.tasks.missed, sub: `tasks not done`, color: data.tasks.missed === 0 ? '#7FD5AA' : data.tasks.missed <= 2 ? '#ECC666' : '#FF9B87' },
             ].map(m => (
               <div key={m.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '12px 14px', textAlign: 'center' }}>
                 <p style={{ color: '#6E6E73', fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>{m.label}</p>
@@ -345,7 +345,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
               </div>
             ))}
           </div>
-          <Bar pct={data.tasks.rate} color={data.tasks.rate >= 70 ? '#9FE7C0' : data.tasks.rate >= 50 ? '#F3D58A' : '#FFB4A8'} />
+          <Bar pct={data.tasks.rate} color={data.tasks.rate >= 70 ? '#7FD5AA' : data.tasks.rate >= 50 ? '#ECC666' : '#FF9B87'} />
         </div>
       )}
 
@@ -383,10 +383,10 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
           <SectionLabel>F · Anti-Drift — {data.antiDrift.total} work items</SectionLabel>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 12 }}>
             {[
-              { label: 'Advancement', value: data.antiDrift.advancementPct, color: '#9FE7C0' },
-              { label: 'Maintenance', value: data.antiDrift.maintenancePct, color: '#9FCBFF' },
-              { label: 'Reactive',    value: data.antiDrift.reactivePct,    color: '#F3D58A' },
-              { label: 'Busywork',    value: data.antiDrift.busyworkPct,    color: '#FFB4A8' },
+              { label: 'Advancement', value: data.antiDrift.advancementPct, color: '#7FD5AA' },
+              { label: 'Maintenance', value: data.antiDrift.maintenancePct, color: '#80BDFF' },
+              { label: 'Reactive',    value: data.antiDrift.reactivePct,    color: '#ECC666' },
+              { label: 'Busywork',    value: data.antiDrift.busyworkPct,    color: '#FF9B87' },
             ].map(m => (
               <div key={m.label} style={{ textAlign: 'center' }}>
                 <p style={{ color: m.color, fontSize: 22, fontWeight: 700 }}>{m.value}%</p>
@@ -396,10 +396,10 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
             ))}
           </div>
           {data.antiDrift.advancementPct < 30 && (
-            <p style={{ color: '#F3D58A', fontSize: 12 }}>⚠ Less than 30% of effort went to advancement — add 2 advancement blocks next week</p>
+            <p style={{ color: '#ECC666', fontSize: 12 }}>⚠ Less than 30% of effort went to advancement — add 2 advancement blocks next week</p>
           )}
           {data.antiDrift.busyworkPct > 25 && (
-            <p style={{ color: '#FFB4A8', fontSize: 12 }}>⚠ High busywork ({data.antiDrift.busyworkPct}%) — review if these tasks are goal-linked</p>
+            <p style={{ color: '#FF9B87', fontSize: 12 }}>⚠ High busywork ({data.antiDrift.busyworkPct}%) — review if these tasks are goal-linked</p>
           )}
         </div>
       )}
@@ -441,7 +441,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
           <button
             onClick={analyze}
             disabled={analyzing}
-            style={{ background: 'rgba(201,184,255,0.15)', border: '1px solid rgba(201,184,255,0.35)', color: '#C9B8FF', borderRadius: 10, padding: '12px 28px', fontSize: 14, fontWeight: 700, cursor: analyzing ? 'not-allowed' : 'pointer' }}
+            style={{ background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.35)', color: '#B8A4FF', borderRadius: 10, padding: '12px 28px', fontSize: 14, fontWeight: 700, cursor: analyzing ? 'not-allowed' : 'pointer' }}
           >
             {analyzing ? '⏳ Analyzing with AI…' : '✦ Generate AI Analysis'}
           </button>
@@ -453,21 +453,21 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
         <>
           {/* ── H. NEXT WEEK PLAN ──────────────────────────────────────── */}
           {(data.ai.nextWeekPriorities?.length > 0 || data.ai.nextWeekTasks?.length > 0) && (
-            <div style={{ background: 'rgba(159,231,192,0.05)', border: '1px solid rgba(159,231,192,0.2)', borderRadius: 14, padding: '16px 20px', marginBottom: 16 }}>
+            <div style={{ background: 'rgba(127,213,170,0.05)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 14, padding: '16px 20px', marginBottom: 16 }}>
               <SectionLabel>H · Next Week Plan</SectionLabel>
               {data.ai.nextWeekPriorities?.length > 0 && (
                 <div style={{ marginBottom: 14 }}>
-                  <p style={{ color: '#9FE7C0', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Top priorities</p>
-                  <BulletList items={data.ai.nextWeekPriorities} color="#9FE7C0" numbered />
+                  <p style={{ color: '#7FD5AA', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Top priorities</p>
+                  <BulletList items={data.ai.nextWeekPriorities} color="#7FD5AA" numbered />
                 </div>
               )}
               {data.ai.nextWeekTasks?.length > 0 && (
                 <div style={{ marginBottom: 14 }}>
-                  <p style={{ color: '#9FE7C0', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Suggested tasks</p>
+                  <p style={{ color: '#7FD5AA', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Suggested tasks</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {data.ai.nextWeekTasks.map((t, i) => (
                       <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
-                        <span style={{ background: 'rgba(159,231,192,0.15)', color: '#9FE7C0', fontSize: 10, fontWeight: 700, width: 18, height: 18, borderRadius: 99, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
+                        <span style={{ background: 'rgba(127,213,170,0.15)', color: '#7FD5AA', fontSize: 10, fontWeight: 700, width: 18, height: 18, borderRadius: 99, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
                         <div style={{ flex: 1 }}>
                           <span style={{ color: '#F5F5F7', fontSize: 13, fontWeight: 600 }}>{t.title}</span>
                           {t.day && <span style={{ color: '#6E6E73', fontSize: 11, marginLeft: 8 }}>{t.day}</span>}
@@ -480,8 +480,8 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
               )}
               {data.ai.toDrop?.length > 0 && (
                 <div>
-                  <p style={{ color: '#F3D58A', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Drop or defer</p>
-                  <BulletList items={data.ai.toDrop} color="#F3D58A" />
+                  <p style={{ color: '#ECC666', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Drop or defer</p>
+                  <BulletList items={data.ai.toDrop} color="#ECC666" />
                 </div>
               )}
             </div>
@@ -492,9 +492,9 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
             <SectionLabel>I · Avatar Impact</SectionLabel>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 12 }}>
               {[
-                { label: 'XP Gained',       value: `+${data.avatar.xpThisWeek}`,            color: '#C9B8FF' },
-                { label: 'Strongest Domain', value: data.avatar.strongestDomain ?? '—',      color: '#9FE7C0' },
-                { label: 'Week Rating',      value: `${'★'.repeat(data.avatar.weekRating)}${'☆'.repeat(5 - data.avatar.weekRating)}`, color: data.avatar.weekRating >= 4 ? '#9FE7C0' : data.avatar.weekRating >= 3 ? '#F3D58A' : '#FFB4A8' },
+                { label: 'XP Gained',       value: `+${data.avatar.xpThisWeek}`,            color: '#B8A4FF' },
+                { label: 'Strongest Domain', value: data.avatar.strongestDomain ?? '—',      color: '#7FD5AA' },
+                { label: 'Week Rating',      value: `${'★'.repeat(data.avatar.weekRating)}${'☆'.repeat(5 - data.avatar.weekRating)}`, color: data.avatar.weekRating >= 4 ? '#7FD5AA' : data.avatar.weekRating >= 3 ? '#ECC666' : '#FF9B87' },
               ].map(m => (
                 <div key={m.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '12px 14px', textAlign: 'center' }}>
                   <p style={{ color: '#6E6E73', fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>{m.label}</p>
@@ -506,22 +506,22 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
 
           {/* ── J. SYSTEM ADJUSTMENTS ──────────────────────────────────── */}
           {(data.ai.systemAdjustments?.length > 0 || data.ai.taskPatterns?.length > 0) && (
-            <div style={{ background: 'rgba(201,184,255,0.06)', border: '1px solid rgba(201,184,255,0.2)', borderRadius: 14, padding: '16px 20px', marginBottom: 16 }}>
+            <div style={{ background: 'rgba(184,164,255,0.06)', border: '1px solid rgba(184,164,255,0.2)', borderRadius: 14, padding: '16px 20px', marginBottom: 16 }}>
               <SectionLabel>J · System Adjustments for Next Week</SectionLabel>
               {data.ai.taskPatterns?.length > 0 && (
                 <div style={{ marginBottom: 14 }}>
-                  <p style={{ color: '#C9B8FF', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Task patterns detected</p>
-                  <BulletList items={data.ai.taskPatterns} color="#C9B8FF" />
+                  <p style={{ color: '#B8A4FF', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Task patterns detected</p>
+                  <BulletList items={data.ai.taskPatterns} color="#B8A4FF" />
                 </div>
               )}
               {data.ai.systemAdjustments?.length > 0 && (
                 <div>
-                  <p style={{ color: '#C9B8FF', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Apply next week</p>
-                  <BulletList items={data.ai.systemAdjustments} color="#C9B8FF" numbered />
+                  <p style={{ color: '#B8A4FF', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Apply next week</p>
+                  <BulletList items={data.ai.systemAdjustments} color="#B8A4FF" numbered />
                 </div>
               )}
               {data.ai.executiveBullets?.length > 0 && (
-                <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(201,184,255,0.15)' }}>
+                <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(184,164,255,0.15)' }}>
                   <BulletList items={data.ai.executiveBullets} color="#6E6E73" />
                 </div>
               )}
@@ -530,7 +530,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
 
           {/* Chief of staff message */}
           {data.ai.chiefMsg && (
-            <div style={{ padding: '16px 20px', background: 'rgba(201,184,255,0.06)', border: '1px solid rgba(201,184,255,0.2)', borderRadius: 12, marginBottom: 16 }}>
+            <div style={{ padding: '16px 20px', background: 'rgba(184,164,255,0.06)', border: '1px solid rgba(184,164,255,0.2)', borderRadius: 12, marginBottom: 16 }}>
               <p style={{ color: '#6E6E73', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Chief of Staff</p>
               <p style={{ color: '#F5F5F7', fontSize: 14, fontStyle: 'italic', lineHeight: 1.6 }}>
                 &ldquo;{data.ai.chiefMsg}&rdquo;

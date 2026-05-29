@@ -43,7 +43,7 @@ function TaskRow({
           borderRadius: 10,
           flexShrink: 0,
           background: isDone
-            ? (hovered ? 'rgba(159,231,192,0.15)' : 'rgba(159,231,192,0.08)')
+            ? (hovered ? 'rgba(127,213,170,0.15)' : 'rgba(127,213,170,0.08)')
             : (hovered ? 'rgba(255,255,255,0.06)' : 'transparent'),
           border: 'none',
           cursor: 'pointer',
@@ -62,14 +62,14 @@ function TaskRow({
             height: 18,
             borderRadius: isDone ? '50%' : 6,
             border: isDone
-              ? '2px solid #9FE7C0'
+              ? '2px solid #7FD5AA'
               : `1.5px solid ${hovered ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.2)'}`,
-            background: isDone ? 'rgba(159,231,192,0.2)' : 'transparent',
+            background: isDone ? 'rgba(127,213,170,0.2)' : 'transparent',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: 10,
-            color: isDone ? '#9FE7C0' : '#6E6E73',
+            color: isDone ? '#7FD5AA' : '#6E6E73',
             fontWeight: 700,
             transition: 'all 0.12s',
             pointerEvents: 'none',
@@ -167,7 +167,7 @@ export default function TodayTasks({ tasks, weeklyPlanId }: { tasks: Task[]; wee
           <button
             onClick={() => setShowAdd(v => !v)}
             className="btn-motion"
-            style={{ fontSize: 11, color: '#C9B8FF', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            style={{ fontSize: 11, color: '#B8A4FF', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
             {showAdd ? 'Cancel' : '+ Add'}
           </button>
@@ -192,9 +192,9 @@ export default function TodayTasks({ tasks, weeklyPlanId }: { tasks: Task[]; wee
                 style={{
                   fontSize: 10, padding: '3px 7px', borderRadius: 6, border: '1px solid',
                   cursor: 'pointer',
-                  background: newEffort === e ? 'rgba(201,184,255,0.15)' : 'transparent',
-                  borderColor: newEffort === e ? 'rgba(201,184,255,0.4)' : 'rgba(255,255,255,0.08)',
-                  color: newEffort === e ? '#C9B8FF' : '#6E6E73',
+                  background: newEffort === e ? 'rgba(184,164,255,0.15)' : 'transparent',
+                  borderColor: newEffort === e ? 'rgba(184,164,255,0.4)' : 'rgba(255,255,255,0.08)',
+                  color: newEffort === e ? '#B8A4FF' : '#6E6E73',
                 }}
               >
                 {effortLabel[e]}
@@ -204,7 +204,7 @@ export default function TodayTasks({ tasks, weeklyPlanId }: { tasks: Task[]; wee
               onClick={addTask}
               disabled={adding || !newTitle.trim()}
               className="btn-motion"
-              style={{ marginLeft: 'auto', fontSize: 11, padding: '3px 12px', borderRadius: 6, background: '#C9B8FF', color: '#050506', border: 'none', cursor: 'pointer', fontWeight: 700, opacity: adding ? 0.6 : 1 }}
+              style={{ marginLeft: 'auto', fontSize: 11, padding: '3px 12px', borderRadius: 6, background: '#B8A4FF', color: '#050506', border: 'none', cursor: 'pointer', fontWeight: 700, opacity: adding ? 0.6 : 1 }}
             >
               {adding ? '…' : 'Add'}
             </button>
@@ -221,17 +221,17 @@ export default function TodayTasks({ tasks, weeklyPlanId }: { tasks: Task[]; wee
         <div>
           <div className="animate-fade-in" style={{
             padding: '12px 14px', borderRadius: 10,
-            background: 'rgba(159,231,192,0.06)',
-            border: '1px solid rgba(159,231,192,0.18)',
+            background: 'rgba(127,213,170,0.06)',
+            border: '1px solid rgba(127,213,170,0.18)',
             marginBottom: 10,
           }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#9FE7C0', marginBottom: 3 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#7FD5AA', marginBottom: 3 }}>
               ✓ This week complete
             </div>
             <div style={{ fontSize: 11, color: '#6E6E73' }}>
               All {done.length} task{done.length !== 1 ? 's' : ''} done.
             </div>
-            <a href="/quarterly" style={{ fontSize: 11, color: '#C9B8FF', textDecoration: 'none', display: 'block', marginTop: 2 }}>
+            <a href="/quarterly" style={{ fontSize: 11, color: '#B8A4FF', textDecoration: 'none', display: 'block', marginTop: 2 }}>
               Plan next week in Quarterly →
             </a>
           </div>

@@ -4,19 +4,19 @@ import { useRouter } from 'next/navigation'
 import type { Idea } from '@prisma/client'
 
 const domainColors: Record<string, string> = {
-  work_improvement: '#9FCBFF',
-  automation: '#C9B8FF',
-  product: '#9FE7C0',
-  content: '#F3D58A',
-  research: '#F7B98E',
-  project: '#FFB4A8',
+  work_improvement: '#80BDFF',
+  automation: '#B8A4FF',
+  product: '#7FD5AA',
+  content: '#ECC666',
+  research: '#F5A56A',
+  project: '#FF9B87',
   other: '#6E6E73',
 }
 
 const effortColors: Record<string, string> = {
-  low: '#9FE7C0',
-  medium: '#F3D58A',
-  high: '#FFB4A8',
+  low: '#7FD5AA',
+  medium: '#ECC666',
+  high: '#FF9B87',
 }
 
 const STATUS_TRANSITIONS: Record<string, { label: string; nextStatus: string }> = {
@@ -128,18 +128,18 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
       </div>
 
       {idea.nextStep && (
-        <p style={{ color: '#C9B8FF', fontSize: 11, marginBottom: 8 }}>
+        <p style={{ color: '#B8A4FF', fontSize: 11, marginBottom: 8 }}>
           → {idea.nextStep}
         </p>
       )}
 
       {evalData && showEval && (
         <div style={{
-          background: 'rgba(201,184,255,0.06)', border: '1px solid rgba(201,184,255,0.15)',
+          background: 'rgba(184,164,255,0.06)', border: '1px solid rgba(184,164,255,0.15)',
           borderRadius: 8, padding: '8px 10px', marginBottom: 8,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-            <span style={{ color: evalData.isStrategicRelevant ? '#9FE7C0' : '#FFB4A8', fontSize: 11, fontWeight: 700 }}>
+            <span style={{ color: evalData.isStrategicRelevant ? '#7FD5AA' : '#FF9B87', fontSize: 11, fontWeight: 700 }}>
               {evalData.isStrategicRelevant ? '✓ Strategic' : '✗ Not strategic'}
             </span>
             <span style={{ color: '#6E6E73', fontSize: 11 }}>Timing: {evalData.timing}</span>
@@ -152,13 +152,13 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
       {evalData && !showEval && (
         <button
           onClick={() => setShowEval(true)}
-          style={{ background: 'none', border: 'none', color: '#C9B8FF', fontSize: 11, cursor: 'pointer', padding: '0 0 8px 0', display: 'block' }}
+          style={{ background: 'none', border: 'none', color: '#B8A4FF', fontSize: 11, cursor: 'pointer', padding: '0 0 8px 0', display: 'block' }}
         >
           Show AI evaluation ▼
         </button>
       )}
 
-      {error && <p style={{ color: '#FFB4A8', fontSize: 11, marginBottom: 6 }}>{error}</p>}
+      {error && <p style={{ color: '#FF9B87', fontSize: 11, marginBottom: 6 }}>{error}</p>}
 
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
         {!idea.aiEvaluation && (
@@ -166,8 +166,8 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
             onClick={evaluate}
             disabled={evaluating}
             style={{
-              background: 'rgba(201,184,255,0.1)', border: '1px solid rgba(201,184,255,0.25)',
-              color: '#C9B8FF', padding: '4px 8px', borderRadius: 6,
+              background: 'rgba(184,164,255,0.1)', border: '1px solid rgba(184,164,255,0.25)',
+              color: '#B8A4FF', padding: '4px 8px', borderRadius: 6,
               fontSize: 11, fontWeight: 600, cursor: evaluating ? 'not-allowed' : 'pointer',
             }}
           >
@@ -178,8 +178,8 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
           <button
             onClick={advanceStatus}
             style={{
-              background: 'rgba(159,231,192,0.08)', border: '1px solid rgba(159,231,192,0.2)',
-              color: '#9FE7C0', padding: '4px 8px', borderRadius: 6,
+              background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
+              color: '#7FD5AA', padding: '4px 8px', borderRadius: 6,
               fontSize: 11, fontWeight: 600, cursor: 'pointer',
             }}
           >

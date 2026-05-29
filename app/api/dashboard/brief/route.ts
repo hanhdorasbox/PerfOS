@@ -108,20 +108,13 @@ Return ONLY valid JSON, no markdown, no extra text:
       "category": "geopolitics|business|tech|society|science"
     }
   ],
-  "relevantUpdates": [
-    {
-      "topic": "AI|Data Analytics|Automation|BI|Productivity|etc",
-      "update": "One sentence — what happened and why it's relevant"
-    }
-  ],
   "externalContext": "One short practical note IF relevant (weather, holiday, external condition affecting the day). null if nothing useful."
 }
 
 World briefing rules:
-- 3-5 worldBriefing items, prioritize actual significance over virality
-- Cover the most important global developments the user should know
-- Include Czech/Central European news if materially significant
-- 2-3 relevantUpdates items, personalized to career context (AI, data, analytics, automation, productivity)
+- Exactly ONE item per category — 5 categories (geopolitics, business, tech, society, science), exactly 5 items total, each a different category
+- Pick the single most important story for each category; no duplicates within a category
+- Cover the most significant global developments; include Czech/Central European news if materially relevant
 - externalContext: only include if genuinely useful and actionable, otherwise null
 - Base on your most recent knowledge; today's date is provided
 - Be direct and informative, not sensationalist`,

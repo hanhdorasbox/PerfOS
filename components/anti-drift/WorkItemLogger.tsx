@@ -23,10 +23,10 @@ interface Props {
 const CATEGORIES = ['advancement', 'maintenance', 'reactive', 'busywork']
 const DOMAINS = ['career', 'fitness', 'finance', 'personal', 'learning']
 const CATEGORY_COLORS: Record<string, string> = {
-  advancement: '#9FE7C0',
-  maintenance: '#9FCBFF',
-  reactive: '#F3D58A',
-  busywork: '#FFB4A8',
+  advancement: '#7FD5AA',
+  maintenance: '#80BDFF',
+  reactive: '#ECC666',
+  busywork: '#FF9B87',
 }
 
 export default function WorkItemLogger({ userId, existingItems, manualItems }: Props) {
@@ -139,11 +139,11 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
             onChange={e => setImpact(e.target.value)}
             style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#F5F5F7', fontSize: 13, width: '100%', boxSizing: 'border-box' }}
           />
-          {error && <div style={{ fontSize: 12, color: '#FFB4A8' }}>{error}</div>}
+          {error && <div style={{ fontSize: 12, color: '#FF9B87' }}>{error}</div>}
           <button
             type="submit"
             disabled={loading || !title.trim()}
-            style={{ background: 'rgba(201,184,255,0.15)', border: '1px solid rgba(201,184,255,0.3)', color: '#C9B8FF', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}
+            style={{ background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.3)', color: '#B8A4FF', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}
           >
             {loading ? 'Saving...' : '+ Add Item'}
           </button>
@@ -189,11 +189,11 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
                           <div style={{ fontSize: 11, color: '#A1A1A6', marginTop: 2 }}>
                             {item.domain} · {new Date(item.completedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                           </div>
-                          {item.impact && <div style={{ fontSize: 11, color: '#9FE7C0', marginTop: 1 }}>→ {item.impact}</div>}
+                          {item.impact && <div style={{ fontSize: 11, color: '#7FD5AA', marginTop: 1 }}>→ {item.impact}</div>}
                         </div>
                         <button
                           onClick={() => handleDelete(item.id)}
-                          style={{ background: 'none', border: 'none', color: '#FFB4A8', cursor: 'pointer', fontSize: 12, padding: '2px 6px', flexShrink: 0 }}
+                          style={{ background: 'none', border: 'none', color: '#FF9B87', cursor: 'pointer', fontSize: 12, padding: '2px 6px', flexShrink: 0 }}
                         >
                           ✕
                         </button>

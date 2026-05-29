@@ -118,7 +118,7 @@ export default function MealPlanView({ plan, userId }: Props) {
               {' · '}
               <span style={{
                 textTransform: 'capitalize',
-                color: plan.status === 'approved' ? '#9FE7C0' : '#F3D58A',
+                color: plan.status === 'approved' ? '#7FD5AA' : '#ECC666',
               }}>
                 {plan.status}
               </span>
@@ -131,7 +131,7 @@ export default function MealPlanView({ plan, userId }: Props) {
                 <button
                   onClick={approve}
                   disabled={approving}
-                  style={{ background: 'rgba(159,231,192,0.15)', border: '1px solid rgba(159,231,192,0.3)', color: '#9FE7C0', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                  style={{ background: 'rgba(127,213,170,0.15)', border: '1px solid rgba(127,213,170,0.3)', color: '#7FD5AA', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                 >
                   {approving ? 'Approving...' : 'Approve Plan'}
                 </button>
@@ -146,7 +146,7 @@ export default function MealPlanView({ plan, userId }: Props) {
             )}
           </div>
         </div>
-        {error && <div style={{ fontSize: 12, color: '#FFB4A8', marginTop: 8 }}>{error}</div>}
+        {error && <div style={{ fontSize: 12, color: '#FF9B87', marginTop: 8 }}>{error}</div>}
       </div>
 
       {/* 7-day meal grid */}
@@ -184,10 +184,10 @@ export default function MealPlanView({ plan, userId }: Props) {
           <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', marginBottom: 12 }}>Batch Cooking</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {batchCooking.map((batch: any, i: number) => (
-              <div key={i} style={{ padding: '10px 12px', background: 'rgba(159,203,255,0.08)', border: '1px solid rgba(159,203,255,0.15)', borderRadius: 8 }}>
+              <div key={i} style={{ padding: '10px 12px', background: 'rgba(128,189,255,0.08)', border: '1px solid rgba(128,189,255,0.15)', borderRadius: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: '#F5F5F7' }}>{batch.meal}</span>
-                  <span style={{ fontSize: 11, color: '#9FCBFF' }}>{batch.portions}x · Cook {batch.cookDay}</span>
+                  <span style={{ fontSize: 11, color: '#80BDFF' }}>{batch.portions}x · Cook {batch.cookDay}</span>
                 </div>
                 {batch.instructions && (() => {
                   // Parse "1. Step one. 2. Step two." into individual numbered steps
@@ -235,13 +235,13 @@ export default function MealPlanView({ plan, userId }: Props) {
                   {(shoppingList as Array<{ buyDay: string; reason?: string; items: Array<{ item: string; quantity?: string; unit?: string }> }>).map((group, gi) => (
                     <div key={gi}>
                       <div style={{ marginBottom: 6 }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: '#C9B8FF', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Buy {group.buyDay}</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: '#B8A4FF', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Buy {group.buyDay}</span>
                         {group.reason && <span style={{ fontSize: 11, color: '#6E6E73', marginLeft: 8 }}>— {group.reason}</span>}
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                         {(group.items || []).map((item, ii) => (
                           <div key={ii} style={{ fontSize: 13, color: '#A1A1A6', padding: '3px 0', display: 'flex', gap: 6, alignItems: 'flex-start' }}>
-                            <span style={{ color: '#9FE7C0', flexShrink: 0 }}>□</span>
+                            <span style={{ color: '#7FD5AA', flexShrink: 0 }}>□</span>
                             <span>{item.item}{item.quantity ? ` — ${item.quantity}${item.unit ? ' ' + item.unit : ''}` : ''}</span>
                           </div>
                         ))}
@@ -254,7 +254,7 @@ export default function MealPlanView({ plan, userId }: Props) {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                   {(shoppingList as Array<{ item: string; quantity?: string; unit?: string }>).map((item, i) => (
                     <div key={i} style={{ fontSize: 13, color: '#A1A1A6', padding: '4px 0', display: 'flex', gap: 6 }}>
-                      <span style={{ color: '#9FE7C0', flexShrink: 0 }}>□</span>
+                      <span style={{ color: '#7FD5AA', flexShrink: 0 }}>□</span>
                       <span>{item.item}</span>
                       {item.quantity && <span style={{ color: '#A1A1A6' }}>— {item.quantity} {item.unit}</span>}
                     </div>
@@ -275,7 +275,7 @@ function MealCard({ meal, type, feedback, onFeedback }: {
   feedback?: MealFeedback
   onFeedback: (title: string, liked: boolean) => void
 }) {
-  const typeColors: Record<string, string> = { breakfast: '#C9B8FF', lunch: '#9FCBFF', dinner: '#9FE7C0' }
+  const typeColors: Record<string, string> = { breakfast: '#B8A4FF', lunch: '#80BDFF', dinner: '#7FD5AA' }
   const color = typeColors[type] || '#A1A1A6'
 
   if (!meal) {
@@ -307,15 +307,15 @@ function MealCard({ meal, type, feedback, onFeedback }: {
       <div style={{ display: 'flex', gap: 6, fontSize: 10, color: '#A1A1A6', flexWrap: 'wrap' }}>
         {meal.calories && <span>{meal.calories}kcal</span>}
         {meal.protein && <span>{meal.protein}g pro</span>}
-        {meal.isRepeated && <span style={{ color: '#9FCBFF' }}>batch</span>}
+        {meal.isRepeated && <span style={{ color: '#80BDFF' }}>batch</span>}
       </div>
       <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
         <button
           onClick={() => onFeedback(meal.title, true)}
           style={{
-            background: feedback?.liked === true ? 'rgba(159,231,192,0.2)' : 'rgba(255,255,255,0.04)',
+            background: feedback?.liked === true ? 'rgba(127,213,170,0.2)' : 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 4, padding: '2px 6px', fontSize: 10, cursor: 'pointer', color: '#9FE7C0',
+            borderRadius: 4, padding: '2px 6px', fontSize: 10, cursor: 'pointer', color: '#7FD5AA',
           }}
         >
           ↑
@@ -323,9 +323,9 @@ function MealCard({ meal, type, feedback, onFeedback }: {
         <button
           onClick={() => onFeedback(meal.title, false)}
           style={{
-            background: feedback?.liked === false ? 'rgba(255,180,168,0.2)' : 'rgba(255,255,255,0.04)',
+            background: feedback?.liked === false ? 'rgba(255,155,135,0.2)' : 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 4, padding: '2px 6px', fontSize: 10, cursor: 'pointer', color: '#FFB4A8',
+            borderRadius: 4, padding: '2px 6px', fontSize: 10, cursor: 'pointer', color: '#FF9B87',
           }}
         >
           ↓

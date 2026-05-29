@@ -19,10 +19,10 @@ interface Props {
 }
 
 const RISK_META: Record<string, { label: string; color: string; bg: string }> = {
-  high:   { label: 'HIGH RISK', color: '#FFB4A8', bg: 'rgba(255,180,168,0.1)' },
-  medium: { label: 'AT RISK',   color: '#F3D58A', bg: 'rgba(243,213,138,0.1)' },
-  low:    { label: 'ON TRACK',  color: '#9FE7C0', bg: 'rgba(159,231,192,0.1)' },
-  stable: { label: 'STABLE',    color: '#9FCBFF', bg: 'rgba(159,203,255,0.1)'  },
+  high:   { label: 'HIGH RISK', color: '#FF9B87', bg: 'rgba(255,155,135,0.1)' },
+  medium: { label: 'AT RISK',   color: '#ECC666', bg: 'rgba(236,198,102,0.1)' },
+  low:    { label: 'ON TRACK',  color: '#7FD5AA', bg: 'rgba(127,213,170,0.1)' },
+  stable: { label: 'STABLE',    color: '#80BDFF', bg: 'rgba(128,189,255,0.1)'  },
 }
 
 const DOMAIN_ICON: Record<string, string> = {
@@ -60,8 +60,8 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
   return (
     <div style={{
       marginTop: 40,
-      background: 'linear-gradient(135deg, rgba(201,184,255,0.04), rgba(255,255,255,0.01))',
-      border: '1px solid rgba(201,184,255,0.12)',
+      background: 'linear-gradient(135deg, rgba(184,164,255,0.04), rgba(255,255,255,0.01))',
+      border: '1px solid rgba(184,164,255,0.12)',
       borderRadius: 20,
       padding: '28px 32px',
     }}>
@@ -69,7 +69,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: data ? 28 : 16 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            <div style={{ width: 3, height: 22, background: 'linear-gradient(180deg,#C9B8FF,#60A5FA)', borderRadius: 2 }} />
+            <div style={{ width: 3, height: 22, background: 'linear-gradient(180deg,#B8A4FF,#60A5FA)', borderRadius: 2 }} />
             <h2 style={{ fontSize: 18, fontWeight: 800, color: '#F5F5F7', letterSpacing: '-0.02em' }}>
               Trajectory Forecast
             </h2>
@@ -86,9 +86,9 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '9px 18px', borderRadius: 10, fontSize: 13, fontWeight: 700,
             cursor: (loading || !hasPatterns) ? 'not-allowed' : 'pointer',
-            background: loading ? 'rgba(201,184,255,0.08)' : 'rgba(201,184,255,0.12)',
-            border: '1px solid rgba(201,184,255,0.25)',
-            color: '#C9B8FF',
+            background: loading ? 'rgba(184,164,255,0.08)' : 'rgba(184,164,255,0.12)',
+            border: '1px solid rgba(184,164,255,0.25)',
+            color: '#B8A4FF',
             opacity: !hasPatterns ? 0.5 : 1,
             transition: 'all 0.15s',
             flexShrink: 0,
@@ -116,7 +116,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
       )}
 
       {error && (
-        <div style={{ padding: '12px 16px', background: 'rgba(255,180,168,0.08)', border: '1px solid rgba(255,180,168,0.2)', borderRadius: 10, color: '#FFB4A8', fontSize: 13, marginBottom: 16 }}>
+        <div style={{ padding: '12px 16px', background: 'rgba(255,155,135,0.08)', border: '1px solid rgba(255,155,135,0.2)', borderRadius: 10, color: '#FF9B87', fontSize: 13, marginBottom: 16 }}>
           {error}
         </div>
       )}
@@ -206,11 +206,11 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
           {data.highLeverageInterventions?.length > 0 && (
             <div style={{
               padding: '18px 22px',
-              background: 'rgba(159,231,192,0.03)',
-              border: '1px solid rgba(159,231,192,0.12)',
+              background: 'rgba(127,213,170,0.03)',
+              border: '1px solid rgba(127,213,170,0.12)',
               borderRadius: 14,
             }}>
-              <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9FE7C0', marginBottom: 12 }}>
+              <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#7FD5AA', marginBottom: 12 }}>
                 What Changes the Forecast Most
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -218,9 +218,9 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
                   <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                     <span style={{
                       fontSize: 10, fontWeight: 800,
-                      color: '#9FE7C0',
-                      background: 'rgba(159,231,192,0.12)',
-                      border: '1px solid rgba(159,231,192,0.2)',
+                      color: '#7FD5AA',
+                      background: 'rgba(127,213,170,0.12)',
+                      border: '1px solid rgba(127,213,170,0.2)',
                       borderRadius: 5,
                       padding: '2px 7px',
                       flexShrink: 0,
