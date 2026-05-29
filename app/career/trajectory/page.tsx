@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function CareerTrajectoryPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FFB4A8' }}>No user found</div>
+  if (!user) return <div style={{ color: '#FF9B87' }}>No user found</div>
 
   let trajectory = null
   let activeQuarter = null
@@ -36,8 +36,8 @@ export default async function CareerTrajectoryPage() {
     return (
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '32px 20px' }}>
         <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7', marginBottom: 8 }}>Career Trajectory</h1>
-        <div className="card" style={{ background: 'rgba(243,213,138,0.07)', border: '1px solid rgba(243,213,138,0.25)' }}>
-          <p style={{ color: '#F3D58A', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
+        <div className="card" style={{ background: 'rgba(236,198,102,0.07)', border: '1px solid rgba(236,198,102,0.25)' }}>
+          <p style={{ color: '#ECC666', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
             ⚠ Database migration in progress
           </p>
           <p style={{ color: '#6E6E73', fontSize: 13 }}>

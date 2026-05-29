@@ -29,8 +29,8 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
   const metrics = calcGoalMetrics({ startDate: goal.quarter.startDate, deadline: goal.deadline, progressPct })
 
   const statusColors: Record<string, string> = {
-    ahead: '#9FE7C0', on_track: '#9FCBFF', watch: '#F3D58A',
-    at_risk: '#F7B98E', critical: '#FFB4A8', completed: '#9FE7C0'
+    ahead: '#7FD5AA', on_track: '#80BDFF', watch: '#ECC666',
+    at_risk: '#F5A56A', critical: '#FF9B87', completed: '#7FD5AA'
   }
   const color = statusColors[metrics.status] || '#A1A1A6'
 
@@ -53,7 +53,7 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
         {[
           { label: 'Progress', value: `${Math.round(progressPct)}%`, color },
           { label: 'Expected', value: `${Math.round(metrics.expectedPct)}%`, color: '#A1A1A6' },
-          { label: 'Gap', value: `${metrics.gap >= 0 ? '+' : ''}${Math.round(metrics.gap)}%`, color: metrics.gap >= 0 ? '#9FE7C0' : '#FFB4A8' },
+          { label: 'Gap', value: `${metrics.gap >= 0 ? '+' : ''}${Math.round(metrics.gap)}%`, color: metrics.gap >= 0 ? '#7FD5AA' : '#FF9B87' },
           { label: 'Days left', value: `${Math.round(metrics.daysRemaining)}d`, color: '#A1A1A6' },
         ].map(stat => (
           <div key={stat.label} className="card" style={{ textAlign: 'center', padding: '16px' }}>
@@ -89,7 +89,7 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
         {metrics.forecastedCompletionDate && (
           <div style={{ marginTop: 8, fontSize: '12px', color: '#6E6E73' }}>
             Forecasted completion:{' '}
-            <span style={{ color: metrics.forecastedCompletionDate > goal.deadline ? '#FFB4A8' : '#9FE7C0' }}>
+            <span style={{ color: metrics.forecastedCompletionDate > goal.deadline ? '#FF9B87' : '#7FD5AA' }}>
               {metrics.forecastedCompletionDate.toLocaleDateString('cs-CZ')}
             </span>
             {' '}(deadline: {goal.deadline.toLocaleDateString('cs-CZ')})

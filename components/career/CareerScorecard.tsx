@@ -61,15 +61,15 @@ function computeStatus(
 }
 
 const statusConfig = {
-  compounding: { label: 'Compounding', color: '#9FE7C0', border: '3px solid #9FE7C0', bg: 'rgba(159,231,192,0.08)' },
-  maintaining: { label: 'Maintaining', color: '#F3D58A', border: '3px solid #F2C063', bg: 'rgba(243,213,138,0.08)' },
-  declining: { label: 'Declining', color: '#FFB4A8', border: '3px solid #FFB4A8', bg: 'rgba(255,180,168,0.08)' },
+  compounding: { label: 'Compounding', color: '#7FD5AA', border: '3px solid #7FD5AA', bg: 'rgba(127,213,170,0.08)' },
+  maintaining: { label: 'Maintaining', color: '#ECC666', border: '3px solid #F2C063', bg: 'rgba(236,198,102,0.08)' },
+  declining: { label: 'Declining', color: '#FF9B87', border: '3px solid #FF9B87', bg: 'rgba(255,155,135,0.08)' },
 }
 
 const insightColors = {
-  positive: '#9FE7C0',
-  warning: '#F3D58A',
-  critical: '#FFB4A8',
+  positive: '#7FD5AA',
+  warning: '#ECC666',
+  critical: '#FF9B87',
 }
 
 export default function CareerScorecard({
@@ -179,10 +179,10 @@ export default function CareerScorecard({
         onClick={generateScorecard}
         disabled={loading}
         style={{
-          background: loading ? 'rgba(201,184,255,0.2)' : 'rgba(201,184,255,0.15)',
-          border: '1px solid rgba(201,184,255,0.4)',
+          background: loading ? 'rgba(184,164,255,0.2)' : 'rgba(184,164,255,0.15)',
+          border: '1px solid rgba(184,164,255,0.4)',
           borderRadius: 8,
-          color: '#C9B8FF',
+          color: '#B8A4FF',
           padding: '8px 18px',
           fontSize: 13,
           fontWeight: 600,
@@ -198,7 +198,7 @@ export default function CareerScorecard({
               display: 'inline-block',
               width: 14,
               height: 14,
-              border: '2px solid #C9B8FF',
+              border: '2px solid #B8A4FF',
               borderTopColor: 'transparent',
               borderRadius: '50%',
               animation: 'spin 0.8s linear infinite',
@@ -209,7 +209,7 @@ export default function CareerScorecard({
       </button>
 
       {error && (
-        <div style={{ color: '#FFB4A8', fontSize: 13, marginTop: 12 }}>{error}</div>
+        <div style={{ color: '#FF9B87', fontSize: 13, marginTop: 12 }}>{error}</div>
       )}
 
       {/* AI Analysis */}
@@ -254,8 +254,8 @@ export default function CareerScorecard({
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                     <span
                       style={{
-                        background: rec.priority === 'high' ? 'rgba(255,180,168,0.2)' : 'rgba(243,213,138,0.2)',
-                        color: rec.priority === 'high' ? '#FFB4A8' : '#F3D58A',
+                        background: rec.priority === 'high' ? 'rgba(255,155,135,0.2)' : 'rgba(236,198,102,0.2)',
+                        color: rec.priority === 'high' ? '#FF9B87' : '#ECC666',
                         fontSize: 10,
                         padding: '2px 7px',
                         borderRadius: 4,

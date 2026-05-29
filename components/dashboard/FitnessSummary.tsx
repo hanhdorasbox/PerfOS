@@ -22,7 +22,7 @@ export default function FitnessSummary({ fitnessLog, workoutsThisWeek }: { fitne
           </div>
         )}
         <div>
-          <div style={{ fontSize: '22px', fontWeight: 700, color: workoutsThisWeek >= 3 ? '#9FE7C0' : '#F3D58A' }}>{workoutsThisWeek}/3</div>
+          <div style={{ fontSize: '22px', fontWeight: 700, color: workoutsThisWeek >= 3 ? '#7FD5AA' : '#ECC666' }}>{workoutsThisWeek}/3</div>
           <div style={{ fontSize: '11px', color: '#6E6E73' }}>workouts/week</div>
         </div>
       </div>

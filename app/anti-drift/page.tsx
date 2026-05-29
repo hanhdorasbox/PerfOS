@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function AntiDriftPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FFB4A8', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#FF9B87', padding: 40 }}>No user found.</div>
 
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)

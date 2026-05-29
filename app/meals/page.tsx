@@ -18,7 +18,7 @@ function getWeekStart() {
 
 export default async function MealsPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FFB4A8', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#FF9B87', padding: 40 }}>No user found.</div>
 
   const weekStart = getWeekStart()
   const weekEnd = new Date(weekStart)
@@ -68,7 +68,7 @@ export default async function MealsPage() {
           </div>
           <a
             href="/meals/recipes"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(159,231,192,0.08)', border: '1px solid rgba(159,231,192,0.2)', borderRadius: 8, color: '#9FE7C0', fontSize: 13, textDecoration: 'none', fontWeight: 600, flexShrink: 0 }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 8, color: '#7FD5AA', fontSize: 13, textDecoration: 'none', fontWeight: 600, flexShrink: 0 }}
           >
             📖 Recipe Library
           </a>

@@ -17,10 +17,10 @@ interface Props {
 
 const PREF_TYPES = ['dislike', 'allergy', 'preference', 'favorite']
 const PREF_COLORS: Record<string, string> = {
-  dislike: '#FFB4A8',
-  allergy: '#FFB4A8',
-  preference: '#9FCBFF',
-  favorite: '#9FE7C0',
+  dislike: '#FF9B87',
+  allergy: '#FF9B87',
+  preference: '#80BDFF',
+  favorite: '#7FD5AA',
 }
 
 export default function FoodPreferencesEditor({ preferences, userId }: Props) {
@@ -126,12 +126,12 @@ export default function FoodPreferencesEditor({ preferences, userId }: Props) {
             <button
               type="submit"
               disabled={loading || !food.trim()}
-              style={{ background: 'rgba(201,184,255,0.15)', border: '1px solid rgba(201,184,255,0.3)', color: '#C9B8FF', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+              style={{ background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.3)', color: '#B8A4FF', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               + Add
             </button>
           </form>
-          {error && <div style={{ fontSize: 12, color: '#FFB4A8', marginTop: 6 }}>{error}</div>}
+          {error && <div style={{ fontSize: 12, color: '#FF9B87', marginTop: 6 }}>{error}</div>}
         </div>
       )}
     </div>

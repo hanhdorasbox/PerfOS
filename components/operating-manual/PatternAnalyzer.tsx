@@ -17,12 +17,12 @@ interface AnalyzedPattern {
 }
 
 const domainColors: Record<string, string> = {
-  quarterly_planning: '#C9B8FF',
-  weekly: '#9FCBFF',
-  fitness: '#9FE7C0',
-  meals: '#F3D58A',
-  forecasting: '#F7B98E',
-  learning: '#FFB4A8',
+  quarterly_planning: '#B8A4FF',
+  weekly: '#80BDFF',
+  fitness: '#7FD5AA',
+  meals: '#ECC666',
+  forecasting: '#F5A56A',
+  learning: '#FF9B87',
 }
 
 export default function PatternAnalyzer({ userId }: Props) {
@@ -82,9 +82,9 @@ export default function PatternAnalyzer({ userId }: Props) {
         onClick={runAnalysis}
         disabled={loading}
         style={{
-          background: loading ? 'rgba(201,184,255,0.2)' : 'rgba(201,184,255,0.15)',
-          border: '1px solid rgba(201,184,255,0.4)',
-          color: '#C9B8FF', padding: '8px 18px', borderRadius: 10,
+          background: loading ? 'rgba(184,164,255,0.2)' : 'rgba(184,164,255,0.15)',
+          border: '1px solid rgba(184,164,255,0.4)',
+          color: '#B8A4FF', padding: '8px 18px', borderRadius: 10,
           fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
         }}
       >
@@ -92,11 +92,11 @@ export default function PatternAnalyzer({ userId }: Props) {
       </button>
 
       {error && (
-        <p style={{ color: '#FFB4A8', fontSize: 13, marginTop: 8 }}>{error}</p>
+        <p style={{ color: '#FF9B87', fontSize: 13, marginTop: 8 }}>{error}</p>
       )}
 
       {saved && (
-        <p style={{ color: '#9FE7C0', fontSize: 13, marginTop: 8 }}>Patterns saved successfully!</p>
+        <p style={{ color: '#7FD5AA', fontSize: 13, marginTop: 8 }}>Patterns saved successfully!</p>
       )}
 
       {patterns.length > 0 && (
@@ -124,7 +124,7 @@ export default function PatternAnalyzer({ userId }: Props) {
               <p style={{ color: '#F5F5F7', fontSize: 14, marginBottom: 6 }}>{p.pattern}</p>
               {p.evidence && <p style={{ color: '#A1A1A6', fontSize: 12, marginBottom: 4 }}>Evidence: {p.evidence}</p>}
               {p.implication && (
-                <p style={{ color: '#C9B8FF', fontSize: 12 }}>→ {p.implication}</p>
+                <p style={{ color: '#B8A4FF', fontSize: 12 }}>→ {p.implication}</p>
               )}
             </div>
           ))}
@@ -133,8 +133,8 @@ export default function PatternAnalyzer({ userId }: Props) {
             onClick={confirmPatterns}
             disabled={saving}
             style={{
-              background: 'rgba(159,231,192,0.15)', border: '1px solid rgba(159,231,192,0.4)',
-              color: '#9FE7C0', padding: '8px 20px', borderRadius: 10,
+              background: 'rgba(127,213,170,0.15)', border: '1px solid rgba(127,213,170,0.4)',
+              color: '#7FD5AA', padding: '8px 20px', borderRadius: 10,
               fontSize: 13, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer',
               marginTop: 8,
             }}

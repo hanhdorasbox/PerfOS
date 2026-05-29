@@ -5,6 +5,6 @@ export const dynamic = 'force-dynamic'
 
 export default async function FinanceExcelPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FFB4A8', padding: 32 }}>No user found</div>
+  if (!user) return <div style={{ color: '#FF9B87', padding: 32 }}>No user found</div>
   return <FinanceDashboard userId={user.id} />
 }

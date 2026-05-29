@@ -6,9 +6,9 @@ export default function AlertBanner({ alerts }: { alerts: Alert[] }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 2 }}>
       {alerts.map((a, i) => {
         const isCritical = a.status === 'critical'
-        const color  = isCritical ? '#FFB4A8' : '#F7B98E'
-        const bgColor = isCritical ? 'rgba(255,180,168,0.07)' : 'rgba(247,185,142,0.07)'
-        const border  = isCritical ? 'rgba(255,180,168,0.2)'  : 'rgba(247,185,142,0.2)'
+        const color  = isCritical ? '#FF9B87' : '#F5A56A'
+        const bgColor = isCritical ? 'rgba(255,155,135,0.07)' : 'rgba(245,165,106,0.07)'
+        const border  = isCritical ? 'rgba(255,155,135,0.2)'  : 'rgba(245,165,106,0.2)'
         return (
           <div key={i} style={{
             display: 'flex', gap: 12, alignItems: 'flex-start',

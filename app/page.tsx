@@ -11,7 +11,7 @@ export default async function Dashboard() {
   const user = await prisma.user.findFirst()
   if (!user) {
     return (
-      <div style={{ color: '#FFB4A8', padding: '40px' }}>
+      <div style={{ color: '#FF9B87', padding: '40px' }}>
         No user found. Run: npx prisma db seed
       </div>
     )
@@ -73,8 +73,8 @@ export default async function Dashboard() {
 
   if (!quarter) {
     return (
-      <div style={{ color: '#F3D58A', padding: '40px' }}>
-        No active quarter. Go to <a href="/quarterly" style={{ color: '#C9B8FF' }}>Quarterly</a> to create one.
+      <div style={{ color: '#ECC666', padding: '40px' }}>
+        No active quarter. Go to <a href="/quarterly" style={{ color: '#B8A4FF' }}>Quarterly</a> to create one.
       </div>
     )
   }

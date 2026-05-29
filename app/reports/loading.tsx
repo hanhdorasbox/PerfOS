@@ -12,7 +12,7 @@ export default function ReportsLoading() {
       <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 20 }} />
 
       {/* Status card */}
-      <div style={{ background: 'rgba(159,203,255,0.06)', border: '1px solid rgba(159,203,255,0.12)', borderRadius: 14, padding: '18px 20px', marginBottom: 16 }}>
+      <div style={{ background: 'rgba(128,189,255,0.06)', border: '1px solid rgba(128,189,255,0.12)', borderRadius: 14, padding: '18px 20px', marginBottom: 16 }}>
         <div style={{ height: 14, width: 80, background: 'rgba(255,255,255,0.08)', borderRadius: 4, marginBottom: 14, animation: 'sk 1.4s ease-in-out infinite' }} />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {[0, 1].map(i => (

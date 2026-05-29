@@ -107,7 +107,7 @@ export default function AddPatternForm({ userId }: { userId: string }) {
         />
       </div>
 
-      {error && <p style={{ color: '#FFB4A8', fontSize: 13 }}>{error}</p>}
+      {error && <p style={{ color: '#FF9B87', fontSize: 13 }}>{error}</p>}
 
       <button
         type="submit"

@@ -25,11 +25,11 @@ interface Props {
 }
 
 const MOMENTUM_COLORS: Record<string, string> = {
-  forward_strongly: '#9FE7C0',
-  forward_slowly: '#9FCBFF',
-  stagnant: '#F3D58A',
-  fragmented: '#F3D58A',
-  overloaded: '#FFB4A8',
+  forward_strongly: '#7FD5AA',
+  forward_slowly: '#80BDFF',
+  stagnant: '#ECC666',
+  fragmented: '#ECC666',
+  overloaded: '#FF9B87',
 }
 
 const MOMENTUM_LABELS: Record<string, string> = {
@@ -94,10 +94,10 @@ export default function ReportGenerator({ userId, pastReports: initPastReports }
       <div style={{ padding: '16px 0' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
           {[
-            { label: 'Advancement', value: `${Math.round(report.advancementPct)}%`, color: '#9FE7C0' },
-            { label: 'Maintenance', value: `${Math.round(report.maintenancePct)}%`, color: '#9FCBFF' },
-            { label: 'Reactive', value: `${Math.round(report.reactivePct)}%`, color: '#F3D58A' },
-            { label: 'Busywork', value: `${Math.round(report.busyworkPct)}%`, color: '#FFB4A8' },
+            { label: 'Advancement', value: `${Math.round(report.advancementPct)}%`, color: '#7FD5AA' },
+            { label: 'Maintenance', value: `${Math.round(report.maintenancePct)}%`, color: '#80BDFF' },
+            { label: 'Reactive', value: `${Math.round(report.reactivePct)}%`, color: '#ECC666' },
+            { label: 'Busywork', value: `${Math.round(report.busyworkPct)}%`, color: '#FF9B87' },
           ].map(stat => (
             <div key={stat.label} style={{ textAlign: 'center', padding: '8px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: 8 }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: stat.color }}>{stat.value}</div>
@@ -132,7 +132,7 @@ export default function ReportGenerator({ userId, pastReports: initPastReports }
               <div>
                 <div style={{ fontSize: 12, fontWeight: 700, color: '#A1A1A6', marginBottom: 6 }}>DURABLE ASSETS CREATED</div>
                 {assets.map((asset: string, i: number) => (
-                  <div key={i} style={{ fontSize: 13, color: '#9FE7C0', padding: '2px 0' }}>✓ {asset}</div>
+                  <div key={i} style={{ fontSize: 13, color: '#7FD5AA', padding: '2px 0' }}>✓ {asset}</div>
                 ))}
               </div>
             )}
@@ -151,9 +151,9 @@ export default function ReportGenerator({ userId, pastReports: initPastReports }
           onClick={() => generate('monthly')}
           disabled={loading !== null}
           className="btn-motion"
-          style={{ background: 'rgba(201,184,255,0.15)', border: '1px solid rgba(201,184,255,0.3)', color: '#C9B8FF', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 7 }}
+          style={{ background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.3)', color: '#B8A4FF', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 7 }}
         >
-          {loading === 'monthly' && <Spinner size={13} color="#C9B8FF" strokeWidth={1.5} />}
+          {loading === 'monthly' && <Spinner size={13} color="#B8A4FF" strokeWidth={1.5} />}
           {loading === 'monthly' ? 'Generating…' : 'Generate Monthly Report'}
         </button>
         <button
@@ -167,10 +167,10 @@ export default function ReportGenerator({ userId, pastReports: initPastReports }
         </button>
       </div>
 
-      {error && <div style={{ fontSize: 12, color: '#FFB4A8', marginBottom: 12 }}>{error}</div>}
+      {error && <div style={{ fontSize: 12, color: '#FF9B87', marginBottom: 12 }}>{error}</div>}
 
       {latestReport && (
-        <div style={{ marginBottom: 20, padding: 16, background: 'rgba(159,231,192,0.06)', border: '1px solid rgba(159,231,192,0.2)', borderRadius: 10 }}>
+        <div style={{ marginBottom: 20, padding: 16, background: 'rgba(127,213,170,0.06)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7' }}>
               {latestReport.periodType === 'monthly' ? 'Monthly' : 'Quarterly'} Report

@@ -94,7 +94,7 @@ function RecipeCard({ recipe, onView, onEdit, onDelete }: {
           <div style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', marginBottom: 2, lineHeight: 1.3 }}>{recipe.name}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 11, color: '#6E6E73' }}>{getMealTypeEmoji(recipe.mealType)} {getMealTypeLabel(recipe.mealType)}</span>
-            {recipe.isMealPrep && <span style={{ fontSize: 10, color: '#C9B8FF', background: 'rgba(201,184,255,0.1)', border: '1px solid rgba(201,184,255,0.2)', borderRadius: 4, padding: '1px 6px' }}>Meal prep</span>}
+            {recipe.isMealPrep && <span style={{ fontSize: 10, color: '#B8A4FF', background: 'rgba(184,164,255,0.1)', border: '1px solid rgba(184,164,255,0.2)', borderRadius: 4, padding: '1px 6px' }}>Meal prep</span>}
             {totalMin > 0 && <span style={{ fontSize: 10, color: '#6E6E73' }}>• {totalMin} min</span>}
             {recipe.portions > 1 && <span style={{ fontSize: 10, color: '#6E6E73' }}>• {recipe.portions} portions</span>}
           </div>
@@ -106,10 +106,10 @@ function RecipeCard({ recipe, onView, onEdit, onDelete }: {
       {/* Macros per portion */}
       {kcalPP != null && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-          <MacroPill label="kcal" value={kcalPP} color="#F3D58A" />
-          {protPP != null && <MacroPill label="P" value={protPP} color="#9FE7C0" />}
-          {carbPP != null && <MacroPill label="C" value={carbPP} color="#9FCBFF" />}
-          {fatPP != null && <MacroPill label="F" value={fatPP} color="#F7B98E" />}
+          <MacroPill label="kcal" value={kcalPP} color="#ECC666" />
+          {protPP != null && <MacroPill label="P" value={protPP} color="#7FD5AA" />}
+          {carbPP != null && <MacroPill label="C" value={carbPP} color="#80BDFF" />}
+          {fatPP != null && <MacroPill label="F" value={fatPP} color="#F5A56A" />}
           {recipe.portions > 1 && <span style={{ fontSize: 10, color: '#6E6E73', alignSelf: 'center' }}>per portion</span>}
         </div>
       )}
@@ -126,8 +126,8 @@ function RecipeCard({ recipe, onView, onEdit, onDelete }: {
       {/* Actions */}
       <div style={{ display: 'flex', gap: 6, paddingTop: 4, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
         <button onClick={onView} style={btnStyle('#A1A1A6')}>View</button>
-        <button onClick={onEdit} style={btnStyle('#9FCBFF')}>Edit</button>
-        <button onClick={onDelete} style={{ ...btnStyle('#FFB4A8'), marginLeft: 'auto' }}>Archive</button>
+        <button onClick={onEdit} style={btnStyle('#80BDFF')}>Edit</button>
+        <button onClick={onDelete} style={{ ...btnStyle('#FF9B87'), marginLeft: 'auto' }}>Archive</button>
       </div>
     </div>
   )
@@ -199,7 +199,7 @@ function IngredientRow({ ing, index, onChange, onRemove }: {
             <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: '#1A1916', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.5)', maxHeight: 200, overflowY: 'auto' }}>
               {suggestions.map(s => (
                 <div key={s.name} onClick={() => applyIngredient(s)} style={{ padding: '7px 10px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: 12, color: '#A1A1A6' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(159,231,192,0.08)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(127,213,170,0.08)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                   <span style={{ color: '#F5F5F7' }}>{s.name}</span>
                   <span style={{ color: '#6E6E73', marginLeft: 8, fontSize: 11 }}>{s.kcal} kcal · {s.protein}g P / 100{s.unit}</span>
@@ -216,7 +216,7 @@ function IngredientRow({ ing, index, onChange, onRemove }: {
         <input type="number" value={ing.protein ?? ''} onChange={e => onChange(index, 'protein', e.target.value ? parseFloat(e.target.value) : null)} placeholder="P" style={inputStyle} min={0} />
         <input type="number" value={ing.carbs ?? ''} onChange={e => onChange(index, 'carbs', e.target.value ? parseFloat(e.target.value) : null)} placeholder="C" style={inputStyle} min={0} />
         <input type="number" value={ing.fat ?? ''} onChange={e => onChange(index, 'fat', e.target.value ? parseFloat(e.target.value) : null)} placeholder="F" style={inputStyle} min={0} />
-        <button onClick={() => onRemove(index)} style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,180,168,0.1)', border: '1px solid rgba(255,180,168,0.2)', color: '#FFB4A8', cursor: 'pointer', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>✕</button>
+        <button onClick={() => onRemove(index)} style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.2)', color: '#FF9B87', cursor: 'pointer', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>✕</button>
       </div>
     </div>
   )
@@ -302,7 +302,7 @@ function RecipeForm({ initial, userId, onSave, onCancel }: {
         <button onClick={onCancel} style={{ fontSize: 12, color: '#6E6E73', background: 'none', border: 'none', cursor: 'pointer' }}>✕ Cancel</button>
       </div>
 
-      {error && <div style={{ background: 'rgba(255,180,168,0.1)', border: '1px solid rgba(255,180,168,0.3)', borderRadius: 8, padding: '8px 12px', color: '#FFB4A8', fontSize: 12, marginBottom: 14 }}>{error}</div>}
+      {error && <div style={{ background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.3)', borderRadius: 8, padding: '8px 12px', color: '#FF9B87', fontSize: 12, marginBottom: 14 }}>{error}</div>}
 
       {/* Basic info */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
@@ -351,8 +351,8 @@ function RecipeForm({ initial, userId, onSave, onCancel }: {
         </label>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, color: '#A1A1A6' }}>
           <span>Like?</span>
-          <button onClick={() => setLiked(liked === true ? null : true)} style={{ background: liked === true ? 'rgba(159,231,192,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${liked === true ? 'rgba(159,231,192,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 6, padding: '3px 8px', cursor: 'pointer', fontSize: 12 }}>❤️</button>
-          <button onClick={() => setLiked(liked === false ? null : false)} style={{ background: liked === false ? 'rgba(255,180,168,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${liked === false ? 'rgba(255,180,168,0.2)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 6, padding: '3px 8px', cursor: 'pointer', fontSize: 12 }}>👎</button>
+          <button onClick={() => setLiked(liked === true ? null : true)} style={{ background: liked === true ? 'rgba(127,213,170,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${liked === true ? 'rgba(127,213,170,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 6, padding: '3px 8px', cursor: 'pointer', fontSize: 12 }}>❤️</button>
+          <button onClick={() => setLiked(liked === false ? null : false)} style={{ background: liked === false ? 'rgba(255,155,135,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${liked === false ? 'rgba(255,155,135,0.2)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 6, padding: '3px 8px', cursor: 'pointer', fontSize: 12 }}>👎</button>
         </div>
       </div>
 
@@ -361,14 +361,14 @@ function RecipeForm({ initial, userId, onSave, onCancel }: {
         <label style={labelStyle}>Tags</label>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
           {tags.map(t => (
-            <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(159,231,192,0.08)', border: '1px solid rgba(159,231,192,0.2)', borderRadius: 99, padding: '2px 8px', fontSize: 12, color: '#9FE7C0' }}>
-              {t} <button onClick={() => removeTag(t)} style={{ background: 'none', border: 'none', color: '#9FE7C0', cursor: 'pointer', padding: 0, lineHeight: 1, fontSize: 10 }}>✕</button>
+            <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 99, padding: '2px 8px', fontSize: 12, color: '#7FD5AA' }}>
+              {t} <button onClick={() => removeTag(t)} style={{ background: 'none', border: 'none', color: '#7FD5AA', cursor: 'pointer', padding: 0, lineHeight: 1, fontSize: 10 }}>✕</button>
             </span>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
           <input value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())} placeholder="Add tag (press Enter)" style={{ ...inputStyle, flex: 1 }} />
-          <button onClick={addTag} style={{ padding: '8px 14px', background: 'rgba(159,231,192,0.1)', border: '1px solid rgba(159,231,192,0.25)', borderRadius: 8, color: '#9FE7C0', cursor: 'pointer', fontSize: 12 }}>Add</button>
+          <button onClick={addTag} style={{ padding: '8px 14px', background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.25)', borderRadius: 8, color: '#7FD5AA', cursor: 'pointer', fontSize: 12 }}>Add</button>
         </div>
       </div>
 
@@ -378,10 +378,10 @@ function RecipeForm({ initial, userId, onSave, onCancel }: {
           <label style={labelStyle}>Ingredients</label>
           {totals.kcal > 0 && (
             <div style={{ display: 'flex', gap: 6 }}>
-              <MacroPill label="kcal" value={perPortion(totals.kcal, p)} color="#F3D58A" />
-              <MacroPill label="P" value={perPortion(totals.protein, p)} color="#9FE7C0" />
-              <MacroPill label="C" value={perPortion(totals.carbs, p)} color="#9FCBFF" />
-              <MacroPill label="F" value={perPortion(totals.fat, p)} color="#F7B98E" />
+              <MacroPill label="kcal" value={perPortion(totals.kcal, p)} color="#ECC666" />
+              <MacroPill label="P" value={perPortion(totals.protein, p)} color="#7FD5AA" />
+              <MacroPill label="C" value={perPortion(totals.carbs, p)} color="#80BDFF" />
+              <MacroPill label="F" value={perPortion(totals.fat, p)} color="#F5A56A" />
               {p > 1 && <span style={{ fontSize: 10, color: '#6E6E73', alignSelf: 'center' }}>/ portion</span>}
             </div>
           )}
@@ -397,7 +397,7 @@ function RecipeForm({ initial, userId, onSave, onCancel }: {
             <IngredientRow key={i} ing={ing} index={i} onChange={updateIngredient} onRemove={removeIngredient} />
           ))}
         </div>
-        <button onClick={addIngredient} style={{ marginTop: 8, fontSize: 12, color: '#9FE7C0', background: 'rgba(159,231,192,0.06)', border: '1px dashed rgba(159,231,192,0.25)', borderRadius: 8, padding: '7px 14px', cursor: 'pointer', width: '100%' }}>
+        <button onClick={addIngredient} style={{ marginTop: 8, fontSize: 12, color: '#7FD5AA', background: 'rgba(127,213,170,0.06)', border: '1px dashed rgba(127,213,170,0.25)', borderRadius: 8, padding: '7px 14px', cursor: 'pointer', width: '100%' }}>
           + Add ingredient
         </button>
       </div>
@@ -417,12 +417,12 @@ function RecipeForm({ initial, userId, onSave, onCancel }: {
                 style={{ ...inputStyle, flex: 1, resize: 'vertical', minHeight: 36 }}
               />
               {steps.length > 1 && (
-                <button onClick={() => removeStep(i)} style={{ marginTop: 6, width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,180,168,0.08)', border: '1px solid rgba(255,180,168,0.15)', color: '#FFB4A8', cursor: 'pointer', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, flexShrink: 0 }}>✕</button>
+                <button onClick={() => removeStep(i)} style={{ marginTop: 6, width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,155,135,0.08)', border: '1px solid rgba(255,155,135,0.15)', color: '#FF9B87', cursor: 'pointer', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, flexShrink: 0 }}>✕</button>
               )}
             </div>
           ))}
         </div>
-        <button onClick={addStep} style={{ marginTop: 8, fontSize: 12, color: '#C9B8FF', background: 'rgba(201,184,255,0.06)', border: '1px dashed rgba(201,184,255,0.25)', borderRadius: 8, padding: '7px 14px', cursor: 'pointer', width: '100%' }}>
+        <button onClick={addStep} style={{ marginTop: 8, fontSize: 12, color: '#B8A4FF', background: 'rgba(184,164,255,0.06)', border: '1px dashed rgba(184,164,255,0.25)', borderRadius: 8, padding: '7px 14px', cursor: 'pointer', width: '100%' }}>
           + Add step
         </button>
       </div>
@@ -436,7 +436,7 @@ function RecipeForm({ initial, userId, onSave, onCancel }: {
       {/* Save */}
       <div style={{ display: 'flex', gap: 10 }}>
         <button onClick={onCancel} style={{ padding: '10px 20px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#6E6E73', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
-        <button onClick={handleSave} disabled={saving} style={{ flex: 1, padding: '10px 20px', background: saving ? 'rgba(159,231,192,0.1)' : 'rgba(159,231,192,0.15)', border: '1px solid rgba(159,231,192,0.3)', borderRadius: 8, color: '#9FE7C0', fontSize: 13, fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer' }}>
+        <button onClick={handleSave} disabled={saving} style={{ flex: 1, padding: '10px 20px', background: saving ? 'rgba(127,213,170,0.1)' : 'rgba(127,213,170,0.15)', border: '1px solid rgba(127,213,170,0.3)', borderRadius: 8, color: '#7FD5AA', fontSize: 13, fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer' }}>
           {saving ? 'Saving…' : initial ? 'Save changes' : 'Create recipe'}
         </button>
       </div>
@@ -455,7 +455,7 @@ function RecipeDetail({ recipe, onEdit, onBack }: { recipe: Recipe; onEdit: () =
     <div style={{ maxWidth: 700 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
         <button onClick={onBack} style={{ fontSize: 12, color: '#6E6E73', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>← Back</button>
-        <button onClick={onEdit} style={{ fontSize: 12, color: '#9FCBFF', background: 'rgba(125,200,247,0.08)', border: '1px solid rgba(125,200,247,0.2)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer' }}>Edit</button>
+        <button onClick={onEdit} style={{ fontSize: 12, color: '#80BDFF', background: 'rgba(125,200,247,0.08)', border: '1px solid rgba(125,200,247,0.2)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer' }}>Edit</button>
       </div>
 
       <div style={{ marginBottom: 16 }}>
@@ -464,8 +464,8 @@ function RecipeDetail({ recipe, onEdit, onBack }: { recipe: Recipe; onEdit: () =
           <span style={{ fontSize: 13, color: '#6E6E73' }}>{getMealTypeEmoji(recipe.mealType)} {getMealTypeLabel(recipe.mealType)}</span>
           {totalMin > 0 && <span style={{ fontSize: 12, color: '#6E6E73' }}>⏱ {totalMin} min total</span>}
           {p > 1 && <span style={{ fontSize: 12, color: '#6E6E73' }}>🍽️ {p} portions</span>}
-          {recipe.difficulty && <span style={{ fontSize: 11, color: '#C9B8FF', background: 'rgba(201,184,255,0.08)', border: '1px solid rgba(201,184,255,0.15)', borderRadius: 4, padding: '1px 7px' }}>{recipe.difficulty}</span>}
-          {recipe.isMealPrep && <span style={{ fontSize: 11, color: '#9FE7C0', background: 'rgba(159,231,192,0.08)', border: '1px solid rgba(159,231,192,0.2)', borderRadius: 4, padding: '1px 7px' }}>Meal prep ✓</span>}
+          {recipe.difficulty && <span style={{ fontSize: 11, color: '#B8A4FF', background: 'rgba(184,164,255,0.08)', border: '1px solid rgba(184,164,255,0.15)', borderRadius: 4, padding: '1px 7px' }}>{recipe.difficulty}</span>}
+          {recipe.isMealPrep && <span style={{ fontSize: 11, color: '#7FD5AA', background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 4, padding: '1px 7px' }}>Meal prep ✓</span>}
           {recipe.storageDays && <span style={{ fontSize: 11, color: '#6E6E73' }}>Stores {recipe.storageDays}d</span>}
         </div>
       </div>
@@ -484,11 +484,11 @@ function RecipeDetail({ recipe, onEdit, onBack }: { recipe: Recipe; onEdit: () =
           <div style={{ fontSize: 11, fontWeight: 700, color: '#6E6E73', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Nutrition{p > 1 ? ' per portion' : ''}</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
             {[
-              { label: 'Calories', value: perPortion(totals.kcal, p), unit: 'kcal', color: '#F3D58A' },
-              { label: 'Protein', value: perPortion(totals.protein, p), unit: 'g', color: '#9FE7C0' },
-              { label: 'Carbs', value: perPortion(totals.carbs, p), unit: 'g', color: '#9FCBFF' },
-              { label: 'Fat', value: perPortion(totals.fat, p), unit: 'g', color: '#F7B98E' },
-              { label: 'Fiber', value: perPortion(totals.fiber, p), unit: 'g', color: '#C9B8FF' },
+              { label: 'Calories', value: perPortion(totals.kcal, p), unit: 'kcal', color: '#ECC666' },
+              { label: 'Protein', value: perPortion(totals.protein, p), unit: 'g', color: '#7FD5AA' },
+              { label: 'Carbs', value: perPortion(totals.carbs, p), unit: 'g', color: '#80BDFF' },
+              { label: 'Fat', value: perPortion(totals.fat, p), unit: 'g', color: '#F5A56A' },
+              { label: 'Fiber', value: perPortion(totals.fiber, p), unit: 'g', color: '#B8A4FF' },
             ].map(m => (
               <div key={m.label} style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: 16, fontWeight: 800, color: m.color }}>{Math.round(m.value)}<span style={{ fontSize: 10, opacity: 0.7 }}>{m.unit}</span></div>
@@ -511,7 +511,7 @@ function RecipeDetail({ recipe, onEdit, onBack }: { recipe: Recipe; onEdit: () =
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <span style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 600 }}>{ing.amount} {ing.unit}</span>
                   {ing.calories != null && <span style={{ fontSize: 11, color: '#6E6E73' }}>{Math.round(ing.calories)} kcal</span>}
-                  {ing.protein != null && <span style={{ fontSize: 11, color: '#9FE7C0' }}>{Math.round(ing.protein)}g P</span>}
+                  {ing.protein != null && <span style={{ fontSize: 11, color: '#7FD5AA' }}>{Math.round(ing.protein)}g P</span>}
                 </div>
               </div>
             ))}
@@ -532,8 +532,8 @@ function RecipeDetail({ recipe, onEdit, onBack }: { recipe: Recipe; onEdit: () =
       )}
 
       {recipe.notes && (
-        <div style={{ background: 'rgba(201,184,255,0.06)', border: '1px solid rgba(201,184,255,0.15)', borderRadius: 8, padding: '10px 14px' }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#C9B8FF', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Notes</div>
+        <div style={{ background: 'rgba(184,164,255,0.06)', border: '1px solid rgba(184,164,255,0.15)', borderRadius: 8, padding: '10px 14px' }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#B8A4FF', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Notes</div>
           <p style={{ fontSize: 12, color: '#A1A1A6', margin: 0, lineHeight: 1.6 }}>{recipe.notes}</p>
         </div>
       )}
@@ -607,7 +607,7 @@ export default function RecipeLibrary({ userId }: { userId: string }) {
           <h2 style={{ fontSize: 18, fontWeight: 700, color: '#F5F5F7', margin: 0 }}>Recipe Library</h2>
           <p style={{ fontSize: 13, color: '#6E6E73', margin: '3px 0 0' }}>{recipes.length} saved recipe{recipes.length !== 1 ? 's' : ''}</p>
         </div>
-        <button onClick={() => setView('create')} style={{ padding: '8px 16px', background: 'rgba(159,231,192,0.12)', border: '1px solid rgba(159,231,192,0.3)', borderRadius: 8, color: '#9FE7C0', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+        <button onClick={() => setView('create')} style={{ padding: '8px 16px', background: 'rgba(127,213,170,0.12)', border: '1px solid rgba(127,213,170,0.3)', borderRadius: 8, color: '#7FD5AA', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
           + New recipe
         </button>
       </div>
@@ -624,7 +624,7 @@ export default function RecipeLibrary({ userId }: { userId: string }) {
           <option value="all">All types</option>
           {MEAL_TYPES.map(t => <option key={t.value} value={t.value}>{t.emoji} {t.label}</option>)}
         </select>
-        <button onClick={() => setFilterPrep(!filterPrep)} style={{ padding: '6px 12px', background: filterPrep ? 'rgba(201,184,255,0.12)' : 'rgba(255,255,255,0.04)', border: `1px solid ${filterPrep ? 'rgba(201,184,255,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, color: filterPrep ? '#C9B8FF' : '#6E6E73', fontSize: 12, cursor: 'pointer', fontWeight: filterPrep ? 700 : 400 }}>
+        <button onClick={() => setFilterPrep(!filterPrep)} style={{ padding: '6px 12px', background: filterPrep ? 'rgba(184,164,255,0.12)' : 'rgba(255,255,255,0.04)', border: `1px solid ${filterPrep ? 'rgba(184,164,255,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, color: filterPrep ? '#B8A4FF' : '#6E6E73', fontSize: 12, cursor: 'pointer', fontWeight: filterPrep ? 700 : 400 }}>
           📦 Meal prep
         </button>
       </div>
@@ -646,7 +646,7 @@ export default function RecipeLibrary({ userId }: { userId: string }) {
             {recipes.length === 0 ? 'No recipes yet. Add your first recipe to get started.' : 'No recipes match your filters.'}
           </div>
           {recipes.length === 0 && (
-            <button onClick={() => setView('create')} style={{ padding: '9px 20px', background: 'rgba(159,231,192,0.1)', border: '1px solid rgba(159,231,192,0.25)', borderRadius: 8, color: '#9FE7C0', fontSize: 13, cursor: 'pointer' }}>
+            <button onClick={() => setView('create')} style={{ padding: '9px 20px', background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.25)', borderRadius: 8, color: '#7FD5AA', fontSize: 13, cursor: 'pointer' }}>
               Add first recipe
             </button>
           )}

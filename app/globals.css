@@ -23,47 +23,47 @@
   --border-inset:    rgba(0, 0, 0, 0.35);
 
   /* ── Pastel accent palette ── */
-  --purple-text:   #C9B8FF;
-  --purple-bg:     rgba(201, 184, 255, 0.10);
-  --purple-border: rgba(201, 184, 255, 0.22);
+  --purple-text:   #B8A4FF;
+  --purple-bg:     rgba(184, 164, 255, 0.12);
+  --purple-border: rgba(184, 164, 255, 0.26);
 
-  --blue-text:     #9FCBFF;
-  --blue-bg:       rgba(159, 203, 255, 0.10);
-  --blue-border:   rgba(159, 203, 255, 0.22);
+  --blue-text:     #80BDFF;
+  --blue-bg:       rgba(128, 189, 255, 0.12);
+  --blue-border:   rgba(128, 189, 255, 0.26);
 
-  --mint-text:     #9FE7C0;
-  --mint-bg:       rgba(159, 231, 192, 0.09);
-  --mint-border:   rgba(159, 231, 192, 0.20);
+  --mint-text:     #7FD5AA;
+  --mint-bg:       rgba(127, 213, 170, 0.11);
+  --mint-border:   rgba(127, 213, 170, 0.24);
 
-  --amber-text:    #F3D58A;
-  --amber-bg:      rgba(243, 213, 138, 0.10);
-  --amber-border:  rgba(243, 213, 138, 0.20);
+  --amber-text:    #ECC666;
+  --amber-bg:      rgba(236, 198, 102, 0.11);
+  --amber-border:  rgba(236, 198, 102, 0.24);
 
-  --peach-text:    #F7B98E;
-  --peach-bg:      rgba(247, 185, 142, 0.10);
-  --peach-border:  rgba(247, 185, 142, 0.20);
+  --peach-text:    #F5A56A;
+  --peach-bg:      rgba(245, 165, 106, 0.11);
+  --peach-border:  rgba(245, 165, 106, 0.24);
 
-  --rose-text:     #F4A7B9;
-  --rose-bg:       rgba(244, 167, 185, 0.10);
-  --rose-border:   rgba(244, 167, 185, 0.20);
+  --rose-text:     #F18CA6;
+  --rose-bg:       rgba(241, 140, 166, 0.11);
+  --rose-border:   rgba(241, 140, 166, 0.24);
 
-  --red-text:      #FFB4A8;
-  --red-bg:        rgba(255, 180, 168, 0.10);
-  --red-border:    rgba(255, 180, 168, 0.22);
+  --red-text:      #FF9B87;
+  --red-bg:        rgba(255, 155, 135, 0.11);
+  --red-border:    rgba(255, 155, 135, 0.26);
 
-  /* ── Semantic shorthand (pastel) ── */
+  /* ── Semantic shorthand ── */
   --accent:   var(--blue-text);
   --success:  var(--mint-text);
   --warning:  var(--amber-text);
   --danger:   var(--red-text);
 
   /* Kept for gradient references */
-  --blue:    #9FCBFF;
-  --green:   #9FE7C0;
-  --yellow:  #F3D58A;
-  --orange:  #F7B98E;
-  --red:     #FFB4A8;
-  --purple:  #C9B8FF;
+  --blue:    #80BDFF;
+  --green:   #7FD5AA;
+  --yellow:  #ECC666;
+  --orange:  #F5A56A;
+  --red:     #FF9B87;
+  --purple:  #B8A4FF;
 
   /* ── Radius ── */
   --r-sm:   10px;
@@ -106,7 +106,7 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
 
 /* Selection */
-::selection { background: rgba(159, 203, 255, 0.25); color: var(--text-primary); }
+::selection { background: rgba(128, 189, 255, 0.28); color: var(--text-primary); }
 
 /* ─── Card ───────────────────────────────────────────────────────────────────── */
 
@@ -158,9 +158,9 @@ body {
 
 /* Primary — pastel blue, clearly a CTA but not aggressive */
 .btn-primary {
-  background: rgba(159, 203, 255, 0.12);
-  color: #CFE4FF;
-  border: 1px solid rgba(159, 203, 255, 0.28);
+  background: rgba(128, 189, 255, 0.14);
+  color: #C8E4FF;
+  border: 1px solid rgba(128, 189, 255, 0.32);
   border-radius: var(--r-md);
   padding: 9px 18px;
   font-size: 14px;
@@ -169,7 +169,7 @@ body {
   letter-spacing: -0.01em;
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
-.btn-primary:hover  { background: rgba(159, 203, 255, 0.2); border-color: rgba(159, 203, 255, 0.42); }
+.btn-primary:hover  { background: rgba(128, 189, 255, 0.22); border-color: rgba(128, 189, 255, 0.46); }
 .btn-primary:active { transform: scale(0.97); }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
@@ -215,7 +215,7 @@ body {
   cursor: pointer;
   transition: background 0.14s ease, border-color 0.14s ease;
 }
-.btn-destructive:hover { background: rgba(255,180,168,0.18); border-color: rgba(255,180,168,0.35); }
+.btn-destructive:hover { background: rgba(255,155,135,0.20); border-color: rgba(255,155,135,0.40); }
 
 /* Legacy motion helper */
 .btn-motion {
@@ -240,8 +240,8 @@ body {
 }
 .input-apple::placeholder { color: var(--text-muted); }
 .input-apple:focus {
-  border-color: rgba(159, 203, 255, 0.35);
-  box-shadow: 0 0 0 3px rgba(159, 203, 255, 0.12);
+  border-color: rgba(128, 189, 255, 0.40);
+  box-shadow: 0 0 0 3px rgba(128, 189, 255, 0.14);
 }
 
 /* ─── Progress bar ────────────────────────────────────────────────────────────── */

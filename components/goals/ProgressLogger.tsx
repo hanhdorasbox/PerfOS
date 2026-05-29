@@ -36,14 +36,14 @@ export default function ProgressLogger({ goalId, unit, trackingType }: { goalId:
           onClick={() => setOpen(true)}
           style={{
             width: '100%', padding: '10px', borderRadius: 10, fontSize: 13, fontWeight: 600,
-            background: 'rgba(201,184,255,0.08)', border: '1px dashed rgba(201,184,255,0.3)',
-            color: '#C9B8FF', cursor: 'pointer',
+            background: 'rgba(184,164,255,0.08)', border: '1px dashed rgba(184,164,255,0.3)',
+            color: '#B8A4FF', cursor: 'pointer',
           }}
         >
           + Log Progress
         </button>
       ) : (
-        <div style={{ padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(201,184,255,0.2)' }}>
+        <div style={{ padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(184,164,255,0.2)' }}>
           <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
             Log Progress Update
           </div>
@@ -77,7 +77,7 @@ export default function ProgressLogger({ goalId, unit, trackingType }: { goalId:
               disabled={saving || !value.trim()}
               style={{
                 flex: 1, padding: '9px', borderRadius: 8, fontSize: 13, fontWeight: 700,
-                background: '#C9B8FF', color: '#050506', border: 'none', cursor: 'pointer',
+                background: '#B8A4FF', color: '#050506', border: 'none', cursor: 'pointer',
                 opacity: saving || !value.trim() ? 0.5 : 1,
               }}
             >
