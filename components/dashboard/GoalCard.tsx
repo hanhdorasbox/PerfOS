@@ -45,14 +45,14 @@ export default function GoalCard({ goal, metrics }: Props) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, gap: 12 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
-            fontSize: 11, fontWeight: 500, letterSpacing: '0.06em',
-            textTransform: 'uppercase', color: '#6E6E73', marginBottom: 5,
+            fontSize: 10, fontWeight: 500, letterSpacing: '0.06em',
+            textTransform: 'uppercase', color: '#52525A', marginBottom: 6,
           }}>
             {goal.category}
           </div>
           <Link href={`/goals/${goal.id}`} style={{
-            fontSize: 17, fontWeight: 600, color: '#F5F5F7',
-            textDecoration: 'none', letterSpacing: '-0.02em', lineHeight: 1.3,
+            fontSize: 16, fontWeight: 600, color: '#EEEEF2',
+            textDecoration: 'none', letterSpacing: '-0.02em', lineHeight: 1.35,
             display: 'block',
           }}>
             {goal.title}
@@ -65,35 +65,35 @@ export default function GoalCard({ goal, metrics }: Props) {
       <div style={{ display: 'flex', gap: 28, marginBottom: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
         <div>
           <div style={{
-            fontSize: 34, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
-            color: '#F5F5F7', lineHeight: 1, letterSpacing: '-0.03em',
+            fontSize: 32, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
+            color: '#EEEEF2', lineHeight: 1, letterSpacing: '-0.035em',
           }}>
             {Math.round(metrics.progressPct)}%
           </div>
-          <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 3, letterSpacing: '0.02em' }}>complete</div>
+          <div style={{ fontSize: 10, color: '#52525A', marginTop: 4, letterSpacing: '0.02em' }}>complete</div>
         </div>
 
         {goal.trackingType === 'QUANTITATIVE' && goal.currentValue != null && (
           <div>
-            <div style={{ fontSize: 20, fontWeight: 600, color: '#A1A1A6', lineHeight: 1, letterSpacing: '-0.02em' }}>
+            <div style={{ fontSize: 19, fontWeight: 600, color: '#9E9EA6', lineHeight: 1, letterSpacing: '-0.02em' }}>
               {goal.currentValue} {goal.unit}
             </div>
-            <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 3 }}>
+            <div style={{ fontSize: 11, color: '#52525A', marginTop: 3 }}>
               {goal.startValue} → {goal.targetValue} {goal.unit}
             </div>
           </div>
         )}
 
         <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-          <div style={{ fontSize: 11, color: '#6E6E73', marginBottom: 2 }}>Expected today</div>
-          <div style={{ fontSize: 17, fontWeight: 600, color: '#A1A1A6', letterSpacing: '-0.02em' }}>
+          <div style={{ fontSize: 10, color: '#52525A', marginBottom: 3 }}>Expected today</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: '#9E9EA6', letterSpacing: '-0.02em' }}>
             {Math.round(metrics.expectedPct)}%
           </div>
           <div style={{
-            fontSize: 12, fontWeight: 600, marginTop: 2,
-            color: metrics.gap >= 0 ? '#7FD5AA' : '#FF9B87',
+            fontSize: 12, fontWeight: 500, marginTop: 3,
+            color: metrics.gap >= 0 ? '#7FD5AA' : '#E8907A',
           }}>
-            {metrics.gap >= 0 ? '+' : ''}{Math.round(metrics.gap)}% gap
+            {metrics.gap >= 0 ? '+' : ''}{Math.round(metrics.gap)}%
           </div>
         </div>
       </div>
@@ -143,21 +143,22 @@ export default function GoalCard({ goal, metrics }: Props) {
 
       {/* Recommendation note */}
       <div style={{
-        fontSize: 13, color: '#A1A1A6', lineHeight: 1.55,
-        padding: '10px 14px',
-        background: 'rgba(255,255,255,0.03)',
-        borderRadius: 12,
-        border: '1px solid rgba(255,255,255,0.06)',
+        fontSize: 13, color: '#9E9EA6', lineHeight: 1.6,
+        padding: '11px 14px',
+        background: 'rgba(255,255,255,0.025)',
+        borderRadius: 14,
+        border: '1px solid rgba(255,255,255,0.055)',
+        letterSpacing: '-0.005em',
       }}>
         {metrics.recommendation}
       </div>
 
       {metrics.forecastedCompletionDate && (
-        <div style={{ marginTop: 10, fontSize: 12, color: '#6E6E73' }}>
+        <div style={{ marginTop: 10, fontSize: 12, color: '#52525A' }}>
           Forecast{' '}
           <span style={{
-            color: metrics.forecastedCompletionDate > new Date(goal.deadline) ? '#FF9B87' : '#7FD5AA',
-            fontWeight: 600,
+            color: metrics.forecastedCompletionDate > new Date(goal.deadline) ? '#E8907A' : '#7FD5AA',
+            fontWeight: 500,
           }}>
             {metrics.forecastedCompletionDate.toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
           </span>
