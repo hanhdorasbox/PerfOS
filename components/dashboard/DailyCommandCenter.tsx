@@ -721,26 +721,26 @@ export default function DailyCommandCenter({
 
       {/* ══ DAILY INTELLIGENCE BAR ══════════════════════════════════════════ */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(184,164,255,0.05), rgba(255,255,255,0.02))',
-        borderRadius: 20,
-        border: '1px solid rgba(184,164,255,0.1)',
-        padding: '20px 24px',
+        background: 'rgba(255,255,255,0.018)',
+        borderRadius: 28,
+        border: '1px solid rgba(255,255,255,0.07)',
+        padding: '22px 26px',
         marginBottom: 20,
       }}>
         {/* Bar header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
           <div>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73' }}>
+            <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#52525A' }}>
               Daily Intelligence
             </span>
-            <span style={{ fontSize: 11, color: '#6E6E73', marginLeft: 12 }}>
+            <span style={{ fontSize: 11, color: '#52525A', marginLeft: 12 }}>
               {dateStr}
             </span>
             {quarterName && (
-              <span style={{ fontSize: 10, color: '#6E6E73', marginLeft: 10, opacity: 0.7 }}>· {quarterName}</span>
+              <span style={{ fontSize: 10, color: '#3E3E44', marginLeft: 10 }}>· {quarterName}</span>
             )}
             {lastRefreshedAt && !loadingBrief && (
-              <span style={{ fontSize: 10, color: '#6E6E73', marginLeft: 10, opacity: 0.6 }}>
+              <span style={{ fontSize: 10, color: '#3E3E44', marginLeft: 10 }}>
                 · {formatAge(Date.now() - lastRefreshedAt.getTime())}
               </span>
             )}
@@ -804,9 +804,9 @@ export default function DailyCommandCenter({
 
         {/* LEFT — Directive + Today's Priorities */}
         <div className="card">
-          {/* Strategic Directive — purple left border applies only to the directive text */}
-          <div style={{ borderLeft: '3px solid #B8A4FF', paddingLeft: 14, marginBottom: briefing?.instruction ? 10 : 18 }}>
-            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6 }}>
+          {/* Strategic Directive */}
+          <div style={{ borderLeft: '2px solid rgba(184,164,255,0.35)', paddingLeft: 16, marginBottom: briefing?.instruction ? 10 : 18 }}>
+            <div style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#52525A', marginBottom: 8 }}>
               This Week&apos;s Directive
             </div>
             {loadingBrief && !briefing ? (
@@ -826,17 +826,17 @@ export default function DailyCommandCenter({
 
           {/* Today block — OUTSIDE purple border, below directive */}
           {briefing?.instruction && (
-            <div style={{ marginTop: 16, marginBottom: 18, padding: '8px 12px', background: 'rgba(127,213,170,0.05)', borderRadius: 8, border: '1px solid rgba(127,213,170,0.15)' }}>
-              <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#7FD5AA', marginBottom: 4 }}>
+            <div style={{ marginTop: 16, marginBottom: 18, padding: '10px 14px', background: 'rgba(127,213,170,0.04)', borderRadius: 14, border: '1px solid rgba(127,213,170,0.12)' }}>
+              <div style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#7FD5AA', marginBottom: 5, opacity: 0.8 }}>
                 Today
               </div>
-              <span style={{ fontSize: 12, color: '#A1A1A6', lineHeight: 1.6 }}>{briefing.instruction}</span>
+              <span style={{ fontSize: 12, color: '#9E9EA6', lineHeight: 1.65 }}>{briefing.instruction}</span>
             </div>
           )}
 
           {/* Today's Priorities */}
           <div>
-            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
+            <div style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#52525A', marginBottom: 12 }}>
               Today&apos;s Priorities
             </div>
 
@@ -850,20 +850,20 @@ export default function DailyCommandCenter({
             ) : (
               <>
                 {mustDo.length > 0 && (
-                  <div style={{ marginBottom: 10 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#FF9B87', marginBottom: 2 }}>Must Do</div>
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#E8907A', marginBottom: 4, opacity: 0.85 }}>Must Do</div>
                     {mustDo.map(t => <PriorityItem key={t.id} task={t} briefItem={findBriefItem(t)} onToggle={toggleTask} toggling={toggling} />)}
                   </div>
                 )}
                 {shouldDo.length > 0 && (
-                  <div style={{ marginBottom: 10 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#ECC666', marginBottom: 2 }}>Should Do</div>
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#DDB96A', marginBottom: 4, opacity: 0.85 }}>Should Do</div>
                     {shouldDo.map(t => <PriorityItem key={t.id} task={t} briefItem={findBriefItem(t)} onToggle={toggleTask} toggling={toggling} />)}
                   </div>
                 )}
                 {optional.length > 0 && (
                   <div>
-                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 2 }}>Optional</div>
+                    <div style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#52525A', marginBottom: 4 }}>Optional</div>
                     {optional.map(t => <PriorityItem key={t.id} task={t} briefItem={findBriefItem(t)} onToggle={toggleTask} toggling={toggling} />)}
                   </div>
                 )}

@@ -108,10 +108,10 @@ export default async function FitnessStrategyPage() {
 
   return (
     <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7' }}>Quarterly Fitness Strategy</h1>
-        <p style={{ color: '#A1A1A6', fontSize: 14, marginTop: 4 }}>
-          Structured quarterly fitness plan aligned with your body composition goals.
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 600, color: '#EEEEF2', letterSpacing: '-0.02em', lineHeight: 1.3 }}>Fitness Strategy</h1>
+        <p style={{ color: '#52525A', fontSize: 13, marginTop: 5, lineHeight: 1.5 }}>
+          Structured quarterly plan aligned with your body composition goals.
         </p>
       </div>
 
