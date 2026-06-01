@@ -462,7 +462,7 @@ function RecipeDetail({ recipe, onEdit, onBack }: { recipe: Recipe; onEdit: () =
         <h2 style={{ fontSize: 20, fontWeight: 800, color: '#F5F5F7', margin: '0 0 6px' }}>{recipe.name}</h2>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
           <span style={{ fontSize: 13, color: '#6E6E73' }}>{getMealTypeLabel(recipe.mealType)}</span>
-          {totalMin > 0 && <span style={{ fontSize: 12, color: '#6E6E73' }}>⏱ {totalMin} min total</span>}
+          {totalMin > 0 && <span style={{ fontSize: 12, color: '#6E6E73' }}>{totalMin} min</span>}
           {p > 1 && <span style={{ fontSize: 12, color: '#6E6E73', display: 'inline-flex', alignItems: 'center', gap: 3 }}><Utensils size={11} />{p} portions</span>}
           {recipe.difficulty && <span style={{ fontSize: 11, color: '#B8A4FF', background: 'rgba(184,164,255,0.08)', border: '1px solid rgba(184,164,255,0.15)', borderRadius: 4, padding: '1px 7px' }}>{recipe.difficulty}</span>}
           {recipe.isMealPrep && <span style={{ fontSize: 11, color: '#7FD5AA', background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 4, padding: '1px 7px' }}>Meal prep ✓</span>}

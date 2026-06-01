@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Bot } from 'lucide-react'
+import { Bot, Clock, Star } from 'lucide-react'
 import Spinner from '@/components/ui/Spinner'
 import type { Idea } from '@prisma/client'
 
@@ -94,8 +94,8 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
       <div style={{ marginBottom: 8 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
           <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, flex: 1, paddingRight: 8 }}>
-            {idea.isTimeSensitive && '⏰ '}
-            {idea.isHighUpsideBet && '⭐ '}
+            {idea.isTimeSensitive && <Clock size={12} color="#ECC666" style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+            {idea.isHighUpsideBet && <Star size={12} color="#B8A4FF" style={{ marginRight: 4, verticalAlign: 'middle' }} />}
             {idea.title}
           </p>
         </div>

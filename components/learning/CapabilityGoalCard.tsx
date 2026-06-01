@@ -285,7 +285,7 @@ export default function CapabilityGoalCard({ goal }: Props) {
       {/* Meta info row */}
       <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
         {goal.weeklyHours && (
-          <span style={{ color: '#6E6E73', fontSize: 11 }}>⏱ {goal.weeklyHours}h/week</span>
+          <span style={{ color: '#6E6E73', fontSize: 11 }}>{goal.weeklyHours}h/week</span>
         )}
         {goal.deadline && (
           <span style={{ color: '#6E6E73', fontSize: 11, display: 'inline-flex', alignItems: 'center', gap: 3 }}>

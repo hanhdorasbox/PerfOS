@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Clock } from 'lucide-react'
 
 const DOMAINS = [
   'work_improvement', 'automation', 'product', 'content', 'research', 'project', 'other'
@@ -96,7 +97,7 @@ export default function AddIdeaForm({ userId }: { userId: string }) {
             onChange={e => setForm(f => ({ ...f, isTimeSensitive: e.target.checked }))}
             style={{ width: 14, height: 14 }}
           />
-          <span style={{ color: '#A1A1A6', fontSize: 13 }}>⏰ Time sensitive</span>
+          <span style={{ color: '#A1A1A6', fontSize: 13, display: 'flex', alignItems: 'center', gap: 5 }}><Clock size={12} /> Time sensitive</span>
         </label>
         <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
           <input

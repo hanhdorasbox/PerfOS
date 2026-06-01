@@ -666,7 +666,7 @@ export default function TrajectoryView({ trajectory, quarterId }: Props) {
               fontSize: 12, fontWeight: 600, cursor: generatingPlan ? 'not-allowed' : 'pointer',
             }}
           >
-            {generatingPlan ? '⏳ Generating...' : '+ Generate Quarter Plan'}
+            {generatingPlan ? 'Generating...' : '+ Generate Quarter Plan'}
           </button>
         </div>
 
