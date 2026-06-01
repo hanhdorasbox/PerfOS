@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db'
 import CapabilityGoalCard from '@/components/learning/CapabilityGoalCard'
 import AddCapabilityGoalForm from '@/components/learning/AddCapabilityGoalForm'
+import { Brain } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -125,7 +126,7 @@ export default async function LearningPage() {
 
       {activeGoalsList.length === 0 && (
         <div className="card" style={{ textAlign: 'center', padding: '48px 24px', marginBottom: 24 }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>🧠</div>
+          <div style={{ marginBottom: 12, color: '#6E6E73', display: 'flex', justifyContent: 'center' }}><Brain size={40} /></div>
           <p style={{ color: '#A1A1A6', fontSize: 15, marginBottom: 6 }}>No active roadmaps yet.</p>
           <p style={{ color: '#6E6E73', fontSize: 13 }}>Create your first learning roadmap above.</p>
         </div>

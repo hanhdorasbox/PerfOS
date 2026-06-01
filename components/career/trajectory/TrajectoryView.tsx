@@ -300,7 +300,7 @@ export default function TrajectoryView({ trajectory, quarterId }: Props) {
             cursor: deletingTrajectory ? 'not-allowed' : 'pointer',
           }}
         >
-          {deletingTrajectory ? '⏳ Deleting...' : '🗑 Delete Trajectory'}
+          {deletingTrajectory ? 'Deleting...' : 'Delete Trajectory'}
         </button>
       </div>
 
@@ -370,7 +370,7 @@ export default function TrajectoryView({ trajectory, quarterId }: Props) {
               cursor: generatingRoadmap ? 'not-allowed' : 'pointer',
             }}
           >
-            {generatingRoadmap ? '⏳ Calculating readiness...' : '⚡ Generate Readiness Score + Roadmap'}
+            {generatingRoadmap ? 'Calculating readiness...' : 'Generate Readiness Score + Roadmap'}
           </button>
         )}
 
@@ -422,7 +422,7 @@ export default function TrajectoryView({ trajectory, quarterId }: Props) {
                             color: gap.priority === 1 ? '#FF9B87' : gap.priority === 2 ? '#ECC666' : '#6E6E73',
                             fontSize: 10, fontWeight: 700,
                           }}>
-                            {gap.priority === 1 ? '🔴 High' : gap.priority === 2 ? '🟡 Med' : '🟢 Low'}
+                            {gap.priority === 1 ? 'High' : gap.priority === 2 ? 'Med' : 'Low'}
                           </span>
                           {gap.difficulty && (
                             <span style={{ color: DIFF_COLORS[gap.difficulty] ?? '#6E6E73', fontSize: 10, fontWeight: 700 }}>
@@ -473,7 +473,7 @@ export default function TrajectoryView({ trajectory, quarterId }: Props) {
                             cursor: isGenerating ? 'not-allowed' : 'pointer',
                           }}
                         >
-                          {isGenerating ? '⏳ Generating...' : '⚡ How to Close'}
+                          {isGenerating ? 'Generating...' : 'How to Close'}
                         </button>
                       )}
                       {hasActionPlan && (

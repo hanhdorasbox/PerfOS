@@ -38,7 +38,7 @@ export default async function CareerTrajectoryPage() {
         <h1 style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7', marginBottom: 8 }}>Career Trajectory</h1>
         <div className="card" style={{ background: 'rgba(236,198,102,0.07)', border: '1px solid rgba(236,198,102,0.25)' }}>
           <p style={{ color: '#ECC666', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
-            ⚠ Database migration in progress
+            Database migration in progress
           </p>
           <p style={{ color: '#6E6E73', fontSize: 13 }}>
             New schema columns are being applied. Please refresh the page in a few seconds.

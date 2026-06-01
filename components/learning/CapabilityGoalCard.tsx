@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Brain, Rocket, GraduationCap, Layout, Award, Wrench, Settings, FileText, Archive, Trash2, Target, CalendarDays, AlertTriangle } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import type { CapabilityGoal, LearningMilestone, LearningStep } from '@prisma/client'
 
 type StepFull = LearningStep
@@ -20,9 +22,9 @@ const healthColors: Record<string, { color: string; bg: string; border: string; 
   completed: { color: '#7FD5AA', bg: 'rgba(127,213,170,0.08)', border: 'rgba(127,213,170,0.2)', label: 'Completed' },
 }
 
-const roadmapTypeIcon: Record<string, string> = {
-  skill: '🧠', career: '🚀', school: '🎓', portfolio: '🖼️',
-  certification: '📜', project: '🔧', tool: '⚙️', exam: '📝',
+const roadmapTypeIcon: Record<string, LucideIcon> = {
+  skill: Brain, career: Rocket, school: GraduationCap, portfolio: Layout,
+  certification: Award, project: Wrench, tool: Settings, exam: FileText,
 }
 
 export default function CapabilityGoalCard({ goal }: Props) {
@@ -102,11 +104,10 @@ export default function CapabilityGoalCard({ goal }: Props) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 5 }}>
-            {goal.roadmapType && (
-              <span title={goal.roadmapType} style={{ fontSize: 15 }}>
-                {roadmapTypeIcon[goal.roadmapType] || '🧠'}
-              </span>
-            )}
+            {goal.roadmapType && (() => {
+              const TypeIcon = roadmapTypeIcon[goal.roadmapType] ?? Brain
+              return <TypeIcon size={15} color="#6E6E73" aria-label={goal.roadmapType} />
+            })()}
             {(isCompleted) && (
               <span style={{
                 background: 'rgba(127,213,170,0.12)', color: '#7FD5AA',
@@ -177,9 +178,10 @@ export default function CapabilityGoalCard({ goal }: Props) {
                 style={{
                   background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
                   color: '#6E6E73', padding: '4px 8px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center',
                 }}
               >
-                📦
+                <Archive size={12} />
               </button>
             )
           )}
@@ -190,9 +192,10 @@ export default function CapabilityGoalCard({ goal }: Props) {
               style={{
                 background: 'rgba(255,155,135,0.06)', border: '1px solid rgba(255,155,135,0.15)',
                 color: '#FF9B87', padding: '4px 8px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
+                display: 'flex', alignItems: 'center',
               }}
             >
-              🗑
+              <Trash2 size={12} />
             </button>
           ) : (
             <>
@@ -269,7 +272,7 @@ export default function CapabilityGoalCard({ goal }: Props) {
           borderRadius: 7,
           display: 'flex', alignItems: 'flex-start', gap: 8,
         }}>
-          <span style={{ fontSize: 12, flexShrink: 0, marginTop: 1 }}>🎯</span>
+          <Target size={12} color="#7FD5AA" style={{ flexShrink: 0, marginTop: 1 }} />
           <div>
             <p style={{ color: '#6E6E73', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Next Action</p>
             <p style={{ color: '#A1A1A6', fontSize: 12, marginTop: 2 }}>
@@ -285,8 +288,8 @@ export default function CapabilityGoalCard({ goal }: Props) {
           <span style={{ color: '#6E6E73', fontSize: 11 }}>⏱ {goal.weeklyHours}h/week</span>
         )}
         {goal.deadline && (
-          <span style={{ color: '#6E6E73', fontSize: 11 }}>
-            📅 {new Date(goal.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+          <span style={{ color: '#6E6E73', fontSize: 11, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+            <CalendarDays size={10} />{new Date(goal.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
           </span>
         )}
         {goal.milestones.length === 0 && !isCompleted && !isArchived && (
@@ -301,8 +304,8 @@ export default function CapabilityGoalCard({ goal }: Props) {
           background: 'rgba(236,198,102,0.06)', border: '1px solid rgba(236,198,102,0.15)',
           borderRadius: 7, padding: '7px 11px',
         }}>
-          <p style={{ color: '#ECC666', fontSize: 12 }}>
-            ⚠️ No 'output' milestone — add one to produce something tangible.
+          <p style={{ color: '#ECC666', fontSize: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <AlertTriangle size={12} /> No &apos;output&apos; milestone — add one to produce something tangible.
           </p>
         </div>
       )}

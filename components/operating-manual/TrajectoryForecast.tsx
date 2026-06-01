@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import { Dumbbell, Brain, Salad, FolderOpen, CalendarDays, BarChart2 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 interface DomainForecast {
   name: string
@@ -25,12 +27,12 @@ const RISK_META: Record<string, { label: string; color: string; bg: string }> = 
   stable: { label: 'STABLE',    color: '#80BDFF', bg: 'rgba(128,189,255,0.1)'  },
 }
 
-const DOMAIN_ICON: Record<string, string> = {
-  Fitness: '💪',
-  Learning: '🧠',
-  Meals: '🥗',
-  Portfolio: '📁',
-  Planning: '🗓️',
+const DOMAIN_ICON: Record<string, LucideIcon> = {
+  Fitness: Dumbbell,
+  Learning: Brain,
+  Meals: Salad,
+  Portfolio: FolderOpen,
+  Planning: CalendarDays,
 }
 
 export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
@@ -102,7 +104,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
           ) : data ? (
             <>↻ Regenerate</>
           ) : (
-            <>🔮 Generate Forecast</>
+            <>Generate Forecast</>
           )}
         </button>
       </div>
@@ -150,7 +152,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
             }}>
               {data.domains.map((domain, i) => {
                 const risk = RISK_META[domain.risk] ?? RISK_META.medium
-                const icon = DOMAIN_ICON[domain.name] ?? '📊'
+                const DomainIcon = DOMAIN_ICON[domain.name] ?? BarChart2
                 return (
                   <div
                     key={i}
@@ -165,8 +167,8 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#F5F5F7' }}>
-                        {icon} {domain.name}
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#F5F5F7', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <DomainIcon size={14} /> {domain.name}
                       </div>
                       <span style={{
                         fontSize: 8, fontWeight: 800, letterSpacing: '0.1em',

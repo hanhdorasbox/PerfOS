@@ -137,9 +137,9 @@ async function main() {
 
   // Workout logs
   const workoutEntries = [
-    { daysAgo: 18, type: '💪 Síla' }, { daysAgo: 16, type: '💪 Síla' }, { daysAgo: 14, type: '🏃 Cardio' },
-    { daysAgo: 11, type: '💪 Síla' }, { daysAgo: 9, type: '🧘 Sauna' }, { daysAgo: 7, type: '💪 Síla' },
-    { daysAgo: 5, type: '💪 Síla' }, { daysAgo: 3, type: '🏃 Cardio' }, { daysAgo: 1, type: '💪 Síla' },
+    { daysAgo: 18, type: 'Síla' }, { daysAgo: 16, type: 'Síla' }, { daysAgo: 14, type: 'Cardio' },
+    { daysAgo: 11, type: 'Síla' }, { daysAgo: 9, type: 'Sauna' }, { daysAgo: 7, type: 'Síla' },
+    { daysAgo: 5, type: 'Síla' }, { daysAgo: 3, type: 'Cardio' }, { daysAgo: 1, type: 'Síla' },
   ]
   for (const w of workoutEntries) {
     const date = new Date(); date.setDate(date.getDate() - w.daysAgo)

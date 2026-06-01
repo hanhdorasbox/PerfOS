@@ -173,7 +173,7 @@ export default function TrajectorySetup({ userId }: { userId: string }) {
                 fontSize: 13, fontWeight: 600, cursor: analyzingGaps ? 'not-allowed' : 'pointer',
               }}
             >
-              {analyzingGaps ? '⏳ Analyzing gaps...' : '🔍 AI Gap Analysis →'}
+              {analyzingGaps ? 'Analyzing gaps...' : 'AI Gap Analysis →'}
             </button>
           </div>
           {error && <p style={{ color: '#FF9B87', fontSize: 13, marginTop: 8 }}>{error}</p>}

@@ -57,7 +57,7 @@ export default function AntiDriftChart({ workItems }: Props) {
           color: '#FF9B87',
           fontWeight: 600,
         }}>
-          ⚠ Less than 30% of your effort this period created lasting advancement.
+          Less than 30% of your effort this period created lasting advancement.
         </div>
       )}
 

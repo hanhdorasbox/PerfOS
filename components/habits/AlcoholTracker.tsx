@@ -1,5 +1,7 @@
 'use client'
 import { useState, useCallback } from 'react'
+import { ClipboardList, CalendarDays, Search, Settings, Shield, Droplets, Salad, Footprints, BedDouble, Dumbbell, Flame, Zap, Target } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -45,20 +47,20 @@ interface Props {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const OCCASIONS = [
-  { value: 'social',       label: '👥 Social' },
-  { value: 'work',         label: '💼 Work event' },
-  { value: 'stress',       label: '😤 Stress relief' },
-  { value: 'habit',        label: '🔄 Just habit' },
-  { value: 'celebration',  label: '🎉 Celebration' },
-  { value: 'other',        label: '• Other' },
+  { value: 'social',       label: 'Social' },
+  { value: 'work',         label: 'Work event' },
+  { value: 'stress',       label: 'Stress relief' },
+  { value: 'habit',        label: 'Just habit' },
+  { value: 'celebration',  label: 'Celebration' },
+  { value: 'other',        label: 'Other' },
 ]
 
-const DAMAGE_CONTROL_STEPS = [
-  { icon: '💧', text: 'Drink 500ml water right now, before bed.' },
-  { icon: '🥗', text: 'Plan a high-protein breakfast for tomorrow morning.' },
-  { icon: '🚶', text: 'Non-negotiable: hit at least 8k steps tomorrow even if the workout is off.' },
-  { icon: '😴', text: 'Prioritise 7+ hours of sleep — don\'t scroll, go to bed.' },
-  { icon: '🏋️', text: 'If you miss the workout, replace it with a 20-min walk. Momentum over perfection.' },
+const DAMAGE_CONTROL_STEPS: { Icon: LucideIcon; text: string }[] = [
+  { Icon: Droplets,  text: 'Drink 500ml water right now, before bed.' },
+  { Icon: Salad,     text: 'Plan a high-protein breakfast for tomorrow morning.' },
+  { Icon: Footprints,text: 'Non-negotiable: hit at least 8k steps tomorrow even if the workout is off.' },
+  { Icon: BedDouble, text: 'Prioritise 7+ hours of sleep — don\'t scroll, go to bed.' },
+  { Icon: Dumbbell,  text: 'If you miss the workout, replace it with a 20-min walk. Momentum over perfection.' },
 ]
 
 const BUDGET_OPTIONS = [
@@ -67,10 +69,10 @@ const BUDGET_OPTIONS = [
   { value: 'custom',   label: 'Custom',               budget: 2, description: 'Set your own weekly limit' },
 ]
 
-const GOAL_OPTIONS = [
-  { value: 'fat_loss',    label: '🔥 Fat Loss' },
-  { value: 'performance', label: '⚡ Performance' },
-  { value: 'general',     label: '🎯 General health' },
+const GOAL_OPTIONS: { value: string; label: string; Icon: LucideIcon }[] = [
+  { value: 'fat_loss',    label: 'Fat Loss',      Icon: Flame },
+  { value: 'performance', label: 'Performance',   Icon: Zap },
+  { value: 'general',     label: 'General health',Icon: Target },
 ]
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -354,12 +356,12 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
     }
   }, [settings, userId])
 
-  const TABS = [
-    { key: 'log',      label: '📝 Log', },
-    { key: 'history',  label: '📅 History', },
-    { key: 'patterns', label: '🔍 Patterns', },
-    { key: 'settings', label: '⚙️ Settings', },
-  ] as const
+  const TABS: { key: 'log' | 'history' | 'patterns' | 'settings'; label: string; Icon: LucideIcon }[] = [
+    { key: 'log',      label: 'Log',      Icon: ClipboardList },
+    { key: 'history',  label: 'History',  Icon: CalendarDays },
+    { key: 'patterns', label: 'Patterns', Icon: Search },
+    { key: 'settings', label: 'Settings', Icon: Settings },
+  ]
 
   const cardStyle: React.CSSProperties = {
     background: 'rgba(255,255,255,0.03)',
@@ -424,8 +426,8 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
           background: 'rgba(128,189,255,0.06)',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#80BDFF' }}>
-              🛡️ Damage control protocol
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#80BDFF', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Shield size={14} /> Damage control protocol
             </div>
             <button
               onClick={() => setShowDamageControl(false)}
@@ -438,7 +440,7 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {DAMAGE_CONTROL_STEPS.map((step, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <span style={{ fontSize: 16, flexShrink: 0 }}>{step.icon}</span>
+                <step.Icon size={16} color="#80BDFF" style={{ flexShrink: 0, marginTop: 1 }} />
                 <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.5 }}>{step.text}</span>
               </div>
             ))}
@@ -458,8 +460,9 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
               background: tab === t.key ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.03)',
               color: tab === t.key ? '#F5F5F7' : '#6E6E73',
               transition: 'background 0.15s, color 0.15s',
+              display: 'flex', alignItems: 'center', gap: 5,
             }}
-          >{t.label}</button>
+          ><t.Icon size={12} />{t.label}</button>
         ))}
       </div>
 
@@ -670,7 +673,7 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {patterns.map((p, i) => (
                   <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.04)' }}>
-                    <span style={{ color: '#ECC666', flexShrink: 0 }}>⚡</span>
+                    <Zap size={14} color="#ECC666" style={{ flexShrink: 0, marginTop: 2 }} />
                     <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.5 }}>{p}</span>
                   </div>
                 ))}
@@ -789,8 +792,9 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
                     background: settings.goal === g.value ? 'rgba(184,164,255,0.25)' : 'rgba(255,255,255,0.05)',
                     color: settings.goal === g.value ? '#B8A4FF' : '#6E6E73',
                     fontWeight: settings.goal === g.value ? 600 : 400,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
                   }}
-                >{g.label}</button>
+                ><g.Icon size={11} />{g.label}</button>
               ))}
             </div>
           </div>
@@ -826,11 +830,11 @@ function LogRow({ log, onDelete }: { log: AlcoholLogRow; onDelete: (id: string) 
     log.moodScore != null || log.recoveryRating != null
 
   const impactFlags: string[] = []
-  if (log.missedWorkout) impactFlags.push('❌ Missed workout')
-  if (log.missedSteps) impactFlags.push('🚶 Missed steps')
-  if ((log.sleepQuality ?? 5) <= 2) impactFlags.push('😴 Poor sleep')
-  if ((log.nextDayEnergy ?? 5) <= 2) impactFlags.push('🔋 Low energy')
-  if (log.hadCravings) impactFlags.push('🍕 Cravings')
+  if (log.missedWorkout) impactFlags.push('Missed workout')
+  if (log.missedSteps) impactFlags.push('Missed steps')
+  if ((log.sleepQuality ?? 5) <= 2) impactFlags.push('Poor sleep')
+  if ((log.nextDayEnergy ?? 5) <= 2) impactFlags.push('Low energy')
+  if (log.hadCravings) impactFlags.push('Cravings')
 
   return (
     <div style={{

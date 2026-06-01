@@ -213,7 +213,7 @@ export default function TransactionReviewTable({ transactions, onSave, onApprove
                     <td style={{ padding: '9px 14px', color: '#F5F5F7', fontSize: 13, maxWidth: 240 }}>
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {isDuplicate && (
-                          <span style={{ color: '#ECC666', marginRight: 6, fontSize: 11 }}>⚠ DUP</span>
+                          <span style={{ color: '#ECC666', marginRight: 6, fontSize: 11 }}>DUP</span>
                         )}
                         {tx.description}
                       </div>

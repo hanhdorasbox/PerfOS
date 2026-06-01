@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Code2, BarChart2, Target, MessageSquare } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 type Skill = {
   id: string
@@ -12,11 +14,11 @@ type Skill = {
   inUse: boolean
 }
 
-const categoryConfig: Record<string, { icon: string; label: string }> = {
-  technical: { icon: '💻', label: 'Technical' },
-  analytical: { icon: '📊', label: 'Analytical' },
-  strategic: { icon: '🎯', label: 'Strategic' },
-  communication: { icon: '🗣️', label: 'Communication' },
+const categoryConfig: Record<string, { Icon: LucideIcon; label: string }> = {
+  technical:     { Icon: Code2,         label: 'Technical' },
+  analytical:    { Icon: BarChart2,     label: 'Analytical' },
+  strategic:     { Icon: Target,        label: 'Strategic' },
+  communication: { Icon: MessageSquare, label: 'Communication' },
 }
 
 const CATEGORIES = ['technical', 'analytical', 'strategic', 'communication']
@@ -148,7 +150,7 @@ export default function SkillTracker({
             style={inputStyle}
           >
             {CATEGORIES.map(c => (
-              <option key={c} value={c}>{categoryConfig[c].icon} {categoryConfig[c].label}</option>
+              <option key={c} value={c}>{categoryConfig[c].label}</option>
             ))}
           </select>
           <div>
@@ -219,8 +221,9 @@ export default function SkillTracker({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {CATEGORIES.filter(cat => grouped[cat].length > 0).map(cat => (
           <div key={cat}>
-            <div style={{ color: '#6E6E73', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
-              {categoryConfig[cat].icon} {categoryConfig[cat].label}
+            <div style={{ color: '#6E6E73', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+              {(() => { const { Icon } = categoryConfig[cat]; return <Icon size={11} /> })()}
+              {categoryConfig[cat].label}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {grouped[cat].map(skill => (

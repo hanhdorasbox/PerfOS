@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Eye, Rocket, Users, Award, FolderOpen, Globe, PenLine } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 type CareerCapitalItem = {
   id: string
@@ -15,14 +17,14 @@ type CareerCapitalItem = {
 const INTERNAL_TYPES = ['visibility', 'initiative', 'collaboration', 'recognition']
 const EXTERNAL_TYPES = ['portfolio', 'networking', 'thought_leadership']
 
-const TYPE_ICONS: Record<string, string> = {
-  visibility: '👁️',
-  initiative: '🚀',
-  collaboration: '🤝',
-  recognition: '⭐',
-  portfolio: '📂',
-  networking: '🌐',
-  thought_leadership: '✍️',
+const TYPE_ICONS: Record<string, LucideIcon> = {
+  visibility:       Eye,
+  initiative:       Rocket,
+  collaboration:    Users,
+  recognition:      Award,
+  portfolio:        FolderOpen,
+  networking:       Globe,
+  thought_leadership: PenLine,
 }
 
 function ItemCard({ item, onDelete, isDeleting }: { item: CareerCapitalItem; onDelete: (id: string) => void; isDeleting: boolean }) {
@@ -39,7 +41,7 @@ function ItemCard({ item, onDelete, isDeleting }: { item: CareerCapitalItem; onD
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-        <span style={{ fontSize: 16, flexShrink: 0 }}>{TYPE_ICONS[item.type] ?? '•'}</span>
+        {(() => { const Icon = TYPE_ICONS[item.type]; return Icon ? <Icon size={15} color="#6E6E73" style={{ flexShrink: 0, marginTop: 1 }} /> : <span style={{ color: '#6E6E73' }}>•</span> })()}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ color: '#F5F5F7', fontSize: 13, fontWeight: 600 }}>{item.title}</div>
           {item.impact && (
@@ -174,7 +176,7 @@ export default function CareerCapitalItems({
           >
             {typeOptions.map(t => (
               <option key={t} value={t}>
-                {TYPE_ICONS[t]} {t.replace('_', ' ')}
+                {t.replace('_', ' ')}
               </option>
             ))}
           </select>

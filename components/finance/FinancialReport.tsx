@@ -205,7 +205,7 @@ export default function FinancialReport({ report }: Props) {
           borderRadius: 12, padding: '16px 20px', marginBottom: 16,
         }}>
           <p style={{ color: '#ECC666', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
-            ⚠ Watch points
+            Watch points
           </p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
             {parsed.watchPoints.map((wp, i) => (
@@ -287,7 +287,7 @@ export default function FinancialReport({ report }: Props) {
       {!parsed && narrative && (
         <div style={{ background: 'rgba(236,198,102,0.07)', border: '1px solid rgba(236,198,102,0.25)', borderRadius: 12, padding: '16px 20px' }}>
           <p style={{ color: '#ECC666', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
-            ⚠ Analysis is in old format
+            Analysis is in old format
           </p>
           <p style={{ color: '#6E6E73', fontSize: 12, marginBottom: 14 }}>
             Regenerate to get structured insights: status chip, key bullets, watch signals, action items.
@@ -302,7 +302,7 @@ export default function FinancialReport({ report }: Props) {
               cursor: regenerating ? 'not-allowed' : 'pointer',
             }}
           >
-            {regenerating ? '⏳ Regenerating...' : '↻ Regenerate Analysis'}
+            {regenerating ? 'Regenerating...' : '↻ Regenerate Analysis'}
           </button>
         </div>
       )}

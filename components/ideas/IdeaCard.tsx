@@ -1,6 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Bot } from 'lucide-react'
+import Spinner from '@/components/ui/Spinner'
 import type { Idea } from '@prisma/client'
 
 const domainColors: Record<string, string> = {
@@ -171,7 +173,7 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
               fontSize: 11, fontWeight: 600, cursor: evaluating ? 'not-allowed' : 'pointer',
             }}
           >
-            {evaluating ? '⏳' : '🤖 Evaluate'}
+            {evaluating ? <Spinner size={11} color="#B8A4FF" strokeWidth={2} /> : <><Bot size={12} style={{ marginRight: 4 }} />Evaluate</>}
           </button>
         )}
         {transition && (

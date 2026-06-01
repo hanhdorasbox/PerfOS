@@ -1,6 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Brain, Rocket, GraduationCap, Layout, Award, Wrench, Settings, FileText } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import type { Goal } from '@prisma/client'
 
 interface Props {
@@ -8,15 +10,15 @@ interface Props {
   goals: Goal[]
 }
 
-const roadmapTypes = [
-  { value: 'skill', label: '🧠 Skill', desc: 'Master a specific skill' },
-  { value: 'career', label: '🚀 Career', desc: 'Career advancement' },
-  { value: 'school', label: '🎓 School', desc: 'Academic learning' },
-  { value: 'portfolio', label: '🖼️ Portfolio', desc: 'Build a portfolio piece' },
-  { value: 'certification', label: '📜 Cert', desc: 'Earn a certification' },
-  { value: 'project', label: '🔧 Project', desc: 'Complete a project' },
-  { value: 'tool', label: '⚙️ Tool', desc: 'Master a tool or software' },
-  { value: 'exam', label: '📝 Exam', desc: 'Prepare for an exam' },
+const roadmapTypes: { value: string; label: string; desc: string; Icon: LucideIcon }[] = [
+  { value: 'skill',         label: 'Skill',        desc: 'Master a specific skill',     Icon: Brain },
+  { value: 'career',        label: 'Career',       desc: 'Career advancement',          Icon: Rocket },
+  { value: 'school',        label: 'School',       desc: 'Academic learning',           Icon: GraduationCap },
+  { value: 'portfolio',     label: 'Portfolio',    desc: 'Build a portfolio piece',     Icon: Layout },
+  { value: 'certification', label: 'Cert',         desc: 'Earn a certification',        Icon: Award },
+  { value: 'project',       label: 'Project',      desc: 'Complete a project',          Icon: Wrench },
+  { value: 'tool',          label: 'Tool',         desc: 'Master a tool or software',   Icon: Settings },
+  { value: 'exam',          label: 'Exam',         desc: 'Prepare for an exam',         Icon: FileText },
 ]
 
 export default function AddCapabilityGoalForm({ userId, goals }: Props) {
@@ -132,8 +134,10 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
                 background: form.roadmapType === t.value ? 'rgba(184,164,255,0.15)' : 'rgba(255,255,255,0.04)',
                 border: form.roadmapType === t.value ? '1px solid rgba(184,164,255,0.4)' : '1px solid rgba(255,255,255,0.08)',
                 color: form.roadmapType === t.value ? '#B8A4FF' : '#6E6E73',
+                display: 'flex', alignItems: 'center', gap: 5,
               }}
             >
+              <t.Icon size={11} />
               {t.label}
             </button>
           ))}
@@ -283,7 +287,7 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
           style={{ width: 16, height: 16 }}
         />
         <span style={{ color: '#A1A1A6', fontSize: 13 }}>
-          ✨ Generate AI roadmap with phases, milestones & concrete steps
+          Generate AI roadmap with phases, milestones &amp; concrete steps
         </span>
       </label>
 
@@ -301,8 +305,8 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
           }}
         >
           {saving
-            ? (generateRoadmap ? '⏳ Creating + generating roadmap…' : 'Creating…')
-            : `+ Create ${roadmapTypes.find(t => t.value === form.roadmapType)?.label.split(' ')[1] || ''} Roadmap`}
+            ? (generateRoadmap ? 'Creating + generating roadmap…' : 'Creating…')
+            : `+ Create ${roadmapTypes.find(t => t.value === form.roadmapType)?.label || ''} Roadmap`}
         </button>
         <button
           type="button"

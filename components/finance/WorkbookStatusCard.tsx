@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { put } from '@vercel/blob/client'
+import { Cloud, BarChart2 } from 'lucide-react'
 
 interface WorkbookData {
   id: string
@@ -137,7 +138,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
                 opacity: uploading ? 0.9 : 1, minWidth: 160,
               }}
             >
-              <span>{!uploading ? '☁️ Upload Workbook' : uploadPhase === 1 ? 'Preparing…' : uploadPhase === 3 ? 'Saving…' : uploadPct >= 98 ? 'Finalizing…' : `Uploading ${uploadPct}%`}</span>
+              <span>{!uploading ? <><Cloud size={13} style={{ marginRight: 5 }} /> Upload Workbook</> : uploadPhase === 1 ? 'Preparing…' : uploadPhase === 3 ? 'Saving…' : uploadPct >= 98 ? 'Finalizing…' : `Uploading ${uploadPct}%`}</span>
               {uploading && (
                 <div style={{ width: '100%', height: 3, background: 'rgba(184,164,255,0.2)', borderRadius: 2, overflow: 'hidden' }}>
                   {uploadPct >= 98 ? (
@@ -187,7 +188,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 18,
           }}>
-            {isCloud ? '☁️' : '📊'}
+            {isCloud ? <Cloud size={18} /> : <BarChart2 size={18} />}
           </div>
           <div>
             <p style={{ color: '#F5F5F7', fontWeight: 600, fontSize: 15 }}>{workbook.fileName}</p>
@@ -206,7 +207,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
             fontSize: 11,
             fontWeight: 700,
           }}>
-            {isCloud ? '☁️ CLOUD' : 'CONNECTED'}
+            {isCloud ? <><Cloud size={10} style={{ marginRight: 3 }} />CLOUD</> : 'CONNECTED'}
           </div>
           {/* Re-upload button */}
           <input
@@ -228,7 +229,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
               fontSize: 11, cursor: uploading ? 'not-allowed' : 'pointer', minWidth: 80,
             }}
           >
-            <span>{!uploading ? '↑ Replace' : uploadPhase === 1 ? '…' : uploadPhase === 3 ? '✓' : uploadPct >= 98 ? '⏳' : `${uploadPct}%`}</span>
+            <span>{!uploading ? '↑ Replace' : uploadPhase === 1 ? '…' : uploadPhase === 3 ? '✓' : uploadPct >= 98 ? '…' : `${uploadPct}%`}</span>
             {uploading && (
               <div style={{ width: '100%', height: 2, background: 'rgba(255,255,255,0.08)', borderRadius: 1, overflow: 'hidden' }}>
                 <div style={{

@@ -1,6 +1,8 @@
 'use client'
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { FileText } from 'lucide-react'
+import Spinner from '@/components/ui/Spinner'
 
 export default function StatementUploader({ userId }: { userId: string }) {
   const router = useRouter()
@@ -62,12 +64,12 @@ export default function StatementUploader({ userId }: { userId: string }) {
       >
         {loading ? (
           <div>
-            <div style={{ fontSize: 24, marginBottom: 8 }}>⏳</div>
+            <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'center' }}><Spinner size={24} color="#B8A4FF" strokeWidth={2} /></div>
             <p style={{ color: '#B8A4FF', fontSize: 14, fontWeight: 600 }}>Processing...</p>
           </div>
         ) : (
           <>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>📄</div>
+            <div style={{ marginBottom: 8, color: '#6E6E73', display: 'flex', justifyContent: 'center' }}><FileText size={28} /></div>
             <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, marginBottom: 4 }}>
               Drop your statement here
             </p>

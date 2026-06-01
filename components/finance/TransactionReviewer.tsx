@@ -182,7 +182,7 @@ export default function TransactionReviewer({ statement, rules: _rules, userId: 
                   </td>
                   <td style={{ padding: '8px 10px' }}>
                     {isReview && (
-                      <span style={{ color: '#ECC666', fontSize: 11, fontWeight: 700 }}>⚠️ Review</span>
+                      <span style={{ color: '#ECC666', fontSize: 11, fontWeight: 700 }}>Review</span>
                     )}
                   </td>
                 </tr>

@@ -1,12 +1,13 @@
 import Link from 'next/link'
+import { Dumbbell } from 'lucide-react'
 
 interface FitnessLog { weight: number | null; waist: number | null }
 
 export default function FitnessSummary({ fitnessLog, workoutsThisWeek }: { fitnessLog: FitnessLog | null, workoutsThisWeek: number }) {
   return (
     <div className="card">
-      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '14px' }}>
-        💪 Fitness
+      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: 5 }}>
+        <Dumbbell size={12} /> Fitness
       </div>
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
         {fitnessLog?.weight && (

@@ -3,6 +3,7 @@ import AntiDriftChart from '@/components/anti-drift/AntiDriftChart'
 import WorkItemLogger from '@/components/anti-drift/WorkItemLogger'
 import ReportGenerator from '@/components/anti-drift/ReportGenerator'
 import AutoTrackedItems from '@/components/anti-drift/AutoTrackedItems'
+import { BarChart2 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -53,7 +54,7 @@ export default async function AntiDriftPage() {
 
       {allItems.length === 0 ? (
         <div className="card" style={{ textAlign: 'center', padding: '48px 24px', marginBottom: 20 }}>
-          <div style={{ fontSize: 36, marginBottom: 12 }}>📊</div>
+          <div style={{ marginBottom: 12, color: '#6E6E73', display: 'flex', justifyContent: 'center' }}><BarChart2 size={36} /></div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 8 }}>No work items yet</div>
           <p style={{ color: '#6E6E73', fontSize: 14, maxWidth: 400, margin: '0 auto' }}>
             Complete goals and milestones in your quarterly plan, or log work items manually below to start tracking your effort breakdown.

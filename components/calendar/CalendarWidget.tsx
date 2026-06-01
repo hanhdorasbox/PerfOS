@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import Spinner from '@/components/ui/Spinner'
+import { Leaf, Briefcase, CalendarDays, Target } from 'lucide-react'
 
 interface CalEvent {
   id: string
@@ -189,7 +190,7 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
       <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
         {(['personal', 'work'] as const).map(t => (
           <button key={t} onClick={() => setIcsType(t)} style={{ flex: 1, padding: '6px 0', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', background: icsType === t ? (t === 'work' ? 'rgba(128,189,255,0.2)' : 'rgba(127,213,170,0.15)') : 'rgba(255,255,255,0.05)', color: icsType === t ? (t === 'work' ? '#80BDFF' : '#7FD5AA') : '#6E6E73' }}>
-            {t === 'personal' ? '🌿 Personal' : '💼 Work'}
+            {t === 'personal' ? <><Leaf size={11} /> Personal</> : <><Briefcase size={11} /> Work</>}
           </button>
         ))}
       </div>
@@ -234,10 +235,10 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
       <div className="card">
         <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 12 }}>Calendar</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', padding: '8px 0' }}>
-          <div style={{ fontSize: 22, marginBottom: 4 }}>📅</div>
+          <div style={{ marginBottom: 4, color: '#6E6E73' }}><CalendarDays size={22} /></div>
           <div style={{ fontSize: 12, color: '#6E6E73', textAlign: 'center', lineHeight: 1.5 }}>Connect your calendars so Project Hanh can read your schedule</div>
           <button onClick={() => setShowIcsForm(true)} className="btn-motion" style={{ padding: '8px 20px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.3)', color: '#B8A4FF', width: '100%' }}>
-            📅 Connect via ICS URL (recommended)
+            <CalendarDays size={13} style={{ marginRight: 5 }} /> Connect via ICS URL (recommended)
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', margin: '2px 0' }}>
             <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
@@ -378,7 +379,7 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
           {icsSources.map(src => (
             <div key={src.url} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                <span style={{ fontSize: 12 }}>{src.type === 'work' ? '💼' : '🌿'}</span>
+                {src.type === 'work' ? <Briefcase size={12} color="#80BDFF" /> : <Leaf size={12} color="#7FD5AA" />}
                 <div>
                   <div style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>{src.name}</div>
                   <div style={{ fontSize: 10, color: '#6E6E73' }}>{src.type}</div>
@@ -403,7 +404,7 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
         <div style={{ display: 'flex', gap: 5, marginBottom: 10, flexWrap: 'wrap' }}>
           {icsSources.map(src => (
             <span key={src.url} style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 999, background: src.type === 'work' ? 'rgba(128,189,255,0.1)' : 'rgba(127,213,170,0.1)', color: src.type === 'work' ? '#80BDFF' : '#7FD5AA', border: `1px solid ${src.type === 'work' ? 'rgba(128,189,255,0.2)' : 'rgba(127,213,170,0.2)'}` }}>
-              {src.type === 'work' ? '💼' : '🌿'} {src.name}
+              {src.type === 'work' ? <Briefcase size={10} style={{ marginRight: 3 }} /> : <Leaf size={10} style={{ marginRight: 3 }} />}{src.name}
             </span>
           ))}
         </div>
@@ -412,7 +413,7 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
         <div style={{ display: 'flex', gap: 5, marginBottom: 10, flexWrap: 'wrap' }}>
           {connectedCalendars.map(cc => (
             <span key={cc.id} style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 999, background: cc.type === 'work' ? 'rgba(128,189,255,0.1)' : 'rgba(127,213,170,0.1)', color: cc.type === 'work' ? '#80BDFF' : '#7FD5AA', border: `1px solid ${cc.type === 'work' ? 'rgba(128,189,255,0.2)' : 'rgba(127,213,170,0.2)'}` }}>
-              {cc.type === 'work' ? '💼' : '🌿'} {cc.name}
+              {cc.type === 'work' ? <Briefcase size={10} style={{ marginRight: 3 }} /> : <Leaf size={10} style={{ marginRight: 3 }} />}{cc.name}
             </span>
           ))}
         </div>
@@ -460,7 +461,7 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
 
       {!loading && focusWindowStart && (
         <div style={{ marginTop: 8, padding: '5px 9px', borderRadius: 7, background: 'rgba(127,213,170,0.06)', border: '1px solid rgba(127,213,170,0.15)' }}>
-          <div style={{ fontSize: 10, color: '#7FD5AA' }}>🎯 Focus window from {focusWindowStart.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' })}</div>
+          <div style={{ fontSize: 10, color: '#7FD5AA', display: 'flex', alignItems: 'center', gap: 4 }}><Target size={10} /> Focus window from {focusWindowStart.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' })}</div>
         </div>
       )}
 

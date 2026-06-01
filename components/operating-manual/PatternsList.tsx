@@ -16,7 +16,6 @@ interface Pattern {
 interface DomainGroup {
   displayDomain: string
   color: string
-  icon: string
   patterns: Pattern[]
 }
 
@@ -73,7 +72,7 @@ export default function PatternsList({ domainGroups }: { domainGroups: DomainGro
 
   return (
     <>
-      {domainGroups.map(({ displayDomain, color, icon, patterns }) => {
+      {domainGroups.map(({ displayDomain, color, patterns }) => {
         const visiblePatterns = patterns.filter(p => !deletedIds.has(p.id))
         if (visiblePatterns.length === 0) return null
         return (
@@ -86,7 +85,7 @@ export default function PatternsList({ domainGroups }: { domainGroups: DomainGro
                 padding: '4px 14px', borderRadius: 999,
                 fontSize: 12, fontWeight: 700,
               }}>
-                {icon} {displayDomain}
+                {displayDomain}
               </span>
               <span style={{ color: '#6E6E73', fontSize: 12 }}>
                 {visiblePatterns.length} pattern{visiblePatterns.length !== 1 ? 's' : ''}

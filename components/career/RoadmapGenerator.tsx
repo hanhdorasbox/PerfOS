@@ -117,7 +117,7 @@ export default function RoadmapGenerator({ userId }: { userId: string }) {
             }}
           >
             {loading && <Spinner size={13} color="#B8A4FF" strokeWidth={2} />}
-            {loading ? 'Generating…' : '✦ Generate Roadmap'}
+            {loading ? 'Generating…' : 'Generate Roadmap'}
           </button>
         </div>
         <textarea
@@ -259,7 +259,7 @@ function RoadmapView({ roadmap, phaseColors }: { roadmap: Roadmap; phaseColors: 
                 <div>
                   <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6 }}>Resources</div>
                   {phase.resources.map((r, j) => (
-                    <div key={j} style={{ fontSize: 12, color: '#6E6E73', marginBottom: 3 }}>📖 {r}</div>
+                    <div key={j} style={{ fontSize: 12, color: '#6E6E73', marginBottom: 3 }}>· {r}</div>
                   ))}
                 </div>
               )}

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Spinner from '@/components/ui/Spinner'
+import { Utensils } from 'lucide-react'
 
 interface Props {
   userId: string
@@ -34,7 +35,7 @@ export default function MealPlanStarter({ userId, weekStart }: Props) {
 
   return (
     <div className="card animate-entrance" style={{ textAlign: 'center', padding: '40px 24px' }}>
-      <div style={{ fontSize: 40, marginBottom: 16 }}>🍽</div>
+      <div style={{ marginBottom: 16, color: '#6E6E73', display: 'flex', justifyContent: 'center' }}><Utensils size={40} /></div>
       <h2 style={{ fontSize: 18, fontWeight: 700, color: '#F5F5F7', marginBottom: 8 }}>No meal plan for this week</h2>
       <p style={{ fontSize: 14, color: '#A1A1A6', marginBottom: 24, maxWidth: 480, margin: '0 auto 24px' }}>
         Generate a personalized meal plan based on your fitness goals, food preferences, and protein targets.

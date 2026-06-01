@@ -224,7 +224,7 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
                   whiteSpace: 'nowrap',
                 }}
               >
-                Low Capital Impact ⚠️
+                Low Capital Impact
               </span>
             )}
             <button
@@ -294,7 +294,7 @@ function GoalEvalCard({ goal }: { goal: Goal }) {
                 marginTop: 4,
               }}
             >
-              ⚠️ No proof-of-work attached — add a deliverable or this goal's value remains weak
+              No proof-of-work attached — add a deliverable or this goal&apos;s value remains weak
             </div>
           )}
         </div>

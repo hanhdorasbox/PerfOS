@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import RecipeLibrary from '@/components/meals/RecipeLibrary'
+import { BookOpen } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,7 +16,7 @@ export default async function RecipesPage() {
           ← Meal Plan
         </a>
         <span style={{ fontSize: 12, color: '#4A8A6E', padding: '5px 12px', borderRadius: 6, border: '1px solid rgba(127,213,170,0.2)', background: 'rgba(127,213,170,0.06)', fontWeight: 700 }}>
-          📖 Recipes
+          <BookOpen size={12} style={{ marginRight: 5 }} /> Recipes
         </span>
       </div>
 

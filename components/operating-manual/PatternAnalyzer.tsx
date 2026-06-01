@@ -88,7 +88,7 @@ export default function PatternAnalyzer({ userId }: Props) {
           fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
         }}
       >
-        {loading ? '⏳ Analyzing your historical data...' : '⚙️ Analyze My Patterns'}
+        {loading ? 'Analyzing your historical data...' : 'Analyze My Patterns'}
       </button>
 
       {error && (

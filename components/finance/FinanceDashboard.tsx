@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import WorkbookStatusCard from './WorkbookStatusCard'
 import TransactionReviewTable, { TxRecord } from './TransactionReviewTable'
+import { FolderOpen, CheckCircle2 } from 'lucide-react'
 import FinancialReport from './FinancialReport'
 import StepProgress, { type ProgressStep } from '@/components/ui/StepProgress'
 import Spinner from '@/components/ui/Spinner'
@@ -234,7 +235,7 @@ export default function FinanceDashboard({ userId }: Props) {
       setReportData(data.report!)
       // Show non-blocking warning if Excel write failed but transactions were still approved
       if (data.excelError) {
-        setError(`⚠️ Transactions approved in database, but Excel write failed: ${data.excelError}. Re-upload your workbook to fix this.`)
+        setError(`Transactions approved in database, but Excel write failed: ${data.excelError}. Re-upload your workbook to fix this.`)
       }
       setStep('approved')
       await fetchStatus()
@@ -549,7 +550,7 @@ export default function FinanceDashboard({ userId }: Props) {
             </div>
           ) : (
             <div>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>📂</div>
+              <div style={{ marginBottom: 12, color: '#6E6E73', display: 'flex', justifyContent: 'center' }}><FolderOpen size={40} /></div>
               <p style={{ color: '#F5F5F7', fontSize: 16, fontWeight: 600 }}>Drop your bank statement here</p>
               <p style={{ color: '#6E6E73', fontSize: 13, marginTop: 8 }}>or click to browse — PDF or CSV</p>
               <p style={{ color: '#6E6E73', fontSize: 11, marginTop: 16 }}>
@@ -600,10 +601,10 @@ export default function FinanceDashboard({ userId }: Props) {
 
   // ─── Approved ────────────────────────────────────────────────────────────────
   if (step === 'approved') {
-    const excelFailed = error?.startsWith('⚠️')
+    const excelFailed = !!error
     return (
       <div style={{ textAlign: 'center', padding: '60px 32px' }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>{excelFailed ? '✅' : '✅'}</div>
+        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'center' }}><CheckCircle2 size={48} color="#7FD5AA" /></div>
         <h2 style={{ color: '#7FD5AA', fontSize: 24, fontWeight: 700 }}>
           {approvedCount} transactions approved
         </h2>

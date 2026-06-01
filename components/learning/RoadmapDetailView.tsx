@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Spinner from '@/components/ui/Spinner'
+import { Target, Route, ListChecks, Activity, Gem, Archive, Trash2, BookOpen, CalendarDays, AlertTriangle, Zap, Pencil, Play, Hammer, MessageSquare, Dumbbell } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import type { CapabilityGoal, LearningMilestone, LearningStep } from '@prisma/client'
 
 type StepFull = LearningStep
@@ -34,8 +36,8 @@ interface StrategicRoadmap {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const stepTypeIcon: Record<string, string> = {
-  read: '📖', watch: '▶️', practice: '⚡', build: '🔨', reflect: '💭', exercise: '💪',
+const stepTypeIcon: Record<string, LucideIcon> = {
+  read: BookOpen, watch: Play, practice: Zap, build: Hammer, reflect: MessageSquare, exercise: Dumbbell,
 }
 const stepTypeColor: Record<string, string> = {
   read: '#80BDFF', watch: '#F18CA6', practice: '#7FD5AA', build: '#B8A4FF', reflect: '#ECC666', exercise: '#F5A56A',
@@ -60,12 +62,12 @@ const phaseColors = ['#B8A4FF', '#7FD5AA', '#ECC666', '#80BDFF', '#F5A56A', '#F1
 
 type Tab = 'overview' | 'roadmap' | 'plan' | 'health' | 'capital'
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'overview',  label: '📌 Overview' },
-  { id: 'roadmap',   label: '🗺 Roadmap' },
-  { id: 'plan',      label: '📋 Execution Plan' },
-  { id: 'health',    label: '🏥 Health' },
-  { id: 'capital',   label: '💎 Capitalization' },
+const TABS: { id: Tab; label: string; Icon: LucideIcon }[] = [
+  { id: 'overview',  label: 'Overview',       Icon: Target },
+  { id: 'roadmap',   label: 'Roadmap',         Icon: Route },
+  { id: 'plan',      label: 'Execution Plan',  Icon: ListChecks },
+  { id: 'health',    label: 'Health',          Icon: Activity },
+  { id: 'capital',   label: 'Capitalization',  Icon: Gem },
 ]
 
 interface Props { goal: GoalFull }
@@ -193,7 +195,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
               </span>
               {goal.capitalPotential && (
                 <span style={{ ...capitalColors[goal.capitalPotential], padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700, border: `1px solid ${capitalColors[goal.capitalPotential].border}` }}>
-                  {goal.capitalPotential === 'high' ? '💎 High Capital' : goal.capitalPotential === 'medium' ? '⭐ Medium Capital' : '· Low Capital'}
+                  {goal.capitalPotential === 'high' ? 'High Capital' : goal.capitalPotential === 'medium' ? 'Medium Capital' : 'Low Capital'}
                 </span>
               )}
               {goal.detailLevel === 'eli5' && (
@@ -208,24 +210,24 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
 
           {/* Action buttons */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end', flexShrink: 0 }}>
-            {regenError && <p style={{ color: '#FF9B87', fontSize: 12, maxWidth: 280, textAlign: 'right' }}>⚠ {regenError}</p>}
+            {regenError && <p style={{ color: '#FF9B87', fontSize: 12, maxWidth: 280, textAlign: 'right', display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end' }}><AlertTriangle size={12} />{regenError}</p>}
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
               {goal.status === 'active' && (
                 <>
                   <button onClick={completeGoal} style={{ ...btnStyle, color: '#7FD5AA', border: '1px solid rgba(127,213,170,0.3)' }}>✓ Complete</button>
-                  <button onClick={archiveGoal} style={btnStyle}>📦 Archive</button>
+                  <button onClick={archiveGoal} style={{ ...btnStyle, display: 'flex', alignItems: 'center', gap: 5 }}><Archive size={12} /> Archive</button>
                   <button
                     onClick={regenerateRoadmap}
                     disabled={regenerating}
                     style={{ ...btnStyle, color: '#B8A4FF', border: '1px solid rgba(184,164,255,0.3)', display: 'flex', alignItems: 'center', gap: 6 }}
                   >
                     {regenerating && <Spinner size={11} color="#B8A4FF" strokeWidth={2} />}
-                    {regenerating ? 'Regenerating…' : '✨ Regenerate'}
+                    {regenerating ? 'Regenerating…' : 'Regenerate'}
                   </button>
                 </>
               )}
               {!confirmDelete ? (
-                <button onClick={() => setConfirmDelete(true)} style={{ ...btnStyle, color: '#FF9B87', border: '1px solid rgba(255,155,135,0.3)' }}>🗑 Delete</button>
+                <button onClick={() => setConfirmDelete(true)} style={{ ...btnStyle, color: '#FF9B87', border: '1px solid rgba(255,155,135,0.3)', display: 'flex', alignItems: 'center', gap: 5 }}><Trash2 size={12} /> Delete</button>
               ) : (
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                   <span style={{ color: '#FF9B87', fontSize: 12 }}>Sure?</span>
@@ -279,7 +281,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
         {/* Next Best Action */}
         {goal.nextBestAction && (
           <div style={{ marginTop: 14, background: 'rgba(127,213,170,0.06)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 16 }}>🎯</span>
+            <Target size={16} color="#7FD5AA" style={{ flexShrink: 0 }} />
             <div>
               <p style={{ color: '#7FD5AA', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Best Action</p>
               <p style={{ color: '#F5F5F7', fontSize: 13, marginTop: 2 }}>{goal.nextBestAction}</p>
@@ -299,8 +301,10 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
               border: activeTab === tab.id ? '1px solid rgba(184,164,255,0.4)' : '1px solid transparent',
               background: activeTab === tab.id ? 'rgba(184,164,255,0.1)' : 'transparent',
               color: activeTab === tab.id ? '#B8A4FF' : '#6E6E73',
+              display: 'flex', alignItems: 'center', gap: 6,
             }}
           >
+            <tab.Icon size={12} />
             {tab.label}
           </button>
         ))}
@@ -377,7 +381,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
                 style={{ background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.4)', color: '#B8A4FF', padding: '10px 24px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
               >
                 {regenerating && <Spinner size={13} color="#B8A4FF" strokeWidth={2} />}
-                {regenerating ? 'Generating…' : '✨ Generate AI Roadmap'}
+                {regenerating ? 'Generating…' : 'Generate AI Roadmap'}
               </button>
             </div>
           ) : (
@@ -415,7 +419,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
                 style={{ background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.4)', color: '#B8A4FF', padding: '8px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
               >
                 {regenerating && <Spinner size={13} color="#B8A4FF" strokeWidth={2} />}
-                {regenerating ? 'Generating…' : '✨ Generate with AI'}
+                {regenerating ? 'Generating…' : 'Generate with AI'}
               </button>
             </div>
           ) : (
@@ -521,7 +525,7 @@ function StrategicPhaseCard({ phase, index, color }: { phase: StrategicPhase; in
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 7 }}>Resources</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {phase.resources.map((r, i) => (
-                  <div key={i} style={{ fontSize: 12, color: '#6E6E73' }}>📖 {r}</div>
+                  <div key={i} style={{ fontSize: 12, color: '#6E6E73', display: 'flex', alignItems: 'center', gap: 5 }}><BookOpen size={11} />{r}</div>
                 ))}
               </div>
             </div>
@@ -609,7 +613,7 @@ function MilestoneCard({
               <span style={{ color: '#6E6E73', fontSize: 12 }}>No steps yet.</span>
               {onRegenerate && (
                 <button onClick={onRegenerate} disabled={regenerating} style={{ background: 'rgba(184,164,255,0.1)', border: '1px solid rgba(184,164,255,0.25)', color: '#B8A4FF', padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: regenerating ? 'not-allowed' : 'pointer' }}>
-                  {regenerating ? '⏳ Generating…' : '⚡ Generate steps'}
+                  {regenerating ? 'Generating…' : 'Generate steps'}
                 </button>
               )}
             </div>
@@ -629,11 +633,11 @@ function MilestoneCard({
 
 function StepRow({ step, onComplete, isGoalCompleted }: { step: StepFull; onComplete: () => void; isGoalCompleted: boolean }) {
   const [showCriteria, setShowCriteria] = useState(false)
-  const icon = stepTypeIcon[step.stepType] ?? '⚡'
+  const StepIcon = stepTypeIcon[step.stepType] ?? Zap
   const color = stepTypeColor[step.stepType] ?? '#7FD5AA'
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '9px 12px', background: step.completed ? 'rgba(127,213,170,0.04)' : 'rgba(255,255,255,0.02)', borderRadius: 8, border: `1px solid ${step.completed ? 'rgba(127,213,170,0.15)' : 'rgba(255,255,255,0.05)'}` }}>
-      <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>{icon}</span>
+      <span style={{ flexShrink: 0, marginTop: 1, color }}><StepIcon size={14} /></span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
           <div style={{ flex: 1 }}>
@@ -642,7 +646,7 @@ function StepRow({ step, onComplete, isGoalCompleted }: { step: StepFull; onComp
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
               <span style={{ background: `${color}15`, color, border: `1px solid ${color}30`, padding: '1px 7px', borderRadius: 999, fontSize: 10, fontWeight: 600 }}>{step.stepType}</span>
               <span style={{ color: '#6E6E73', fontSize: 11 }}>~{step.estimatedMinutes} min</span>
-              {step.suggestedDay && <span style={{ color: '#6E6E73', fontSize: 11 }}>📅 {step.suggestedDay}</span>}
+              {step.suggestedDay && <span style={{ color: '#6E6E73', fontSize: 11, display: 'inline-flex', alignItems: 'center', gap: 3 }}><CalendarDays size={10} />{step.suggestedDay}</span>}
               {step.completionCriteria && (
                 <button onClick={() => setShowCriteria(v => !v)} style={{ background: 'none', border: 'none', color: '#6E6E73', fontSize: 11, cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
                   {showCriteria ? 'hide criteria' : 'done when?'}
@@ -707,7 +711,7 @@ function HealthTab({ goal, onUpdateHealth }: { goal: GoalFull; onUpdateHealth: (
         </div>
         {suggestedHealth !== goal.healthStatus && (
           <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(236,198,102,0.06)', border: '1px solid rgba(236,198,102,0.2)', borderRadius: 7 }}>
-            <p style={{ color: '#ECC666', fontSize: 12 }}>💡 Based on {Math.round(pct * 100)}% completion, suggested: <strong>{suggestedHealth.replace('_', ' ')}</strong></p>
+            <p style={{ color: '#ECC666', fontSize: 12 }}>Based on {Math.round(pct * 100)}% completion, suggested: <strong>{suggestedHealth.replace('_', ' ')}</strong></p>
           </div>
         )}
       </div>
@@ -784,7 +788,7 @@ function CapitalizationTab({ goal, strategicRoadmap }: { goal: GoalFull; strateg
       {capPotential && capStyle && (
         <div className="card">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-            <span style={{ fontSize: 24 }}>{capPotential === 'high' ? '💎' : capPotential === 'medium' ? '⭐' : '·'}</span>
+            {capPotential === 'high' ? <Gem size={22} color="#7FD5AA" /> : capPotential === 'medium' ? <Gem size={22} color="#ECC666" /> : <span style={{ fontSize: 22, color: '#6E6E73' }}>·</span>}
             <div>
               <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Capital Potential</p>
               <span style={{ ...capStyle, padding: '3px 12px', borderRadius: 999, fontSize: 13, fontWeight: 700, border: `1px solid ${capStyle.border}`, display: 'inline-block', marginTop: 4 }}>
@@ -832,7 +836,7 @@ function CapitalizationTab({ goal, strategicRoadmap }: { goal: GoalFull; strateg
           {/* Important note */}
           <div style={{ marginTop: 14, padding: '10px 12px', background: 'rgba(236,198,102,0.06)', border: '1px solid rgba(236,198,102,0.15)', borderRadius: 8 }}>
             <p style={{ color: '#ECC666', fontSize: 12, lineHeight: 1.5 }}>
-              ⚠ Passive learning alone does not create career capital. Capital is created only when there is evidence, output, or demonstrated skill that others can verify.
+              Passive learning alone does not create career capital. Capital is created only when there is evidence, output, or demonstrated skill that others can verify.
             </p>
           </div>
         </div>
@@ -871,7 +875,7 @@ function CapitalizationTab({ goal, strategicRoadmap }: { goal: GoalFull; strateg
             }}
           >
             {converting && <Spinner size={13} color="#7FD5AA" strokeWidth={2} />}
-            {converting ? 'Adding…' : '💎 Convert Output to Career Capital'}
+            {converting ? 'Adding…' : <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Gem size={13} /> Convert Output to Career Capital</span>}
           </button>
         )}
         {convertError && <p style={{ color: '#FF9B87', fontSize: 12, marginTop: 8 }}>{convertError}</p>}
@@ -914,7 +918,7 @@ function EditGoalForm({ goal, onSave }: { goal: GoalFull; onSave: (data: Partial
   if (!editing) {
     return (
       <button onClick={() => setEditing(true)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', padding: '6px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-        ✏️ Edit Goal Details
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}><Pencil size={12} /> Edit Goal Details</span>
       </button>
     )
   }

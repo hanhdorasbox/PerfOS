@@ -105,7 +105,7 @@ export default function FinancialReportView({ report, userId }: Props) {
       {!parsed && aiAnalysis && (
         <div style={{ background: 'rgba(236,198,102,0.07)', border: '1px solid rgba(236,198,102,0.25)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
           <p style={{ color: '#ECC666', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
-            ⚠ This analysis was generated in the old format
+            This analysis was generated in the old format
           </p>
           <p style={{ color: '#6E6E73', fontSize: 12, marginBottom: 14 }}>
             Regenerate to get structured insights: status, key points, watch signals, and action items.
@@ -120,7 +120,7 @@ export default function FinancialReportView({ report, userId }: Props) {
               cursor: regenerating ? 'not-allowed' : 'pointer',
             }}
           >
-            {regenerating ? '⏳ Regenerating...' : '↻ Regenerate Analysis'}
+            {regenerating ? 'Regenerating...' : '↻ Regenerate Analysis'}
           </button>
         </div>
       )}
@@ -139,7 +139,7 @@ export default function FinancialReportView({ report, userId }: Props) {
               cursor: regenerating ? 'not-allowed' : 'pointer',
             }}
           >
-            {regenerating ? '⏳ Generating...' : '✦ Generate Analysis'}
+            {regenerating ? 'Generating...' : 'Generate Analysis'}
           </button>
         </div>
       )}
@@ -212,7 +212,7 @@ export default function FinancialReportView({ report, userId }: Props) {
           {parsed.watchPoints && parsed.watchPoints.length > 0 && (
             <div style={{ background: 'rgba(236,198,102,0.06)', border: '1px solid rgba(236,198,102,0.2)', borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
               <p style={{ color: '#ECC666', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
-                ⚠ Watch points
+                Watch points
               </p>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {parsed.watchPoints.map((wp, i) => (
@@ -282,7 +282,7 @@ export default function FinancialReportView({ report, userId }: Props) {
               disabled={regenerating}
               style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 6, padding: '4px 12px', fontSize: 11, cursor: regenerating ? 'not-allowed' : 'pointer' }}
             >
-              {regenerating ? '⏳ Regenerating...' : '↻ Regenerate'}
+              {regenerating ? 'Regenerating...' : '↻ Regenerate'}
             </button>
           </div>
         </>

@@ -4,6 +4,7 @@ import AddPatternForm from '@/components/operating-manual/AddPatternForm'
 import TrajectoryForecast from '@/components/operating-manual/TrajectoryForecast'
 import PatternsList from '@/components/operating-manual/PatternsList'
 import AutoPatternRefresh from '@/components/operating-manual/AutoPatternRefresh'
+import { Settings } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,16 +24,16 @@ const DOMAIN_NORMALIZE = (domain: string): string => {
   }
 }
 
-const DISPLAY_META: Record<string, { color: string; icon: string }> = {
-  'Fitness':              { color: '#7FD5AA', icon: '💪' },
-  'Learning':             { color: '#80BDFF', icon: '🧠' },
-  'Meals':                { color: '#ECC666', icon: '🥗' },
-  'Planning & Execution': { color: '#B8A4FF', icon: '🗓️' },
-  'Time Use':             { color: '#F5A56A', icon: '📅' },
+const DISPLAY_META: Record<string, { color: string }> = {
+  'Fitness':              { color: '#7FD5AA' },
+  'Learning':             { color: '#80BDFF' },
+  'Meals':                { color: '#ECC666' },
+  'Planning & Execution': { color: '#B8A4FF' },
+  'Time Use':             { color: '#F5A56A' },
 }
 
 function getMeta(displayDomain: string) {
-  return DISPLAY_META[displayDomain] ?? { color: '#6E6E73', icon: '◈' }
+  return DISPLAY_META[displayDomain] ?? { color: '#6E6E73' }
 }
 
 // ─── Bullet text renderer ─────────────────────────────────────────────────────
@@ -174,7 +175,7 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
               <div key={domain}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                   <span style={{ fontSize: 11, fontWeight: 600, color: '#A1A1A6' }}>
-                    {meta.icon} {domain}
+                    {domain}
                   </span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: meta.color, fontVariantNumeric: 'tabular-nums' }}>
                     {count}
@@ -290,7 +291,7 @@ export default async function OperatingManualPage() {
         </h1>
         <div className="card" style={{ background: 'rgba(236,198,102,0.07)', border: '1px solid rgba(236,198,102,0.25)' }}>
           <p style={{ color: '#ECC666', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
-            ⚠ Database migration in progress
+            Database migration in progress
           </p>
           <p style={{ color: '#6E6E73', fontSize: 13 }}>
             New schema columns are being applied. Please refresh the page in a few seconds.
@@ -335,7 +336,7 @@ export default async function OperatingManualPage() {
         </div>
 
         <div className="card" style={{ textAlign: 'center', padding: '56px 24px', marginBottom: 24 }}>
-          <div style={{ fontSize: 40, marginBottom: 14 }}>⚙️</div>
+          <div style={{ marginBottom: 14, color: '#6E6E73', display: 'flex', justifyContent: 'center' }}><Settings size={40} /></div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 8 }}>
             Analyzing your behavioral patterns…
           </div>
@@ -389,7 +390,6 @@ export default async function OperatingManualPage() {
               return {
                 displayDomain,
                 color: meta.color,
-                icon: meta.icon,
                 patterns: patternsByDisplay[displayDomain],
               }
             })}

@@ -20,9 +20,9 @@ interface Props {
 // ─── Colours ──────────────────────────────────────────────────────────────────
 
 const STATUS_CFG = {
-  thriving:  { label: 'Thriving',  color: '#7FD5AA', bg: 'rgba(127,213,170,0.12)',  border: 'rgba(127,213,170,0.3)',  icon: '⚡' },
+  thriving:  { label: 'Thriving',  color: '#7FD5AA', bg: 'rgba(127,213,170,0.12)',  border: 'rgba(127,213,170,0.3)',  icon: '▲' },
   stable:    { label: 'Stable',    color: '#80BDFF', bg: 'rgba(128,189,255,0.12)',   border: 'rgba(128,189,255,0.3)',   icon: '●' },
-  watch:     { label: 'Watch',     color: '#ECC666', bg: 'rgba(236,198,102,0.12)',   border: 'rgba(236,198,102,0.3)',   icon: '⚠' },
+  watch:     { label: 'Watch',     color: '#ECC666', bg: 'rgba(236,198,102,0.12)',   border: 'rgba(236,198,102,0.3)',   icon: '!' },
   risk:      { label: 'Risk',      color: '#F5A56A', bg: 'rgba(245,165,106,0.12)',   border: 'rgba(245,165,106,0.3)',   icon: '▲' },
   recovery:  { label: 'Recovery',  color: '#FF9B87', bg: 'rgba(255,155,135,0.12)',  border: 'rgba(255,155,135,0.3)',  icon: '↻' },
 } as const
@@ -253,7 +253,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
           )}
           {data.snapshot.risks.length > 0 && (
             <div>
-              <p style={{ color: '#ECC666', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>⚠ Risks</p>
+              <p style={{ color: '#ECC666', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Risks</p>
               <BulletList items={data.snapshot.risks} color="#ECC666" />
             </div>
           )}
@@ -396,10 +396,10 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
             ))}
           </div>
           {data.antiDrift.advancementPct < 30 && (
-            <p style={{ color: '#ECC666', fontSize: 12 }}>⚠ Less than 30% of effort went to advancement — add 2 advancement blocks next week</p>
+            <p style={{ color: '#ECC666', fontSize: 12 }}>Less than 30% of effort went to advancement — add 2 advancement blocks next week</p>
           )}
           {data.antiDrift.busyworkPct > 25 && (
-            <p style={{ color: '#FF9B87', fontSize: 12 }}>⚠ High busywork ({data.antiDrift.busyworkPct}%) — review if these tasks are goal-linked</p>
+            <p style={{ color: '#FF9B87', fontSize: 12 }}>High busywork ({data.antiDrift.busyworkPct}%) — review if these tasks are goal-linked</p>
           )}
         </div>
       )}
@@ -443,7 +443,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
             disabled={analyzing}
             style={{ background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.35)', color: '#B8A4FF', borderRadius: 10, padding: '12px 28px', fontSize: 14, fontWeight: 700, cursor: analyzing ? 'not-allowed' : 'pointer' }}
           >
-            {analyzing ? '⏳ Analyzing with AI…' : '✦ Generate AI Analysis'}
+            {analyzing ? 'Analyzing with AI…' : 'Generate AI Analysis'}
           </button>
           <p style={{ color: '#6E6E73', fontSize: 12, marginTop: 8 }}>
             Generates task patterns, next week plan, system adjustments

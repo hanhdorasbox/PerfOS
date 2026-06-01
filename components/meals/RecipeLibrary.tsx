@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { ThumbsUp, ThumbsDown, Utensils, Archive } from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -25,14 +26,14 @@ interface DbIngredient { name: string; kcal: number; protein: number; carbs: num
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const MEAL_TYPES = [
-  { value: 'breakfast', label: 'Breakfast', emoji: '🌅' },
-  { value: 'lunch', label: 'Lunch', emoji: '☀️' },
-  { value: 'dinner', label: 'Dinner', emoji: '🌙' },
-  { value: 'snack', label: 'Snack', emoji: '🍎' },
-  { value: 'pre_workout', label: 'Pre-workout', emoji: '⚡' },
-  { value: 'post_workout', label: 'Post-workout', emoji: '💪' },
-  { value: 'meal_prep', label: 'Meal prep', emoji: '📦' },
-  { value: 'other', label: 'Other', emoji: '🍽️' },
+  { value: 'breakfast',   label: 'Breakfast' },
+  { value: 'lunch',       label: 'Lunch' },
+  { value: 'dinner',      label: 'Dinner' },
+  { value: 'snack',       label: 'Snack' },
+  { value: 'pre_workout', label: 'Pre-workout' },
+  { value: 'post_workout',label: 'Post-workout' },
+  { value: 'meal_prep',   label: 'Meal prep' },
+  { value: 'other',       label: 'Other' },
 ]
 
 const UNITS = ['g', 'ml', 'piece', 'tbsp', 'tsp', 'cup', 'handful', 'slice', 'scoop']
@@ -61,7 +62,6 @@ function parseTags(tags: string | null): string[] {
   try { return JSON.parse(tags) } catch { return [] }
 }
 
-function getMealTypeEmoji(type: string) { return MEAL_TYPES.find(t => t.value === type)?.emoji ?? '🍽️' }
 function getMealTypeLabel(type: string) { return MEAL_TYPES.find(t => t.value === type)?.label ?? type }
 
 // ─── Macro pill ───────────────────────────────────────────────────────────────
@@ -93,14 +93,14 @@ function RecipeCard({ recipe, onView, onEdit, onDelete }: {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', marginBottom: 2, lineHeight: 1.3 }}>{recipe.name}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 11, color: '#6E6E73' }}>{getMealTypeEmoji(recipe.mealType)} {getMealTypeLabel(recipe.mealType)}</span>
+            <span style={{ fontSize: 11, color: '#6E6E73' }}>{getMealTypeLabel(recipe.mealType)}</span>
             {recipe.isMealPrep && <span style={{ fontSize: 10, color: '#B8A4FF', background: 'rgba(184,164,255,0.1)', border: '1px solid rgba(184,164,255,0.2)', borderRadius: 4, padding: '1px 6px' }}>Meal prep</span>}
             {totalMin > 0 && <span style={{ fontSize: 10, color: '#6E6E73' }}>• {totalMin} min</span>}
             {recipe.portions > 1 && <span style={{ fontSize: 10, color: '#6E6E73' }}>• {recipe.portions} portions</span>}
           </div>
         </div>
-        {recipe.liked === true && <span style={{ fontSize: 14 }}>❤️</span>}
-        {recipe.liked === false && <span style={{ fontSize: 14 }}>👎</span>}
+        {recipe.liked === true && <ThumbsUp size={13} color="#7FD5AA" />}
+        {recipe.liked === false && <ThumbsDown size={13} color="#FF9B87" />}
       </div>
 
       {/* Macros per portion */}
@@ -313,7 +313,7 @@ function RecipeForm({ initial, userId, onSave, onCancel }: {
         <div>
           <label style={labelStyle}>Meal type *</label>
           <select value={mealType} onChange={e => setMealType(e.target.value)} style={{ ...inputStyle }}>
-            {MEAL_TYPES.map(t => <option key={t.value} value={t.value}>{t.emoji} {t.label}</option>)}
+            {MEAL_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
         </div>
         <div>
@@ -351,8 +351,8 @@ function RecipeForm({ initial, userId, onSave, onCancel }: {
         </label>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, color: '#A1A1A6' }}>
           <span>Like?</span>
-          <button onClick={() => setLiked(liked === true ? null : true)} style={{ background: liked === true ? 'rgba(127,213,170,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${liked === true ? 'rgba(127,213,170,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 6, padding: '3px 8px', cursor: 'pointer', fontSize: 12 }}>❤️</button>
-          <button onClick={() => setLiked(liked === false ? null : false)} style={{ background: liked === false ? 'rgba(255,155,135,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${liked === false ? 'rgba(255,155,135,0.2)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 6, padding: '3px 8px', cursor: 'pointer', fontSize: 12 }}>👎</button>
+          <button onClick={() => setLiked(liked === true ? null : true)} style={{ background: liked === true ? 'rgba(127,213,170,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${liked === true ? 'rgba(127,213,170,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 6, padding: '3px 8px', cursor: 'pointer', fontSize: 12 }}><ThumbsUp size={12} /></button>
+          <button onClick={() => setLiked(liked === false ? null : false)} style={{ background: liked === false ? 'rgba(255,155,135,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${liked === false ? 'rgba(255,155,135,0.2)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 6, padding: '3px 8px', cursor: 'pointer', fontSize: 12 }}><ThumbsDown size={12} /></button>
         </div>
       </div>
 
@@ -461,9 +461,9 @@ function RecipeDetail({ recipe, onEdit, onBack }: { recipe: Recipe; onEdit: () =
       <div style={{ marginBottom: 16 }}>
         <h2 style={{ fontSize: 20, fontWeight: 800, color: '#F5F5F7', margin: '0 0 6px' }}>{recipe.name}</h2>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ fontSize: 13, color: '#6E6E73' }}>{getMealTypeEmoji(recipe.mealType)} {getMealTypeLabel(recipe.mealType)}</span>
+          <span style={{ fontSize: 13, color: '#6E6E73' }}>{getMealTypeLabel(recipe.mealType)}</span>
           {totalMin > 0 && <span style={{ fontSize: 12, color: '#6E6E73' }}>⏱ {totalMin} min total</span>}
-          {p > 1 && <span style={{ fontSize: 12, color: '#6E6E73' }}>🍽️ {p} portions</span>}
+          {p > 1 && <span style={{ fontSize: 12, color: '#6E6E73', display: 'inline-flex', alignItems: 'center', gap: 3 }}><Utensils size={11} />{p} portions</span>}
           {recipe.difficulty && <span style={{ fontSize: 11, color: '#B8A4FF', background: 'rgba(184,164,255,0.08)', border: '1px solid rgba(184,164,255,0.15)', borderRadius: 4, padding: '1px 7px' }}>{recipe.difficulty}</span>}
           {recipe.isMealPrep && <span style={{ fontSize: 11, color: '#7FD5AA', background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 4, padding: '1px 7px' }}>Meal prep ✓</span>}
           {recipe.storageDays && <span style={{ fontSize: 11, color: '#6E6E73' }}>Stores {recipe.storageDays}d</span>}
@@ -622,10 +622,10 @@ export default function RecipeLibrary({ userId }: { userId: string }) {
         />
         <select value={filterType} onChange={e => setFilterType(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#A1A1A6', fontSize: 12, padding: '6px 10px', outline: 'none' }}>
           <option value="all">All types</option>
-          {MEAL_TYPES.map(t => <option key={t.value} value={t.value}>{t.emoji} {t.label}</option>)}
+          {MEAL_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
         </select>
         <button onClick={() => setFilterPrep(!filterPrep)} style={{ padding: '6px 12px', background: filterPrep ? 'rgba(184,164,255,0.12)' : 'rgba(255,255,255,0.04)', border: `1px solid ${filterPrep ? 'rgba(184,164,255,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, color: filterPrep ? '#B8A4FF' : '#6E6E73', fontSize: 12, cursor: 'pointer', fontWeight: filterPrep ? 700 : 400 }}>
-          📦 Meal prep
+          <Archive size={12} style={{ marginRight: 5 }} /> Meal prep
         </button>
       </div>
 
@@ -641,7 +641,7 @@ export default function RecipeLibrary({ userId }: { userId: string }) {
         </div>
       ) : filtered.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>🍽️</div>
+          <div style={{ marginBottom: 12, color: '#6E6E73', display: 'flex', justifyContent: 'center' }}><Utensils size={32} /></div>
           <div style={{ fontSize: 14, color: '#6E6E73', marginBottom: 16 }}>
             {recipes.length === 0 ? 'No recipes yet. Add your first recipe to get started.' : 'No recipes match your filters.'}
           </div>

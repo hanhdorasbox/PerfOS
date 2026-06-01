@@ -3,6 +3,7 @@ import MealPlanView from '@/components/meals/MealPlanView'
 import FoodPreferencesEditor from '@/components/meals/FoodPreferencesEditor'
 import MealPlanStarter from '@/components/meals/MealPlanStarter'
 import PastMealPlans from '@/components/meals/PastMealPlans'
+import { BookOpen } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -70,7 +71,7 @@ export default async function MealsPage() {
             href="/meals/recipes"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 8, color: '#7FD5AA', fontSize: 13, textDecoration: 'none', fontWeight: 600, flexShrink: 0 }}
           >
-            📖 Recipe Library
+            <BookOpen size={13} /> Recipe Library
           </a>
         </div>
       </div>
