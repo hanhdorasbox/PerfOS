@@ -72,6 +72,28 @@ const TABS: { id: Tab; label: string; Icon: LucideIcon }[] = [
 
 interface Props { goal: GoalFull }
 
+// ── Helper: add step to this week's plan ─────────────────────────────────────
+async function addStepToWeek(userId: string, step: StepFull): Promise<boolean> {
+  try {
+    const effort = step.estimatedMinutes <= 30 ? 1 : step.estimatedMinutes <= 60 ? 2 : 3
+    const res = await fetch('/api/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId,
+        title: step.title,
+        effort,
+        priority: 2,
+        taskType: 'learning',
+        sourceModule: 'learning',
+        sourceId: step.id,
+        createdBy: 'user',
+      }),
+    })
+    return res.ok
+  } catch { return false }
+}
+
 export default function RoadmapDetailView({ goal: initialGoal }: Props) {
   const router = useRouter()
   const [goal, setGoal] = useState(initialGoal)
@@ -448,6 +470,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
                     isGoalCompleted={goal.status === 'completed'}
                     onRegenerate={regenerateRoadmap}
                     regenerating={regenerating}
+                    userId={goal.userId}
                   />
                 ))}
               </div>
@@ -555,7 +578,7 @@ function StrategicPhaseCard({ phase, index, color }: { phase: StrategicPhase; in
 
 function MilestoneCard({
   milestone, phaseColor, isExpanded, onToggle, onCompleteStep, onCompleteMilestone,
-  isGoalCompleted, onRegenerate, regenerating,
+  isGoalCompleted, onRegenerate, regenerating, userId,
 }: {
   milestone: MilestoneFull
   phaseColor: string
@@ -566,6 +589,7 @@ function MilestoneCard({
   isGoalCompleted: boolean
   onRegenerate?: () => void
   regenerating?: boolean
+  userId: string
 }) {
   const completedSteps = milestone.steps.filter(s => s.completed).length
   const totalSteps = milestone.steps.length
@@ -605,7 +629,7 @@ function MilestoneCard({
           {milestone.steps.length > 0 ? (
             <div style={{ display: 'grid', gap: 6 }}>
               {milestone.steps.map(step => (
-                <StepRow key={step.id} step={step} onComplete={() => onCompleteStep(step.id, milestone.id)} isGoalCompleted={isGoalCompleted || milestone.completed} />
+                <StepRow key={step.id} step={step} onComplete={() => onCompleteStep(step.id, milestone.id)} isGoalCompleted={isGoalCompleted || milestone.completed} userId={userId} />
               ))}
             </div>
           ) : (
@@ -631,10 +655,19 @@ function MilestoneCard({
 
 // ── Step Row ──────────────────────────────────────────────────────────────────
 
-function StepRow({ step, onComplete, isGoalCompleted }: { step: StepFull; onComplete: () => void; isGoalCompleted: boolean }) {
+function StepRow({ step, onComplete, isGoalCompleted, userId }: { step: StepFull; onComplete: () => void; isGoalCompleted: boolean; userId: string }) {
   const [showCriteria, setShowCriteria] = useState(false)
+  const [addState, setAddState] = useState<'idle' | 'adding' | 'added'>('idle')
   const StepIcon = stepTypeIcon[step.stepType] ?? Zap
   const color = stepTypeColor[step.stepType] ?? '#7FD5AA'
+
+  async function handleAddToWeek() {
+    setAddState('adding')
+    const ok = await addStepToWeek(userId, step)
+    setAddState(ok ? 'added' : 'idle')
+    if (ok) setTimeout(() => setAddState('idle'), 3000)
+  }
+
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '9px 12px', background: step.completed ? 'rgba(127,213,170,0.04)' : 'rgba(255,255,255,0.02)', borderRadius: 8, border: `1px solid ${step.completed ? 'rgba(127,213,170,0.15)' : 'rgba(255,255,255,0.05)'}` }}>
       <span style={{ flexShrink: 0, marginTop: 1, color }}><StepIcon size={14} /></span>
@@ -659,11 +692,32 @@ function StepRow({ step, onComplete, isGoalCompleted }: { step: StepFull; onComp
               </div>
             )}
           </div>
-          {!step.completed && !isGoalCompleted && (
-            <button onClick={onComplete} style={{ background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.25)', color: '#7FD5AA', padding: '3px 10px', borderRadius: 5, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
-              Done
-            </button>
-          )}
+          <div style={{ display: 'flex', gap: 6, flexShrink: 0, alignItems: 'center' }}>
+            {/* Add to week button — only for incomplete steps */}
+            {!step.completed && !isGoalCompleted && (
+              <button
+                onClick={handleAddToWeek}
+                disabled={addState === 'adding'}
+                title="Add to this week's plan"
+                style={{
+                  background: addState === 'added' ? 'rgba(127,213,170,0.12)' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${addState === 'added' ? 'rgba(127,213,170,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                  color: addState === 'added' ? '#7FD5AA' : '#6E6E73',
+                  padding: '3px 8px', borderRadius: 5, fontSize: 10, fontWeight: 600,
+                  cursor: addState === 'adding' ? 'wait' : 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  transition: 'all 0.15s',
+                }}
+              >
+                {addState === 'added' ? <>✓ Added</> : addState === 'adding' ? '…' : '+ Week'}
+              </button>
+            )}
+            {!step.completed && !isGoalCompleted && (
+              <button onClick={onComplete} style={{ background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.25)', color: '#7FD5AA', padding: '3px 10px', borderRadius: 5, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                Done
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

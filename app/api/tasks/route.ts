@@ -14,7 +14,7 @@ function getWeekBounds() {
 }
 
 export async function POST(req: NextRequest) {
-  const { weeklyPlanId, userId, title, effort, goalId, priority, sourceModule, sourceId, createdBy } = await req.json()
+  const { weeklyPlanId, userId, title, effort, goalId, priority, sourceModule, sourceId, createdBy, taskType } = await req.json()
 
   let planId = weeklyPlanId as string | undefined
 
@@ -53,6 +53,14 @@ export async function POST(req: NextRequest) {
     planId = plan.id
   }
 
+  // Dedup: if sourceId is given, return existing task in this plan instead of creating a duplicate
+  if (sourceId) {
+    const existing = await prisma.weeklyTask.findFirst({
+      where: { weeklyPlanId: planId, sourceModule: sourceModule ?? null, sourceId },
+    })
+    if (existing) return NextResponse.json(existing)
+  }
+
   const task = await prisma.weeklyTask.create({
     data: {
       weeklyPlanId: planId,
@@ -61,6 +69,7 @@ export async function POST(req: NextRequest) {
       priority: Number(priority) || 2,
       goalId: goalId || null,
       completed: false,
+      taskType: taskType || null,
       sourceModule: sourceModule || (goalId ? 'goal' : null),
       sourceId: sourceId || goalId || null,
       createdBy: createdBy || 'user',

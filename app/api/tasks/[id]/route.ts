@@ -19,6 +19,21 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     data: { completed, completedAt: completed ? new Date() : null },
   })
 
+  // Bidirectional sync: if task is linked to a LearningStep, sync completion
+  if (task.sourceModule === 'learning' && task.sourceId) {
+    if (completed) {
+      await prisma.learningStep.updateMany({
+        where: { id: task.sourceId, completed: false },
+        data: { completed: true, completedAt: new Date() },
+      }).catch(() => {})
+    } else {
+      await prisma.learningStep.updateMany({
+        where: { id: task.sourceId, completed: true },
+        data: { completed: false, completedAt: null },
+      }).catch(() => {})
+    }
+  }
+
   // Auto-create WorkItem for anti-drift when completing (not uncompleting)
   if (completed) {
     const domain =

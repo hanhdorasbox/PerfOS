@@ -232,6 +232,48 @@ Requirements:
       },
     })
 
+    // ── Auto-generate WeeklyTasks for Phase 1 first milestone's steps ──────────
+    try {
+      const weeklyPlan = await prisma.weeklyPlan.findFirst({
+        where: { status: 'active', quarter: { userId: goal.userId, status: 'active' } },
+        orderBy: { weekStart: 'desc' },
+      })
+
+      if (weeklyPlan) {
+        // Get first phase milestones sorted by order
+        const firstPhaseName = strategicRoadmap?.phases?.[0]?.name ?? null
+        const firstMilestone = await prisma.learningMilestone.findFirst({
+          where: { capabilityGoalId: id, ...(firstPhaseName ? { phaseName: firstPhaseName } : {}) },
+          include: { steps: { orderBy: { order: 'asc' } } },
+          orderBy: { order: 'asc' },
+        })
+
+        if (firstMilestone?.steps?.length) {
+          for (const step of firstMilestone.steps) {
+            // Dedup: skip if already exists for this step in this plan
+            const existing = await prisma.weeklyTask.findFirst({
+              where: { weeklyPlanId: weeklyPlan.id, sourceModule: 'learning', sourceId: step.id },
+            })
+            if (!existing) {
+              const effort = step.estimatedMinutes <= 30 ? 1 : step.estimatedMinutes <= 60 ? 2 : 3
+              await prisma.weeklyTask.create({
+                data: {
+                  weeklyPlanId: weeklyPlan.id,
+                  title: step.title,
+                  effort,
+                  priority: 2,
+                  taskType: 'learning',
+                  sourceModule: 'learning',
+                  sourceId: step.id,
+                  createdBy: 'system',
+                },
+              })
+            }
+          }
+        }
+      }
+    } catch { /* Don't fail roadmap generation if task creation errors */ }
+
     return NextResponse.json({ count: milestones.length })
   } catch (e: unknown) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Error' }, { status: 500 })
