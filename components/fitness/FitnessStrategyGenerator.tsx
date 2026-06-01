@@ -18,7 +18,6 @@ interface Props {
   quarterId?: string
   label?: string
   // Prefill values from existing tracked data
-  prefillWeight?: number | null
   prefillWaist?: number | null
   prefillTrainingFreq?: number | null
 }
@@ -67,7 +66,7 @@ function Field({ children }: { children: React.ReactNode }) {
   return <div style={{ display: 'flex', flexDirection: 'column' as const }}>{children}</div>
 }
 
-export default function FitnessStrategyGenerator({ userId, quarterId, label, prefillWeight, prefillWaist, prefillTrainingFreq }: Props) {
+export default function FitnessStrategyGenerator({ userId, quarterId, label, prefillWaist, prefillTrainingFreq }: Props) {
   const router = useRouter()
   const [expanded, setExpanded] = useState(!label)
   const [step, setStep] = useState(0)
@@ -84,11 +83,10 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
   }, [loading])
 
   // Section A — Current state
-  const [weight, setWeight] = useState(prefillWeight?.toString() ?? '')
   const [waist, setWaist] = useState(prefillWaist?.toString() ?? '')
   const [additionalMeasurements, setAdditionalMeasurements] = useState('')
   const [mainObjective, setMainObjective] = useState('')
-  const [changeType, setChangeType] = useState('') // weight-change | body-shape | performance | consistency
+  const [changeType, setChangeType] = useState('') // body-shape | performance | consistency | measurement-change
 
   // Section B — Previous quarter review
   const [plannedSessions, setPlannedSessions] = useState('')
@@ -114,7 +112,6 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
   const [cardioTypes, setCardioTypes] = useState('')
   const [cardioFreq, setCardioFreq] = useState('')
   const [walksRegularly, setWalksRegularly] = useState('') // yes | no
-  const [walkTarget, setWalkTarget] = useState('')
   const [walkingDays, setWalkingDays] = useState<string[]>([]) // which days
   const [walkingRole, setWalkingRole] = useState('') // tracked-cardio | recovery | step-target
   const [wantsSauna, setWantsSauna] = useState('') // yes | no | already-routine
@@ -131,7 +128,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
   const [secondaryMetrics, setSecondaryMetrics] = useState<string[]>([])
 
   const focusOptions = ['Lower body', 'Glutes', 'Core', 'Upper body', 'Full-body balanced', 'Strength emphasis', 'Hypertrophy focus']
-  const secondaryMetricOptions = ['Weight trend', 'Waist circumference', 'Strength progression', 'Training adherence', 'Cardio adherence', 'Protein adherence', 'Visual / body composition']
+  const secondaryMetricOptions = ['Waist circumference', 'Hip circumference', 'Strength progression', 'Training adherence', 'Cardio adherence', 'Protein adherence', 'Visual / body composition']
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
   const toggleFocus = (opt: string) => setTrainingFocus(prev => prev.includes(opt) ? prev.filter(x => x !== opt) : [...prev, opt])
@@ -152,18 +149,14 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
     <div key="A" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field>
-          <Label>Current weight (kg)</Label>
-          <input style={inputStyle} value={weight} onChange={e => setWeight(e.target.value)} placeholder="e.g. 72" />
-        </Field>
-        <Field>
           <Label>Current waist (cm)</Label>
           <input style={inputStyle} value={waist} onChange={e => setWaist(e.target.value)} placeholder="e.g. 74" />
         </Field>
+        <Field>
+          <Label>Other measurements (optional)</Label>
+          <input style={inputStyle} value={additionalMeasurements} onChange={e => setAdditionalMeasurements(e.target.value)} placeholder="e.g. hips 95cm" />
+        </Field>
       </div>
-      <Field>
-        <Label>Other measurements (optional)</Label>
-        <input style={inputStyle} value={additionalMeasurements} onChange={e => setAdditionalMeasurements(e.target.value)} placeholder="e.g. hips 95cm, chest 88cm" />
-      </Field>
       <Field>
         <Label>Main objective for this quarter</Label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -176,7 +169,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
       <Field>
         <Label>What type of change are you primarily after?</Label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {[['weight-change', 'Scale weight change'], ['body-shape', 'Body shape / composition'], ['performance', 'Performance / strength'], ['consistency', 'Routine consistency']].map(([val, lbl]) => (
+          {[['measurement-change', 'Measurement change (waist/hip)'], ['body-shape', 'Body shape / composition'], ['performance', 'Performance / strength'], ['consistency', 'Routine consistency']].map(([val, lbl]) => (
             <ChoiceButton key={val} label={lbl} selected={changeType === val} onClick={() => setChangeType(val)} />
           ))}
         </div>
@@ -205,7 +198,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
       </Field>
       <Field>
         <Label>Progress on body metrics</Label>
-        <input style={inputStyle} value={metricProgress} onChange={e => setMetricProgress(e.target.value)} placeholder="e.g. Waist down 2cm, weight stable" />
+        <input style={inputStyle} value={metricProgress} onChange={e => setMetricProgress(e.target.value)} placeholder="e.g. Waist down 2cm, training consistent" />
       </Field>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field>
@@ -333,10 +326,6 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
               ))}
             </div>
           </Field>
-          <Field>
-            <Label>Daily step target (optional)</Label>
-            <input style={inputStyle} value={walkTarget} onChange={e => setWalkTarget(e.target.value)} placeholder="e.g. 8000 steps" />
-          </Field>
         </>
       )}
       <Field>
@@ -395,11 +384,11 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
       <Field>
         <Label>Primary success metric for this quarter</Label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {['Waist circumference', 'Weight trend', 'Strength progression', 'Training adherence', 'Body composition (visual)'].map(opt => (
+          {['Waist circumference', 'Hip circumference', 'Strength progression', 'Training adherence', 'Body composition (visual)'].map(opt => (
             <ChoiceButton key={opt} label={opt} selected={primaryMetric === opt} onClick={() => setPrimaryMetric(opt)} />
           ))}
         </div>
-        <input style={{ ...inputStyle, marginTop: 8 }} value={['Waist circumference','Weight trend','Strength progression','Training adherence','Body composition (visual)'].includes(primaryMetric) ? '' : primaryMetric} onChange={e => setPrimaryMetric(e.target.value)} placeholder="Or type a custom metric..." />
+        <input style={{ ...inputStyle, marginTop: 8 }} value={['Waist circumference','Hip circumference','Strength progression','Training adherence','Body composition (visual)'].includes(primaryMetric) ? '' : primaryMetric} onChange={e => setPrimaryMetric(e.target.value)} placeholder="Or type a custom metric..." />
       </Field>
       <Field>
         <Label>Secondary metrics (select all relevant)</Label>
@@ -417,10 +406,10 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
     setError('')
     try {
       const intakeData = {
-        currentState: { weight, waist, additionalMeasurements, mainObjective, changeType },
+        currentState: { waist, additionalMeasurements, mainObjective, changeType },
         previousQuarter: { plannedSessions, actualSessions, cardioAdherence, metricProgress, sustainable, recoveryFelt, whatWorked, whatFailed, nextPlanDirection },
         trainingPreferences: { preferredFreq, maxFreq, sessionDuration, keepSplit, trainingFocus, limitations },
-        cardioMovementSauna: { wantsCardio, cardioTypes, cardioFreq, walksRegularly, walkingDays, walkingRole, walkTarget, wantsSauna, saunaRoutine },
+        cardioMovementSauna: { wantsCardio, cardioTypes, cardioFreq, walksRegularly, walkingDays, walkingRole, wantsSauna, saunaRoutine },
         nutrition: { nutritionStructure, caloricIntent, proteinConsistency, linkMealPlan },
         successMetrics: { primaryMetric, secondaryMetrics },
       }

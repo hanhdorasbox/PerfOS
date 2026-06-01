@@ -10,16 +10,11 @@ export async function POST(req: NextRequest) {
 
   if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 })
 
-  // Pull 90 days of historical data for context
+  // Pull 90 days of execution history — no body metrics
   const ninetyDaysAgo = new Date()
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90)
 
-  const [fitnessLogs, workoutLogs, previousStrategy, fitnessGoals] = await Promise.all([
-    prisma.fitnessLog.findMany({
-      where: { userId, date: { gte: ninetyDaysAgo } },
-      orderBy: { date: 'asc' },
-      take: 30,
-    }),
+  const [workoutLogs, previousStrategy, fitnessGoals] = await Promise.all([
     prisma.workoutLog.findMany({
       where: { userId, date: { gte: ninetyDaysAgo } },
       orderBy: { date: 'desc' },
@@ -36,18 +31,12 @@ export async function POST(req: NextRequest) {
     }),
   ])
 
-  const latestLog = fitnessLogs[fitnessLogs.length - 1]
-  const oldestLog = fitnessLogs[0]
-  const weightTrend = latestLog && oldestLog && latestLog.id !== oldestLog.id
-    ? `${oldestLog.weight ?? '?'}kg → ${latestLog.weight ?? '?'}kg over ${fitnessLogs.length} measurements`
-    : latestLog ? `Current: ${latestLog.weight ?? '?'}kg, waist: ${latestLog.waist ?? '?'}cm` : 'No body measurements in DB'
-
+  // Execution-based context — no body measurements
   const workoutFrequencyActual = workoutLogs.length > 0
     ? `${workoutLogs.length} sessions in last 90 days (avg ${(workoutLogs.length / 13).toFixed(1)}/week)`
-    : 'No workout logs'
+    : 'No workout history'
 
   const historicalContext = {
-    bodyMetricTrend: weightTrend,
     workoutFrequency: workoutFrequencyActual,
     previousStrategyObjective: previousStrategy?.mainObjective ?? null,
     previousStrategyStatus: previousStrategy?.status ?? null,
@@ -62,8 +51,9 @@ IMPORTANT: Only recommend what is justified by the user's actual stated inputs a
 - Do NOT recommend 4 sessions/week if the user said they prefer 3
 - Every major recommendation must have a clear reason tied to the user's goal, history, or constraints
 - If the user said "unsure" about nutrition, recommend a simple approach, not a complex one
-- Always use metric units: kilograms, centimetres, kilometres. Use Celsius (°C) for temperatures — never Fahrenheit.
-- WALKING: If the user walks on specific days (walkingDays), respect those days in the weekly schedule. If walkingRole is "tracked-cardio", include those walks as cardio sessions in the schedule. If "recovery", mark those days as "Walk (recovery)" in the schedule. If "step-target", reflect the walkTarget in cardioPlan.walkingTarget and don't block those days with heavy training. Preserve the user's walking rhythm.
+- Always use metric units: kilograms for loads, centimetres for distances. Use Celsius (°C) for temperatures — never Fahrenheit.
+- BODY METRICS: Do NOT base success metrics on body weight (kg) or waist/hip measurements. Fitness progress is measured by execution, adherence, performance, and consistency — not by scale or tape measure. Do NOT tell the user to "weigh yourself" or "measure your waist". trackingMetrics should be execution-based (sessions completed, adherence %, protein days hit, progressive overload, etc).
+- WALKING: If the user walks on specific days (walkingDays), respect those days in the weekly schedule. If walkingRole is "tracked-cardio", include those walks as cardio sessions. If "recovery", mark as "Walk (recovery)". Express walking as sessions/week (e.g. "5 walks/week"), never as a daily step count target. Preserve the user's walking rhythm.
 - WORKOUT PLAN: The workoutPlan must contain a SPECIFIC exercise for every planned strength day — not just muscle group labels. Include exact exercise names, sets, rep ranges. Select exercises appropriate for the split, focus priority, and user limitations. Include at least 5–7 exercises per day. Use compound lifts as primary movements and isolation as finishers.
 
 Return ONLY valid JSON, no markdown.`
@@ -79,6 +69,7 @@ ${JSON.stringify(historicalContext, null, 2)}
 Return JSON with this exact structure:
 {
   "mainObjective": "specific 1-sentence objective grounded in the intake",
+  "objectiveShort": "5-7 word strategic headline (e.g. '12-week body recomposition plan.')",
   "reasoning": "2-3 sentences explaining why this strategy is appropriate for this user",
   "strengthPlan": {
     "sessionsPerWeek": number,
@@ -93,7 +84,7 @@ Return JSON with this exact structure:
     "sessionsPerWeek": number or null,
     "type": "string or null",
     "duration": "string or null",
-    "walkingTarget": "string or null — e.g. 8000 steps/day if user mentioned walking",
+    "walkFrequency": "string or null — e.g. 5 walks/week if user walks regularly (sessions/week, not step count)",
     "notes": "string"
   },
   "saunaPlan": {
@@ -130,7 +121,7 @@ Return JSON with this exact structure:
     "cardio": "string or null",
     "sauna": "string or null",
     "protein": "string or null",
-    "bodyMetricCadence": "string — e.g. Weigh and measure waist every Sunday"
+    "weeklyCheckin": "string — e.g. Log energy and recovery rating after each session"
   },
   "roadmap": [
     {
@@ -174,7 +165,7 @@ Return JSON with this exact structure:
   "decisionRules": "string",
   "workoutPlan": {
     "progressionRule": "string — e.g. When you complete all reps in the top of the range with clean form across all sets, add 2.5 kg on compounds next session. Add 1.25 kg on isolation. If performance drops two sessions in a row, reduce load by 10% and rebuild.",
-    "trackingNote": "string — what to log every session, e.g. Track weight, sets and reps for all compound lifts. Note energy and form quality.",
+    "trackingNote": "string — what to log every session, e.g. Track load, sets and reps for all compound lifts. Note energy and form quality.",
     "days": [
       {
         "label": "Lower Body A",
@@ -273,6 +264,7 @@ IMPORTANT for workoutPlan:
         quarterId: quarterId ? String(quarterId) : null,
         status: 'draft',
         mainObjective: toStr(parsed.mainObjective) || 'Quarterly fitness objective',
+        objectiveShort: toStr(parsed.objectiveShort) || null,
         strengthPlan: JSON.stringify(parsed.strengthPlan ?? null),
         cardioPlan: JSON.stringify(parsed.cardioPlan ?? null),
         saunaPlan: JSON.stringify(parsed.saunaPlan ?? null),

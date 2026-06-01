@@ -55,17 +55,19 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
   const [saving, setSaving] = useState(false)
 
   async function handleRoleChange(newRole: string) {
-    setRole(newRole)
+    const prev = role // H2: remember for revert
+    setRole(newRole)  // optimistic
     setSaving(true)
     try {
-      await fetch(`/api/goals/${goal.id}/strategic-role`, {
+      const res = await fetch(`/api/goals/${goal.id}/strategic-role`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ strategicRole: newRole || null }),
       })
+      if (!res.ok) throw new Error('Save failed')
       router.refresh()
     } catch {
-      // silently fail; optimistic update already applied
+      setRole(prev) // H2: revert — user sees correct saved state
     } finally {
       setSaving(false)
     }

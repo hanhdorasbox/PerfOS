@@ -80,6 +80,10 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null)
+  // H5: milestone drafts for new MILESTONE goals
+  const [milestoneDrafts, setMilestoneDrafts] = useState<{ title: string; weight: number }[]>([
+    { title: '', weight: 25 }, { title: '', weight: 25 }, { title: '', weight: 25 }, { title: '', weight: 25 },
+  ])
 
   // Separate saving states so concurrent operations don't conflict
   const [savingProfile, setSavingProfile] = useState(false)
@@ -155,6 +159,23 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
     }
   }
 
+  // C4: Pause / resume goal so it stops triggering alerts without being deleted
+  const togglePause = async (goal: Goal) => {
+    const newStatus = goal.status === 'paused' ? 'active' : 'paused'
+    try {
+      const res = await fetch(`/api/goals/${goal.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      })
+      if (!res.ok) throw new Error('Failed to update status')
+      setGoals(prev => prev.map(g => g.id === goal.id ? { ...g, status: newStatus } : g))
+      flash(newStatus === 'paused' ? 'Goal paused — won\'t trigger alerts' : 'Goal resumed')
+    } catch (e) {
+      flash(e instanceof Error ? e.message : 'Failed', true)
+    }
+  }
+
   // Open edit form for existing goal
   const startEditGoal = (goal: Goal) => {
     setEditingGoal(goal)
@@ -214,11 +235,25 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
         })
         const data = await res.json() as Goal & { error?: string }
         if (!res.ok || data.error) throw new Error(data.error)
+
+        // H5: create milestones for MILESTONE-type goals
+        if (payload.trackingType === 'MILESTONE') {
+          const validMilestones = milestoneDrafts.filter(m => m.title.trim())
+          for (const m of validMilestones) {
+            await fetch('/api/milestones', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ goalId: data.id, title: m.title.trim(), weight: m.weight }),
+            }).catch(() => {}) // non-fatal
+          }
+        }
+
         setGoals(prev => [...prev, data])
         flash('Goal added ✓')
       }
 
       setForm(EMPTY_FORM)
+      setMilestoneDrafts([{ title: '', weight: 25 }, { title: '', weight: 25 }, { title: '', weight: 25 }, { title: '', weight: 25 }])
       setEditingGoal(null)
       setShowForm(false)
     } catch (e) {
@@ -427,12 +462,20 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                         {' '}· due {new Date(goal.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 6, marginLeft: 12 }}>
+                    <div style={{ display: 'flex', gap: 6, marginLeft: 12, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                       <button
                         onClick={() => startEditGoal(goal)}
                         style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: 'pointer' }}
                       >
                         Edit
+                      </button>
+                      {/* C4: Pause/Resume — stops false alerts without deleting */}
+                      <button
+                        onClick={() => togglePause(goal)}
+                        style={{ background: 'none', border: `1px solid ${goal.status === 'paused' ? 'rgba(127,213,170,0.25)' : 'rgba(255,255,255,0.1)'}`, color: goal.status === 'paused' ? '#7FD5AA' : '#6E6E73', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: 'pointer' }}
+                        title={goal.status === 'paused' ? 'Resume this goal' : 'Pause — stops alerts for this goal'}
+                      >
+                        {goal.status === 'paused' ? 'Resume' : 'Pause'}
                       </button>
                       <button
                         onClick={() => deleteGoal(goal.id)}
@@ -461,7 +504,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                 <input
                   required
                   style={inputStyle}
-                  placeholder="e.g. Lose 4 kg by end of quarter"
+                  placeholder="e.g. Complete 10 minimum effective weeks out of 12"
                   value={form.title}
                   onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
                 />
@@ -494,6 +537,16 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
               </div>
 
               {/* Tracking type */}
+              {/* Fitness goal guidance — execution-based, not weight-based */}
+              {(form.category === 'fitness' || form.category === 'health') && (
+                <div style={{ marginBottom: 14, padding: '8px 12px', background: 'rgba(127,213,170,0.06)', borderRadius: 8, border: '1px solid rgba(127,213,170,0.15)' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#7FD5AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Fitness goal ideas</div>
+                  <div style={{ fontSize: 11, color: '#6E6E73', lineHeight: 1.6 }}>
+                    Complete 10 minimum effective weeks · Hit protein 5×/week · Keep alcohol under weekly limit · 3 strength sessions/week at 80%+ adherence
+                  </div>
+                </div>
+              )}
+
               <div style={{ marginBottom: 14 }}>
                 <label style={labelStyle}>How to track progress</label>
                 <div style={{ display: 'flex', gap: 8 }}>
@@ -541,6 +594,36 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                   <div>
                     <label style={labelStyle}>Unit</label>
                     <input style={inputStyle} placeholder="kg / % / hrs" value={form.unit} onChange={e => setForm(p => ({ ...p, unit: e.target.value }))} />
+                  </div>
+                </div>
+              )}
+
+              {/* H5: Milestone editor — only for new MILESTONE goals */}
+              {form.trackingType === 'MILESTONE' && !editingGoal && (
+                <div style={{ marginBottom: 14 }}>
+                  <label style={labelStyle}>Milestones (add up to 4)</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {milestoneDrafts.map((m, i) => (
+                      <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <input
+                          style={{ ...inputStyle, flex: 1 }}
+                          placeholder={`Milestone ${i + 1} title`}
+                          value={m.title}
+                          onChange={e => setMilestoneDrafts(prev => prev.map((x, j) => j === i ? { ...x, title: e.target.value } : x))}
+                        />
+                        <input
+                          style={{ ...inputStyle, width: 60, textAlign: 'center' }}
+                          type="number" min="5" max="100" step="5"
+                          value={m.weight}
+                          onChange={e => setMilestoneDrafts(prev => prev.map((x, j) => j === i ? { ...x, weight: parseInt(e.target.value) || 25 } : x))}
+                          title="Weight %"
+                        />
+                        <span style={{ fontSize: 10, color: '#6E6E73', minWidth: 14 }}>%</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 4 }}>
+                    You can also add milestones after creation on the goal detail page.
                   </div>
                 </div>
               )}

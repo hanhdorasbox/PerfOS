@@ -124,7 +124,15 @@ function CollapsedDone({ tasks, onToggle, toggling }: { tasks: Task[]; onToggle:
   )
 }
 
-export default function TodayTasks({ tasks, weeklyPlanId }: { tasks: Task[]; weeklyPlanId?: string }) {
+export default function TodayTasks({
+  tasks,
+  weeklyPlanId,
+  userId,
+}: {
+  tasks: Task[]
+  weeklyPlanId?: string
+  userId?: string
+}) {
   const router = useRouter()
   const [, startTransition] = useTransition()
   const [toggling, setToggling] = useState<string | null>(null)
@@ -136,20 +144,34 @@ export default function TodayTasks({ tasks, weeklyPlanId }: { tasks: Task[]; wee
   const todo = tasks.filter(t => !t.completed)
   const done = tasks.filter(t => t.completed)
 
+  // Can add a task if we have either a direct planId or a userId to auto-create one
+  const canAdd = !!(weeklyPlanId || userId)
+
   async function toggleTask(id: string) {
     setToggling(id)
-    await fetch(`/api/tasks/${id}`, { method: 'PATCH' })
-    startTransition(() => router.refresh())
-    setToggling(null)
+    try {
+      const res = await fetch(`/api/tasks/${id}`, { method: 'PATCH' })
+      if (!res.ok) throw new Error('Toggle failed')
+      startTransition(() => router.refresh())
+    } catch {
+      // Silent — state resets on next refresh
+    } finally {
+      setToggling(null)
+    }
   }
 
   async function addTask() {
-    if (!newTitle.trim() || !weeklyPlanId) return
+    if (!newTitle.trim() || !canAdd) return
     setAdding(true)
     await fetch('/api/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ weeklyPlanId, title: newTitle.trim(), effort: newEffort }),
+      // Pass weeklyPlanId when known; otherwise pass userId so the API auto-creates the plan
+      body: JSON.stringify({
+        ...(weeklyPlanId ? { weeklyPlanId } : { userId }),
+        title: newTitle.trim(),
+        effort: newEffort,
+      }),
     })
     setNewTitle('')
     setShowAdd(false)
@@ -163,7 +185,7 @@ export default function TodayTasks({ tasks, weeklyPlanId }: { tasks: Task[]; wee
         <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73' }}>
           This Week — Tasks
         </div>
-        {weeklyPlanId && (
+        {canAdd && (
           <button
             onClick={() => setShowAdd(v => !v)}
             className="btn-motion"
@@ -231,8 +253,8 @@ export default function TodayTasks({ tasks, weeklyPlanId }: { tasks: Task[]; wee
             <div style={{ fontSize: 11, color: '#6E6E73' }}>
               All {done.length} task{done.length !== 1 ? 's' : ''} done.
             </div>
-            <a href="/quarterly" style={{ fontSize: 11, color: '#B8A4FF', textDecoration: 'none', display: 'block', marginTop: 2 }}>
-              Plan next week in Quarterly →
+            <a href="/weekly" style={{ fontSize: 11, color: '#B8A4FF', textDecoration: 'none', display: 'block', marginTop: 2 }}>
+              Plan next week →
             </a>
           </div>
           {/* Collapsed done list */}

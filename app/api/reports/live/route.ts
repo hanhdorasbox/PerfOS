@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+// H7: use shared thresholds so report status matches dashboard status
+import { calcMilestoneProgress, calcGoalStatus } from '@/lib/calculations'
 import type { GoalLive, WeekLiveData } from '@/lib/types/reports'
 
 // Re-export so any existing imports still work
@@ -19,13 +21,7 @@ function getWeekBounds(now: Date) {
   return { weekStart, weekEnd }
 }
 
-function goalStatus(gap: number): GoalLive['status'] {
-  if (gap >= 10) return 'ahead'
-  if (gap >= -5) return 'on_track'
-  if (gap >= -15) return 'watch'
-  if (gap >= -30) return 'at_risk'
-  return 'critical'
-}
+// H7: removed local goalStatus — use calcGoalStatus from lib so thresholds match dashboard
 
 // ─── Compute ──────────────────────────────────────────────────────────────────
 
@@ -95,15 +91,19 @@ async function compute(userId: string, weekStart: Date, weekEnd: Date): Promise<
           weekDelta = Math.round(((goal.currentValue - weekStartVal) / range) * 100)
         }
       } else if (goal.trackingType === 'MILESTONE') {
-        const total = goal.milestones.length || 1
-        const done = goal.milestones.filter(m => m.completed).length
-        currentPct = Math.round((done / total) * 100)
-        const weekDone = goal.milestones.filter(m => m.completed && m.completedAt && m.completedAt >= weekStart).length
-        weekDelta = Math.round((weekDone / total) * 100)
+        // C3: use weighted milestone progress (consistent with dashboard)
+        currentPct = Math.round(calcMilestoneProgress(goal.milestones))
+        const totalWeight = goal.milestones.reduce((s: number, m: { weight: number }) => s + m.weight, 0) || 1
+        const weekDoneWeight = goal.milestones
+          .filter((m: { completed: boolean; completedAt: Date | null; weight: number }) => m.completed && m.completedAt && m.completedAt >= weekStart)
+          .reduce((s: number, m: { weight: number }) => s + m.weight, 0)
+        weekDelta = Math.round((weekDoneWeight / totalWeight) * 100)
       }
 
       const gap = currentPct - expectedPct
-      const status = goalStatus(gap)
+      // H7: shared thresholds; cast to GoalLive.status (doesn't include 'completed'/'paused')
+      const rawStatus = calcGoalStatus(gap)
+      const status = (rawStatus === 'completed' || rawStatus === 'paused' ? 'on_track' : rawStatus) as GoalLive['status']
       if (status === 'ahead') goalsAhead++
       if (status === 'at_risk' || status === 'critical') goalsAtRisk++
 

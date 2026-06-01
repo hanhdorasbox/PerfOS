@@ -17,6 +17,12 @@ export default async function Dashboard() {
     )
   }
 
+  // Current week bounds — ensures we only load THIS week's plan (H1)
+  const _now = new Date()
+  const _dow = _now.getDay()
+  const _mon = new Date(_now); _mon.setDate(_now.getDate() - (_dow === 0 ? 6 : _dow - 1)); _mon.setHours(0,0,0,0)
+  const _sun = new Date(_mon); _sun.setDate(_mon.getDate() + 6); _sun.setHours(23,59,59,999)
+
   const quarter = await prisma.quarter.findFirst({
     where: { userId: user.id, status: 'active' },
     include: {
@@ -28,18 +34,13 @@ export default async function Dashboard() {
         },
       },
       weeklyPlans: {
-        where: { status: 'active' },
+        // H1: current week only — avoids stale tasks from previous unclosed plans
+        where: { status: 'active', weekStart: { gte: _mon, lte: _sun } },
         include: { tasks: { include: { goal: true } } },
         orderBy: { weekStart: 'desc' },
         take: 1,
       },
     },
-  })
-
-  const fitnessLogs = await prisma.fitnessLog.findMany({
-    where: { userId: user.id },
-    orderBy: { date: 'desc' },
-    take: 3,
   })
 
   // Use most recently created strategy (draft or active) — a fresh draft overrides an older active
@@ -63,7 +64,10 @@ export default async function Dashboard() {
     orderBy: { weekStart: 'desc' },
   })
 
-  const todayMeals = todayMealPlan?.meals.filter(m => m.dayOfWeek === todayDayOfWeek) ?? []
+  const todayMeals    = todayMealPlan?.meals.filter(m => m.dayOfWeek === todayDayOfWeek) ?? []
+  // H6: tomorrow's meals (was always [] before)
+  const tomorrowDayOfWeek = (todayDayOfWeek + 1) % 7
+  const tomorrowMeals = todayMealPlan?.meals.filter(m => m.dayOfWeek === tomorrowDayOfWeek) ?? []
 
   // Daily briefing (cached for today)
   const todayStr = new Date().toISOString().split('T')[0]
@@ -92,22 +96,37 @@ export default async function Dashboard() {
     } else if (goal.trackingType === 'MILESTONE') {
       progressPct = calcMilestoneProgress(goal.milestones)
     }
+    // C1: use goal.createdAt as start (not quarter start) — goals created mid-quarter
+    // had wrong expected% and velocity when quarter.startDate was used.
+    // C2: mark goals with no data so alert filtering can exclude them.
+    const hasData = goal.trackingType === 'QUANTITATIVE'
+      ? goal.currentValue != null
+      : goal.milestones.length > 0
     const metrics = calcGoalMetrics({
-      startDate: quarter.startDate,
+      startDate: goal.createdAt,
       deadline: goal.deadline,
       progressPct,
       progressHistory: goal.progressUpdates.map(u => ({ loggedAt: u.loggedAt, pct: u.value })),
     })
-    return { ...goal, progressPct, metrics }
+    return { ...goal, progressPct, hasData, metrics }
   })
 
   const qProgress = getQuarterProgress(quarter.startDate, quarter.endDate)
   const totalWeight = goalsWithMetrics.reduce((s, g) => s + g.priorityWeight, 0)
   const weightedCompletion = goalsWithMetrics.reduce((sum, g) => sum + g.progressPct * g.priorityWeight, 0) / Math.max(1, totalWeight)
 
-  const alerts = goalsWithMetrics.filter(
-    g => g.metrics.status === 'critical' || g.metrics.status === 'at_risk'
+  // C2: skip goals with no data (false critical for brand-new QUANTITATIVE goals)
+  // C4: skip paused goals
+  // M6: include 'watch' as an early-warning tier
+  const alerts = goalsWithMetrics.filter(g =>
+    g.hasData &&
+    g.status !== 'paused' &&
+    (g.metrics.status === 'critical' || g.metrics.status === 'at_risk' || g.metrics.status === 'watch')
   )
+
+  // M10: health counts for QuarterOverview
+  const atRiskCount  = goalsWithMetrics.filter(g => g.hasData && (g.metrics.status === 'at_risk' || g.metrics.status === 'critical')).length
+  const watchCount   = goalsWithMetrics.filter(g => g.hasData && g.metrics.status === 'watch').length
 
   const currentWeekPlan = quarter.weeklyPlans[0]
   const weekTasks = currentWeekPlan?.tasks ?? []
@@ -137,8 +156,7 @@ export default async function Dashboard() {
         tasks={weekTasks}
         strategy={activeStrategy}
         todayMeals={todayMeals}
-        tomorrowMeals={[]}
-        fitnessLog={fitnessLogs[0] ?? null}
+        tomorrowMeals={tomorrowMeals}
         userId={user.id}
         quarterName={quarter.name}
         weeklyPlanId={weeklyPlanId}
@@ -172,6 +190,8 @@ export default async function Dashboard() {
             qProgress={qProgress}
             weightedCompletion={weightedCompletion}
             goalCount={quarter.goals.length}
+            atRiskCount={atRiskCount}
+            watchCount={watchCount}
           />
         </div>
 

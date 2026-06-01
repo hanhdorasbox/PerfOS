@@ -11,23 +11,23 @@ export default function ProgressLogger({ goalId, unit, trackingType }: { goalId:
   const [open, setOpen] = useState(false)
 
   async function save() {
-    if (!value.trim()) return
+    const isMilestone = trackingType === 'MILESTONE'
+    if (!isMilestone && !value.trim()) return
     setSaving(true)
     await fetch(`/api/goals/${goalId}/progress`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ value: parseFloat(value), note: note.trim() || null }),
+      // H3: for MILESTONE, pass 0 as value (ignored by route since milestones drive %)
+      body: JSON.stringify({ value: isMilestone ? 0 : parseFloat(value), note: note.trim() || null }),
     })
-    setValue('')
-    setNote('')
-    setOpen(false)
-    setSaving(false)
+    setValue(''); setNote('')
+    setOpen(false); setSaving(false)
     startTransition(() => router.refresh())
   }
 
-  const placeholder = trackingType === 'QUANTITATIVE'
-    ? `New value${unit ? ` (${unit})` : ''}`
-    : 'Progress % (0–100)'
+  // H3: for MILESTONE goals, only show a journal note (progress comes from milestone toggles)
+  const isMilestone = trackingType === 'MILESTONE'
+  const placeholder = `New value${unit ? ` (${unit})` : ''}`
 
   return (
     <div style={{ marginTop: 16 }}>
@@ -40,25 +40,32 @@ export default function ProgressLogger({ goalId, unit, trackingType }: { goalId:
             color: '#B8A4FF', cursor: 'pointer',
           }}
         >
-          + Log Progress
+          {isMilestone ? '+ Add Progress Note' : '+ Log Progress'}
         </button>
       ) : (
         <div style={{ padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(184,164,255,0.2)' }}>
           <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
-            Log Progress Update
+            {isMilestone ? 'Progress Note (journal only)' : 'Log Progress Update'}
           </div>
-          <input
-            type="number"
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            placeholder={placeholder}
-            autoFocus
-            style={{
-              width: '100%', padding: '9px 12px', borderRadius: 8, marginBottom: 8,
-              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-              color: '#F5F5F7', fontSize: 14, fontWeight: 600, outline: 'none',
-            }}
-          />
+          {isMilestone && (
+            <div style={{ fontSize: 11, color: '#6E6E73', marginBottom: 8 }}>
+              Progress % is calculated from milestone completion. This note is for context only.
+            </div>
+          )}
+          {!isMilestone && (
+            <input
+              type="number"
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              placeholder={placeholder}
+              autoFocus
+              style={{
+                width: '100%', padding: '9px 12px', borderRadius: 8, marginBottom: 8,
+                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                color: '#F5F5F7', fontSize: 14, fontWeight: 600, outline: 'none',
+              }}
+            />
+          )}
           <textarea
             value={note}
             onChange={e => setNote(e.target.value)}
@@ -74,7 +81,7 @@ export default function ProgressLogger({ goalId, unit, trackingType }: { goalId:
           <div style={{ display: 'flex', gap: 8 }}>
             <button
               onClick={save}
-              disabled={saving || !value.trim()}
+              disabled={saving || (!isMilestone && !value.trim())}
               style={{
                 flex: 1, padding: '9px', borderRadius: 8, fontSize: 13, fontWeight: 700,
                 background: '#B8A4FF', color: '#050506', border: 'none', cursor: 'pointer',

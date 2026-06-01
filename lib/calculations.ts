@@ -1,5 +1,28 @@
 export type GoalStatus = 'ahead' | 'on_track' | 'watch' | 'at_risk' | 'critical' | 'completed' | 'paused'
 
+// Shared status thresholds — use this everywhere (dashboard, quarterly, reports)
+export function calcGoalStatus(gap: number): GoalStatus {
+  if (gap >= 10)  return 'ahead'
+  if (gap >= -5)  return 'on_track'
+  if (gap >= -15) return 'watch'
+  if (gap >= -25) return 'at_risk'
+  return 'critical'
+}
+
+// Recent velocity: progress per day using last 14 days of history (avoids stale average)
+export function calcRecentVelocity(
+  history: { loggedAt: Date; pct: number }[] | undefined,
+  now: Date
+): number | null {
+  if (!history || history.length < 2) return null
+  const cutoff = new Date(now.getTime() - 14 * 86400000)
+  const recent = history.filter(h => h.loggedAt >= cutoff)
+  const pts = recent.length >= 2 ? recent : history.slice(-2)
+  const dt = (pts[pts.length - 1].loggedAt.getTime() - pts[0].loggedAt.getTime()) / 86400000
+  if (dt <= 0) return null
+  return (pts[pts.length - 1].pct - pts[0].pct) / dt
+}
+
 export interface GoalMetrics {
   progressPct: number
   expectedPct: number
@@ -57,8 +80,9 @@ export function calcGoalMetrics(
   const expectedPct = calcExpectedProgress(startDate, deadline, now)
   const gap = progressPct - expectedPct
 
-  // velocity = progress per day (based on all history)
-  const velocity = daysElapsed > 0 ? progressPct / daysElapsed : 0
+  // Recent velocity preferred (last 14 days); fallback to overall average
+  const recentVel = calcRecentVelocity(goal.progressHistory, now)
+  const velocity = recentVel ?? (daysElapsed > 0 ? progressPct / daysElapsed : 0)
 
   // forecasted completion
   let forecastedCompletionDate: Date | null = null
@@ -72,21 +96,8 @@ export function calcGoalMetrics(
   // required velocity to still hit deadline
   const requiredVelocity = daysRemaining > 0 ? (100 - progressPct) / daysRemaining : Infinity
 
-  // status
-  let status: GoalStatus = 'on_track'
-  if (progressPct >= 100) {
-    status = 'completed'
-  } else if (gap >= 10) {
-    status = 'ahead'
-  } else if (gap >= -5) {
-    status = 'on_track'
-  } else if (gap >= -15) {
-    status = 'watch'
-  } else if (gap >= -25) {
-    status = 'at_risk'
-  } else {
-    status = 'critical'
-  }
+  // status — use shared helper so dashboard/quarterly/reports all agree
+  const status: GoalStatus = progressPct >= 100 ? 'completed' : calcGoalStatus(gap)
 
   const statusLabels: Record<GoalStatus, string> = {
     ahead: 'Ahead',

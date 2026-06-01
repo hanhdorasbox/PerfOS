@@ -1,10 +1,70 @@
 import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 
+function getWeekBounds() {
+  const now = new Date()
+  const dow = now.getDay()
+  const monday = new Date(now)
+  monday.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1))
+  monday.setHours(0, 0, 0, 0)
+  const sunday = new Date(monday)
+  sunday.setDate(monday.getDate() + 6)
+  sunday.setHours(23, 59, 59, 999)
+  return { monday, sunday }
+}
+
 export async function POST(req: NextRequest) {
-  const { weeklyPlanId, title, effort, goalId } = await req.json()
+  const { weeklyPlanId, userId, title, effort, goalId, priority, sourceModule, sourceId, createdBy } = await req.json()
+
+  let planId = weeklyPlanId as string | undefined
+
+  // Auto-find or create the current week's WeeklyPlan when no planId provided
+  if (!planId) {
+    if (!userId) {
+      return NextResponse.json({ error: 'weeklyPlanId or userId required' }, { status: 400 })
+    }
+
+    const quarter = await prisma.quarter.findFirst({
+      where: { userId, status: 'active' },
+      orderBy: { startDate: 'desc' },
+    })
+    if (!quarter) {
+      return NextResponse.json({ error: 'No active quarter — create one first at /quarterly' }, { status: 400 })
+    }
+
+    const { monday, sunday } = getWeekBounds()
+
+    // Find an existing active plan whose weekStart falls in this week
+    let plan = await prisma.weeklyPlan.findFirst({
+      where: {
+        quarterId: quarter.id,
+        status: 'active',
+        weekStart: { gte: monday, lte: sunday },
+      },
+    })
+
+    // Nothing found — create one
+    if (!plan) {
+      plan = await prisma.weeklyPlan.create({
+        data: { quarterId: quarter.id, weekStart: monday, weekEnd: sunday, status: 'active' },
+      })
+    }
+
+    planId = plan.id
+  }
+
   const task = await prisma.weeklyTask.create({
-    data: { weeklyPlanId, title, effort: Number(effort) || 2, goalId: goalId || null, completed: false },
+    data: {
+      weeklyPlanId: planId,
+      title,
+      effort: Number(effort) || 2,
+      priority: Number(priority) || 2,
+      goalId: goalId || null,
+      completed: false,
+      sourceModule: sourceModule || (goalId ? 'goal' : null),
+      sourceId: sourceId || goalId || null,
+      createdBy: createdBy || 'user',
+    },
   })
   return NextResponse.json(task)
 }

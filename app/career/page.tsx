@@ -4,7 +4,6 @@ import SkillTracker from '@/components/career/SkillTracker'
 import ProofOfWorkTracker from '@/components/career/ProofOfWorkTracker'
 import CareerCapitalItems from '@/components/career/CareerCapitalItems'
 import GoalCapitalEvals from '@/components/career/GoalCapitalEvals'
-import RoadmapGenerator from '@/components/career/RoadmapGenerator'
 
 export const dynamic = 'force-dynamic'
 
@@ -59,15 +58,6 @@ export default async function CareerPage() {
         <GoalCapitalEvals goals={goals} />
       </div>
 
-      <div style={{ marginTop: 20 }}>
-        <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#6E6E73', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Planning Sandbox</span>
-          <span style={{ fontSize: 11, color: '#4A4845', padding: '2px 8px', borderRadius: 6, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            Draft only — convert to a Learning Roadmap to make it operational
-          </span>
-        </div>
-        <RoadmapGenerator userId={user.id} />
-      </div>
     </main>
   )
 }

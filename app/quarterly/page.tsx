@@ -79,7 +79,7 @@ export default async function QuarterlyPage() {
       progressPct = calcMilestoneProgress(goal.milestones)
     }
     const metrics = calcGoalMetrics({
-      startDate: activeQuarter.startDate,
+      startDate: goal.createdAt, // C1: use goal's own start, not quarter start
       deadline: goal.deadline,
       progressPct,
       progressHistory: goal.progressUpdates.map(u => ({ loggedAt: u.loggedAt, pct: u.value })),

@@ -163,6 +163,12 @@ model WeeklyTask {
   // Cross-module tags
   taskType     String?     // workout | cardio | sauna | learning | project | admin | other
   priority     Int         @default(2) // 1=must 2=should 3=optional
+  // Source linking — where this task came from
+  sourceModule String?     // goal | learning | fitness | career_gap | report
+  sourceId     String?     // ID of the source entity (strategyId, capabilityGoalId, gapId, etc.)
+  createdBy    String?     // user | ai | system
+
+  @@index([sourceModule, sourceId])
 }
 
 model FitnessLog {
@@ -380,7 +386,8 @@ model FitnessStrategy {
   user            User     @relation(fields: [userId], references: [id])
   quarterId       String?
   quarter         Quarter? @relation(fields: [quarterId], references: [id])
-  mainObjective   String
+  mainObjective      String
+  objectiveShort     String?   // Short headline e.g. "12-week body recomposition plan."
   strengthPlan    String?
   cardioPlan      String?
   saunaPlan       String?
@@ -396,6 +403,18 @@ model FitnessStrategy {
   workoutPlan        String?   // JSON: {progressionRule, trackingNote, days:[{label,theme,exercises:[{name,sets,reps,notes?,substitution?}]}]}
   status             String   @default("draft")
   createdAt          DateTime @default(now())
+  checklistItems     StrategyChecklistItem[]
+}
+
+model StrategyChecklistItem {
+  id           String          @id @default(cuid())
+  strategyId   String
+  strategy     FitnessStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+  title        String
+  orderIndex   Int             @default(0)
+  completed    Boolean         @default(false)
+  completedAt  DateTime?
+  createdAt    DateTime        @default(now())
 }
 
 // ─── MODULE 24: Operating Manual ─────────────────────────────────────────────
@@ -644,6 +663,7 @@ model DailyBriefing {
   worldBriefing    String?  // JSON: [{headline, why, category}] — 3-5 items
   relevantUpdates  String?  // JSON: [{topic, update}] — 2-3 items
   externalContext  String?  // plain text, optional one-liner
+  dailyFacts       String?  // JSON: [{category, fact, whyItMatters}]
   generatedAt      DateTime @default(now())
 
   @@unique([userId, date])

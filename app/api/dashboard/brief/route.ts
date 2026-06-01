@@ -105,19 +105,42 @@ Return ONLY valid JSON, no markdown, no extra text:
     {
       "headline": "One clear sentence stating what happened",
       "why": "One phrase explaining why it matters — keep under 15 words",
-      "category": "geopolitics|business|tech|society|science"
+      "category": "geopolitics|business|tech|society|markets"
     }
   ],
-  "externalContext": "One short practical note IF relevant (weather, holiday, external condition affecting the day). null if nothing useful."
+  "dailyFacts": [
+    {
+      "category": "psychology",
+      "fact": "One practical, credible insight. Max 2 sentences.",
+      "whyItMatters": "One short sentence on why this is useful right now"
+    },
+    {
+      "category": "health",
+      "fact": "One practical health/lifestyle insight. Max 2 sentences.",
+      "whyItMatters": "One short sentence on why this is useful right now"
+    },
+    {
+      "category": "fitness",
+      "fact": "One practical strength/body composition insight. Max 2 sentences.",
+      "whyItMatters": "One short sentence on why this is useful right now"
+    }
+  ],
+  "externalContext": null
 }
 
 World briefing rules:
-- Exactly ONE item per category — 5 categories (geopolitics, business, tech, society, science), exactly 5 items total, each a different category
-- Pick the single most important story for each category; no duplicates within a category
-- Cover the most significant global developments; include Czech/Central European news if materially relevant
-- externalContext: only include if genuinely useful and actionable, otherwise null
+- Exactly ONE item per category — 5 categories (geopolitics, business, tech, society, markets), exactly 5 items total
+- Pick the single most important story per category; include Czech/Central European news if materially relevant
 - Base on your most recent knowledge; today's date is provided
-- Be direct and informative, not sensationalist`,
+
+Daily facts rules:
+- ALWAYS return exactly 3 facts: one psychology, one health, one fitness
+- Choose based on what's most relevant to the user's current situation (goals, blockers, patterns)
+- Psychology topics: procrastination, motivation, focus, ADHD execution, habits, decision-making, cognitive biases
+- Health topics: sleep, hydration, stress, recovery, nutrition basics, energy, hormones, alcohol impact
+- Fitness topics: strength training, fat loss, protein, cardio, progressive overload, recovery, workout consistency
+- Facts should be short (1-2 sentences), practical, credible, not sensationalist
+- Personalize: if user is behind on protein → protein fact; alcohol logged → recovery fact; tasks skipped → procrastination fact`,
       messages: [
         {
           role: 'user',
@@ -173,7 +196,8 @@ World briefing rules:
       priorities: JSON.stringify(parsed.priorities ?? []),
       worldBriefing: parsed.worldBriefing ? JSON.stringify(parsed.worldBriefing) : null,
       relevantUpdates: parsed.relevantUpdates ? JSON.stringify(parsed.relevantUpdates) : null,
-      externalContext: parsed.externalContext ?? null,
+      externalContext: null,
+      dailyFacts: parsed.dailyFacts ? JSON.stringify(parsed.dailyFacts) : null,
     },
     update: {
       summary: parsed.summary,
@@ -182,7 +206,8 @@ World briefing rules:
       priorities: JSON.stringify(parsed.priorities ?? []),
       worldBriefing: parsed.worldBriefing ? JSON.stringify(parsed.worldBriefing) : null,
       relevantUpdates: parsed.relevantUpdates ? JSON.stringify(parsed.relevantUpdates) : null,
-      externalContext: parsed.externalContext ?? null,
+      externalContext: null,
+      dailyFacts: parsed.dailyFacts ? JSON.stringify(parsed.dailyFacts) : null,
       generatedAt: new Date(),
     },
   })

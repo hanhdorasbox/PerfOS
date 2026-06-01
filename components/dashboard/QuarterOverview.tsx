@@ -3,11 +3,13 @@ interface Props {
   qProgress: { pct: number; daysElapsed: number; daysTotal: number; daysRemaining: number }
   weightedCompletion: number
   goalCount: number
+  atRiskCount?: number
+  watchCount?: number
 }
 
-export default function QuarterOverview({ quarter, qProgress, weightedCompletion, goalCount }: Props) {
+export default function QuarterOverview({ quarter, qProgress, weightedCompletion, goalCount, atRiskCount = 0, watchCount = 0 }: Props) {
   const gap = weightedCompletion - qProgress.pct
-  const onTrack = gap >= -5
+  const onTrack = gap >= -5 && atRiskCount === 0
   const statusColor = onTrack ? '#7FD5AA' : '#ECC666'
 
   return (
@@ -94,6 +96,12 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
               ? <span style={{ color: '#7FD5AA', fontWeight: 600 }}>On track.</span>
               : <span style={{ color: '#ECC666', fontWeight: 600 }}>Behind by {Math.round(Math.abs(gap))}%.</span>
             }
+            {atRiskCount > 0 && (
+              <span style={{ color: '#FF9B87', fontWeight: 600 }}> · {atRiskCount} goal{atRiskCount !== 1 ? 's' : ''} at risk.</span>
+            )}
+            {watchCount > 0 && atRiskCount === 0 && (
+              <span style={{ color: '#ECC666' }}> · {watchCount} goal{watchCount !== 1 ? 's' : ''} to watch.</span>
+            )}
           </div>
         </div>
       </div>

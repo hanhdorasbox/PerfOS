@@ -26,7 +26,12 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
   } else if (goal.trackingType === 'MILESTONE') {
     progressPct = calcMilestoneProgress(goal.milestones)
   }
-  const metrics = calcGoalMetrics({ startDate: goal.quarter.startDate, deadline: goal.deadline, progressPct })
+  const metrics = calcGoalMetrics({
+    startDate: goal.createdAt, // C1: goal's own start date
+    deadline: goal.deadline,
+    progressPct,
+    progressHistory: goal.progressUpdates.map(u => ({ loggedAt: u.loggedAt, pct: u.value })),
+  })
 
   const statusColors: Record<string, string> = {
     ahead: '#7FD5AA', on_track: '#80BDFF', watch: '#ECC666',

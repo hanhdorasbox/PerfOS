@@ -10,6 +10,7 @@ interface SerializedStrategy {
   userId: string
   quarterId: string | null
   mainObjective: string
+  objectiveShort: string | null
   strengthPlan: string | null
   cardioPlan: string | null
   saunaPlan: string | null
@@ -22,6 +23,7 @@ interface SerializedStrategy {
   weeklyTargets: string | null
   immediateNextSteps: string | null
   intakeData: string | null
+  workoutPlan: string | null
   status: string
   createdAt: string
 }
@@ -65,6 +67,7 @@ export default async function FitnessStrategyPage() {
     userId: string
     quarterId: string | null
     mainObjective: string
+    objectiveShort: string | null
     strengthPlan: string | null
     cardioPlan: string | null
     saunaPlan: string | null
@@ -77,6 +80,7 @@ export default async function FitnessStrategyPage() {
     weeklyTargets: string | null
     immediateNextSteps: string | null
     intakeData: string | null
+    workoutPlan: string | null
     status: string
     createdAt: Date
   }): SerializedStrategy => ({
@@ -86,7 +90,6 @@ export default async function FitnessStrategyPage() {
 
   // Prefill data from latest fitness log
   const latestLog = fitnessLogs[0] ?? null
-  const prefillWeight = latestLog?.weight ?? null
   const prefillWaist = latestLog?.waist ?? null
   // Estimate training frequency from last 90 days (avg per week over 13 weeks)
   const prefillTrainingFreq = workoutLogs.length > 0
@@ -129,7 +132,6 @@ export default async function FitnessStrategyPage() {
               userId={user.id}
               quarterId={quarter?.id}
               label="Start New Strategy Review"
-              prefillWeight={prefillWeight}
               prefillWaist={prefillWaist}
               prefillTrainingFreq={prefillTrainingFreq}
             />
@@ -141,7 +143,6 @@ export default async function FitnessStrategyPage() {
           <FitnessStrategyGenerator
             userId={user.id}
             quarterId={quarter?.id}
-            prefillWeight={prefillWeight}
             prefillWaist={prefillWaist}
             prefillTrainingFreq={prefillTrainingFreq}
           />

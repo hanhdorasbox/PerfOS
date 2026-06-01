@@ -70,6 +70,9 @@ export async function POST(req: NextRequest) {
                 completed: false,
                 effort: 3,
                 taskType: 'workout',
+                sourceModule: 'fitness',
+                sourceId: strategyId,
+                createdBy: 'system',
               },
             })
           }

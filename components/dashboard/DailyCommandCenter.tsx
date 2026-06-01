@@ -17,7 +17,14 @@ interface DailyBriefing {
   worldBriefing: string | null
   relevantUpdates: string | null
   externalContext: string | null
+  dailyFacts: string | null
   generatedAt: string | Date
+}
+
+interface DailyFact {
+  category: 'psychology' | 'health' | 'fitness'
+  fact: string
+  whyItMatters: string
 }
 
 interface GoalWithMetrics {
@@ -52,11 +59,6 @@ interface PlannedMeal {
   protein: number | null
 }
 
-interface FitnessLog {
-  weight: number | null
-  waist: number | null
-}
-
 interface BriefingPriority {
   text: string
   priority: 'must' | 'should' | 'optional'
@@ -82,7 +84,6 @@ interface Props {
   strategy: FitnessStrategy | null
   todayMeals: PlannedMeal[]
   tomorrowMeals: PlannedMeal[]
-  fitnessLog: FitnessLog | null
   userId: string
   quarterName: string
   weeklyPlanId?: string
@@ -104,12 +105,23 @@ const PRIORITY_LABEL: Record<string, string> = {
 }
 const EFFORT_LABEL: Record<number, string> = { 1: 'Easy', 2: 'Medium', 3: 'Deep work' }
 const MEAL_ORDER: Record<string, number> = { breakfast: 0, lunch: 1, dinner: 2, snack: 3 }
-const CATEGORY_COLOR: Record<string, string> = {
-  geopolitics: '#F5A56A',
-  business:    '#ECC666',
-  tech:        '#B8A4FF',
-  society:     '#80BDFF',
-  science:     '#7FD5AA',
+// Unified color map — all 13 categories have a unique hex
+const INTEL_COLORS: Record<string, string> = {
+  // ── News ──────────────────────────────────────────────────────
+  geopolitics:  '#F5A56A',  // warm orange
+  business:     '#ECC666',  // amber
+  tech:         '#B8A4FF',  // soft purple
+  society:      '#80BDFF',  // sky blue
+  science:      '#7FD5AA',  // mint green
+  markets:      '#F18CA6',  // rose pink
+  // ── Body & Mind ───────────────────────────────────────────────
+  psychology:   '#FF9B87',  // coral/salmon   (≠ soft purple)
+  health:       '#4AC9C0',  // teal           (≠ sky blue, ≠ mint green)
+  fitness:      '#A3D977',  // lime green     (≠ mint green)
+  nutrition:    '#FFDC78',  // warm yellow    (≠ amber)
+  recovery:     '#CC88EE',  // violet         (≠ soft purple)
+  productivity: '#FF7752',  // tangerine      (≠ warm orange)
+  habits:       '#F066CC',  // fuchsia        (≠ rose pink)
 }
 
 function sortMeals(meals: PlannedMeal[]) {
@@ -256,38 +268,53 @@ function ActiveDayRing() {
   )
 }
 
-// ─── World Briefing Item ───────────────────────────────────────────────────────
+// ─── Intel Card (unified — used for all 6 cards) ─────────────────────────────
 
-function WorldBriefingItem({ item }: { item: WorldItem }) {
+interface IntelItem {
+  category: string
+  headline: string
+  why: string
+}
+
+function IntelCard({ item }: { item: IntelItem }) {
   const [open, setOpen] = useState(false)
-  const catColor = CATEGORY_COLOR[item.category?.toLowerCase()] ?? '#6E6E73'
+  const catColor = INTEL_COLORS[item.category?.toLowerCase()] ?? '#6E6E73'
 
   return (
     <div
       onClick={() => setOpen(v => !v)}
-      style={{ padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer' }}
+      style={{
+        padding: '10px 12px',
+        borderRadius: 10,
+        background: `${catColor}1C`,
+        border: `1px solid ${catColor}${open ? '55' : '38'}`,
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 5,
+        transition: 'border-color 0.15s, background 0.15s',
+      }}
     >
-      <div style={{ display: 'flex', gap: 7, alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         {item.category && (
           <span style={{
-            fontSize: 8, padding: '2px 5px', borderRadius: 3, flexShrink: 0, marginTop: 2,
+            fontSize: 8, padding: '2px 5px', borderRadius: 3,
             background: `${catColor}18`, color: catColor,
             fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase',
           }}>
             {item.category}
           </span>
         )}
-        <span style={{ fontSize: 12, color: '#F5F5F7', lineHeight: 1.45, flex: 1 }}>{item.headline}</span>
-        {item.why && (
-          <span style={{ fontSize: 10, color: '#6E6E73', flexShrink: 0, marginTop: 2 }}>
-            {open ? '▲' : '▼'}
-          </span>
-        )}
+        <span style={{ fontSize: 9, color: '#3A3A3C', marginLeft: 'auto' }}>{open ? '▲' : '▼'}</span>
+      </div>
+      <div style={{ fontSize: 12, color: '#F5F5F7', lineHeight: 1.45, fontWeight: 500 }}>
+        {item.headline}
       </div>
       {open && item.why && (
         <div style={{
-          fontSize: 11, color: '#A1A1A6', marginTop: 5,
-          paddingLeft: item.category ? 48 : 0,
+          fontSize: 11, color: '#A1A1A6',
+          borderTop: '1px solid rgba(255,255,255,0.05)',
+          paddingTop: 6, marginTop: 1,
           lineHeight: 1.55, fontStyle: 'italic',
         }}>
           → {item.why}
@@ -297,8 +324,29 @@ function WorldBriefingItem({ item }: { item: WorldItem }) {
   )
 }
 
+// ─── Daily Body & Mind fallback facts (rotate by day) ───────────────────────
+
+const DEFAULT_FACTS: DailyFact[] = [
+  {
+    category: 'psychology',
+    fact: 'Vague tasks create more resistance than difficult ones. Break them into named, concrete steps.',
+    whyItMatters: 'Specificity reduces activation energy and makes procrastination less likely.',
+  },
+  {
+    category: 'health',
+    fact: 'Morning light exposure within 30 minutes of waking helps regulate your circadian rhythm.',
+    whyItMatters: 'Better sleep quality and more consistent energy throughout the day.',
+  },
+  {
+    category: 'fitness',
+    fact: 'Protein consistency across days matters more than hitting perfect macros on any single day.',
+    whyItMatters: 'Muscle protein synthesis responds to sustained availability, not spikes.',
+  },
+]
+
 // ─── Relevant Update Item ─────────────────────────────────────────────────────
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function RelevantUpdateItem({ item }: { item: RelevantItem }) {
   return (
     <div style={{ padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
@@ -323,20 +371,6 @@ function Skel({ w, h = 12 }: { w: string | number; h?: number }) {
   )
 }
 
-function IntelligenceSkeleton() {
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-      <div>
-        <Skel w="60%" h={10} />
-        {[85, 70, 90].map(w => <Skel key={w} w={`${w}%`} />)}
-      </div>
-      <div>
-        <Skel w="50%" h={10} />
-        {[75, 80].map(w => <Skel key={w} w={`${w}%`} />)}
-      </div>
-    </div>
-  )
-}
 
 // ─── Priority Item ────────────────────────────────────────────────────────────
 
@@ -424,7 +458,7 @@ function PriorityItem({
 
 // ─── Fitness Snapshot ─────────────────────────────────────────────────────────
 
-function FitnessSnapshot({ strategy, fitnessLog }: { strategy: FitnessStrategy | null; fitnessLog: FitnessLog | null }) {
+function FitnessSnapshot({ strategy }: { strategy: FitnessStrategy | null }) {
   const today = new Date()
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   const todayName = dayNames[today.getDay()]
@@ -454,20 +488,10 @@ function FitnessSnapshot({ strategy, fitnessLog }: { strategy: FitnessStrategy |
         <div style={{ fontSize: 12, color: '#6E6E73' }}>Rest day</div>
       )}
 
-      {(fitnessLog?.weight || targetProtein) && (
-        <div style={{ display: 'flex', gap: 16, marginTop: 10, paddingTop: 9, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          {fitnessLog?.weight && (
-            <div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: '#F5F5F7' }}>{fitnessLog.weight} kg</div>
-              <div style={{ fontSize: 10, color: '#6E6E73' }}>last weighed</div>
-            </div>
-          )}
-          {targetProtein && (
-            <div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: '#7FD5AA' }}>{targetProtein}g</div>
-              <div style={{ fontSize: 10, color: '#6E6E73' }}>protein target</div>
-            </div>
-          )}
+      {targetProtein && (
+        <div style={{ marginTop: 10, paddingTop: 9, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ fontSize: 17, fontWeight: 700, color: '#7FD5AA' }}>{targetProtein}g</div>
+          <div style={{ fontSize: 10, color: '#6E6E73' }}>protein target</div>
         </div>
       )}
 
@@ -527,10 +551,8 @@ function MealPreview({ meals, label, href }: { meals: PlannedMeal[]; label: stri
 // ─── Bullet Directive renderer ────────────────────────────────────────────────
 
 function BulletDirective({ text }: { text: string }) {
-  // Split on newlines, strip leading/trailing whitespace
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
 
-  // First non-bullet line = framing statement; rest = bullet points
   const framing: string[] = []
   const bullets: string[] = []
   let seenBullet = false
@@ -542,12 +564,10 @@ function BulletDirective({ text }: { text: string }) {
     } else if (!seenBullet) {
       framing.push(line)
     } else {
-      // continuation after bullets — treat as extra bullet
       bullets.push(line)
     }
   }
 
-  // Fallback: if no bullet markers found, split on '. ' and treat each sentence as a bullet
   if (bullets.length === 0 && framing.length > 0) {
     const sentences = text.split(/(?<=\.)\s+/)
     if (sentences.length > 1) {
@@ -615,7 +635,6 @@ export default function DailyCommandCenter({
   tasks,
   strategy,
   todayMeals,
-  fitnessLog,
   userId,
   quarterName,
   weeklyPlanId,
@@ -630,6 +649,7 @@ export default function DailyCommandCenter({
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(
     initialBriefing?.generatedAt ? new Date(initialBriefing.generatedAt) : null
   )
+
 
   const generateBriefing = useCallback(async () => {
     setLoadingBrief(true)
@@ -657,7 +677,7 @@ export default function DailyCommandCenter({
     startTransition(() => router.refresh())
   }, [userId, router, startTransition])
 
-  // Auto-generate on mount if no briefing or older than 5 hours; then refresh every 5 hours
+  // Auto-generate on mount if no briefing or older than 5 hours
   useEffect(() => {
     const age = briefingAgeMs(initialBriefing?.generatedAt)
     if (age > REFRESH_INTERVAL_MS) {
@@ -672,21 +692,44 @@ export default function DailyCommandCenter({
 
   async function toggleTask(id: string) {
     setToggling(id)
-    await fetch(`/api/tasks/${id}`, { method: 'PATCH' })
-    startTransition(() => router.refresh())
-    setToggling(null)
+    try {
+      const res = await fetch(`/api/tasks/${id}`, { method: 'PATCH' })
+      if (!res.ok) throw new Error('Toggle failed')
+      startTransition(() => router.refresh())
+    } catch {
+      // Silent — UI will snap back on next refresh; could add toast here
+    } finally {
+      setToggling(null)
+    }
   }
 
   // Parse briefing JSON fields
   const briefPriorities = parseSafeJson<BriefingPriority[]>(briefing?.priorities) ?? []
-  // One item per category — deduplicate defensively even if API returns more
   const worldBriefingRaw = parseSafeJson<WorldItem[]>(briefing?.worldBriefing) ?? []
   const worldBriefing = worldBriefingRaw.reduce((acc: WorldItem[], item) => {
     const cat = item.category?.toLowerCase()
     if (!acc.find(x => x.category?.toLowerCase() === cat)) acc.push(item)
     return acc
   }, [])
-  const externalContext = briefing?.externalContext ?? null
+
+  // Pick ONE body & mind fact for the 6th card — rotate by day
+  const allDailyFacts = parseSafeJson<DailyFact[]>(briefing?.dailyFacts) ?? []
+  const factsPool = allDailyFacts.length > 0 ? allDailyFacts : DEFAULT_FACTS
+  const bodyMindFact = factsPool[new Date().getDay() % factsPool.length] ?? factsPool[0]
+
+  // Build the 6-card intel items array (up to 5 news + 1 body & mind)
+  const intelItems: IntelItem[] = [
+    ...worldBriefing.slice(0, 5).map(item => ({
+      category: item.category?.toLowerCase() ?? '',
+      headline: item.headline,
+      why: item.why,
+    })),
+    ...(bodyMindFact ? [{
+      category: bodyMindFact.category,
+      headline: bodyMindFact.fact,
+      why: bodyMindFact.whyItMatters,
+    }] : []),
+  ]
 
   // Priority lists
   const incompleteTasks = tasks.filter(t => !t.completed)
@@ -717,7 +760,6 @@ export default function DailyCommandCenter({
 
   return (
     <div className="animate-entrance">
-      {/* keyframes are in globals.css */}
 
       {/* ══ DAILY INTELLIGENCE BAR ══════════════════════════════════════════ */}
       <div style={{
@@ -750,7 +792,7 @@ export default function DailyCommandCenter({
           )}
         </div>
 
-        {/* Bar body: Ring + Intelligence */}
+        {/* ── 2-column intel row: Ring | 3×2 card grid ── */}
         <div className="r-grid-intel">
 
           {/* LEFT — Day ring */}
@@ -763,40 +805,30 @@ export default function DailyCommandCenter({
             <ActiveDayRing />
           </div>
 
-          {/* RIGHT — Intelligence columns */}
-          {loadingBrief && worldBriefing.length === 0 ? (
-            <IntelligenceSkeleton />
-          ) : (
-            <div key={briefing?.id ?? 'empty'} className="animate-fade-in">
-              {/* World Briefing — full width, one per category */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '0 24px' }}>
-                {worldBriefing.length > 0 ? (
-                  worldBriefing.map((item, i) => (
-                    <WorldBriefingItem key={i} item={item} />
-                  ))
-                ) : (
-                  <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic', paddingTop: 8 }}>
-                    Generate briefing to see today&apos;s world summary.
-                  </div>
-                )}
-              </div>
-
-              {/* External context */}
-              {externalContext && (
-                <div style={{
-                  marginTop: 10,
-                  padding: '7px 10px',
-                  background: 'rgba(236,198,102,0.06)',
-                  border: '1px solid rgba(236,198,102,0.18)',
-                  borderRadius: 8,
-                  fontSize: 11, color: '#ECC666', lineHeight: 1.5,
-                }}>
-                  ☀️ {externalContext}
+          {/* RIGHT — 6 equal cards in a 3×2 grid */}
+          {loadingBrief && intelItems.length === 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+              {[1,2,3,4,5,6].map(i => (
+                <div key={i} style={{ borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 5 }}>
+                  <Skel w="45%" h={10} />
+                  <Skel w="90%" h={12} />
+                  <Skel w="70%" h={12} />
                 </div>
-              )}
+              ))}
+            </div>
+          ) : intelItems.length > 0 ? (
+            <div key={briefing?.id ?? 'empty'} className="animate-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+              {intelItems.map((item, i) => (
+                <IntelCard key={i} item={item} />
+              ))}
+            </div>
+          ) : (
+            <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic', paddingTop: 8 }}>
+              Generate briefing to load today&apos;s intelligence board.
             </div>
           )}
         </div>
+
       </div>
 
       {/* ══ TWO-COLUMN BODY ══════════════════════════════════════════════════ */}
@@ -805,8 +837,8 @@ export default function DailyCommandCenter({
         {/* LEFT — Directive + Today's Priorities */}
         <div className="card">
           {/* Strategic Directive */}
-          <div style={{ borderLeft: '2px solid rgba(184,164,255,0.35)', paddingLeft: 16, marginBottom: briefing?.instruction ? 10 : 18 }}>
-            <div style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#52525A', marginBottom: 8 }}>
+          <div style={{ borderLeft: '3px solid #B8A4FF', paddingLeft: 14, marginBottom: briefing?.instruction ? 10 : 18 }}>
+            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6 }}>
               This Week&apos;s Directive
             </div>
             {loadingBrief && !briefing ? (
@@ -824,7 +856,7 @@ export default function DailyCommandCenter({
             )}
           </div>
 
-          {/* Today block — OUTSIDE purple border, below directive */}
+          {/* Today instruction */}
           {briefing?.instruction && (
             <div style={{ marginTop: 16, marginBottom: 18, padding: '10px 14px', background: 'rgba(127,213,170,0.04)', borderRadius: 14, border: '1px solid rgba(127,213,170,0.12)' }}>
               <div style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#7FD5AA', marginBottom: 5, opacity: 0.8 }}>
@@ -845,7 +877,7 @@ export default function DailyCommandCenter({
             ) : incompleteTasks.length === 0 ? (
               <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic' }}>
                 No tasks this week.{' '}
-                <Link href="/quarterly" style={{ color: '#B8A4FF', textDecoration: 'none' }}>Set up a plan →</Link>
+                <Link href="/weekly" style={{ color: '#B8A4FF', textDecoration: 'none' }}>Plan this week →</Link>
               </div>
             ) : (
               <>
@@ -883,10 +915,10 @@ export default function DailyCommandCenter({
           />
 
           {/* 2. This Week — Tasks */}
-          <TodayTasks tasks={tasks} weeklyPlanId={weeklyPlanId} />
+          <TodayTasks tasks={tasks} weeklyPlanId={weeklyPlanId} userId={userId} />
 
           {/* 3. Today's Fitness */}
-          <FitnessSnapshot strategy={strategy} fitnessLog={fitnessLog} />
+          <FitnessSnapshot strategy={strategy} />
 
           {/* 4. Today's Meals */}
           <MealPreview meals={todayMeals} label="Today's Meals" href="/meals" />

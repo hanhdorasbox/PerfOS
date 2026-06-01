@@ -1,64 +1,25 @@
 'use client'
 import { useState } from 'react'
 
-interface WorkoutLog { id: string; date: string; type: string; duration: number | null; notes: string | null }
 interface ProteinLog { id: string; amount: number; date: string }
 
 export default function WorkoutTracker({
-  workoutLogs: initWorkoutLogs,
   proteinToday,
   proteinLogs: initProteinLogs,
   proteinTarget = 150,
   userId,
 }: {
-  workoutLogs: WorkoutLog[]
   proteinToday: number
   proteinLogs: ProteinLog[]
   proteinTarget?: number
   userId: string
 }) {
-  const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>(initWorkoutLogs)
   const [proteinLogs, setProteinLogs] = useState<ProteinLog[]>(initProteinLogs)
-  const [selectedType, setSelectedType] = useState('')
-  const [note, setNote] = useState('')
   const [protein, setProtein] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [deletingWorkout, setDeletingWorkout] = useState<string | null>(null)
   const [deletingProtein, setDeletingProtein] = useState<string | null>(null)
-  const [workoutMsg, setWorkoutMsg] = useState('')
   const [proteinMsg, setProteinMsg] = useState('')
 
   const proteinTotal = proteinLogs.reduce((s, p) => s + p.amount, 0)
-
-  const logWorkout = async () => {
-    if (!selectedType) return
-    setSaving(true)
-    try {
-      const res = await fetch('/api/fitness/workout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, type: selectedType, notes: note, duration: 60 }),
-      })
-      const data = await res.json() as WorkoutLog
-      setWorkoutLogs(prev => [data, ...prev])
-      setSelectedType('')
-      setNote('')
-      setWorkoutMsg('Workout logged!')
-      setTimeout(() => setWorkoutMsg(''), 2000)
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const deleteWorkout = async (id: string) => {
-    setDeletingWorkout(id)
-    try {
-      await fetch(`/api/fitness/workout/${id}`, { method: 'DELETE' })
-      setWorkoutLogs(prev => prev.filter(w => w.id !== id))
-    } finally {
-      setDeletingWorkout(null)
-    }
-  }
 
   const addProtein = async (amount: number) => {
     const res = await fetch('/api/fitness/protein', {
@@ -84,74 +45,8 @@ export default function WorkoutTracker({
     }
   }
 
-  const types = ['💪 Síla', '🏃 Cardio', '🧘 Sauna', '🚶 Chůze']
-
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-      {/* ── Workout card ── */}
-      <div className="card">
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '14px' }}>Log Workout</div>
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '12px' }}>
-          {types.map(t => (
-            <button
-              key={t}
-              onClick={() => setSelectedType(t)}
-              style={{
-                padding: '6px 12px', borderRadius: '999px',
-                border: `1px solid ${selectedType === t ? 'rgba(127,213,170,0.4)' : 'rgba(255,255,255,0.1)'}`,
-                background: selectedType === t ? 'rgba(127,213,170,0.1)' : 'none',
-                color: selectedType === t ? '#7FD5AA' : '#A1A1A6',
-                fontSize: '12px', cursor: 'pointer',
-              }}
-            >{t}</button>
-          ))}
-        </div>
-        <input
-          value={note}
-          onChange={e => setNote(e.target.value)}
-          placeholder="Note (optional)…"
-          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#F5F5F7', fontSize: '12px', marginBottom: '10px', outline: 'none' }}
-        />
-        <button
-          onClick={logWorkout}
-          disabled={!selectedType || saving}
-          style={{ width: '100%', padding: '9px', borderRadius: '8px', background: 'rgba(127,213,170,0.12)', border: '1px solid rgba(127,213,170,0.25)', color: '#7FD5AA', fontWeight: 700, cursor: 'pointer', fontSize: '13px' }}
-        >
-          {saving ? 'Saving…' : '✓ Log Workout'}
-        </button>
-        {workoutMsg && <div style={{ marginTop: '8px', fontSize: '12px', color: '#7FD5AA' }}>{workoutMsg}</div>}
-
-        <div style={{ marginTop: '14px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px' }}>
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '8px' }}>Recent</div>
-          {workoutLogs.length === 0 && (
-            <div style={{ fontSize: 12, color: '#6E6E73' }}>No workouts logged yet.</div>
-          )}
-          {workoutLogs.slice(0, 7).map(w => (
-            <div
-              key={w.id}
-              style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '12px',
-                opacity: deletingWorkout === w.id ? 0.4 : 1, transition: 'opacity 0.15s ease',
-              }}
-            >
-              <span style={{ color: '#A1A1A6' }}>{w.type}</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ color: '#6E6E73' }}>{new Date(w.date).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}</span>
-                <button
-                  onClick={() => deleteWorkout(w.id)}
-                  disabled={deletingWorkout === w.id}
-                  style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 11, padding: 0, lineHeight: 1 }}
-                  title="Delete"
-                >✕</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Protein card ── */}
-      <div className="card">
+    <div className="card">
         <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '14px' }}>Protein Today</div>
         <div style={{ fontSize: '42px', fontWeight: 800, color: '#F5F5F7', lineHeight: 1, marginBottom: '4px' }}>
           {proteinTotal}<span style={{ fontSize: '20px', color: '#6E6E73' }}>/ {proteinTarget}g</span>
@@ -212,7 +107,6 @@ export default function WorkoutTracker({
             ))}
           </div>
         )}
-      </div>
     </div>
   )
 }
