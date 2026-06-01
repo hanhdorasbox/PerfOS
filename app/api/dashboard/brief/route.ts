@@ -97,7 +97,7 @@ Return ONLY valid JSON, no markdown, no extra text:
 {
   "summary": "one direct sentence summarizing today's strategic situation (reference specific goals/numbers)",
   "instruction": "one concrete tactical operating instruction for today (e.g. 'Block 2h for X before 11am' — not motivational)",
-  "directive": "Structured weekly directive. Format as: one framing sentence ending with a colon, then each action/conclusion on its own line starting with '• '. Use \\n between lines. Example: 'This week is about recovery:\\n• SQL is the critical gap — block at least 3 sessions before Friday.\\n• Protein tracking must run every day, not just training days.' Be specific, reference actual goal names and numbers.",
+  "directive": "Structured weekly directive. Format as: one framing sentence ending with a colon, then each action/conclusion on its own line starting with '• '. Use \\n between lines. Example: 'This week is about execution consistency:\\n• SQL is the critical gap — block at least 3 sessions before Friday.\\n• Protein tracking must run every day, not just training days.' Be specific, reference actual goal names and numbers. Focus on execution: training sessions completed, learning steps done, protein logged, tasks finished. Never mention waist measurement, weight tracking, body composition measurement, or baseline metrics — fitness is tracked by session adherence and consistency, not body measurements.",
   "priorities": [
     {"text": "task description", "priority": "must|should|optional", "goalTitle": "string or null", "whyToday": "brief 1-sentence reason"}
   ],
