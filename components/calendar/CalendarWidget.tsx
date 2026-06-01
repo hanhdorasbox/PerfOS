@@ -403,8 +403,8 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
       {!showManageSources && icsSources.length > 0 && (
         <div style={{ display: 'flex', gap: 5, marginBottom: 10, flexWrap: 'wrap' }}>
           {icsSources.map(src => (
-            <span key={src.url} style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 999, background: src.type === 'work' ? 'rgba(128,189,255,0.1)' : 'rgba(127,213,170,0.1)', color: src.type === 'work' ? '#80BDFF' : '#7FD5AA', border: `1px solid ${src.type === 'work' ? 'rgba(128,189,255,0.2)' : 'rgba(127,213,170,0.2)'}` }}>
-              {src.type === 'work' ? <Briefcase size={10} style={{ marginRight: 3 }} /> : <Leaf size={10} style={{ marginRight: 3 }} />}{src.name}
+            <span key={src.url} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 999, background: src.type === 'work' ? 'rgba(128,189,255,0.1)' : 'rgba(127,213,170,0.1)', color: src.type === 'work' ? '#80BDFF' : '#7FD5AA', border: `1px solid ${src.type === 'work' ? 'rgba(128,189,255,0.2)' : 'rgba(127,213,170,0.2)'}` }}>
+              {src.type === 'work' ? <Briefcase size={10} /> : <Leaf size={10} />}{src.name}
             </span>
           ))}
         </div>
@@ -412,8 +412,8 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
       {!showManageSources && connected && connectedCalendars.length > 0 && (
         <div style={{ display: 'flex', gap: 5, marginBottom: 10, flexWrap: 'wrap' }}>
           {connectedCalendars.map(cc => (
-            <span key={cc.id} style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 999, background: cc.type === 'work' ? 'rgba(128,189,255,0.1)' : 'rgba(127,213,170,0.1)', color: cc.type === 'work' ? '#80BDFF' : '#7FD5AA', border: `1px solid ${cc.type === 'work' ? 'rgba(128,189,255,0.2)' : 'rgba(127,213,170,0.2)'}` }}>
-              {cc.type === 'work' ? <Briefcase size={10} style={{ marginRight: 3 }} /> : <Leaf size={10} style={{ marginRight: 3 }} />}{cc.name}
+            <span key={cc.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 999, background: cc.type === 'work' ? 'rgba(128,189,255,0.1)' : 'rgba(127,213,170,0.1)', color: cc.type === 'work' ? '#80BDFF' : '#7FD5AA', border: `1px solid ${cc.type === 'work' ? 'rgba(128,189,255,0.2)' : 'rgba(127,213,170,0.2)'}` }}>
+              {cc.type === 'work' ? <Briefcase size={10} /> : <Leaf size={10} />}{cc.name}
             </span>
           ))}
         </div>
