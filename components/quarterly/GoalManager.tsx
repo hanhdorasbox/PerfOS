@@ -23,6 +23,15 @@ interface Quarter {
   name: string
 }
 
+interface AvailableQuarter {
+  id: string
+  name: string
+  quarterNumber: number
+  year: number
+  status: string
+  startDate: string
+}
+
 interface User {
   id: string
   name: string
@@ -33,6 +42,7 @@ interface Props {
   user: User
   quarter: Quarter
   goals: Goal[]
+  availableQuarters?: AvailableQuarter[]
 }
 
 const STRATEGIC_ROLES = [
@@ -58,14 +68,27 @@ const EMPTY_FORM = {
   unit: '',
   deadline: '',
   priorityWeight: '1',
+  quarterId: '', // set dynamically from selected quarter
 }
 
-export default function GoalManager({ user: initUser, quarter: initQuarter, goals: initGoals }: Props) {
+const STATUS_LABEL: Record<string, string> = {
+  active:  'Active',
+  planned: 'Planned',
+  closed:  'Closed',
+}
+const STATUS_COLOR: Record<string, string> = {
+  active:  '#7FD5AA',
+  planned: '#80BDFF',
+  closed:  '#6E6E73',
+}
+
+export default function GoalManager({ user: initUser, quarter: initQuarter, goals: initGoals, availableQuarters = [] }: Props) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [goals, setGoals] = useState<Goal[]>(initGoals)
   const [quarter, setQuarter] = useState(initQuarter)
   const [user, setUser] = useState(initUser)
+  const [selectedQuarterId, setSelectedQuarterId] = useState(initQuarter.id)
 
   // Profile editing
   const [editingProfile, setEditingProfile] = useState(false)
@@ -190,6 +213,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
       unit: goal.unit ?? '',
       deadline: goal.deadline.slice(0, 10),
       priorityWeight: String(goal.priorityWeight),
+      quarterId: quarter.id,
     })
     setShowForm(true)
   }
@@ -231,7 +255,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
         const res = await fetch('/api/goals', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, quarterId: quarter.id, ...payload }),
+          body: JSON.stringify({ userId: user.id, quarterId: selectedQuarterId || quarter.id, ...payload }),
         })
         const data = await res.json() as Goal & { error?: string }
         if (!res.ok || data.error) throw new Error(data.error)
@@ -497,6 +521,49 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
               <div style={{ fontSize: 13, fontWeight: 700, color: '#B8A4FF', marginBottom: 16 }}>
                 {editingGoal ? 'Edit Goal' : 'New Goal'}
               </div>
+
+              {/* Quarter selector — only for new goals when multiple quarters available */}
+              {!editingGoal && availableQuarters.length > 1 && (
+                <div style={{ marginBottom: 14 }}>
+                  <label style={labelStyle}>Quarter</label>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {availableQuarters.map(aq => {
+                      const sel = (selectedQuarterId || quarter.id) === aq.id
+                      const sc  = STATUS_COLOR[aq.status] ?? '#6E6E73'
+                      return (
+                        <button
+                          key={aq.id}
+                          type="button"
+                          onClick={() => setSelectedQuarterId(aq.id)}
+                          style={{
+                            padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+                            cursor: 'pointer', border: 'none',
+                            background: sel ? `${sc}20` : 'rgba(255,255,255,0.05)',
+                            color: sel ? sc : '#6E6E73',
+                            outline: sel ? `1px solid ${sc}50` : 'none',
+                          }}
+                        >
+                          Q{aq.quarterNumber} {aq.year}
+                          <span style={{ marginLeft: 5, fontWeight: 500, fontSize: 10, opacity: 0.8 }}>
+                            {STATUS_LABEL[aq.status] ?? aq.status}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {/* Status hint */}
+                  {(() => {
+                    const sq = availableQuarters.find(q => q.id === (selectedQuarterId || quarter.id))
+                    if (!sq) return null
+                    if (sq.status === 'planned') {
+                      const d = new Date(sq.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+                      return <div style={{ marginTop: 6, fontSize: 11, color: '#80BDFF' }}>Planned quarter — activates automatically on {d}.</div>
+                    }
+                    if (sq.status === 'closed') return <div style={{ marginTop: 6, fontSize: 11, color: '#6E6E73' }}>Closed quarter — goals here are historical.</div>
+                    return <div style={{ marginTop: 6, fontSize: 11, color: '#7FD5AA' }}>Active quarter — goal will appear in current dashboard.</div>
+                  })()}
+                </div>
+              )}
 
               {/* Title */}
               <div style={{ marginBottom: 14 }}>

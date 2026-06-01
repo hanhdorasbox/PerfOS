@@ -13,6 +13,7 @@
  */
 
 import { prisma } from './db'
+import { ensureQuarterStatuses } from './quarters'
 
 // ─── TaskCandidate ────────────────────────────────────────────────────────────
 
@@ -105,6 +106,7 @@ export async function planTasks(
   if (!candidates.length) return { created: 0, skipped: 0, planId: '', taskIds: [] }
 
   // ── 1. Resolve active WeeklyPlan ─────────────────────────────────────────
+  await ensureQuarterStatuses(userId)
   const quarter = await prisma.quarter.findFirst({
     where: { userId, status: 'active' },
     orderBy: { startDate: 'desc' },

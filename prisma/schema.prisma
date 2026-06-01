@@ -78,16 +78,19 @@ model LongTermGoal {
 }
 
 model Quarter {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  name      String
-  startDate DateTime
-  endDate   DateTime
-  status    String   @default("active")
-  createdAt DateTime @default(now())
-  goals     Goal[]
-  weeklyPlans WeeklyPlan[]
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  year           Int      @default(0)  // calendar year; 0 = legacy/unset
+  quarterNumber  Int      @default(0)  // 1-4; 0 = legacy/unset
+  name           String
+  startDate      DateTime
+  endDate        DateTime
+  status         String   @default("active") // planned | active | closed
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  goals          Goal[]
+  weeklyPlans    WeeklyPlan[]
   fitnessStrategies FitnessStrategy[]
   trajectoryPlans   TrajectoryQuarterPlan[]
 }

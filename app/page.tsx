@@ -4,6 +4,7 @@ import GoalCard from '@/components/dashboard/GoalCard'
 import QuarterOverview from '@/components/dashboard/QuarterOverview'
 import AlertBanner from '@/components/dashboard/AlertBanner'
 import DailyCommandCenter from '@/components/dashboard/DailyCommandCenter'
+import { ensureQuarterStatuses } from '@/lib/quarters'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,6 +17,9 @@ export default async function Dashboard() {
       </div>
     )
   }
+
+  // Auto-sync quarter statuses based on today's date
+  await ensureQuarterStatuses(user.id)
 
   // Current week bounds — ensures we only load THIS week's plan (H1)
   const _now = new Date()
