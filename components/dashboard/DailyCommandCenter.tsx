@@ -914,9 +914,6 @@ export default function DailyCommandCenter({
             calendarIcsConnected={calendarIcsConnected}
           />
 
-          {/* 2. This Week — Tasks */}
-          <TodayTasks tasks={tasks} weeklyPlanId={weeklyPlanId} userId={userId} />
-
           {/* 3. Today's Fitness */}
           <FitnessSnapshot strategy={strategy} />
 
