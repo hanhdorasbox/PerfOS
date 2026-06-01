@@ -62,6 +62,14 @@ export async function POST(req: NextRequest) {
 
   const tasks = quarter?.weeklyPlans[0]?.tasks ?? []
 
+  // Compute current week number within the quarter (1-based)
+  const weekOfQuarter = quarter
+    ? Math.min(13, Math.max(1, Math.ceil((Date.now() - quarter.startDate.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1))
+    : null
+  const quarterTotalWeeks = quarter
+    ? Math.round((quarter.endDate.getTime() - quarter.startDate.getTime()) / (7 * 24 * 60 * 60 * 1000))
+    : null
+
   const fitnessStrategy = await prisma.fitnessStrategy.findFirst({
     where: { userId, status: { in: ['active', 'draft'] } },
     orderBy: [{ status: 'asc' }, { createdAt: 'desc' }],
@@ -148,6 +156,8 @@ Daily facts rules:
             date: todayStr,
             dayOfWeek: new Date().toLocaleDateString('en-US', { weekday: 'long' }),
             quarterName: quarter?.name,
+            weekOfQuarter,
+            quarterTotalWeeks,
             goals: goalsWithMetrics.map((g) => ({
               title: g.title,
               category: g.category,
