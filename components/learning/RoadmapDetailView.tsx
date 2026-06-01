@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Spinner from '@/components/ui/Spinner'
 import { Target, Route, ListChecks, Activity, Gem, Archive, Trash2, BookOpen, CalendarDays, AlertTriangle, Zap, Pencil, Play, Hammer, MessageSquare, Dumbbell } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -96,13 +96,18 @@ async function addStepToWeek(userId: string, step: StepFull): Promise<boolean> {
 
 export default function RoadmapDetailView({ goal: initialGoal }: Props) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [goal, setGoal] = useState(initialGoal)
 
   const strategicRoadmap: StrategicRoadmap | null = (() => {
     try { return goal.strategicRoadmap ? JSON.parse(goal.strategicRoadmap) : null } catch { return null }
   })()
 
-  const defaultTab: Tab = strategicRoadmap ? 'roadmap' : (goal.milestones.length > 0 ? 'plan' : 'overview')
+  const VALID_TABS: Tab[] = ['overview', 'roadmap', 'plan', 'health', 'capital']
+  const tabParam = searchParams.get('tab') as Tab | null
+  const defaultTab: Tab = tabParam && VALID_TABS.includes(tabParam)
+    ? tabParam
+    : strategicRoadmap ? 'roadmap' : (goal.milestones.length > 0 ? 'plan' : 'overview')
   const [activeTab, setActiveTab] = useState<Tab>(defaultTab)
   const [regenerating, setRegenerating] = useState(false)
   const [regenError, setRegenError] = useState('')

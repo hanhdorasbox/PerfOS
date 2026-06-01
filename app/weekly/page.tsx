@@ -93,7 +93,7 @@ export default async function WeeklyPage() {
           sourceModule: t.sourceModule ?? null,
           sourceId: t.sourceId ?? null,
           sourceUrl: t.sourceModule === 'learning' && t.sourceId && stepGoalMap.has(t.sourceId)
-            ? `/learning/${stepGoalMap.get(t.sourceId)}`
+            ? `/learning/${stepGoalMap.get(t.sourceId)}?tab=plan`
             : null,
         })) ?? []}
         goals={quarter.goals.map(g => ({ id: g.id, title: g.title, category: g.category }))}
