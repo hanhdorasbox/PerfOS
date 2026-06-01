@@ -189,7 +189,7 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
 
       <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
         {(['personal', 'work'] as const).map(t => (
-          <button key={t} onClick={() => setIcsType(t)} style={{ flex: 1, padding: '6px 0', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', background: icsType === t ? (t === 'work' ? 'rgba(128,189,255,0.2)' : 'rgba(127,213,170,0.15)') : 'rgba(255,255,255,0.05)', color: icsType === t ? (t === 'work' ? '#80BDFF' : '#7FD5AA') : '#6E6E73' }}>
+          <button key={t} onClick={() => setIcsType(t)} style={{ flex: 1, padding: '6px 0', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, background: icsType === t ? (t === 'work' ? 'rgba(128,189,255,0.2)' : 'rgba(127,213,170,0.15)') : 'rgba(255,255,255,0.05)', color: icsType === t ? (t === 'work' ? '#80BDFF' : '#7FD5AA') : '#6E6E73' }}>
             {t === 'personal' ? <><Leaf size={11} /> Personal</> : <><Briefcase size={11} /> Work</>}
           </button>
         ))}
