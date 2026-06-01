@@ -9,6 +9,30 @@ import { prisma } from './db'
 
 export type QuarterStatus = 'planned' | 'active' | 'closed'
 
+// ─── Schema migration (runs once, idempotent) ─────────────────────────────────
+
+let schemaMigrated = false
+
+async function ensureQuarterSchema() {
+  if (schemaMigrated) return
+  try {
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Quarter" ADD COLUMN IF NOT EXISTS "year" INTEGER NOT NULL DEFAULT 0`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Quarter" ADD COLUMN IF NOT EXISTS "quarterNumber" INTEGER NOT NULL DEFAULT 0`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Quarter" ADD COLUMN IF NOT EXISTS "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT NOW()`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WeeklyPlan" ADD COLUMN IF NOT EXISTS "userId" TEXT`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WeeklyPlan" ADD COLUMN IF NOT EXISTS "weeklyTheme" TEXT`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WeeklyPlan" ADD COLUMN IF NOT EXISTS "capacityLevel" TEXT`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WeeklyPlan" ADD COLUMN IF NOT EXISTS "overloadRisk" DOUBLE PRECISION`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WeeklyPlan" ADD COLUMN IF NOT EXISTS "reviewedAt" TIMESTAMP(3)`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WeeklyPlan" ADD COLUMN IF NOT EXISTS "createdAt" TIMESTAMP(3) NOT NULL DEFAULT NOW()`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WeeklyPlan" ADD COLUMN IF NOT EXISTS "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT NOW()`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WeeklyTask" ADD COLUMN IF NOT EXISTS "estimatedMinutes" INTEGER`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WeeklyTask" ADD COLUMN IF NOT EXISTS "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT NOW()`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WorkoutLog" ADD COLUMN IF NOT EXISTS "linkedWeeklyTaskId" TEXT`)
+    schemaMigrated = true
+  } catch { /* already exists or not PostgreSQL */ }
+}
+
 // ─── Dates ────────────────────────────────────────────────────────────────────
 
 export function quarterDates(year: number, qNum: 1 | 2 | 3 | 4): { startDate: Date; endDate: Date } {
@@ -42,6 +66,7 @@ export function currentYearAndQuarter(): { year: number; qNum: number } {
  * date-derived value.  Cheap — only writes rows that actually changed.
  */
 export async function ensureQuarterStatuses(userId: string): Promise<void> {
+  await ensureQuarterSchema()
   const rows = await prisma.quarter.findMany({
     where: { userId },
     select: { id: true, startDate: true, endDate: true, status: true },
