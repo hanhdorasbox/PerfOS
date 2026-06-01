@@ -59,16 +59,40 @@ function tryParse(s: string | null | undefined) {
   try { return JSON.parse(s) } catch { return null }
 }
 
-function shortenObjective(text: string): string {
-  if (!text) return text
-  const first = text.split(/\.\s+/)[0]
-  return first.endsWith('.') ? first : first + '.'
+const BODY_METRIC_PATTERN = /\b(waist|circumference|body composition|body measurement|baseline|current weight|reduce weight|kg target|cm target)\b/i
+
+// Returns the short display title for the objective card.
+// Priority: objectiveShort → derived short title → safe fallback.
+// Never shows a full paragraph or body-metric language.
+function getDisplayObjective(strategy: FitnessStrategy): string {
+  // 1. Use explicit short field if clean
+  if (strategy.objectiveShort && !BODY_METRIC_PATTERN.test(strategy.objectiveShort)) {
+    return strategy.objectiveShort
+  }
+  // 2. If objectiveShort has body-metric language, derive from plans
+  const sp = tryParse(strategy.strengthPlan)
+  const cp = tryParse(strategy.cardioPlan)
+  const parts: string[] = []
+  if (sp?.sessionsPerWeek) parts.push(`${sp.sessionsPerWeek}× strength`)
+  if (cp?.sessionsPerWeek) parts.push(`${cp.sessionsPerWeek}× cardio`)
+  if (parts.length > 0) return `12-week plan · ${parts.join(', ')}.`
+  // 3. Last resort clean fallback
+  return '12-week fitness execution plan.'
+}
+
+interface ChecklistItem {
+  id: string
+  title: string
+  orderIndex: number
+  completed: boolean
+  completedAt: string | null
 }
 
 interface FitnessStrategy {
   id: string
   userId?: string
   mainObjective: string
+  objectiveShort?: string | null
   strengthPlan?: string | null
   cardioPlan?: string | null
   saunaPlan?: string | null
@@ -83,6 +107,7 @@ interface FitnessStrategy {
   workoutPlan?: string | null
   status: string
   createdAt: string
+  checklistItems?: ChecklistItem[]
 }
 
 interface Props { strategy: FitnessStrategy }
@@ -468,8 +493,16 @@ export default function FitnessStrategyView({ strategy }: Props) {
   const [feedback, setFeedback] = useState<FeedbackState | null>(null)
   const weekId = getWeekId()
 
-  const [checkedSteps, setCheckedSteps] = useState<Set<number>>(new Set())
-  const [stepsDismissed, setStepsDismissed] = useState(false)
+  // DB-backed checklist — loaded from API, not from local React state
+  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>(
+    strategy.checklistItems ?? []
+  )
+  const [checklistLoaded, setChecklistLoaded] = useState(!!strategy.checklistItems)
+  const [stepsDismissed, setStepsDismissed] = useState(() => {
+    // Persist dismissed state in localStorage so it survives refresh
+    if (typeof window === 'undefined') return false
+    return localStorage.getItem(`fitness-setup-dismissed-${strategy.id}`) === 'true'
+  })
 
   const [adjusting, setAdjusting] = useState<string | null>(null)
   const [adjustError, setAdjustError] = useState<string | null>(null)
@@ -480,7 +513,6 @@ export default function FitnessStrategyView({ strategy }: Props) {
   const sauna = tryParse(strategy.saunaPlan)
   const nutr  = tryParse(strategy.nutritionDir)
   const weeklyTargets  = tryParse(strategy.weeklyTargets)
-  const nextSteps: string[] = tryParse(strategy.immediateNextSteps) ?? []
   const trackingMetrics: string[] = tryParse(strategy.trackingMetrics) ?? []
   const roadmap: RoadmapPhaseData[] = tryParse(strategy.roadmap) ?? []
   const workoutPlan: WorkoutPlan | null = tryParse(strategy.workoutPlan)
@@ -491,33 +523,87 @@ export default function FitnessStrategyView({ strategy }: Props) {
   }
 
   const isDraft = strategy.status === 'draft'
-  const allStepsDone = nextSteps.length > 0 && checkedSteps.size >= nextSteps.length
-  const showNextSteps = nextSteps.length > 0 && !stepsDismissed
 
+  // Filter out body-metric tasks from checklist display (don't show weight/waist tasks)
+  const visibleChecklist = checklistItems.filter(
+    item => !BODY_METRIC_PATTERN.test(item.title)
+  )
+  const allStepsDone = visibleChecklist.length > 0 && visibleChecklist.every(i => i.completed)
+  const showNextSteps = visibleChecklist.length > 0 && !stepsDismissed && checklistLoaded
+
+  // Auto-dismiss checklist 1.8s after all steps complete
   useEffect(() => {
-    if (allStepsDone) {
-      const timer = setTimeout(() => setStepsDismissed(true), 1800)
+    if (allStepsDone && !stepsDismissed) {
+      const timer = setTimeout(() => {
+        setStepsDismissed(true)
+        localStorage.setItem(`fitness-setup-dismissed-${strategy.id}`, 'true')
+      }, 1800)
       return () => clearTimeout(timer)
     }
-  }, [allStepsDone])
+  }, [allStepsDone, stepsDismissed, strategy.id])
+
+  // Load checklist from DB on mount (unless already passed as initial data)
+  useEffect(() => {
+    if (checklistLoaded) return
+    fetch(`/api/fitness/checklist?strategyId=${strategy.id}`)
+      .then(r => r.json())
+      .then((items: ChecklistItem[]) => {
+        if (Array.isArray(items)) setChecklistItems(items)
+        setChecklistLoaded(true)
+      })
+      .catch(() => setChecklistLoaded(true))
+  }, [strategy.id, checklistLoaded])
 
   useEffect(() => {
     if (!strategy.userId) return
     fetch(`/api/fitness/schedule-change?userId=${strategy.userId}&weekId=${weekId}`)
       .then(r => r.json())
-      .then((changes: Array<{ id: string; sessionLabel: string; sessionDay: string; action: string; undone: boolean }>) => {
+      .then((changes: Array<{ id: string; sessionLabel: string; sessionDay: string; action: string; reason?: string | null; undone: boolean }>) => {
         if (!Array.isArray(changes)) return
-        const removed = new Set<string>(); const compl = new Set<string>()
+        const removed = new Set<string>()
+        const compl = new Set<string>()
+        const permanentlyRemoved = new Set<string>() // sessions with remove_from_plan
+
         for (const c of changes) {
           if (c.undone) continue
           const lk = `${c.sessionDay}:${c.sessionLabel}`
-          if (c.action === 'completed') compl.add(lk)
-          else removed.add(lk)
+          if (c.action === 'completed') {
+            compl.add(lk)
+          } else if (c.reason === 'remove_from_plan') {
+            // Permanent removal — track session name (not day:session) so we
+            // clean ALL instances across all days
+            permanentlyRemoved.add(c.sessionLabel)
+          } else {
+            removed.add(lk)
+          }
         }
-        setRemovedKeys(removed); setCompletedKeys(compl)
+
+        setRemovedKeys(removed)
+        setCompletedKeys(compl)
+
+        // Retroactively clean permanently-removed sessions that are still in schedule
+        if (permanentlyRemoved.size > 0) {
+          setSchedule(prev => {
+            const hasStale = prev.some(d =>
+              (d.sessions ?? []).some(s => permanentlyRemoved.has(s))
+            )
+            if (!hasStale) return prev
+            const cleaned = prev.map(d => ({
+              ...d,
+              sessions: (d.sessions ?? []).filter(s => !permanentlyRemoved.has(s)),
+            }))
+            // Persist cleaned schedule to DB (fire-and-forget)
+            fetch('/api/fitness/strategy/update', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ strategyId: strategy.id, weeklySchedule: cleaned }),
+            }).catch(() => {})
+            return cleaned
+          })
+        }
       })
       .catch(() => {})
-  }, [strategy.userId, weekId])
+  }, [strategy.userId, strategy.id, weekId])
 
   async function activate() {
     setActivating(true)
@@ -810,7 +896,7 @@ export default function FitnessStrategyView({ strategy }: Props) {
           </div>
         </div>
         <div style={{ fontSize: 18, fontWeight: 600, color: '#EEEEF2', lineHeight: 1.52, letterSpacing: '-0.015em' }}>
-          {shortenObjective(strategy.mainObjective)}
+          {getDisplayObjective(strategy)}
         </div>
       </div>
 
@@ -826,42 +912,53 @@ export default function FitnessStrategyView({ strategy }: Props) {
             <div style={{ fontSize: 11, fontWeight: 500, color: allStepsDone ? '#7FD5AA' : '#B8A4FF', letterSpacing: '0.04em' }}>
               {allStepsDone ? 'Initial Setup Complete' : 'Immediate Next Steps'}
             </div>
-            <button onClick={() => setStepsDismissed(true)} style={{ fontSize: 11, color: '#3E3E44', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px', borderRadius: 4 }}>
+            <button
+              onClick={() => {
+                setStepsDismissed(true)
+                localStorage.setItem(`fitness-setup-dismissed-${strategy.id}`, 'true')
+              }}
+              style={{ fontSize: 11, color: '#3E3E44', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px', borderRadius: 4 }}
+            >
               {allStepsDone ? 'Dismiss' : '✕'}
             </button>
           </div>
           {!allStepsDone && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {nextSteps.map((step, i) => {
-                const checked = checkedSteps.has(i)
-                return (
-                  <label key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', cursor: 'pointer' }}>
-                    <div
-                      onClick={() => setCheckedSteps(prev => {
-                        const n = new Set(prev)
-                        if (n.has(i)) n.delete(i); else n.add(i)
-                        return n
-                      })}
-                      style={{
-                        width: 20, height: 20, borderRadius: 7, flexShrink: 0, marginTop: 1,
-                        background: checked ? 'rgba(127,213,170,0.15)' : 'transparent',
-                        border: checked ? '1.5px solid rgba(127,213,170,0.45)' : '1.5px solid rgba(255,255,255,0.10)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        transition: 'all 0.16s', cursor: 'pointer',
-                      }}
-                    >
-                      {checked && (
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                          <path d="M2 5.5L4 7.5L8 3" stroke="#7FD5AA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      )}
-                    </div>
-                    <span style={{ fontSize: 13, color: checked ? '#52525A' : '#EEEEF2', lineHeight: 1.55, textDecoration: checked ? 'line-through' : 'none', transition: 'all 0.16s', letterSpacing: '-0.005em' }}>
-                      {step}
-                    </span>
-                  </label>
-                )
-              })}
+              {visibleChecklist.map(item => (
+                <label key={item.id} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', cursor: 'pointer' }}>
+                  <div
+                    onClick={async () => {
+                      const newCompleted = !item.completed
+                      // Optimistic UI update
+                      setChecklistItems(prev => prev.map(i =>
+                        i.id === item.id ? { ...i, completed: newCompleted, completedAt: newCompleted ? new Date().toISOString() : null } : i
+                      ))
+                      // Persist to DB
+                      await fetch('/api/fitness/checklist', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: item.id, completed: newCompleted }),
+                      }).catch(() => {})
+                    }}
+                    style={{
+                      width: 20, height: 20, borderRadius: 7, flexShrink: 0, marginTop: 1,
+                      background: item.completed ? 'rgba(127,213,170,0.15)' : 'transparent',
+                      border: item.completed ? '1.5px solid rgba(127,213,170,0.45)' : '1.5px solid rgba(255,255,255,0.10)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.16s', cursor: 'pointer',
+                    }}
+                  >
+                    {item.completed && (
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 5.5L4 7.5L8 3" stroke="#7FD5AA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span style={{ fontSize: 13, color: item.completed ? '#52525A' : '#EEEEF2', lineHeight: 1.55, textDecoration: item.completed ? 'line-through' : 'none', transition: 'all 0.16s', letterSpacing: '-0.005em' }}>
+                    {item.title}
+                  </span>
+                </label>
+              ))}
             </div>
           )}
         </div>
