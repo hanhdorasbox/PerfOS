@@ -92,6 +92,9 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
   const [analyzing, setAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const autoRefreshRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // Track which task indices have been added to the week plan
+  const [addedTasks, setAddedTasks] = useState<Set<number>>(new Set())
+  const [addingAll, setAddingAll] = useState(false)
 
   const refresh = useCallback(async () => {
     setRefreshing(true); setError(null)
@@ -132,6 +135,34 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
       if (result.ai) setData(prev => prev ? { ...prev, ai: result.ai } : prev)
     } catch { setError('AI analysis failed') } finally { setAnalyzing(false) }
   }, [report, userId])
+
+  // Add a single AI-suggested task to this week's plan
+  const addTask = useCallback(async (task: { title: string; why?: string; day?: string }, index: number) => {
+    if (!report) return
+    try {
+      const res = await fetch(`/api/reports/${report.id}/add-tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, tasks: [{ ...task, priority: index < 2 ? 1 : 2 }] }),
+      })
+      if (res.ok) setAddedTasks(prev => new Set(prev).add(index))
+    } catch { /* ignore */ }
+  }, [report, userId])
+
+  // Add all AI-suggested tasks to this week's plan at once
+  const addAllTasks = useCallback(async () => {
+    if (!report || !data?.ai?.nextWeekTasks?.length) return
+    setAddingAll(true)
+    try {
+      const tasks = data.ai.nextWeekTasks.map((t, i) => ({ ...t, priority: (i < 2 ? 1 : 2) as 1 | 2 }))
+      const res = await fetch(`/api/reports/${report.id}/add-tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, tasks }),
+      })
+      if (res.ok) setAddedTasks(new Set(data.ai.nextWeekTasks.map((_, i) => i)))
+    } catch { /* ignore */ } finally { setAddingAll(false) }
+  }, [report, userId, data])
 
   if (!data) {
     // Skeleton loading state — shown while auto-loading on mount
@@ -463,16 +494,51 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
               )}
               {data.ai.nextWeekTasks?.length > 0 && (
                 <div style={{ marginBottom: 14 }}>
-                  <p style={{ color: '#7FD5AA', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Suggested tasks</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <p style={{ color: '#7FD5AA', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                      Suggested tasks
+                    </p>
+                    <button
+                      onClick={addAllTasks}
+                      disabled={addingAll || addedTasks.size === data.ai.nextWeekTasks.length}
+                      style={{
+                        background: addedTasks.size === data.ai.nextWeekTasks.length
+                          ? 'rgba(127,213,170,0.1)' : 'rgba(127,213,170,0.15)',
+                        border: '1px solid rgba(127,213,170,0.3)',
+                        color: '#7FD5AA', borderRadius: 6, padding: '4px 12px',
+                        fontSize: 11, fontWeight: 700, cursor: addingAll ? 'wait' : 'pointer',
+                        display: 'flex', alignItems: 'center', gap: 5,
+                      }}
+                    >
+                      {addingAll ? '…' : addedTasks.size === data.ai.nextWeekTasks.length
+                        ? `✓ All ${data.ai.nextWeekTasks.length} added`
+                        : `+ Add all ${data.ai.nextWeekTasks.length} to week`}
+                    </button>
+                  </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {data.ai.nextWeekTasks.map((t, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
+                      <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 10px', background: addedTasks.has(i) ? 'rgba(127,213,170,0.04)' : 'rgba(255,255,255,0.03)', borderRadius: 8, border: `1px solid ${addedTasks.has(i) ? 'rgba(127,213,170,0.15)' : 'transparent'}`, transition: 'all 0.2s' }}>
                         <span style={{ background: 'rgba(127,213,170,0.15)', color: '#7FD5AA', fontSize: 10, fontWeight: 700, width: 18, height: 18, borderRadius: 99, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
-                        <div style={{ flex: 1 }}>
-                          <span style={{ color: '#F5F5F7', fontSize: 13, fontWeight: 600 }}>{t.title}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <span style={{ color: addedTasks.has(i) ? '#7FD5AA' : '#F5F5F7', fontSize: 13, fontWeight: 600 }}>{t.title}</span>
                           {t.day && <span style={{ color: '#6E6E73', fontSize: 11, marginLeft: 8 }}>{t.day}</span>}
                           {t.why && <p style={{ color: '#6E6E73', fontSize: 11, marginTop: 1 }}>{t.why}</p>}
                         </div>
+                        <button
+                          onClick={() => addTask(t, i)}
+                          disabled={addedTasks.has(i)}
+                          style={{
+                            flexShrink: 0,
+                            background: addedTasks.has(i) ? 'rgba(127,213,170,0.1)' : 'rgba(255,255,255,0.05)',
+                            border: `1px solid ${addedTasks.has(i) ? 'rgba(127,213,170,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                            color: addedTasks.has(i) ? '#7FD5AA' : '#6E6E73',
+                            borderRadius: 5, padding: '3px 8px', fontSize: 10, fontWeight: 600,
+                            cursor: addedTasks.has(i) ? 'default' : 'pointer',
+                            transition: 'all 0.15s',
+                          }}
+                        >
+                          {addedTasks.has(i) ? '✓ Added' : '+ Week'}
+                        </button>
                       </div>
                     ))}
                   </div>
