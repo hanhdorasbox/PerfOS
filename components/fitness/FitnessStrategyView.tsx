@@ -585,19 +585,65 @@ export default function FitnessStrategyView({ strategy }: Props) {
     if (!removeTarget || !selectedReason) return
     setSavingRemoval(true)
     try {
-      const res = await fetch('/api/fitness/schedule-change', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: strategy.userId, weekId, sessionLabel: removeTarget.session, sessionDay: removeTarget.day, sessionType: removeTarget.sessionType, action: selectedReason === 'moving_to_other_day' ? 'rescheduled' : 'removed', reason: selectedReason }) })
-      const data = await res.json() as { id: string }
-      setRemovedKeys(prev => new Set([...prev, removeTarget.labelKey]))
-      const allOfType = schedule.flatMap(d => (d.sessions ?? []).map(s => ({ type: classifySession(s), lk: `${d.day}:${s}` }))).filter(x => x.type === removeTarget.sessionType)
-      const remaining = allOfType.filter(x => !removedKeys.has(x.lk) && x.lk !== removeTarget.labelKey).length
-      const type = removeTarget.sessionType
-      let impactText = ''
-      if (type === 'strength') impactText = remaining <= 1 ? `Strength drops to ${remaining} session this week.` : `Strength: ${remaining} sessions remaining this week.`
-      else if (type === 'cardio') impactText = `Cardio: ${remaining} session${remaining !== 1 ? 's' : ''} remaining this week.`
-      else impactText = 'Session removed.'
-      setFeedback({ text: impactText, type: remaining <= 1 && type === 'strength' ? 'warn' : selectedReason === 'plan_too_much' ? 'protect' : 'ok' })
-      setUndoState({ id: data.id, labelKey: removeTarget.labelKey, label: removeTarget.session })
-      setTimeout(() => setUndoState(null), 8000)
+      const isPermanent = selectedReason === 'remove_from_plan'
+
+      if (isPermanent) {
+        // ── Permanent removal: strip ALL instances of this session name from
+        //    every day in the schedule and save to DB immediately. ──────────────
+        const sessionName = removeTarget.session
+        const newSchedule = schedule.map(d => ({
+          ...d,
+          sessions: (d.sessions ?? []).filter(s => s !== sessionName),
+        }))
+        setSchedule(newSchedule)
+        await persistSchedule(newSchedule)
+
+        // Log the change for history (no undo for permanent removal)
+        await fetch('/api/fitness/schedule-change', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: strategy.userId,
+            weekId,
+            sessionLabel: sessionName,
+            sessionDay: removeTarget.day,
+            sessionType: removeTarget.sessionType,
+            action: 'removed',
+            reason: 'remove_from_plan',
+          }),
+        })
+
+        setFeedback({ text: `"${sessionName}" permanently removed from plan.`, type: 'ok' })
+        setTimeout(() => setFeedback(null), 4000)
+      } else {
+        // ── Weekly removal: mark faded for this week only (existing behaviour) ─
+        const res = await fetch('/api/fitness/schedule-change', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: strategy.userId,
+            weekId,
+            sessionLabel: removeTarget.session,
+            sessionDay: removeTarget.day,
+            sessionType: removeTarget.sessionType,
+            action: selectedReason === 'moving_to_other_day' ? 'rescheduled' : 'removed',
+            reason: selectedReason,
+          }),
+        })
+        const data = await res.json() as { id: string }
+        setRemovedKeys(prev => new Set([...prev, removeTarget.labelKey]))
+        const allOfType = schedule.flatMap(d => (d.sessions ?? []).map(s => ({ type: classifySession(s), lk: `${d.day}:${s}` }))).filter(x => x.type === removeTarget.sessionType)
+        const remaining = allOfType.filter(x => !removedKeys.has(x.lk) && x.lk !== removeTarget.labelKey).length
+        const type = removeTarget.sessionType
+        let impactText = ''
+        if (type === 'strength') impactText = remaining <= 1 ? `Strength drops to ${remaining} session this week.` : `Strength: ${remaining} sessions remaining this week.`
+        else if (type === 'cardio') impactText = `Cardio: ${remaining} session${remaining !== 1 ? 's' : ''} remaining this week.`
+        else impactText = 'Session removed.'
+        setFeedback({ text: impactText, type: remaining <= 1 && type === 'strength' ? 'warn' : selectedReason === 'plan_too_much' ? 'protect' : 'ok' })
+        setUndoState({ id: data.id, labelKey: removeTarget.labelKey, label: removeTarget.session })
+        setTimeout(() => setUndoState(null), 8000)
+      }
+
       setRemoveTarget(null); setSelectedReason('')
     } catch { /* silent */ }
     finally { setSavingRemoval(false) }
