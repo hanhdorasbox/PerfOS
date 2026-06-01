@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { createAnthropicClient } from '@/lib/anthropic'
+import { planTasks } from '@/lib/execution-planner'
 
 const client = createAnthropicClient()
 
@@ -234,43 +235,28 @@ Requirements:
 
     // ── Auto-generate WeeklyTasks for Phase 1 first milestone's steps ──────────
     try {
-      const weeklyPlan = await prisma.weeklyPlan.findFirst({
-        where: { status: 'active', quarter: { userId: goal.userId, status: 'active' } },
-        orderBy: { weekStart: 'desc' },
+      const firstPhaseName = strategicRoadmap?.phases?.[0]?.name ?? null
+      const firstMilestone = await prisma.learningMilestone.findFirst({
+        where: { capabilityGoalId: id, ...(firstPhaseName ? { phaseName: firstPhaseName } : {}) },
+        include: { steps: { orderBy: { order: 'asc' } } },
+        orderBy: { order: 'asc' },
       })
 
-      if (weeklyPlan) {
-        // Get first phase milestones sorted by order
-        const firstPhaseName = strategicRoadmap?.phases?.[0]?.name ?? null
-        const firstMilestone = await prisma.learningMilestone.findFirst({
-          where: { capabilityGoalId: id, ...(firstPhaseName ? { phaseName: firstPhaseName } : {}) },
-          include: { steps: { orderBy: { order: 'asc' } } },
-          orderBy: { order: 'asc' },
-        })
-
-        if (firstMilestone?.steps?.length) {
-          for (const step of firstMilestone.steps) {
-            // Dedup: skip if already exists for this step in this plan
-            const existing = await prisma.weeklyTask.findFirst({
-              where: { weeklyPlanId: weeklyPlan.id, sourceModule: 'learning', sourceId: step.id },
-            })
-            if (!existing) {
-              const effort = step.estimatedMinutes <= 30 ? 1 : step.estimatedMinutes <= 60 ? 2 : 3
-              await prisma.weeklyTask.create({
-                data: {
-                  weeklyPlanId: weeklyPlan.id,
-                  title: step.title,
-                  effort,
-                  priority: 2,
-                  taskType: 'learning',
-                  sourceModule: 'learning',
-                  sourceId: step.id,
-                  createdBy: 'system',
-                },
-              })
-            }
-          }
-        }
+      if (firstMilestone?.steps?.length) {
+        const candidates = firstMilestone.steps.map(step => ({
+          title: step.title,
+          domain: 'learning' as const,
+          taskType: 'study' as const,
+          priority: 'should' as const,
+          effort: (step.estimatedMinutes <= 30 ? 'low' : step.estimatedMinutes <= 60 ? 'medium' : 'deep') as 'low' | 'medium' | 'deep',
+          estimatedMinutes: step.estimatedMinutes,
+          doneCriteria: step.completionCriteria ?? undefined,
+          sourceModule: 'learning',
+          sourceType: 'learning_step',
+          sourceId: step.id,
+          createdBy: 'system' as const,
+        }))
+        await planTasks(goal.userId, candidates).catch(() => {})
       }
     } catch { /* Don't fail roadmap generation if task creation errors */ }
 

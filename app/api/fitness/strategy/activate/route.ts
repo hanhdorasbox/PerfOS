@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { planTasks } from '@/lib/execution-planner'
 
 export async function POST(req: NextRequest) {
   const { userId, strategyId } = await req.json() as { userId: string; strategyId: string }
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
       data: { status: 'active' },
     })
 
-    // ── Generate concrete weekly tasks from workout plan ──────────────────────
+    // ── Generate WeeklyTasks from weekly schedule via ExecutionPlanner ────────
     const weeklySchedule: { day: string; sessions: string[] }[] = (() => {
       try { return JSON.parse(strategy.weeklySchedule || '[]') } catch { return [] }
     })()
@@ -25,58 +26,34 @@ export async function POST(req: NextRequest) {
       try { return JSON.parse((strategy as unknown as Record<string, unknown>).workoutPlan as string || 'null') } catch { return null }
     })()
 
-    // Find the active quarter and its current weekly plan
-    const quarter = await prisma.quarter.findFirst({
-      where: { userId, status: 'active' },
-      include: {
-        weeklyPlans: {
-          where: { status: 'active' },
-          orderBy: { weekStart: 'desc' },
-          take: 1,
-        },
-      },
-    })
-
-    const weeklyPlan = quarter?.weeklyPlans[0]
-
-    if (weeklyPlan && weeklySchedule.length > 0) {
-      // Build label→theme lookup
+    if (weeklySchedule.length > 0) {
       const workoutMeta = new Map<string, string>()
       if (workoutPlan?.days) {
-        for (const d of workoutPlan.days) {
-          workoutMeta.set(d.label.toLowerCase(), d.theme)
-        }
+        for (const d of workoutPlan.days) workoutMeta.set(d.label.toLowerCase(), d.theme)
       }
 
-      // For each strength session in the schedule, create a task if not already present
-      for (const schedDay of weeklySchedule) {
-        for (const session of schedDay.sessions || []) {
-          const isStrength = /\b(body|upper|lower|push|pull|full|strength|hypertrophy|leg|chest|back|shoulder)\b/i.test(session)
-          if (!isStrength) continue
-
-          const theme = workoutMeta.get(session.toLowerCase())
-          const taskTitle = theme
-            ? `${session} — ${theme}`
-            : `Complete ${session} workout`
-
-          const existing = await prisma.weeklyTask.findFirst({
-            where: { weeklyPlanId: weeklyPlan.id, title: taskTitle },
+      const candidates = weeklySchedule.flatMap(schedDay =>
+        (schedDay.sessions ?? [])
+          .filter(session => /\b(body|upper|lower|push|pull|full|strength|hypertrophy|leg|chest|back|shoulder)\b/i.test(session))
+          .map(session => {
+            const theme = workoutMeta.get(session.toLowerCase())
+            const title = theme ? `${session} — ${theme}` : `Complete ${session} workout`
+            return {
+              title,
+              domain: 'fitness' as const,
+              taskType: 'workout' as const,
+              priority: 'should' as const,
+              effort: 'deep' as const,
+              sourceModule: 'fitness',
+              sourceType: 'fitness_schedule_item',
+              sourceId: `${strategyId}:${schedDay.day}:${session}`,
+              createdBy: 'system' as const,
+            }
           })
-          if (!existing) {
-            await prisma.weeklyTask.create({
-              data: {
-                weeklyPlanId: weeklyPlan.id,
-                title: taskTitle,
-                completed: false,
-                effort: 3,
-                taskType: 'workout',
-                sourceModule: 'fitness',
-                sourceId: strategyId,
-                createdBy: 'system',
-              },
-            })
-          }
-        }
+      )
+
+      if (candidates.length > 0) {
+        await planTasks(userId, candidates).catch(() => {})
       }
     }
 

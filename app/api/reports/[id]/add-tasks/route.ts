@@ -1,33 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { planTasks } from '@/lib/execution-planner'
 
 interface TaskInput {
   title: string
   why?: string
   day?: string
   priority?: 1 | 2 | 3
-}
-
-function getWeekBounds() {
-  const now = new Date()
-  const dow = now.getDay()
-  const monday = new Date(now)
-  monday.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1))
-  monday.setHours(0, 0, 0, 0)
-  const sunday = new Date(monday)
-  sunday.setDate(monday.getDate() + 6)
-  sunday.setHours(23, 59, 59, 999)
-  return { monday, sunday }
+  recommendationId?: string  // ReportRecommendation.id if already exists
 }
 
 /**
  * POST /api/reports/[id]/add-tasks
  *
- * Converts AI-generated nextWeekTasks from a WeeklyReport into actual
- * WeeklyTasks in the current active plan.
- *
- * Body: { userId: string, tasks: TaskInput[] }
- * Returns: { created: number, skipped: number, planId: string }
+ * 1. For each task, ensures a ReportRecommendation record exists (creates if needed).
+ * 2. Creates WeeklyTasks via ExecutionPlanner using ReportRecommendation.id as sourceId.
+ * 3. Marks recommendations as converted_to_task.
  */
 export async function POST(
   req: NextRequest,
@@ -40,62 +28,68 @@ export async function POST(
       return NextResponse.json({ error: 'userId and tasks required' }, { status: 400 })
     }
 
-    // Verify report exists and belongs to user
-    const report = await prisma.weeklyReport.findFirst({
-      where: { id: reportId, userId },
-    })
+    // Verify report belongs to user
+    const report = await prisma.weeklyReport.findFirst({ where: { id: reportId, userId } })
     if (!report) return NextResponse.json({ error: 'Report not found' }, { status: 404 })
 
-    // Find or create the current week's WeeklyPlan
-    const quarter = await prisma.quarter.findFirst({
-      where: { userId, status: 'active' },
-      orderBy: { startDate: 'desc' },
-    })
-    if (!quarter) {
-      return NextResponse.json({ error: 'No active quarter — create one at /quarterly' }, { status: 400 })
+    // Ensure ReportRecommendation records exist for each task
+    const recIds: Map<string, string> = new Map() // title → recommendationId
+
+    const existingRecs = await prisma.reportRecommendation.findMany({ where: { reportId } })
+
+    for (const [i, t] of tasks.entries()) {
+      if (t.recommendationId) {
+        recIds.set(t.title, t.recommendationId)
+        continue
+      }
+
+      const existing = existingRecs.find(r => r.title === t.title)
+      if (existing) {
+        recIds.set(t.title, existing.id)
+      } else {
+        const rec = await prisma.reportRecommendation.create({
+          data: {
+            reportId,
+            title: t.title,
+            reason: t.why ?? null,
+            suggestedDay: t.day ?? null,
+            priority: t.priority ?? (i < 2 ? 1 : 2),
+            status: 'proposed',
+          },
+        })
+        recIds.set(t.title, rec.id)
+      }
     }
 
-    const { monday, sunday } = getWeekBounds()
-    let plan = await prisma.weeklyPlan.findFirst({
-      where: { quarterId: quarter.id, status: 'active', weekStart: { gte: monday, lte: sunday } },
-    })
-    if (!plan) {
-      plan = await prisma.weeklyPlan.create({
-        data: { quarterId: quarter.id, weekStart: monday, weekEnd: sunday, status: 'active' },
-      })
+    // Build TaskCandidates
+    const candidates = tasks
+      .filter(t => t.title?.trim())
+      .map((t, i) => ({
+        title: t.title,
+        domain: undefined,
+        taskType: undefined,
+        priority: (t.priority === 1 || i < 2 ? 'must' : t.priority === 3 ? 'optional' : 'should') as 'must' | 'should' | 'optional',
+        effort: 'medium' as const,
+        sourceModule: 'report',
+        sourceType: 'report_recommendation',
+        sourceId: recIds.get(t.title),
+        createdBy: 'ai' as const,
+      }))
+
+    const result = await planTasks(userId, candidates)
+
+    // Mark recommendations as converted_to_task
+    for (const [title, recId] of recIds.entries()) {
+      const taskId = result.taskIds[tasks.findIndex(t => t.title === title)]
+      if (taskId) {
+        await prisma.reportRecommendation.update({
+          where: { id: recId },
+          data: { status: 'converted_to_task', convertedTaskId: taskId },
+        }).catch(() => {})
+      }
     }
 
-    let created = 0
-    let skipped = 0
-
-    for (const [i, task] of tasks.entries()) {
-      if (!task.title?.trim()) continue
-
-      // Dedup: skip if same title + sourceId already in this plan
-      const existing = await prisma.weeklyTask.findFirst({
-        where: { weeklyPlanId: plan.id, sourceModule: 'report', sourceId: reportId, title: task.title },
-      })
-      if (existing) { skipped++; continue }
-
-      // First 2 tasks → must (1), rest → should (2)
-      const priority = task.priority ?? (i < 2 ? 1 : 2)
-
-      await prisma.weeklyTask.create({
-        data: {
-          weeklyPlanId: plan.id,
-          title: task.title,
-          effort: 2,
-          priority,
-          taskType: 'other',
-          sourceModule: 'report',
-          sourceId: reportId,
-          createdBy: 'ai',
-        },
-      })
-      created++
-    }
-
-    return NextResponse.json({ created, skipped, planId: plan.id })
+    return NextResponse.json({ created: result.created, skipped: result.skipped, planId: result.planId })
   } catch (e: unknown) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Error' }, { status: 500 })
   }

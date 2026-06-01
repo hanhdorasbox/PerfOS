@@ -1,4 +1,5 @@
 import { prisma } from './db'
+import { planTasks, syncSourceCompletion } from './execution-planner'
 import type Anthropic from '@anthropic-ai/sdk'
 
 // ─── Tool definitions for Claude tool_use ────────────────────────────────────
@@ -51,14 +52,15 @@ export const AI_TOOLS: Anthropic.Tool[] = [
   },
   {
     name: 'update_task',
-    description: 'Update a task title, priority or effort.',
+    description: 'Update a task title, priority, effort, or scheduled day.',
     input_schema: {
       type: 'object' as const,
       properties: {
-        taskId: { type: 'string' },
-        title: { type: 'string' },
-        priority: { type: 'string', enum: ['must', 'should', 'optional'] },
-        effort: { type: 'number' },
+        taskId:        { type: 'string' },
+        title:         { type: 'string' },
+        priority:      { type: 'string', enum: ['must', 'should', 'optional'] },
+        effort:        { type: 'number' },
+        scheduledDate: { type: 'string', description: 'ISO date string e.g. "2026-06-04" to assign a specific day' },
       },
       required: ['taskId'],
     },
@@ -167,14 +169,21 @@ export const AI_TOOLS: Anthropic.Tool[] = [
       type: 'object' as const,
       properties: {
         roadmapTitle: { type: 'string' },
-        roadmapId: { type: 'string', description: 'ID of the CapabilityGoal (learning roadmap) these tasks come from' },
+        roadmapId:    { type: 'string', description: 'ID of the CapabilityGoal (learning roadmap) these tasks come from' },
         tasks: {
           type: 'array',
-          items: { type: 'object', properties: { title: { type: 'string' }, effort: { type: 'number' } }, required: ['title'] },
+          items: {
+            type: 'object',
+            properties: {
+              title:  { type: 'string' },
+              effort: { type: 'number' },
+              stepId: { type: 'string', description: 'LearningStep.id — pass when known for precise deduplication' },
+            },
+            required: ['title'],
+          },
         },
-        weeklyPlanId: { type: 'string' },
       },
-      required: ['roadmapTitle', 'tasks', 'weeklyPlanId'],
+      required: ['roadmapTitle', 'tasks'],
     },
   },
 
@@ -221,44 +230,50 @@ export async function executeAction(
 
       // ── Tasks ──────────────────────────────────────────────────────────────
       case 'create_task': {
-        const weekPlan = await prisma.weeklyPlan.findFirst({
-          where: { status: 'active', quarter: { userId, status: 'active' } },
-          orderBy: { weekStart: 'desc' },
-        })
-        if (!weekPlan) return { success: false, message: 'No active weekly plan found' }
-        const priorityMap: Record<string, number> = { must: 1, should: 2, optional: 3 }
-        const goalId = (input.goalId as string) ?? null
-        const sourceModule = (input.sourceModule as string) ?? (goalId ? 'goal' : null)
-        const sourceId = (input.sourceId as string) ?? goalId ?? null
-        const task = await prisma.weeklyTask.create({
-          data: {
-            weeklyPlanId: weekPlan.id,
-            title: input.title as string,
-            priority: priorityMap[input.priority as string] ?? 2,
-            effort: (input.effort as number) ?? 2,
-            goalId,
+        const goalId       = (input.goalId       as string) ?? null
+        const sourceModule = (input.sourceModule as string) ?? (goalId ? 'goal' : 'manual')
+        const sourceType   = (input.sourceType   as string) ?? (goalId ? 'goal_milestone' : 'manual_task')
+        const sourceId     = (input.sourceId     as string) ?? goalId ?? undefined
+        const priorityStr  = (input.priority     as string) ?? 'should'
+        const effortNum    = (input.effort        as number) ?? 2
+        const effortLabel  = effortNum <= 1 ? 'low' : effortNum >= 3 ? 'deep' : 'medium'
+
+        try {
+          const result = await planTasks(userId, [{
+            title:        input.title as string,
+            domain:       (input.domain as 'fitness' | 'learning' | 'career' | 'finance' | 'nutrition' | 'system' | 'personal') ?? undefined,
+            priority:     priorityStr as 'must' | 'should' | 'optional',
+            effort:       effortLabel as 'low' | 'medium' | 'deep',
             sourceModule,
+            sourceType,
             sourceId,
-            createdBy: 'ai',
-          },
-        })
-        return { success: true, message: `Task created: "${task.title}"`, data: { taskId: task.id } }
+            linkedGoalId: goalId ?? undefined,
+            createdBy:    'ai',
+          }])
+          return { success: true, message: `Task created: "${input.title}"`, data: { taskId: result.taskIds[0] } }
+        } catch (e) {
+          return { success: false, message: e instanceof Error ? e.message : 'No active weekly plan' }
+        }
       }
 
       case 'complete_task': {
+        const taskId = input.taskId as string
         const task = await prisma.weeklyTask.update({
-          where: { id: input.taskId as string },
-          data: { completed: true, completedAt: new Date() },
+          where: { id: taskId },
+          data: { completed: true, completedAt: new Date(), status: 'done' },
         })
+        // Sync source completion
+        await syncSourceCompletion(taskId, true)
         return { success: true, message: `"${task.title}" marked as completed` }
       }
 
       case 'update_task': {
         const priorityMap: Record<string, number> = { must: 1, should: 2, optional: 3 }
         const updateData: Record<string, unknown> = {}
-        if (input.title) updateData.title = input.title
-        if (input.priority) updateData.priority = priorityMap[input.priority as string]
-        if (input.effort) updateData.effort = input.effort
+        if (input.title)         updateData.title         = input.title
+        if (input.priority)      updateData.priority      = priorityMap[input.priority as string]
+        if (input.effort)        updateData.effort        = input.effort
+        if (input.scheduledDate) updateData.scheduledDate = new Date(input.scheduledDate as string)
         const task = await prisma.weeklyTask.update({
           where: { id: input.taskId as string },
           data: updateData,
@@ -379,26 +394,26 @@ export async function executeAction(
 
       // ── Learning ───────────────────────────────────────────────────────────
       case 'create_learning_task': {
-        const tasks = input.tasks as { title: string; effort?: number }[]
-        const weekPlanId = input.weeklyPlanId as string
-        const roadmapId = (input.roadmapId as string) ?? null
-        const created = await Promise.all(
-          tasks.map(t =>
-            prisma.weeklyTask.create({
-              data: {
-                weeklyPlanId: weekPlanId,
-                title: t.title,
-                effort: t.effort ?? 2,
-                priority: 2,
-                taskType: 'learning',
-                sourceModule: 'learning',
-                sourceId: roadmapId,
-                createdBy: 'ai',
-              },
-            })
-          )
-        )
-        return { success: true, message: `${created.length} learning tasks created from "${input.roadmapTitle}"`, data: { taskIds: created.map(t => t.id) } }
+        const tasks     = input.tasks as { title: string; effort?: number; stepId?: string }[]
+        const roadmapId = (input.roadmapId as string) ?? undefined
+
+        try {
+          const result = await planTasks(userId, tasks.map(t => ({
+            title:        t.title,
+            domain:       'learning' as const,
+            taskType:     'study' as const,
+            priority:     'should' as const,
+            effort:       (t.effort ?? 2) <= 1 ? 'low' as const : (t.effort ?? 2) >= 3 ? 'deep' as const : 'medium' as const,
+            sourceModule: 'learning',
+            sourceType:   'learning_step',
+            // Use per-step ID if known; fall back to title-based dedup (sourceId omitted)
+            sourceId:     t.stepId ?? (roadmapId ? `${roadmapId}:${t.title}` : undefined),
+            createdBy:    'ai' as const,
+          })))
+          return { success: true, message: `${result.created} learning tasks created from "${input.roadmapTitle}"`, data: { taskIds: result.taskIds } }
+        } catch (e) {
+          return { success: false, message: e instanceof Error ? e.message : 'No active weekly plan' }
+        }
       }
 
       // ── Patterns ───────────────────────────────────────────────────────────
