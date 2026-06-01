@@ -874,32 +874,6 @@ export default function FitnessStrategyView({ strategy }: Props) {
         </div>
       )}
 
-      {/* ══ B. QUARTERLY OBJECTIVE ═══════════════════════════════════════════════ */}
-      <div style={{
-        padding: '22px 26px',
-        background: 'rgba(255,255,255,0.018)',
-        border: '1px solid rgba(255,255,255,0.07)',
-        borderLeft: '3px solid rgba(127,213,170,0.4)',
-        borderRadius: 22,
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-          <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#52525A' }}>
-            Quarterly Objective
-          </span>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <span style={{ fontSize: 11, color: '#3E3E44' }}>
-              {new Date(strategy.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-            </span>
-            <span style={{ fontSize: 10, padding: '3px 10px', borderRadius: 999, background: isDraft ? 'rgba(221,185,106,0.09)' : 'rgba(127,213,170,0.09)', color: isDraft ? '#DDB96A' : '#7FD5AA', border: `1px solid ${isDraft ? 'rgba(221,185,106,0.20)' : 'rgba(127,213,170,0.20)'}`, fontWeight: 500, letterSpacing: '0.02em' }}>
-              {isDraft ? 'Draft' : 'Active'}
-            </span>
-          </div>
-        </div>
-        <div style={{ fontSize: 18, fontWeight: 600, color: '#EEEEF2', lineHeight: 1.52, letterSpacing: '-0.015em' }}>
-          {getDisplayObjective(strategy)}
-        </div>
-      </div>
-
       {/* ══ C. IMMEDIATE NEXT STEPS ══════════════════════════════════════════════ */}
       {showNextSteps && (
         <div style={{
