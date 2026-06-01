@@ -78,12 +78,14 @@ interface Props {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function TrajectoryView({ trajectory, quarterId }: Props) {
+export default function TrajectoryView({ trajectory, quarterId, userId }: Props) {
   const router = useRouter()
 
   // ── State ──────────────────────────────────────────────────────────────────
 
   const [gaps, setGaps] = useState<GapLocal[]>(trajectory.gaps)
+  // Track which step indices per gap have been added to the week plan
+  const [addedGapSteps, setAddedGapSteps] = useState<Record<string, Set<number>>>({})
   const [plans, setPlans] = useState(trajectory.quarterlyPlans)
   const [generatingPlan, setGeneratingPlan] = useState(false)
   const [generatingRoadmap, setGeneratingRoadmap] = useState(false)
@@ -112,6 +114,34 @@ export default function TrajectoryView({ trajectory, quarterId }: Props) {
   const [showClosed, setShowClosed] = useState(false)
   const [showArchived, setShowArchived] = useState(false)
   const [showRoadmap, setShowRoadmap] = useState(roadmap.length > 0)
+
+  // ── Add gap step to week plan ──────────────────────────────────────────────
+
+  async function addGapStepToWeek(gapId: string, stepIndex: number, stepTitle: string) {
+    try {
+      const res = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          title: stepTitle,
+          effort: 2,
+          priority: 2,
+          taskType: 'other',
+          sourceModule: 'career_gap',
+          sourceId: gapId,
+          createdBy: 'user',
+        }),
+      })
+      if (res.ok) {
+        setAddedGapSteps(prev => {
+          const next = { ...prev }
+          next[gapId] = new Set([...(prev[gapId] ?? []), stepIndex])
+          return next
+        })
+      }
+    } catch { /* silent */ }
+  }
 
   // ── Derived ────────────────────────────────────────────────────────────────
 
@@ -526,25 +556,44 @@ export default function TrajectoryView({ trajectory, quarterId }: Props) {
                         Action Plan — {steps.length} steps
                       </p>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {steps.map((step, i) => (
-                          <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                            <div style={{
-                              width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                              background: `${color}20`, border: `1px solid ${color}40`,
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              color, fontSize: 10, fontWeight: 700,
-                            }}>
-                              {step.step}
-                            </div>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', flexWrap: 'wrap' }}>
-                                <span style={{ color: '#F5F5F7', fontSize: 13 }}>{step.action}</span>
-                                <span style={{ color: '#6E6E73', fontSize: 11 }}>{step.timeframe}</span>
+                        {steps.map((step, i) => {
+                          const isAdded = addedGapSteps[gap.id]?.has(i) ?? false
+                          return (
+                            <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                              <div style={{
+                                width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                                background: `${color}20`, border: `1px solid ${color}40`,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                color, fontSize: 10, fontWeight: 700,
+                              }}>
+                                {step.step}
                               </div>
-                              <span style={{ color: '#6E6E73', fontSize: 11 }}>→ {step.output}</span>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', flexWrap: 'wrap' }}>
+                                  <span style={{ color: '#F5F5F7', fontSize: 13 }}>{step.action}</span>
+                                  <span style={{ color: '#6E6E73', fontSize: 11 }}>{step.timeframe}</span>
+                                </div>
+                                <span style={{ color: '#6E6E73', fontSize: 11 }}>→ {step.output}</span>
+                              </div>
+                              <button
+                                onClick={() => addGapStepToWeek(gap.id, i, step.action)}
+                                disabled={isAdded}
+                                title="Add to this week"
+                                style={{
+                                  flexShrink: 0,
+                                  background: isAdded ? 'rgba(127,213,170,0.1)' : 'rgba(255,255,255,0.04)',
+                                  border: `1px solid ${isAdded ? 'rgba(127,213,170,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                                  color: isAdded ? '#7FD5AA' : '#6E6E73',
+                                  borderRadius: 5, padding: '3px 8px', fontSize: 10, fontWeight: 600,
+                                  cursor: isAdded ? 'default' : 'pointer',
+                                  transition: 'all 0.15s',
+                                }}
+                              >
+                                {isAdded ? '✓ Added' : '+ Week'}
+                              </button>
                             </div>
-                          </div>
-                        ))}
+                          )
+                        })}
                       </div>
                       <div style={{ marginTop: 12, display: 'flex', gap: 6 }}>
                         <button
