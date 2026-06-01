@@ -86,6 +86,10 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
   const [gaps, setGaps] = useState<GapLocal[]>(trajectory.gaps)
   // Track which step indices per gap have been added to the week plan
   const [addedGapSteps, setAddedGapSteps] = useState<Record<string, Set<number>>>({})
+  // Track bulk "add all" loading state per gap
+  const [addingAllGap, setAddingAllGap] = useState<string | null>(null)
+  // Track nextBestAction added per gap
+  const [addedNextAction, setAddedNextAction] = useState<Set<string>>(new Set())
   const [plans, setPlans] = useState(trajectory.quarterlyPlans)
   const [generatingPlan, setGeneratingPlan] = useState(false)
   const [generatingRoadmap, setGeneratingRoadmap] = useState(false)
@@ -140,6 +144,40 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
           return next
         })
       }
+    } catch { /* silent */ }
+  }
+
+  // Add ALL steps of a gap's action plan to this week at once
+  async function addAllGapStepsToWeek(gapId: string, steps: ActionStep[]) {
+    if (!steps.length) return
+    setAddingAllGap(gapId)
+    try {
+      const res = await fetch(`/api/career/trajectory/gaps/${gapId}/add-tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          tasks: steps.map((s, i) => ({ title: s.action, timeframe: s.timeframe, output: s.output, priority: i < 2 ? 1 : 2 })),
+        }),
+      })
+      if (res.ok) {
+        setAddedGapSteps(prev => ({
+          ...prev,
+          [gapId]: new Set(steps.map((_, i) => i)),
+        }))
+      }
+    } catch { /* silent */ } finally { setAddingAllGap(null) }
+  }
+
+  // Add gap's nextBestAction as a single task
+  async function addNextActionToWeek(gapId: string, action: string) {
+    try {
+      const res = await fetch(`/api/career/trajectory/gaps/${gapId}/add-tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, tasks: [{ title: action, priority: 1 }] }),
+      })
+      if (res.ok) setAddedNextAction(prev => new Set(prev).add(gapId))
     } catch { /* silent */ }
   }
 
@@ -476,9 +514,26 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
 
                     {/* Next best action — always visible if exists */}
                     {gap.nextBestAction && (
-                      <div style={{ background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 8, padding: '7px 11px', marginTop: 8 }}>
-                        <p style={{ color: '#7FD5AA', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Next Action</p>
-                        <p style={{ color: '#F5F5F7', fontSize: 12 }}>{gap.nextBestAction}</p>
+                      <div style={{ background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 8, padding: '7px 11px', marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                        <div style={{ flex: 1 }}>
+                          <p style={{ color: '#7FD5AA', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Next Action</p>
+                          <p style={{ color: '#F5F5F7', fontSize: 12 }}>{gap.nextBestAction}</p>
+                        </div>
+                        <button
+                          onClick={() => addNextActionToWeek(gap.id, gap.nextBestAction!)}
+                          disabled={addedNextAction.has(gap.id)}
+                          style={{
+                            flexShrink: 0,
+                            background: addedNextAction.has(gap.id) ? 'rgba(127,213,170,0.15)' : 'rgba(127,213,170,0.1)',
+                            border: '1px solid rgba(127,213,170,0.3)',
+                            color: '#7FD5AA', borderRadius: 5, padding: '3px 9px',
+                            fontSize: 10, fontWeight: 600,
+                            cursor: addedNextAction.has(gap.id) ? 'default' : 'pointer',
+                            transition: 'all 0.15s', marginTop: 2,
+                          }}
+                        >
+                          {addedNextAction.has(gap.id) ? '✓ Added' : '+ Week'}
+                        </button>
                       </div>
                     )}
 
@@ -552,9 +607,30 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
                   {/* Expandable: Action Plan steps */}
                   {isExpanded && steps.length > 0 && (
                     <div style={{ borderTop: `1px solid ${color}20`, padding: '12px 14px' }}>
-                      <p style={{ color: '#6E6E73', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
-                        Action Plan — {steps.length} steps
-                      </p>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                        <p style={{ color: '#6E6E73', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                          Action Plan — {steps.length} steps
+                        </p>
+                        <button
+                          onClick={() => addAllGapStepsToWeek(gap.id, steps)}
+                          disabled={addingAllGap === gap.id || (addedGapSteps[gap.id]?.size ?? 0) >= steps.length}
+                          style={{
+                            background: (addedGapSteps[gap.id]?.size ?? 0) >= steps.length
+                              ? `${color}15` : `${color}18`,
+                            border: `1px solid ${color}40`,
+                            color,
+                            borderRadius: 6, padding: '4px 12px',
+                            fontSize: 10, fontWeight: 700,
+                            cursor: addingAllGap === gap.id ? 'wait' : 'pointer',
+                            display: 'flex', alignItems: 'center', gap: 4,
+                          }}
+                        >
+                          {addingAllGap === gap.id ? '…' :
+                            (addedGapSteps[gap.id]?.size ?? 0) >= steps.length
+                              ? `✓ All ${steps.length} added`
+                              : `+ Add all ${steps.length} to week`}
+                        </button>
+                      </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {steps.map((step, i) => {
                           const isAdded = addedGapSteps[gap.id]?.has(i) ?? false

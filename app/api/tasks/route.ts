@@ -53,10 +53,12 @@ export async function POST(req: NextRequest) {
     planId = plan.id
   }
 
-  // Dedup: if sourceId is given, return existing task in this plan instead of creating a duplicate
+  // Dedup: if sourceId is given, return existing task in this plan instead of creating a duplicate.
+  // Include title in the check so multiple tasks from the same source (e.g. different gap steps
+  // all sharing the same gapId) are treated as distinct.
   if (sourceId) {
     const existing = await prisma.weeklyTask.findFirst({
-      where: { weeklyPlanId: planId, sourceModule: sourceModule ?? null, sourceId },
+      where: { weeklyPlanId: planId, sourceModule: sourceModule ?? null, sourceId, title },
     })
     if (existing) return NextResponse.json(existing)
   }
