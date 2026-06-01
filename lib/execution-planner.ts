@@ -123,7 +123,7 @@ export async function planTasks(
   })
   if (!plan) {
     plan = await prisma.weeklyPlan.create({
-      data: { quarterId: quarter.id, userId, weekStart: monday, weekEnd: sunday, status: 'active' },
+      data: { quarterId: quarter.id, weekStart: monday, weekEnd: sunday, status: 'active' },
     })
   }
 

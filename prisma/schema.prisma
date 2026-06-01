@@ -81,14 +81,11 @@ model Quarter {
   id             String   @id @default(cuid())
   userId         String
   user           User     @relation(fields: [userId], references: [id])
-  year           Int      @default(0)  // calendar year; 0 = legacy/unset
-  quarterNumber  Int      @default(0)  // 1-4; 0 = legacy/unset
   name           String
   startDate      DateTime
   endDate        DateTime
   status         String   @default("active") // planned | active | closed
   createdAt      DateTime @default(now())
-  updatedAt      DateTime @default(now()) @updatedAt
   goals          Goal[]
   weeklyPlans    WeeklyPlan[]
   fitnessStrategies FitnessStrategy[]
@@ -146,16 +143,9 @@ model WeeklyPlan {
   id           String   @id @default(cuid())
   quarterId    String
   quarter      Quarter  @relation(fields: [quarterId], references: [id])
-  userId       String?  // denormalized for direct queries
   weekStart    DateTime
   weekEnd      DateTime
-  status       String   @default("active") // draft | active | reviewed | archived
-  weeklyTheme  String?
-  capacityLevel String? // light | normal | heavy
-  overloadRisk Float?
-  reviewedAt   DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now()) @updatedAt
+  status       String   @default("active")
   tasks        WeeklyTask[]
 }
 
