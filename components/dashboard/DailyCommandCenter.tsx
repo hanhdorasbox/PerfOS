@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import CalendarWidget from '@/components/calendar/CalendarWidget'
 import Spinner from '@/components/ui/Spinner'
-import { Globe, Cpu, TrendingUp, Briefcase, Users, Activity, Timer, Cloud, Shirt, Target, RotateCw, ChevronDown } from 'lucide-react'
+import { Globe, Cpu, TrendingUp, Briefcase, Users, Activity, Timer, RotateCw, ChevronDown } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -504,112 +504,6 @@ function IntelCard({ item }: { item: IntelItem }) {
           {item.why}
         </div>
       )}
-    </div>
-  )
-}
-
-// ─── Bottom Strip ─────────────────────────────────────────────────────────────
-
-interface WeatherData {
-  temp: number
-  feelsLike: number
-  description: string
-  wear: string
-  note: string | null
-  city: string
-}
-
-function BottomStrip({ instruction }: { instruction: string | null | undefined }) {
-  const [weather, setWeather] = useState<WeatherData | null>(null)
-  const [weatherLoading, setWeatherLoading] = useState(false)
-  const [weatherError, setWeatherError] = useState(false)
-
-  useEffect(() => {
-    if (typeof navigator === 'undefined' || !navigator.geolocation) {
-      setWeatherError(true)
-      return
-    }
-    setWeatherLoading(true)
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        const { latitude: lat, longitude: lon } = pos.coords
-        fetch(`/api/dashboard/weather?lat=${lat}&lon=${lon}`)
-          .then(r => r.json())
-          .then(data => {
-            if (data.error) { setWeatherError(true); return }
-            setWeather(data)
-          })
-          .catch(() => setWeatherError(true))
-          .finally(() => setWeatherLoading(false))
-      },
-      () => { setWeatherError(true); setWeatherLoading(false) },
-      { timeout: 8000 }
-    )
-  }, [])
-
-  const dividerStyle = 'intel-strip-divider'
-  const iconWrap = (color: string): React.CSSProperties => ({
-    width: 26, height: 26, borderRadius: 8,
-    background: color + '18',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-  })
-
-  return (
-    <div className="intel-bottom-strip">
-      {/* Today Signal */}
-      <div style={{ padding: '14px 16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
-          <div style={iconWrap('#C8906A')}><Target size={12} color="#C8906A" strokeWidth={2} /></div>
-          <span style={{ fontSize: 8, fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Today Signal</span>
-        </div>
-        {instruction
-          ? <div style={{ fontSize: 11, color: '#8E8E93', lineHeight: 1.6 }}>{instruction}</div>
-          : <div style={{ fontSize: 11, color: '#3A3A3C', fontStyle: 'italic' }}>Generate briefing to load today&apos;s signal.</div>
-        }
-      </div>
-
-      {/* Weather */}
-      <div className={dividerStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
-          <div style={iconWrap('#5E94BB')}><Cloud size={12} color="#5E94BB" strokeWidth={2} /></div>
-          <span style={{ fontSize: 8, fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Weather</span>
-        </div>
-        {weatherLoading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <div style={{ height: 10, width: '65%', borderRadius: 4, background: 'rgba(255,255,255,0.06)', animation: 'pulse 1.6s ease-in-out infinite' }} />
-            <div style={{ height: 10, width: '45%', borderRadius: 4, background: 'rgba(255,255,255,0.06)', animation: 'pulse 1.6s ease-in-out infinite' }} />
-          </div>
-        ) : weather ? (
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#C8C8CC', marginBottom: 2 }}>
-              {weather.temp}°C · {weather.description}
-            </div>
-            <div style={{ fontSize: 10, color: '#52525A' }}>Feels {weather.feelsLike}°C · {weather.city}</div>
-          </div>
-        ) : (
-          <div style={{ fontSize: 11, color: '#3A3A3C', fontStyle: 'italic' }}>
-            {weatherError ? 'Enable location access for weather.' : 'Loading…'}
-          </div>
-        )}
-      </div>
-
-      {/* Outfit */}
-      <div className={dividerStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
-          <div style={iconWrap('#8E80C4')}><Shirt size={12} color="#8E80C4" strokeWidth={2} /></div>
-          <span style={{ fontSize: 8, fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Outfit</span>
-        </div>
-        {weather ? (
-          <div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#C8C8CC', marginBottom: 2 }}>{weather.wear}</div>
-            {weather.note && <div style={{ fontSize: 10, color: '#52525A' }}>{weather.note}</div>}
-          </div>
-        ) : (
-          <div style={{ fontSize: 11, color: '#3A3A3C', fontStyle: 'italic' }}>
-            {weatherError ? 'Weather needed for outfit.' : 'Loading…'}
-          </div>
-        )}
-      </div>
     </div>
   )
 }

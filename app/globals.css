@@ -443,20 +443,6 @@ body {
   min-width: 0;
 }
 .intel-cards-grid > * { min-width: 0; overflow-wrap: break-word; word-break: break-word; }
-.intel-bottom-strip {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  background: rgba(255,255,255,0.025);
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.06);
-  margin-top: 14px;
-  min-width: 0;
-}
-.intel-strip-divider {
-  border-left: 1px solid rgba(255,255,255,0.05);
-  padding: 14px 16px;
-}
 
 @media (max-width: 768px) {
   main { padding: 20px 14px 80px !important; }
@@ -490,16 +476,7 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 7px !important;
   }
-  .intel-bottom-strip {
-    grid-template-columns: minmax(0, 1fr) !important;
-    border-radius: 14px !important;
-    margin-top: 10px !important;
-  }
-  .intel-strip-divider {
-    border-left: none !important;
-    border-top: 1px solid rgba(255,255,255,0.05) !important;
-  }
-  /* Daily Intelligence container padding */
+/* Daily Intelligence container padding */
   .di-container {
     padding: 16px 14px !important;
     border-radius: 18px !important;
