@@ -1277,19 +1277,19 @@ export default function DailyCommandCenter({
                   border: `1px solid ${tight ? 'rgba(255,155,135,0.14)' : 'rgba(127,213,170,0.1)'}`,
                 }}>
                   <span style={{ fontSize: 11, color: '#6E6E73' }}>
-                    Tasky: <strong style={{ color: tight ? '#FF9B87' : '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
+                    Tasks: <strong style={{ color: tight ? '#FF9B87' : '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
                       {tH > 0 ? `${tH}h ` : ''}{tM}m
                     </strong>
                   </span>
                   <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
                   <span style={{ fontSize: 11, color: '#6E6E73' }}>
-                    Do 22:00: <strong style={{ color: '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
+                    Until 22:00: <strong style={{ color: '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
                       {rH}h {String(rM).padStart(2, '0')}m
                     </strong>
                   </span>
                   {tight && (
                     <span style={{ fontSize: 10, color: '#FF9B87', marginLeft: 'auto', fontWeight: 700 }}>
-                      ⚠ Přetížen
+                      ⚠ Overloaded
                     </span>
                   )}
                 </div>

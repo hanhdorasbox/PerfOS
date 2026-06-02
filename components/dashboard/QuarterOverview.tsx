@@ -80,9 +80,9 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
 
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-        <StatItem label="Zbývají dny" value={`${qProgress.daysRemaining}d`} />
+        <StatItem label="Days remaining" value={`${qProgress.daysRemaining}d`} />
         <StatItem
-          label="Progres gap"
+          label="Progress gap"
           value={`${gap >= 0 ? '+' : ''}${Math.round(gap)}%`}
           valueColor={gap >= 0 ? '#7FD5AA' : '#ECC666'}
         />
@@ -94,18 +94,18 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
             borderRadius: 12,
             border: `1px solid ${onTrack ? 'rgba(127,213,170,0.15)' : 'rgba(236,198,102,0.15)'}`,
           }}>
-            {Math.round(qProgress.pct)}% kvartálu uběhlo.{' '}
+            {Math.round(qProgress.pct)}% of the quarter has passed.{' '}
             {onTrack
-              ? <span style={{ color: '#7FD5AA', fontWeight: 600 }}>Jdeš podle plánu.</span>
+              ? <span style={{ color: '#7FD5AA', fontWeight: 600 }}>On track.</span>
               : <span style={{ color: '#ECC666', fontWeight: 600 }}>
-                  Pozadu o {Math.round(Math.abs(gap))}%.
+                  Behind by {Math.round(Math.abs(gap))}%.
                 </span>
             }
             {atRiskCount > 0 && (
-              <span style={{ color: '#FF9B87', fontWeight: 600 }}> · {atRiskCount} {atRiskCount === 1 ? 'cíl ohrožen' : 'cíle ohroženy'}.</span>
+              <span style={{ color: '#FF9B87', fontWeight: 600 }}> · {atRiskCount} {atRiskCount === 1 ? 'goal at risk' : 'goals at risk'}.</span>
             )}
             {watchCount > 0 && atRiskCount === 0 && (
-              <span style={{ color: '#ECC666' }}> · {watchCount} {watchCount === 1 ? 'cíl' : 'cíle'} sledovat.</span>
+              <span style={{ color: '#ECC666' }}> · {watchCount} {watchCount === 1 ? 'goal' : 'goals'} to watch.</span>
             )}
           </div>
         </div>
