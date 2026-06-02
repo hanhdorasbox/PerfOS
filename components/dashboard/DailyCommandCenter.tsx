@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import CalendarWidget from '@/components/calendar/CalendarWidget'
 import Spinner from '@/components/ui/Spinner'
+import PixelAvatar from '@/components/PixelAvatar'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1288,7 +1289,10 @@ export default function DailyCommandCenter({
               </span>
             )}
           </div>
-          {loadingBrief && <Spinner size={14} color="#B8A4FF" strokeWidth={1.8} />}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {loadingBrief && <Spinner size={14} color="#B8A4FF" strokeWidth={1.8} />}
+            <PixelAvatar scale={1} style={{ borderRadius: 6, opacity: 0.92 }} />
+          </div>
         </div>
 
         <div className="r-grid-intel">
