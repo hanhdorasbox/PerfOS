@@ -1,0 +1,90 @@
+'use client'
+
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+
+interface Props {
+  userId: string
+}
+
+export default function EmptyWeekBanner({ userId }: Props) {
+  const router = useRouter()
+  const [, startTransition] = useTransition()
+  const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
+  const [count, setCount] = useState(0)
+
+  async function generate() {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/tasks/auto-generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCount(data.created ?? 0)
+        setDone(true)
+        setTimeout(() => startTransition(() => router.refresh()), 1200)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (done) {
+    return (
+      <div style={{
+        padding: '14px 18px', borderRadius: 12,
+        background: 'rgba(127,213,170,0.06)',
+        border: '1px solid rgba(127,213,170,0.2)',
+        fontSize: 13, color: '#7FD5AA', fontWeight: 600,
+      }}>
+        ✓ Vygenerováno {count} {count === 1 ? 'task' : count <= 4 ? 'tasky' : 'tasků'} z tvých cílů. Načítám…
+      </div>
+    )
+  }
+
+  return (
+    <div style={{
+      padding: '16px 20px', borderRadius: 14,
+      background: 'rgba(184,164,255,0.04)',
+      border: '1px solid rgba(184,164,255,0.15)',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap',
+    }}>
+      <div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', marginBottom: 4 }}>
+          Tento týden nemáš žádné tasky
+        </div>
+        <div style={{ fontSize: 12, color: '#6E6E73' }}>
+          AI může vygenerovat tasky přímo z tvých čtvrtletních cílů.
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
+        <a href="/weekly" style={{
+          fontSize: 12, fontWeight: 600, color: '#6E6E73',
+          background: 'rgba(255,255,255,0.05)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: 8, padding: '8px 14px', cursor: 'pointer',
+          textDecoration: 'none',
+        }}>
+          Plánovat ručně →
+        </a>
+        <button
+          onClick={generate}
+          disabled={loading}
+          style={{
+            fontSize: 12, fontWeight: 700, color: '#0A0A0C',
+            background: loading ? 'rgba(184,164,255,0.5)' : '#B8A4FF',
+            border: 'none', borderRadius: 8, padding: '8px 16px',
+            cursor: loading ? 'default' : 'pointer',
+            transition: 'background 0.15s',
+          }}
+        >
+          {loading ? '⏳ Generuji…' : '✨ Generovat z cílů'}
+        </button>
+      </div>
+    </div>
+  )
+}
