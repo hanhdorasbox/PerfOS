@@ -30,6 +30,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'deadline must be a valid date' }, { status: 400 })
     }
 
+    const quarter = await prisma.quarter.findUnique({
+      where: { id: quarterId },
+      select: { status: true },
+    })
+    if (!quarter) {
+      return NextResponse.json({ error: 'Quarter not found' }, { status: 404 })
+    }
+    if (quarter.status === 'closed') {
+      return NextResponse.json({ error: 'Cannot create goals in closed quarters' }, { status: 403 })
+    }
+
     const goal = await prisma.goal.create({
       data: {
         userId,
