@@ -109,6 +109,8 @@ interface Props {
   calendarIcsConnected?: boolean
   atRiskCount?: number
   watchCount?: number
+  todayProtein?: number
+  proteinTarget?: number | null
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -718,12 +720,15 @@ function getNextMealTime(meal: PlannedMeal): { minutesUntil: number; timeStr: st
   return { minutesUntil, timeStr }
 }
 
-function MealPreview({ meals, label, href, isTomorrow = false }: { meals: PlannedMeal[]; label: string; href?: string; isTomorrow?: boolean }) {
+function MealPreview({ meals, label, href, isTomorrow = false, todayProtein = 0, proteinTarget = null }: { meals: PlannedMeal[]; label: string; href?: string; isTomorrow?: boolean; todayProtein?: number; proteinTarget?: number | null }) {
   const sorted = sortMeals(meals)
+  const showProtein = !isTomorrow && proteinTarget && proteinTarget > 0
+  const proteinPct = showProtein ? Math.min(100, Math.round((todayProtein / proteinTarget!) * 100)) : 0
+  const proteinColor = proteinPct >= 100 ? '#7FD5AA' : proteinPct >= 70 ? '#ECC666' : '#FF9B87'
 
   return (
     <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: showProtein ? 8 : 10 }}>
         <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73' }}>
           {label}
         </div>
@@ -731,6 +736,24 @@ function MealPreview({ meals, label, href, isTomorrow = false }: { meals: Planne
           <Link href={href} style={{ fontSize: 11, color: '#B8A4FF', textDecoration: 'none' }}>Full plan →</Link>
         )}
       </div>
+
+      {showProtein && (
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+            <span style={{ fontSize: 10, color: '#6E6E73' }}>Protein today</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: proteinColor, fontVariantNumeric: 'tabular-nums' }}>
+              {todayProtein}g
+              <span style={{ fontSize: 10, fontWeight: 400, color: '#52525A' }}> / {proteinTarget}g</span>
+            </span>
+          </div>
+          <div style={{ height: 4, borderRadius: 999, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', width: `${proteinPct}%`, borderRadius: 999,
+              background: proteinColor, transition: 'width 0.4s ease',
+            }} />
+          </div>
+        </div>
+      )}
 
       {sorted.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
@@ -1007,6 +1030,8 @@ export default function DailyCommandCenter({
   calendarIcsConnected = false,
   atRiskCount = 0,
   watchCount = 0,
+  todayProtein = 0,
+  proteinTarget = null,
 }: Props) {
   const router = useRouter()
   const [, startTransition] = useTransition()
@@ -1651,7 +1676,7 @@ export default function DailyCommandCenter({
             return <TodaysMeetings events={calendarEvents} workStartMin={workStartMin} workEndMin={workEndMin} />
           })()}
           <FitnessSnapshot strategy={strategy} userId={userId} onWorkoutLogged={() => startTransition(() => router.refresh())} />
-          <MealPreview meals={todayMeals} label="Today's Meals" href="/meals" />
+          <MealPreview meals={todayMeals} label="Today's Meals" href="/meals" todayProtein={todayProtein} proteinTarget={proteinTarget} />
           {tomorrowMeals.length > 0 && (
             <MealPreview meals={tomorrowMeals} label="Tomorrow's Meals" isTomorrow={true} />
           )}

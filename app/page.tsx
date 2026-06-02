@@ -167,6 +167,22 @@ export default async function Dashboard() {
   const calendarConnected = !!calendarToken
   const calendarIcsConnected = !!user.calendarIcsSources
 
+  // Today's protein log
+  const todayStart = new Date(todayStr)
+  const todayEnd = new Date(todayStart.getTime() + 86_400_000)
+  const todayProteinLogs = await prisma.proteinLog.findMany({
+    where: { userId: user.id, date: { gte: todayStart, lt: todayEnd } },
+    orderBy: { date: 'desc' },
+  })
+  const todayProteinTotal = todayProteinLogs.reduce((s, p) => s + p.amount, 0)
+  const proteinTarget: number | null = (() => {
+    if (!activeStrategy?.nutritionDir) return null
+    try {
+      const n = JSON.parse(activeStrategy.nutritionDir) as { proteinTarget?: number; targetProtein?: number }
+      return n.proteinTarget ?? n.targetProtein ?? null
+    } catch { return null }
+  })()
+
   // Serialize briefing for client component
   const serializedBriefing = briefing
     ? {
@@ -194,6 +210,8 @@ export default async function Dashboard() {
         calendarIcsConnected={calendarIcsConnected}
         atRiskCount={atRiskCount}
         watchCount={watchCount}
+        todayProtein={todayProteinTotal}
+        proteinTarget={proteinTarget}
       />
       </div>
 
