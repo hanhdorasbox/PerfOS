@@ -640,6 +640,14 @@ function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: Fitn
   const [loggingSession, setLoggingSession] = useState<string | null>(null)
   const [loggedSessions, setLoggedSessions] = useState<Set<string>>(new Set())
 
+  useEffect(() => {
+    if (!userId) return
+    fetch(`/api/fitness/workout?userId=${userId}`)
+      .then(r => r.json())
+      .then((types: string[]) => setLoggedSessions(new Set(types)))
+      .catch(() => {})
+  }, [userId])
+
   const today = new Date()
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   const todayName = dayNames[today.getDay()]
