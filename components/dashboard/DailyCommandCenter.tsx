@@ -508,6 +508,118 @@ function IntelCard({ item }: { item: IntelItem }) {
   )
 }
 
+// ─── Bottom Strip ─────────────────────────────────────────────────────────────
+
+interface WeatherData {
+  temp: number
+  feelsLike: number
+  description: string
+  wear: string
+  note: string | null
+  city: string
+}
+
+function BottomStrip({ instruction }: { instruction: string | null | undefined }) {
+  const [weather, setWeather] = useState<WeatherData | null>(null)
+  const [weatherLoading, setWeatherLoading] = useState(false)
+  const [weatherError, setWeatherError] = useState(false)
+
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setWeatherError(true)
+      return
+    }
+    setWeatherLoading(true)
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const { latitude: lat, longitude: lon } = pos.coords
+        fetch(`/api/dashboard/weather?lat=${lat}&lon=${lon}`)
+          .then(r => r.json())
+          .then(data => {
+            if (data.error) { setWeatherError(true); return }
+            setWeather(data)
+          })
+          .catch(() => setWeatherError(true))
+          .finally(() => setWeatherLoading(false))
+      },
+      () => { setWeatherError(true); setWeatherLoading(false) },
+      { timeout: 8000 }
+    )
+  }, [])
+
+  const dividerStyle: React.CSSProperties = { borderLeft: '1px solid rgba(255,255,255,0.05)', padding: '14px 16px' }
+  const iconWrap = (color: string): React.CSSProperties => ({
+    width: 26, height: 26, borderRadius: 8,
+    background: color + '18',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  })
+
+  return (
+    <div style={{
+      display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+      background: 'rgba(255,255,255,0.025)',
+      borderRadius: 16, overflow: 'hidden',
+      border: '1px solid rgba(255,255,255,0.06)',
+      marginTop: 14,
+    }}>
+      {/* Today Signal */}
+      <div style={{ padding: '14px 16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
+          <div style={iconWrap('#C8906A')}><Target size={12} color="#C8906A" strokeWidth={2} /></div>
+          <span style={{ fontSize: 8, fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Today Signal</span>
+        </div>
+        {instruction
+          ? <div style={{ fontSize: 11, color: '#8E8E93', lineHeight: 1.6 }}>{instruction}</div>
+          : <div style={{ fontSize: 11, color: '#3A3A3C', fontStyle: 'italic' }}>Generate briefing to load today&apos;s signal.</div>
+        }
+      </div>
+
+      {/* Weather */}
+      <div style={dividerStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
+          <div style={iconWrap('#5E94BB')}><Cloud size={12} color="#5E94BB" strokeWidth={2} /></div>
+          <span style={{ fontSize: 8, fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Weather</span>
+        </div>
+        {weatherLoading ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <div style={{ height: 10, width: '65%', borderRadius: 4, background: 'rgba(255,255,255,0.06)', animation: 'pulse 1.6s ease-in-out infinite' }} />
+            <div style={{ height: 10, width: '45%', borderRadius: 4, background: 'rgba(255,255,255,0.06)', animation: 'pulse 1.6s ease-in-out infinite' }} />
+          </div>
+        ) : weather ? (
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#C8C8CC', marginBottom: 2 }}>
+              {weather.temp}°C · {weather.description}
+            </div>
+            <div style={{ fontSize: 10, color: '#52525A' }}>Feels {weather.feelsLike}°C · {weather.city}</div>
+          </div>
+        ) : (
+          <div style={{ fontSize: 11, color: '#3A3A3C', fontStyle: 'italic' }}>
+            {weatherError ? 'Enable location access for weather.' : 'Loading…'}
+          </div>
+        )}
+      </div>
+
+      {/* Outfit */}
+      <div style={dividerStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
+          <div style={iconWrap('#8E80C4')}><Shirt size={12} color="#8E80C4" strokeWidth={2} /></div>
+          <span style={{ fontSize: 8, fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Outfit</span>
+        </div>
+        {weather ? (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#C8C8CC', marginBottom: 2 }}>{weather.wear}</div>
+            {weather.note && <div style={{ fontSize: 10, color: '#52525A' }}>{weather.note}</div>}
+          </div>
+        ) : (
+          <div style={{ fontSize: 11, color: '#3A3A3C', fontStyle: 'italic' }}>
+            {weatherError ? 'Weather needed for outfit.' : 'Loading…'}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ─── Daily facts ──────────────────────────────────────────────────────────────
 
 const DEFAULT_FACTS: DailyFact[] = [
@@ -1443,50 +1555,74 @@ export default function DailyCommandCenter({
         />
       )}
 
-      {/* ══ DAILY INTELLIGENCE BAR ══════════════════════════════════════════ */}
+      {/* ══ DAILY INTELLIGENCE ══════════════════════════════════════════════ */}
       <div style={{
         background: 'rgba(255,255,255,0.018)',
-        borderRadius: 28,
+        borderRadius: 24,
         border: '1px solid rgba(255,255,255,0.07)',
-        padding: '22px 26px',
+        padding: '20px 22px',
         marginBottom: 20,
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
           <div>
-            <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#52525A' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#F0F0F2', letterSpacing: '-0.02em', marginBottom: 4, lineHeight: 1 }}>
               Daily Intelligence
-            </span>
-            <span style={{ fontSize: 11, color: '#52525A', marginLeft: 12 }}>
-              {dateStr}
-            </span>
-            {quarterName && (
-              <span style={{ fontSize: 10, color: '#3E3E44', marginLeft: 10 }}>· {quarterName}</span>
-            )}
-            {lastRefreshedAt && !loadingBrief && (
-              <span style={{ fontSize: 10, color: '#3E3E44', marginLeft: 10 }}>
-                · {formatAge(Date.now() - lastRefreshedAt.getTime())}
-              </span>
-            )}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 11, color: '#52525A' }}>{dateStr}</span>
+              {quarterName && <span style={{ fontSize: 10, color: '#3E3E44' }}>· {quarterName}</span>}
+              {lastRefreshedAt && !loadingBrief && (
+                <span style={{ fontSize: 10, color: '#3A3A3C' }}>
+                  · updated {formatAge(Date.now() - lastRefreshedAt.getTime())}
+                </span>
+              )}
+            </div>
           </div>
-          {loadingBrief && <Spinner size={14} color="#B8A4FF" strokeWidth={1.8} />}
+          <button
+            onClick={generateBriefing}
+            disabled={loadingBrief}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,
+              fontSize: 11, color: loadingBrief ? '#3E3E44' : '#6E6E73',
+              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: 9, padding: '7px 13px', cursor: loadingBrief ? 'default' : 'pointer',
+              transition: 'color 0.15s, background 0.15s',
+            }}
+          >
+            {loadingBrief
+              ? <Spinner size={11} color="#8E80C4" strokeWidth={1.8} />
+              : <RotateCw size={11} strokeWidth={2} />
+            }
+            <span>{loadingBrief ? 'Refreshing' : 'Refresh'}</span>
+          </button>
         </div>
 
-        <div className="r-grid-intel">
-          <div className="intel-ring-col" style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'stretch', justifyContent: 'flex-start',
-            borderRight: '1px solid rgba(255,255,255,0.06)',
-            paddingRight: 20, paddingTop: 4,
+        {/* Bio Clock + Intel Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 16, alignItems: 'start' }}>
+          {/* Bio Clock card */}
+          <div style={{
+            background: 'rgba(255,255,255,0.025)',
+            borderRadius: 20, border: '1px solid rgba(255,255,255,0.07)',
+            padding: '18px 16px',
           }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
+              <Timer size={11} color="#52525A" strokeWidth={2} />
+              <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#52525A' }}>
+                Bio Clock
+              </span>
+            </div>
             <BioClock />
           </div>
 
+          {/* Intel cards grid */}
           {loadingBrief && intelItems.length === 0 ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
               {[1,2,3,4,5,6].map(i => (
-                <div key={i} style={{ borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 5 }}>
-                  <Skel w="45%" h={10} />
-                  <Skel w="90%" h={12} />
-                  <Skel w="70%" h={12} />
+                <div key={i} style={{ borderRadius: 16, background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', padding: '13px 14px', display: 'flex', flexDirection: 'column', gap: 7 }}>
+                  <div style={{ height: 9, width: '40%', borderRadius: 4, background: 'rgba(255,255,255,0.06)', animation: 'pulse 1.6s ease-in-out infinite' }} />
+                  <div style={{ height: 11, width: '90%', borderRadius: 4, background: 'rgba(255,255,255,0.06)', animation: 'pulse 1.6s ease-in-out infinite' }} />
+                  <div style={{ height: 11, width: '70%', borderRadius: 4, background: 'rgba(255,255,255,0.06)', animation: 'pulse 1.6s ease-in-out infinite' }} />
                 </div>
               ))}
             </div>
@@ -1495,11 +1631,30 @@ export default function DailyCommandCenter({
               {intelItems.map((item, i) => <IntelCard key={i} item={item} />)}
             </div>
           ) : (
-            <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic', paddingTop: 8 }}>
-              Generate briefing to load today&apos;s intelligence board.
+            <div style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              minHeight: 200, gap: 10,
+              border: '1px dashed rgba(255,255,255,0.07)', borderRadius: 20,
+            }}>
+              <div style={{ fontSize: 12, color: '#3A3A3C', textAlign: 'center', lineHeight: 1.7 }}>
+                No briefing yet.<br />Hit Refresh to generate today&apos;s intelligence.
+              </div>
+              <button
+                onClick={generateBriefing}
+                disabled={loadingBrief}
+                style={{
+                  fontSize: 11, color: '#6E6E73', background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '6px 14px', cursor: 'pointer',
+                }}
+              >
+                Generate briefing
+              </button>
             </div>
           )}
         </div>
+
+        {/* Bottom strip */}
+        <BottomStrip instruction={briefing?.instruction} />
       </div>
 
       {/* ══ TWO-COLUMN BODY ══════════════════════════════════════════════════ */}
