@@ -156,10 +156,10 @@ function parseSafeJson<T>(str: string | null | undefined): T | null {
 
 function getTimeLabel(): string | null {
   const h = new Date().getHours()
-  if (h >= 6 && h < 11)  return '🌅 Dobré ráno'
-  if (h >= 11 && h < 14) return '☀️ Dopoledne'
-  if (h >= 14 && h < 18) return '🌤 Odpoledne'
-  if (h >= 18 && h < 22) return '🌙 Večer'
+  if (h >= 6 && h < 11)  return '🌅 Good morning'
+  if (h >= 11 && h < 14) return '☀️ Late morning'
+  if (h >= 14 && h < 18) return '🌤 Afternoon'
+  if (h >= 18 && h < 22) return '🌙 Evening'
   return null
 }
 
@@ -661,7 +661,7 @@ function BulletDirective({ text, expanded, onToggle }: { text: string; expanded:
           ))}
           {sentences.length > 1 && (
             <button onClick={onToggle} style={{ alignSelf: 'flex-start', fontSize: 10, color: '#52525A', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>
-              {expanded ? 'Skrýt ↑' : 'Zobrazit vše ↓'}
+              {expanded ? 'Hide ↑' : 'Show all ↓'}
             </button>
           )}
         </div>
@@ -698,7 +698,7 @@ function BulletDirective({ text, expanded, onToggle }: { text: string; expanded:
       ))}
       {(bullets.length > 1 || (framingShown.length > 0 && bullets.length > 0)) && (
         <button onClick={onToggle} style={{ alignSelf: 'flex-start', fontSize: 10, color: '#52525A', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>
-          {expanded ? 'Skrýt ↑' : 'Zobrazit vše ↓'}
+          {expanded ? 'Hide ↑' : 'Show all ↓'}
         </button>
       )}
     </div>
@@ -1138,9 +1138,9 @@ export default function DailyCommandCenter({
               border: '1px solid rgba(127,213,170,0.18)',
               borderRadius: 12,
             }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#7FD5AA', marginBottom: 6 }}>Dobré ráno 🌅</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#7FD5AA', marginBottom: 6 }}>Good morning 🌅</div>
               <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6 }}>
-                Tvůj dnešní fokus:
+                Your focus today:
               </div>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 12, lineHeight: 1.35 }}>
                 {mustDo[0]?.title}
@@ -1153,7 +1153,7 @@ export default function DailyCommandCenter({
                   borderRadius: 7, padding: '6px 14px', cursor: 'pointer',
                 }}
               >
-                Rozumím, jdeme na to →
+                Got it, let's go →
               </button>
             </div>
           )}
@@ -1299,9 +1299,9 @@ export default function DailyCommandCenter({
             {/* Energy selector */}
             <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
               {([
-                { key: 'low',    label: '🔋 Nízká' },
-                { key: 'medium', label: '⚡ Střední' },
-                { key: 'high',   label: '🚀 Vysoká' },
+                { key: 'low',    label: '🔋 Low' },
+                { key: 'medium', label: '⚡ Medium' },
+                { key: 'high',   label: '🚀 High' },
               ] as const).map(({ key, label }) => (
                 <button
                   key={key}
