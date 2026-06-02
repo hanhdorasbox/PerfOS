@@ -451,6 +451,21 @@ body {
   .scroll-mobile { overflow-x: auto; }
 }
 
+/* ─── Avatar gamification — floating coins ───────────────────────────────────── */
+@keyframes float-coin {
+  0%   { transform: translateY(0) scale(1);    opacity: 1; }
+  80%  { opacity: 0.7; }
+  100% { transform: translateY(-64px) scale(0.5); opacity: 0; }
+}
+.coin-float {
+  position: absolute;
+  font-size: 15px;
+  animation: float-coin 2.2s ease-in infinite;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+
 /* ─── Ambient background — very subtle, warm dark ────────────────────────────── */
 
 body::before {

@@ -111,6 +111,7 @@ interface Props {
   watchCount?: number
   todayProtein?: number
   proteinTarget?: number | null
+  savedAmount?: number | null
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -1025,6 +1026,7 @@ export default function DailyCommandCenter({
   watchCount = 0,
   todayProtein = 0,
   proteinTarget = null,
+  savedAmount = null,
 }: Props) {
   const router = useRouter()
   const [, startTransition] = useTransition()
@@ -1286,21 +1288,37 @@ export default function DailyCommandCenter({
 
         <div className="r-grid-intel">
           <div className="intel-ring-col" style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start',
             borderRight: '1px solid rgba(255,255,255,0.06)',
-            paddingRight: 28, paddingTop: 4,
+            paddingRight: 28, paddingTop: 0,
           }}>
-            <img
-              src="/avatar.svg"
-              alt="Hanh"
-              style={{
-                width: 94,
-                height: 94,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                border: '2px solid rgba(255,255,255,0.12)',
-              }}
-            />
+            <div style={{ position: 'relative' }}>
+              <img
+                src="/avatar.svg"
+                alt="Hanh"
+                style={{
+                  width: 88,
+                  height: 150,
+                  borderRadius: 14,
+                  objectFit: 'cover',
+                  objectPosition: 'top center',
+                  border: '1.5px solid rgba(255,255,255,0.1)',
+                  display: 'block',
+                }}
+              />
+              {savedAmount != null && savedAmount > 0 && ([
+                { left: '8%',  top: '60%', delay: '0s',    e: '🪙' },
+                { left: '-12%',top: '45%', delay: '0.5s',  e: '🪙' },
+                { left: '75%', top: '55%', delay: '1s',    e: '🪙' },
+                { left: '88%', top: '35%', delay: '1.5s',  e: '🪙' },
+                { left: '40%', top: '5%',  delay: '0.25s', e: '💰' },
+                { left: '15%', top: '20%', delay: '1.8s',  e: '🪙' },
+              ].map((c, i) => (
+                <span key={i} className="coin-float" style={{ left: c.left, top: c.top, animationDelay: c.delay }}>
+                  {c.e}
+                </span>
+              )))}
+            </div>
           </div>
 
           {loadingBrief && intelItems.length === 0 ? (
