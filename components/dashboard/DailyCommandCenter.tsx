@@ -1647,8 +1647,6 @@ export default function DailyCommandCenter({
           )}
         </div>
 
-        {/* Bottom strip */}
-        <BottomStrip instruction={briefing?.instruction} />
       </div>
 
       {/* ══ TWO-COLUMN BODY ══════════════════════════════════════════════════ */}
