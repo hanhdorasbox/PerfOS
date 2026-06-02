@@ -421,6 +421,32 @@ body {
   gap: 24px;
 }
 
+/* Daily Intelligence new layout */
+.intel-main-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.intel-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.intel-bottom-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: rgba(255,255,255,0.025);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-top: 14px;
+}
+.intel-strip-divider {
+  border-left: 1px solid rgba(255,255,255,0.05);
+  padding: 14px 16px;
+}
+
 @media (max-width: 768px) {
   main { padding: 20px 14px 80px !important; }
 
@@ -442,6 +468,30 @@ body {
     padding-top: 0 !important;
     border-bottom: 1px solid var(--border);
     padding-bottom: 16px;
+  }
+
+  /* Daily Intelligence mobile */
+  .intel-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .intel-cards-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 7px !important;
+  }
+  .intel-bottom-strip {
+    grid-template-columns: 1fr !important;
+    border-radius: 14px !important;
+    margin-top: 10px !important;
+  }
+  .intel-strip-divider {
+    border-left: none !important;
+    border-top: 1px solid rgba(255,255,255,0.05) !important;
+  }
+  /* Daily Intelligence container padding */
+  .di-container {
+    padding: 16px 14px !important;
+    border-radius: 18px !important;
   }
 
   .hide-mobile { display: none !important; }

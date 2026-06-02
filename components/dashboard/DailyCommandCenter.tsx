@@ -547,7 +547,7 @@ function BottomStrip({ instruction }: { instruction: string | null | undefined }
     )
   }, [])
 
-  const dividerStyle: React.CSSProperties = { borderLeft: '1px solid rgba(255,255,255,0.05)', padding: '14px 16px' }
+  const dividerStyle = 'intel-strip-divider'
   const iconWrap = (color: string): React.CSSProperties => ({
     width: 26, height: 26, borderRadius: 8,
     background: color + '18',
@@ -555,13 +555,7 @@ function BottomStrip({ instruction }: { instruction: string | null | undefined }
   })
 
   return (
-    <div style={{
-      display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-      background: 'rgba(255,255,255,0.025)',
-      borderRadius: 16, overflow: 'hidden',
-      border: '1px solid rgba(255,255,255,0.06)',
-      marginTop: 14,
-    }}>
+    <div className="intel-bottom-strip">
       {/* Today Signal */}
       <div style={{ padding: '14px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
@@ -575,7 +569,7 @@ function BottomStrip({ instruction }: { instruction: string | null | undefined }
       </div>
 
       {/* Weather */}
-      <div style={dividerStyle}>
+      <div className={dividerStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
           <div style={iconWrap('#5E94BB')}><Cloud size={12} color="#5E94BB" strokeWidth={2} /></div>
           <span style={{ fontSize: 8, fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Weather</span>
@@ -600,7 +594,7 @@ function BottomStrip({ instruction }: { instruction: string | null | undefined }
       </div>
 
       {/* Outfit */}
-      <div style={dividerStyle}>
+      <div className={dividerStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
           <div style={iconWrap('#8E80C4')}><Shirt size={12} color="#8E80C4" strokeWidth={2} /></div>
           <span style={{ fontSize: 8, fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Outfit</span>
@@ -1556,7 +1550,7 @@ export default function DailyCommandCenter({
       )}
 
       {/* ══ DAILY INTELLIGENCE ══════════════════════════════════════════════ */}
-      <div style={{
+      <div className="di-container" style={{
         background: 'rgba(255,255,255,0.018)',
         borderRadius: 24,
         border: '1px solid rgba(255,255,255,0.07)',
@@ -1599,7 +1593,7 @@ export default function DailyCommandCenter({
         </div>
 
         {/* Bio Clock + Intel Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 16, alignItems: 'start' }}>
+        <div className="intel-main-grid">
           {/* Bio Clock card */}
           <div style={{
             background: 'rgba(255,255,255,0.025)',
@@ -1617,7 +1611,7 @@ export default function DailyCommandCenter({
 
           {/* Intel cards grid */}
           {loadingBrief && intelItems.length === 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+            <div className="intel-cards-grid">
               {[1,2,3,4,5,6].map(i => (
                 <div key={i} style={{ borderRadius: 16, background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', padding: '13px 14px', display: 'flex', flexDirection: 'column', gap: 7 }}>
                   <div style={{ height: 9, width: '40%', borderRadius: 4, background: 'rgba(255,255,255,0.06)', animation: 'pulse 1.6s ease-in-out infinite' }} />
@@ -1627,7 +1621,7 @@ export default function DailyCommandCenter({
               ))}
             </div>
           ) : intelItems.length > 0 ? (
-            <div key={briefing?.id ?? 'empty'} className="animate-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+            <div key={briefing?.id ?? 'empty'} className="intel-cards-grid animate-fade-in">
               {intelItems.map((item, i) => <IntelCard key={i} item={item} />)}
             </div>
           ) : (
