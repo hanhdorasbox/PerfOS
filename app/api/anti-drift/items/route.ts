@@ -6,15 +6,19 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const { userId, title, category, domain, impact } = body
 
+  if (!userId || !title?.trim() || !category) {
+    return NextResponse.json({ error: 'userId, title, and category required' }, { status: 400 })
+  }
+
   const now = new Date()
   const { monday: weekStart } = getWeekBounds()
 
   const item = await prisma.workItem.create({
     data: {
       userId,
-      title,
+      title: title.trim(),
       category,
-      domain,
+      domain: domain || null,
       impact: impact || null,
       completedAt: now,
       weekStart,
