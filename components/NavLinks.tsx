@@ -17,22 +17,13 @@ interface NavLink { href: string; label: string; icon?: LucideIcon; separator?: 
 
 const primaryLinks: NavLink[] = [
   { href: '/',          label: 'Dashboard',  icon: LayoutDashboard },
-  { href: '/quarterly', label: 'Quarterly',  icon: CalendarDays },
   { href: '/weekly',    label: 'This Week',  icon: ListChecks },
+  { href: '/quarterly', label: 'Quarterly',  icon: CalendarDays },
   { href: '/reports',   label: 'Reports',    icon: FileText },
   { href: '/ai',        label: 'AI Advisor', icon: Sparkles },
 ]
 
 const menuGroups: Array<{ label: string; icon: LucideIcon; links: NavLink[] }> = [
-  {
-    label: 'Career', icon: Briefcase,
-    links: [
-      { href: '/career',            label: 'Career Capital', icon: TrendingUp },
-      { href: '/learning',          label: 'Learning',       icon: BookOpen },
-      { href: '/ideas',             label: 'Ideas',          icon: Lightbulb },
-      { href: '/career/trajectory', label: 'Trajectory',     icon: Target, separator: true },
-    ],
-  },
   {
     label: 'Body', icon: Activity,
     links: [
@@ -40,6 +31,15 @@ const menuGroups: Array<{ label: string; icon: LucideIcon; links: NavLink[] }> =
       { href: '/meals',            label: 'Meal Planning',    icon: UtensilsCrossed },
       { href: '/fitness/strategy', label: 'Fitness Strategy', icon: ClipboardList },
       { href: '/habits',           label: 'Habit Breaker',    icon: Shield, separator: true },
+    ],
+  },
+  {
+    label: 'Career', icon: Briefcase,
+    links: [
+      { href: '/career',            label: 'Career Capital', icon: TrendingUp },
+      { href: '/learning',          label: 'Learning',       icon: BookOpen },
+      { href: '/ideas',             label: 'Ideas',          icon: Lightbulb },
+      { href: '/career/trajectory', label: 'Trajectory',     icon: Target, separator: true },
     ],
   },
   {
