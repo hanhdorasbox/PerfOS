@@ -15,7 +15,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="en">
-      <body style={{ background: '#000000', minHeight: '100vh' }}>
+      <body style={{ background: '#000000', minHeight: '100vh', overflowX: 'hidden' }}>
         <nav style={{
           position: 'sticky',
           top: 0,
@@ -44,7 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </Link>
           <NavLinks />
         </nav>
-        <main style={{ maxWidth: 1200, margin: '0 auto', padding: '36px 28px 100px' }}>
+        <main style={{ maxWidth: 1200, margin: '0 auto', padding: '36px 28px 100px', boxSizing: 'border-box', width: '100%', overflowX: 'hidden' }}>
           {children}
         </main>
         {user && <QuickCapture userId={user.id} />}
