@@ -310,10 +310,12 @@ export async function syncSourceCompletion(
       break
 
     case 'work_item':
-      await prisma.workItem.updateMany({
-        where: { id: task.sourceId },
-        data: { completed, completedAt },
-      }).catch(() => {})
+      if (completed) {
+        await prisma.workItem.updateMany({
+          where: { id: task.sourceId },
+          data: { completedAt: new Date() },
+        }).catch(() => {})
+      }
       break
 
     // fitness_schedule_item: synced via FitnessScheduleChange, not here
