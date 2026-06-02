@@ -539,10 +539,8 @@ function PriorityItem({
 // ─── Fitness Snapshot ─────────────────────────────────────────────────────────
 
 function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: FitnessStrategy | null; userId?: string; onWorkoutLogged?: () => void }) {
-  const [logOpen, setLogOpen] = useState(false)
-  const [workoutType, setWorkoutType] = useState('cardio')
-  const [duration, setDuration] = useState('30')
-  const [logging, setLogging] = useState(false)
+  const [loggingSession, setLoggingSession] = useState<string | null>(null)
+  const [loggedSessions, setLoggedSessions] = useState<Set<string>>(new Set())
 
   const today = new Date()
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -555,25 +553,26 @@ function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: Fitn
   const nutritionDir = parseSafeJson<{ proteinTarget?: number; targetProtein?: number }>(strategy?.nutritionDir)
   const targetProtein = nutritionDir?.proteinTarget ?? nutritionDir?.targetProtein
 
-  async function logWorkout() {
-    if (!userId || !duration || !workoutType) return
-    setLogging(true)
+  async function logSession(sessionName: string) {
+    if (!userId) return
+    setLoggingSession(sessionName)
     try {
+      // Extract duration from session name if present, e.g. "Stairmaster Cardio (20–25 min)" → 22
+      const durationMatch = sessionName.match(/(\d+)(?:[–-](\d+))?\s*min/i)
+      const duration = durationMatch
+        ? durationMatch[2]
+          ? Math.round((parseInt(durationMatch[1]) + parseInt(durationMatch[2])) / 2)
+          : parseInt(durationMatch[1])
+        : 30
       await fetch('/api/fitness/workout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId,
-          type: workoutType,
-          duration: parseInt(duration),
-          notes: null,
-        }),
+        body: JSON.stringify({ userId, type: sessionName, duration, notes: null }),
       })
-      setLogOpen(false)
-      setDuration('30')
+      setLoggedSessions(prev => new Set([...prev, sessionName]))
       onWorkoutLogged?.()
     } finally {
-      setLogging(false)
+      setLoggingSession(null)
     }
   }
 
@@ -583,13 +582,31 @@ function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: Fitn
         Today&apos;s Fitness
       </div>
       {todaySessions.length > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-          {todaySessions.map((s, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 11, color: '#B8A4FF' }}>▸</span>
-              <span style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>{s}</span>
-            </div>
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          {todaySessions.map((s, i) => {
+            const done = loggedSessions.has(s)
+            const isLogging = loggingSession === s
+            return (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, opacity: done ? 0.5 : 1, transition: 'opacity 0.2s' }}>
+                <span style={{ fontSize: 11, color: done ? '#7FD5AA' : '#B8A4FF' }}>{done ? '✓' : '▸'}</span>
+                <span style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500, flex: 1, textDecoration: done ? 'line-through' : 'none' }}>{s}</span>
+                {!done && userId && (
+                  <button
+                    onClick={() => logSession(s)}
+                    disabled={isLogging}
+                    style={{
+                      fontSize: 9, padding: '3px 9px', borderRadius: 5, cursor: 'pointer',
+                      background: 'rgba(163,217,119,0.15)', border: '1px solid rgba(163,217,119,0.35)',
+                      color: '#A3D977', fontWeight: 700, opacity: isLogging ? 0.6 : 1,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {isLogging ? '…' : 'Log'}
+                  </button>
+                )}
+              </div>
+            )
+          })}
         </div>
       ) : (
         <div style={{ fontSize: 12, color: '#6E6E73' }}>Rest day</div>
@@ -602,80 +619,9 @@ function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: Fitn
         </div>
       )}
 
-      {/* Quick log workout */}
-      {!logOpen && userId && (
-        <button
-          onClick={() => setLogOpen(true)}
-          style={{
-            display: 'block', width: '100%', marginTop: 9, fontSize: 11, fontWeight: 600,
-            color: '#0A0A0C', background: '#A3D977', border: 'none', borderRadius: 6,
-            padding: '6px 0', cursor: 'pointer',
-          }}
-        >
-          + Log workout
-        </button>
-      )}
-
-      {logOpen && userId && (
-        <div style={{ marginTop: 10, padding: '8px 10px', background: 'rgba(163,217,119,0.1)', borderRadius: 6, border: '1px solid rgba(163,217,119,0.2)' }}>
-          <div style={{ display: 'flex', gap: 4, marginBottom: 6, flexWrap: 'wrap' }}>
-            {['cardio', 'strength', 'mobility'].map(t => (
-              <button
-                key={t}
-                onClick={() => setWorkoutType(t)}
-                style={{
-                  fontSize: 9, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
-                  background: workoutType === t ? 'rgba(163,217,119,0.3)' : 'transparent',
-                  border: workoutType === t ? '1px solid rgba(163,217,119,0.6)' : '1px solid rgba(255,255,255,0.1)',
-                  color: workoutType === t ? '#A3D977' : '#6E6E73',
-                }}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-            <input
-              type="number"
-              value={duration}
-              onChange={e => setDuration(e.target.value)}
-              min="5"
-              step="5"
-              style={{
-                flex: 1, padding: '4px 6px', borderRadius: 4,
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                color: '#F5F5F7', fontSize: 9, outline: 'none',
-              }}
-            />
-            <span style={{ fontSize: 9, color: '#6E6E73', minWidth: 18 }}>min</span>
-            <button
-              onClick={logWorkout}
-              disabled={logging}
-              style={{
-                padding: '4px 10px', borderRadius: 4, background: '#A3D977', border: 'none',
-                color: '#0A0A0C', fontSize: 9, fontWeight: 700, cursor: 'pointer', opacity: logging ? 0.6 : 1,
-              }}
-            >
-              {logging ? '…' : 'Log'}
-            </button>
-            <button
-              onClick={() => setLogOpen(false)}
-              style={{
-                padding: '4px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', fontSize: 9, cursor: 'pointer',
-              }}
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
-
-      {!logOpen && (
-        <Link href="/fitness" style={{ display: 'block', marginTop: 9, fontSize: 11, color: '#6E6E73', textDecoration: 'none' }}>
-          Fitness details →
-        </Link>
-      )}
+      <Link href="/fitness" style={{ display: 'block', marginTop: 9, fontSize: 11, color: '#6E6E73', textDecoration: 'none' }}>
+        Fitness details →
+      </Link>
     </div>
   )
 }
