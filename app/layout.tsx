@@ -43,19 +43,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             Project Hanh
           </Link>
           <NavLinks />
-          <img
-            src="/avatar.svg"
-            alt="Hanh"
-            style={{
-              marginLeft: 'auto',
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              objectFit: 'cover',
-              border: '1.5px solid rgba(255,255,255,0.15)',
-              flexShrink: 0,
-            }}
-          />
         </nav>
         <main style={{ maxWidth: 1200, margin: '0 auto', padding: '36px 28px 100px' }}>
           {children}

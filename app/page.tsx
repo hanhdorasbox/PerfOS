@@ -183,20 +183,6 @@ export default async function Dashboard() {
     } catch { return null }
   })()
 
-  // Monthly savings for avatar gamification
-  const nowDate = new Date()
-  const financialReport = await prisma.financialReport.findFirst({
-    where: {
-      statement: {
-        userId: user.id,
-        month: nowDate.getMonth() + 1,
-        year: nowDate.getFullYear(),
-      },
-    },
-    orderBy: { createdAt: 'desc' },
-  })
-  const monthlySavedAmount = financialReport?.savedAmount ?? null
-
   // Serialize briefing for client component
   const serializedBriefing = briefing
     ? {
@@ -226,7 +212,6 @@ export default async function Dashboard() {
         watchCount={watchCount}
         todayProtein={todayProteinTotal}
         proteinTarget={proteinTarget}
-        savedAmount={monthlySavedAmount}
       />
       </div>
 
