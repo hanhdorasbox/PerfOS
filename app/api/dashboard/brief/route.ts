@@ -90,6 +90,12 @@ export async function POST(req: NextRequest) {
     take: 3,
   })
 
+  const behaviorPatterns = await prisma.behaviorPattern.findMany({
+    where: { userId, active: true },
+    orderBy: { confidence: 'desc' },
+    take: 8,
+  })
+
   // Call Anthropic
   const match = (
     await client.messages.create({
@@ -148,7 +154,12 @@ Daily facts rules:
 - Health topics: sleep, hydration, stress, recovery, nutrition basics, energy, hormones, alcohol impact
 - Fitness topics: strength training, fat loss, protein, cardio, progressive overload, recovery, workout consistency
 - Facts should be short (1-2 sentences), practical, credible, not sensationalist
-- Personalize: if user is behind on protein → protein fact; alcohol logged → recovery fact; tasks skipped → procrastination fact`,
+- Personalize: if user is behind on protein → protein fact; alcohol logged → recovery fact; tasks skipped → procrastination fact
+
+Behavior patterns rules:
+- If behaviorPatterns is provided, use them to personalize priorities and directive
+- High-confidence patterns (4-5) should directly influence task ordering and directive tone
+- Reference patterns implicitly in recommendations, not by name`,
       messages: [
         {
           role: 'user',
@@ -181,6 +192,12 @@ Daily facts rules:
             careerTarget: careerTrajectory?.targetRoleTitle ?? null,
             learningAreas: capabilityGoals.map((g) => g.title),
             recentReportSummary: weeklyReport?.executiveSummary ?? null,
+            behaviorPatterns: behaviorPatterns.map(p => ({
+              domain: p.domain,
+              pattern: p.pattern,
+              implication: p.implication,
+              confidence: p.confidence,
+            })),
           }),
         },
       ],

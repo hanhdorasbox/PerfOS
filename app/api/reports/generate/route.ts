@@ -74,7 +74,18 @@ export async function POST(req: NextRequest) {
   const avgProtein = proteinLogs.length > 0
     ? Math.round(proteinLogs.reduce((s, p) => s + p.amount, 0) / proteinLogs.length)
     : 0
-  const workItemSummary = workItems.slice(0, 20).map(w => `[${w.category}] ${w.title}`)
+
+  // Enrich work items with goal context via task sourceId linkage
+  const taskIds = workItems.filter(w => w.sourceType === 'task' && w.sourceId).map(w => w.sourceId!)
+  const linkedTasks = taskIds.length > 0
+    ? await prisma.weeklyTask.findMany({ where: { id: { in: taskIds } }, include: { goal: { select: { title: true, category: true } } } })
+    : []
+  const taskGoalMap = new Map(linkedTasks.map(t => [t.id, t.goal]))
+
+  const workItemSummary = workItems.slice(0, 20).map(w => {
+    const goal = w.sourceType === 'task' && w.sourceId ? taskGoalMap.get(w.sourceId) : null
+    return `[${w.category}] ${w.title}${goal ? ` → goal: ${goal.title}` : ''}`
+  })
 
   const response = await client.messages.create({
     model: 'claude-sonnet-4-6',

@@ -8,6 +8,7 @@ interface Task {
   completed: boolean
   effort: number
   priority?: number
+  estimatedMinutes?: number | null
   goal?: { id: string; title: string; category: string } | null
 }
 
@@ -95,8 +96,14 @@ function TaskRow({
         {task.goal && (
           <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 2 }}>→ {task.goal.title}</div>
         )}
-        {!isDone && task.effort > 0 && (
-          <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 2 }}>{effortLabel[task.effort]}</div>
+        {!isDone && (
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
+            {task.effort > 0 && <span style={{ fontSize: 10, color: '#6E6E73' }}>{effortLabel[task.effort]}</span>}
+            {task.estimatedMinutes
+              ? <span style={{ fontSize: 9, color: '#48484A', background: 'rgba(255,255,255,0.04)', borderRadius: 4, padding: '1px 5px' }}>~{task.estimatedMinutes}m</span>
+              : task.effort > 0 && <span style={{ fontSize: 9, color: '#48484A', background: 'rgba(255,255,255,0.04)', borderRadius: 4, padding: '1px 5px' }}>{task.effort === 1 ? '~15m' : task.effort === 2 ? '~25m' : '~45m'}</span>
+            }
+          </div>
         )}
       </div>
     </div>

@@ -243,6 +243,22 @@ Requirements:
       })
 
       if (firstMilestone?.steps?.length) {
+        const DAY_NAME_TO_NUM: Record<string, number> = {
+          sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+          thursday: 4, friday: 5, saturday: 6,
+        }
+        function nextWeekdayDate(dayName: string): Date | undefined {
+          const target = DAY_NAME_TO_NUM[dayName.toLowerCase()]
+          if (target === undefined) return undefined
+          const today = new Date()
+          const current = today.getDay()
+          const diff = (target - current + 7) % 7
+          const d = new Date(today)
+          d.setDate(today.getDate() + (diff === 0 ? 7 : diff))
+          d.setHours(9, 0, 0, 0)
+          return d
+        }
+
         const candidates = firstMilestone.steps.map(step => ({
           title: step.title,
           domain: 'learning' as const,
@@ -250,6 +266,7 @@ Requirements:
           priority: 'should' as const,
           effort: (step.estimatedMinutes <= 30 ? 'low' : step.estimatedMinutes <= 60 ? 'medium' : 'deep') as 'low' | 'medium' | 'deep',
           estimatedMinutes: step.estimatedMinutes,
+          scheduledDate: step.suggestedDay ? nextWeekdayDate(step.suggestedDay) : undefined,
           doneCriteria: step.completionCriteria ?? undefined,
           sourceModule: 'learning',
           sourceType: 'learning_step',

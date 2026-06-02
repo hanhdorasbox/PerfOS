@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/meal-plan",
+      "schedule": "0 5 * * 1"
+    },
+    {
+      "path": "/api/cron/weekly-report",
+      "schedule": "0 18 * * 5"
+    }
+  ]
+}
