@@ -7,6 +7,14 @@ import Spinner from '@/components/ui/Spinner'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+interface CalendarEvent {
+  id: string
+  title: string
+  start: string
+  end: string
+  allDay: boolean
+}
+
 interface DailyBriefing {
   id: string
   summary: string
@@ -165,6 +173,38 @@ function getTimeLabel(): string | null {
 
 function effortTimeLabel(effort: number): string {
   return EFFORT_MINUTES[effort] ?? ''
+}
+
+function calcAvailableMinutes(events: CalendarEvent[]): number {
+  const now = new Date()
+  const DAY_END = 22 * 60 // 22:00 in minutes
+  const current = now.getHours() * 60 + now.getMinutes()
+
+  if (current >= DAY_END) return 0
+
+  // Collect busy minutes from calendar events
+  const busyMs = new Set<number>()
+  events.forEach(e => {
+    if (e.allDay) return // skip all-day events
+    try {
+      const s = new Date(e.start).getTime()
+      const end = new Date(e.end).getTime()
+      const startMin = s / 60000 // ms to minutes since epoch
+      const endMin = end / 60000
+
+      for (let m = Math.ceil(startMin); m < endMin; m++) {
+        busyMs.add(m)
+      }
+    } catch {}
+  })
+
+  // Total available: 7:00-22:00 = 900 min
+  const totalMin = DAY_END - 7 * 60
+  const availableMin = totalMin - busyMs.size
+  const dayRemMin = Math.max(0, DAY_END - current)
+
+  // Return minimum of: remaining today, or total available
+  return Math.min(dayRemMin, availableMin)
 }
 
 // ─── Briefing age helpers ─────────────────────────────────────────────────────
@@ -873,6 +913,9 @@ export default function DailyCommandCenter({
   const [loadingSteps, setLoadingSteps] = useState<string | null>(null)
   const [celebTaskId, setCelebTaskId] = useState<string | null>(null)
 
+  // Calendar integration
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
+
   // Today string for localStorage keys
   const todayStr = new Date().toISOString().split('T')[0]
 
@@ -891,6 +934,15 @@ export default function DailyCommandCenter({
       if (dismissed === 'true') setMorningDismissed(true)
     } catch {}
   }, [todayStr])
+
+  // Load calendar events for today
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]
+    fetch(`/api/calendar/events?userId=${userId}&date=${today}`)
+      .then(r => r.json())
+      .then(d => setCalendarEvents(d.events ?? []))
+      .catch(() => {})
+  }, [userId])
 
   const setEnergyAndPersist = (e: 'low' | 'medium' | 'high' | null) => {
     setEnergy(e)
@@ -1246,7 +1298,7 @@ export default function DailyCommandCenter({
                 background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
                 borderRadius: 10, fontSize: 12, color: '#7FD5AA', fontWeight: 600,
               }}>
-                Den splněn 🎉 Všechno hotovo!
+                Day complete 🎉 All done!
               </div>
             )}
             {!allDone && allMustDone && (
@@ -1255,7 +1307,7 @@ export default function DailyCommandCenter({
                 background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
                 borderRadius: 10, fontSize: 12, color: '#7FD5AA', fontWeight: 600,
               }}>
-                ✓ Must-have tasky hotovy. Skvělá práce 🎉
+                ✓ All must-dos complete. Great work 🎉
               </div>
             )}
 
@@ -1264,8 +1316,7 @@ export default function DailyCommandCenter({
               const totalMin = incompleteTasks.reduce((sum, t) => {
                 return sum + (t.estimatedMinutes ?? (t.effort === 1 ? 15 : t.effort === 2 ? 25 : 45))
               }, 0)
-              const now = new Date()
-              const dayRemMin = Math.max(0, (22 - now.getHours()) * 60 - now.getMinutes())
+              const dayRemMin = calcAvailableMinutes(calendarEvents)
               const tight = totalMin > dayRemMin
               const tH = Math.floor(totalMin / 60), tM = totalMin % 60
               const rH = Math.floor(dayRemMin / 60), rM = dayRemMin % 60
