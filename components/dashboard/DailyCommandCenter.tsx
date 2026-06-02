@@ -280,6 +280,93 @@ function ActiveDayRing() {
   )
 }
 
+// ─── Bio Clock ────────────────────────────────────────────────────────────────
+
+const CLOCK_H = 186
+const BIO_START = 7
+const BIO_END = 22
+const BIO_TOTAL = BIO_END - BIO_START
+
+function toPct(h: number, m = 0) {
+  return Math.min(1, Math.max(0, (h + m / 60 - BIO_START) / BIO_TOTAL))
+}
+
+const BIO_ZONES = [
+  { start: 7,  end: 9,  bg: 'rgba(236,198,102,0.18)', accent: '#ECC666', label: 'RAMP UP' },
+  { start: 9,  end: 12, bg: 'rgba(127,213,170,0.18)', accent: '#7FD5AA', label: 'PEAK FOCUS' },
+  { start: 12, end: 14, bg: 'rgba(82,82,90,0.28)',    accent: '#6E6E73', label: 'LOW TIDE' },
+  { start: 14, end: 17, bg: 'rgba(128,189,255,0.18)', accent: '#80BDFF', label: '2ND WIND' },
+  { start: 17, end: 20, bg: 'rgba(245,165,106,0.18)', accent: '#F5A56A', label: 'WIND DOWN' },
+  { start: 20, end: 22, bg: 'rgba(184,164,255,0.18)', accent: '#B8A4FF', label: 'RECOVERY' },
+]
+
+function BioClock() {
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 60_000)
+    return () => clearInterval(id)
+  }, [])
+
+  const h = now.getHours()
+  const m = now.getMinutes()
+  const nowPct = toPct(h, m)
+  const isActive = h >= BIO_START && h < BIO_END
+  const currentZone = BIO_ZONES.find(z => h >= z.start && h < z.end)
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: '100%' }}>
+      <div style={{ fontSize: 8, color: '#6E6E73', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center' }}>
+        Bio Clock
+      </div>
+      <div style={{ position: 'relative', height: CLOCK_H, width: '100%', borderRadius: 8, overflow: 'hidden' }}>
+        {BIO_ZONES.map(z => {
+          const top = toPct(z.start) * CLOCK_H
+          const height = (toPct(z.end) - toPct(z.start)) * CLOCK_H
+          return (
+            <div key={z.label} style={{
+              position: 'absolute', top, left: 0, right: 0, height,
+              background: z.bg,
+              borderLeft: `2px solid ${z.accent}55`,
+              display: 'flex', alignItems: 'center', paddingLeft: 7,
+            }}>
+              <span style={{ fontSize: 7, color: z.accent, textTransform: 'uppercase', letterSpacing: '0.07em', lineHeight: 1, fontWeight: 600 }}>
+                {z.label}
+              </span>
+            </div>
+          )
+        })}
+        {[9, 12, 14, 17, 20].map(hr => (
+          <div key={hr} style={{
+            position: 'absolute', top: toPct(hr) * CLOCK_H, left: 0, right: 0, height: 1,
+            background: 'rgba(255,255,255,0.07)', pointerEvents: 'none',
+          }} />
+        ))}
+        {isActive && (
+          <div style={{
+            position: 'absolute', top: nowPct * CLOCK_H - 1,
+            left: 0, right: 0, height: 2,
+            background: '#FFFFFF', borderRadius: 1,
+            boxShadow: `0 0 8px 2px ${currentZone?.accent ?? '#fff'}99`,
+            zIndex: 3, pointerEvents: 'none',
+          }}>
+            <div style={{
+              position: 'absolute', left: -3, top: -3,
+              width: 8, height: 8, borderRadius: '50%',
+              background: currentZone?.accent ?? '#FFFFFF',
+              boxShadow: `0 0 10px 3px ${currentZone?.accent ?? '#fff'}`,
+            }} />
+          </div>
+        )}
+      </div>
+      {currentZone && (
+        <div style={{ textAlign: 'center', fontSize: 8, color: currentZone.accent, letterSpacing: '0.06em', fontWeight: 600 }}>
+          {currentZone.label}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Intel Card ───────────────────────────────────────────────────────────────
 
 interface IntelItem {
@@ -1286,11 +1373,11 @@ export default function DailyCommandCenter({
 
         <div className="r-grid-intel">
           <div className="intel-ring-col" style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            display: 'flex', flexDirection: 'column', alignItems: 'stretch', justifyContent: 'flex-start',
             borderRight: '1px solid rgba(255,255,255,0.06)',
-            paddingRight: 28, paddingTop: 4,
+            paddingRight: 20, paddingTop: 4,
           }}>
-            <ActiveDayRing />
+            <BioClock />
           </div>
 
           {loadingBrief && intelItems.length === 0 ? (
