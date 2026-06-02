@@ -80,9 +80,9 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
 
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-        <StatItem label="Days remaining" value={`${qProgress.daysRemaining}d`} />
+        <StatItem label="Zbývají dny" value={`${qProgress.daysRemaining}d`} />
         <StatItem
-          label="Progress gap"
+          label="Progres gap"
           value={`${gap >= 0 ? '+' : ''}${Math.round(gap)}%`}
           valueColor={gap >= 0 ? '#7FD5AA' : '#ECC666'}
         />
@@ -94,7 +94,7 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
             borderRadius: 12,
             border: `1px solid ${onTrack ? 'rgba(127,213,170,0.15)' : 'rgba(236,198,102,0.15)'}`,
           }}>
-            {Math.round(qProgress.pct)}% of the quarter has passed.{' '}
+            {Math.round(qProgress.pct)}% of quarter elapsed.{' '}
             {onTrack
               ? <span style={{ color: '#7FD5AA', fontWeight: 600 }}>On track.</span>
               : <span style={{ color: '#ECC666', fontWeight: 600 }}>

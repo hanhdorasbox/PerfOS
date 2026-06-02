@@ -55,7 +55,7 @@ ${goalsContext}
 Return ONLY a JSON array of tasks with this exact shape:
 [
   {
-    "title": "Konkrétní akce (Czech, max 80 chars)",
+    "title": "Specific action (English, max 80 chars)",
     "priority": "must" | "should" | "optional",
     "effort": "low" | "medium" | "deep",
     "estimatedMinutes": number,
@@ -69,7 +69,7 @@ Rules:
 - 0-2 optional tasks
 - Tasks should be specific and actionable, not vague
 - Estimate realistic minutes: low=15, medium=30, deep=60-90
-- Write task titles in Czech`,
+- Write task titles in English`,
       }],
     })
 

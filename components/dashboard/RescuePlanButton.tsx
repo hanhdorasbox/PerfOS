@@ -46,7 +46,7 @@ export default function RescuePlanButton({ gap, weeksRemaining, quarterName }: P
         border: '1px solid rgba(236,198,102,0.15)',
       }}>
         <strong>{weeksRemaining}</strong> {weeksRemaining === 1 ? 'week' : 'weeks'} remaining.
-        {' '}To catch up you need <strong>~{weeklyNeeded}%/week</strong>.
+        {' '}To catch up you need <strong>~{weeklyNeeded}% per week</strong>.
       </div>
 
       {!plan ? (

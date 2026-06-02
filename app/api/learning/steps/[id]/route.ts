@@ -5,6 +5,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params
   try {
     const { completed, evidence, title, description, estimatedMinutes, completionCriteria, suggestedDay } = await req.json()
+
+    const step = await prisma.learningStep.findUnique({
+      where: { id },
+      include: { goal: { select: { quarterId: true, quarter: { select: { status: true } } } } },
+    })
+    if (!step) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+    if (step.goal?.quarter?.status === 'closed') {
+      return NextResponse.json({ error: 'Cannot update learning steps in closed quarters' }, { status: 403 })
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: Record<string, any> = {}
     if (completed !== undefined) {
@@ -18,7 +29,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (completionCriteria !== undefined) data.completionCriteria = completionCriteria
     if (suggestedDay !== undefined) data.suggestedDay = suggestedDay
 
-    const step = await prisma.learningStep.update({ where: { id }, data })
+    const updated = await prisma.learningStep.update({ where: { id }, data })
 
     // Bidirectional sync: if step was just marked complete, auto-complete linked WeeklyTask(s)
     if (data.completed === true) {
@@ -36,7 +47,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       }).catch(() => {})
     }
 
-    return NextResponse.json({ step })
+    return NextResponse.json({ step: updated })
   } catch (e: unknown) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Error' }, { status: 500 })
   }
@@ -45,6 +56,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   try {
+    const step = await prisma.learningStep.findUnique({
+      where: { id },
+      include: { goal: { select: { quarterId: true, quarter: { select: { status: true } } } } },
+    })
+    if (!step) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+    if (step.goal?.quarter?.status === 'closed') {
+      return NextResponse.json({ error: 'Cannot delete learning steps in closed quarters' }, { status: 403 })
+    }
+
     await prisma.learningStep.delete({ where: { id } })
     return NextResponse.json({ ok: true })
   } catch (e: unknown) {

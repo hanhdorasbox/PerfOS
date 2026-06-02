@@ -7,14 +7,6 @@ import Spinner from '@/components/ui/Spinner'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface CalendarEvent {
-  id: string
-  title: string
-  start: string
-  end: string
-  allDay: boolean
-}
-
 interface DailyBriefing {
   id: string
   summary: string
@@ -173,38 +165,6 @@ function getTimeLabel(): string | null {
 
 function effortTimeLabel(effort: number): string {
   return EFFORT_MINUTES[effort] ?? ''
-}
-
-function calcAvailableMinutes(events: CalendarEvent[]): number {
-  const now = new Date()
-  const DAY_END = 22 * 60 // 22:00 in minutes
-  const current = now.getHours() * 60 + now.getMinutes()
-
-  if (current >= DAY_END) return 0
-
-  // Collect busy minutes from calendar events
-  const busyMs = new Set<number>()
-  events.forEach(e => {
-    if (e.allDay) return // skip all-day events
-    try {
-      const s = new Date(e.start).getTime()
-      const end = new Date(e.end).getTime()
-      const startMin = s / 60000 // ms to minutes since epoch
-      const endMin = end / 60000
-
-      for (let m = Math.ceil(startMin); m < endMin; m++) {
-        busyMs.add(m)
-      }
-    } catch {}
-  })
-
-  // Total available: 7:00-22:00 = 900 min
-  const totalMin = DAY_END - 7 * 60
-  const availableMin = totalMin - busyMs.size
-  const dayRemMin = Math.max(0, DAY_END - current)
-
-  // Return minimum of: remaining today, or total available
-  return Math.min(dayRemMin, availableMin)
 }
 
 // ─── Briefing age helpers ─────────────────────────────────────────────────────
@@ -701,7 +661,7 @@ function BulletDirective({ text, expanded, onToggle }: { text: string; expanded:
           ))}
           {sentences.length > 1 && (
             <button onClick={onToggle} style={{ alignSelf: 'flex-start', fontSize: 10, color: '#52525A', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>
-              {expanded ? 'Hide ↑' : 'Show all ↓'}
+              {expanded ? 'Collapse ↑' : 'Show all ↓'}
             </button>
           )}
         </div>
@@ -738,7 +698,7 @@ function BulletDirective({ text, expanded, onToggle }: { text: string; expanded:
       ))}
       {(bullets.length > 1 || (framingShown.length > 0 && bullets.length > 0)) && (
         <button onClick={onToggle} style={{ alignSelf: 'flex-start', fontSize: 10, color: '#52525A', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>
-          {expanded ? 'Hide ↑' : 'Show all ↓'}
+          {expanded ? 'Collapse ↑' : 'Show all ↓'}
         </button>
       )}
     </div>
@@ -862,7 +822,7 @@ function FocusModeOverlay({
             padding: '8px 20px', cursor: 'pointer',
           }}
         >
-          {running ? '⏸ Pauza' : '▶ Pokračovat'}
+          {running ? '⏸ Pause' : '▶ Resume'}
         </button>
 
         {/* Done button */}
@@ -912,9 +872,7 @@ export default function DailyCommandCenter({
   const [expandedSteps, setExpandedSteps] = useState<Record<string, MicroStep[]>>({})
   const [loadingSteps, setLoadingSteps] = useState<string | null>(null)
   const [celebTaskId, setCelebTaskId] = useState<string | null>(null)
-
-  // Calendar integration
-  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
+  const [calendarEvents, setCalendarEvents] = useState<Array<{ start: Date; end: Date }>>([])
 
   // Today string for localStorage keys
   const todayStr = new Date().toISOString().split('T')[0]
@@ -927,6 +885,25 @@ export default function DailyCommandCenter({
     } catch {}
   }, [])
 
+  // Fetch calendar events for today
+  useEffect(() => {
+    if (!calendarConnected && !calendarIcsConnected) return
+    const fetchCalendar = async () => {
+      try {
+        const res = await fetch(`/api/calendar/events?userId=${userId}&date=${todayStr}`)
+        if (res.ok) {
+          const data = await res.json()
+          const events = data.map((e: any) => ({
+            start: new Date(e.start),
+            end: new Date(e.end),
+          }))
+          setCalendarEvents(events)
+        }
+      } catch {}
+    }
+    fetchCalendar()
+  }, [userId, todayStr, calendarConnected, calendarIcsConnected])
+
   // Load morning dismissed state
   useEffect(() => {
     try {
@@ -934,15 +911,6 @@ export default function DailyCommandCenter({
       if (dismissed === 'true') setMorningDismissed(true)
     } catch {}
   }, [todayStr])
-
-  // Load calendar events for today
-  useEffect(() => {
-    const today = new Date().toISOString().split('T')[0]
-    fetch(`/api/calendar/events?userId=${userId}&date=${today}`)
-      .then(r => r.json())
-      .then(d => setCalendarEvents(d.events ?? []))
-      .catch(() => {})
-  }, [userId])
 
   const setEnergyAndPersist = (e: 'low' | 'medium' | 'high' | null) => {
     setEnergy(e)
@@ -1192,7 +1160,7 @@ export default function DailyCommandCenter({
             }}>
               <div style={{ fontSize: 15, fontWeight: 700, color: '#7FD5AA', marginBottom: 6 }}>Good morning 🌅</div>
               <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6 }}>
-                Your focus today:
+                Today&apos;s focus:
               </div>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 12, lineHeight: 1.35 }}>
                 {mustDo[0]?.title}
@@ -1205,7 +1173,7 @@ export default function DailyCommandCenter({
                   borderRadius: 7, padding: '6px 14px', cursor: 'pointer',
                 }}
               >
-                Got it, let's go →
+                Got it, let&apos;s go →
               </button>
             </div>
           )}
@@ -1307,7 +1275,7 @@ export default function DailyCommandCenter({
                 background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
                 borderRadius: 10, fontSize: 12, color: '#7FD5AA', fontWeight: 600,
               }}>
-                ✓ All must-dos complete. Great work 🎉
+                ✓ Must-have tasks done. Great work 🎉
               </div>
             )}
 
@@ -1316,10 +1284,43 @@ export default function DailyCommandCenter({
               const totalMin = incompleteTasks.reduce((sum, t) => {
                 return sum + (t.estimatedMinutes ?? (t.effort === 1 ? 15 : t.effort === 2 ? 25 : 45))
               }, 0)
-              const dayRemMin = calcAvailableMinutes(calendarEvents)
+              const now = new Date()
+              const nowMin = now.getHours() * 60 + now.getMinutes()
+              const dow = now.getDay() // 0=Sun, 1=Mon, ..., 6=Sat
+              // Default work schedule: Mon/Wed 7:30-15:30, Tue/Thu/Fri 9:00-17:00
+              const workSchedule: Record<number, { start: number; end: number } | null> = {
+                0: null, // Sunday — no work
+                1: { start: 7 * 60 + 30, end: 15 * 60 + 30 }, // Monday
+                2: { start: 9 * 60,       end: 17 * 60 },       // Tuesday
+                3: { start: 7 * 60 + 30, end: 15 * 60 + 30 }, // Wednesday
+                4: { start: 9 * 60,       end: 17 * 60 },       // Thursday
+                5: { start: 9 * 60,       end: 17 * 60 },       // Friday (lighter but same hours)
+                6: null, // Saturday — no work
+              }
+              const work = workSchedule[dow]
+              // Remaining work minutes (if still within work hours)
+              const workRemMin = work
+                ? Math.max(0, work.end - Math.max(nowMin, work.start))
+                : 0
+              // Calculate minutes busy in calendar events AFTER work hours
+              const workEndMin = work ? work.end : 22 * 60
+              const busyInEvents = calendarEvents.reduce((busy, event) => {
+                const eventStart = event.start.getHours() * 60 + event.start.getMinutes()
+                const eventEnd = event.end.getHours() * 60 + event.end.getMinutes()
+                // Only count time after work ends
+                if (eventEnd <= workEndMin) return busy // Event is during work
+                const overlapStart = Math.max(workEndMin, eventStart)
+                const overlapEnd = Math.min(22 * 60, eventEnd)
+                return busy + Math.max(0, overlapEnd - overlapStart)
+              }, 0)
+              // Free minutes = time from work end until 22:00, minus calendar meetings after work
+              const freeStartMin = Math.max(nowMin, workEndMin)
+              const untilEndOfDay = Math.max(0, 22 * 60 - freeStartMin)
+              const dayRemMin = Math.max(0, untilEndOfDay - busyInEvents)
               const tight = totalMin > dayRemMin
               const tH = Math.floor(totalMin / 60), tM = totalMin % 60
               const rH = Math.floor(dayRemMin / 60), rM = dayRemMin % 60
+              const isWorkHours = work && nowMin >= work.start && nowMin < work.end
               return (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
@@ -1334,10 +1335,32 @@ export default function DailyCommandCenter({
                   </span>
                   <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
                   <span style={{ fontSize: 11, color: '#6E6E73' }}>
-                    Until 22:00: <strong style={{ color: '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
+                    Free time: <strong style={{ color: '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
                       {rH}h {String(rM).padStart(2, '0')}m
                     </strong>
                   </span>
+                  {isWorkHours && workRemMin > 0 && (
+                    <>
+                      <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
+                      <span style={{ fontSize: 10, color: '#6E6E73' }}>
+                        Work until {work!.end === 15 * 60 + 30 ? '15:30' : '17:00'}
+                      </span>
+                    </>
+                  )}
+                  {(() => {
+                    const meetsAfterWork = calendarEvents.filter(e => {
+                      const eEnd = e.end.getHours() * 60 + e.end.getMinutes()
+                      return eEnd > workEndMin
+                    }).length
+                    return meetsAfterWork > 0 ? (
+                      <>
+                        <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
+                        <span style={{ fontSize: 10, color: '#ECC666' }}>
+                          {meetsAfterWork} evening meeting{meetsAfterWork === 1 ? '' : 's'}
+                        </span>
+                      </>
+                    ) : null
+                  })()}
                   {tight && (
                     <span style={{ fontSize: 10, color: '#FF9B87', marginLeft: 'auto', fontWeight: 700 }}>
                       ⚠ Overloaded

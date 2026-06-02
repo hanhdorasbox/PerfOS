@@ -1,23 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { getWeekBounds } from '@/lib/quarters'
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const { userId, title, category, domain, impact } = body
 
+  if (!userId || !title?.trim() || !category) {
+    return NextResponse.json({ error: 'userId, title, and category required' }, { status: 400 })
+  }
+
   const now = new Date()
-  const day = now.getDay()
-  const diffToMon = (day === 0 ? -6 : 1 - day)
-  const weekStart = new Date(now)
-  weekStart.setDate(now.getDate() + diffToMon)
-  weekStart.setHours(0, 0, 0, 0)
+  const { monday: weekStart } = getWeekBounds()
 
   const item = await prisma.workItem.create({
     data: {
       userId,
-      title,
+      title: title.trim(),
       category,
-      domain,
+      domain: domain || null,
       impact: impact || null,
       completedAt: now,
       weekStart,

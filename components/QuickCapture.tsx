@@ -69,8 +69,8 @@ export default function QuickCapture({ userId }: Props) {
     <>
       <button
         onClick={() => setOpen(true)}
-        title="Quick capture (⌘K)"
-        aria-label="Quick capture"
+        title="Rychlé zachycení (⌘K)"
+        aria-label="Rychlé zachycení"
         style={{
           position: 'fixed', bottom: 28, right: 28, zIndex: 200,
           width: 50, height: 50, borderRadius: '50%',

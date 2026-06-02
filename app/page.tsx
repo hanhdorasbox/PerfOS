@@ -6,7 +6,7 @@ import AlertBanner from '@/components/dashboard/AlertBanner'
 import DailyCommandCenter from '@/components/dashboard/DailyCommandCenter'
 import CollapsibleSection from '@/components/dashboard/CollapsibleSection'
 import EmptyWeekBanner from '@/components/dashboard/EmptyWeekBanner'
-import { ensureQuarterStatuses } from '@/lib/quarters'
+import { ensureQuarterStatuses, getWeekBounds } from '@/lib/quarters'
 import { rolloverIncompleteTasks } from '@/lib/execution-planner'
 
 export const dynamic = 'force-dynamic'
@@ -25,10 +25,7 @@ export default async function Dashboard() {
   await ensureQuarterStatuses(user.id)
 
   // Current week bounds — ensures we only load THIS week's plan (H1)
-  const _now = new Date()
-  const _dow = _now.getDay()
-  const _mon = new Date(_now); _mon.setDate(_now.getDate() - (_dow === 0 ? 6 : _dow - 1)); _mon.setHours(0,0,0,0)
-  const _sun = new Date(_mon); _sun.setDate(_mon.getDate() + 6); _sun.setHours(23,59,59,999)
+  const { monday: _mon, sunday: _sun } = getWeekBounds()
 
   const quarter = await prisma.quarter.findFirst({
     where: { userId: user.id, status: 'active' },
@@ -36,7 +33,7 @@ export default async function Dashboard() {
       goals: {
         include: {
           milestones: true,
-          progressUpdates: { orderBy: { loggedAt: 'asc' }, take: 50 },
+          progressUpdates: { orderBy: { loggedAt: 'asc' } },
           weeklyTasks: { include: { goal: true } },
         },
       },

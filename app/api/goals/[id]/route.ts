@@ -7,6 +7,20 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
+    const goal = await prisma.goal.findUnique({
+      where: { id },
+      select: { quarterId: true },
+    })
+    if (!goal) return NextResponse.json({ error: 'Goal not found' }, { status: 404 })
+
+    const quarter = await prisma.quarter.findUnique({
+      where: { id: goal.quarterId },
+      select: { status: true },
+    })
+    if (quarter?.status === 'closed') {
+      return NextResponse.json({ error: 'Cannot delete goals in closed quarters' }, { status: 403 })
+    }
+
     // Delete / null-out all dependent records first
     await prisma.progressUpdate.deleteMany({ where: { goalId: id } })
     await prisma.milestone.deleteMany({ where: { goalId: id } })
@@ -30,6 +44,20 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params
+    const goal = await prisma.goal.findUnique({
+      where: { id },
+      select: { quarterId: true },
+    })
+    if (!goal) return NextResponse.json({ error: 'Goal not found' }, { status: 404 })
+
+    const quarter = await prisma.quarter.findUnique({
+      where: { id: goal.quarterId },
+      select: { status: true },
+    })
+    if (quarter?.status === 'closed') {
+      return NextResponse.json({ error: 'Cannot edit goals in closed quarters' }, { status: 403 })
+    }
+
     const body = await req.json() as Partial<{
       title: string
       category: string
@@ -68,8 +96,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
     }
 
-    const goal = await prisma.goal.update({ where: { id }, data })
-    return NextResponse.json(goal)
+    const updated = await prisma.goal.update({ where: { id }, data })
+    return NextResponse.json(updated)
   } catch (e) {
     console.error('[goals PATCH]', e)
     return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 })

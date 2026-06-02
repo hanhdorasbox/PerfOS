@@ -13,7 +13,7 @@
  */
 
 import { prisma } from './db'
-import { ensureQuarterStatuses } from './quarters'
+import { ensureQuarterStatuses, getWeekBounds } from './quarters'
 
 // ─── TaskCandidate ────────────────────────────────────────────────────────────
 
@@ -67,20 +67,6 @@ export interface TaskCandidate {
 
 const PRIORITY_INT: Record<TaskPriority, number> = { must: 1, should: 2, optional: 3 }
 const EFFORT_INT:   Record<TaskEffort,   number> = { low: 1,  medium: 2, deep: 3 }
-
-// ─── Week bounds helper ───────────────────────────────────────────────────────
-
-function getWeekBounds() {
-  const now = new Date()
-  const dow = now.getDay()
-  const monday = new Date(now)
-  monday.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1))
-  monday.setHours(0, 0, 0, 0)
-  const sunday = new Date(monday)
-  sunday.setDate(monday.getDate() + 6)
-  sunday.setHours(23, 59, 59, 999)
-  return { monday, sunday }
-}
 
 // ─── Result type ─────────────────────────────────────────────────────────────
 
@@ -213,7 +199,9 @@ export async function rolloverIncompleteTasks(
   let rolled = 0, dropped = 0
 
   for (const task of tasks) {
-    const maxRollovers = task.priority === 1 ? 2 : task.priority === 2 ? 1 : 0
+    // Optional recurring tasks (marked by sourceType) can roll once
+    const isRecurring = task.sourceType === 'recurring_task'
+    const maxRollovers = task.priority === 1 ? 2 : task.priority === 2 ? 1 : isRecurring ? 1 : 0
     const shouldRoll = task.rolloverCount < maxRollovers
 
     if (shouldRoll) {

@@ -14,8 +14,15 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid value' }, { status: 400 })
   }
 
-  const goal = await prisma.goal.findUnique({ where: { id } })
+  const goal = await prisma.goal.findUnique({
+    where: { id },
+    include: { quarter: { select: { status: true } } },
+  })
   if (!goal) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  if (goal.quarter.status === 'closed') {
+    return NextResponse.json({ error: 'Cannot update progress in closed quarters' }, { status: 403 })
+  }
 
   // ProgressUpdate.value always stores a PERCENTAGE (0–100) so the chart history
   // is consistent regardless of goal type.
