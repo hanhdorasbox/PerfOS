@@ -36,7 +36,7 @@ export default async function Dashboard() {
       goals: {
         include: {
           milestones: true,
-          progressUpdates: { orderBy: { loggedAt: 'asc' } },
+          progressUpdates: { orderBy: { loggedAt: 'asc' }, take: 50 },
           weeklyTasks: { include: { goal: true } },
         },
       },

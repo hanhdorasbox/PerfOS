@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
           goals: {
             include: {
               milestones: true,
-              progressUpdates: { orderBy: { loggedAt: 'asc' } },
+              progressUpdates: { orderBy: { loggedAt: 'asc' }, take: 50 },
             },
           },
         },

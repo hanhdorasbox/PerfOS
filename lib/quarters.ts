@@ -107,7 +107,7 @@ export async function getOrCreateYearQuarters(
       startDate: { gte: new Date(year, 0, 1), lt: new Date(year + 1, 0, 1) },
     },
     include: {
-      goals: { include: { milestones: true, progressUpdates: { orderBy: { loggedAt: 'asc' } } } },
+      goals: { include: { milestones: true, progressUpdates: { orderBy: { loggedAt: 'asc' }, take: 50 } } },
     },
   })
 
@@ -128,7 +128,7 @@ export async function getOrCreateYearQuarters(
     const created = await prisma.quarter.create({
       data: { userId, name: `Q${qNum} ${year}`, startDate, endDate, status },
       include: {
-        goals: { include: { milestones: true, progressUpdates: { orderBy: { loggedAt: 'asc' } } } },
+        goals: { include: { milestones: true, progressUpdates: { orderBy: { loggedAt: 'asc' }, take: 50 } } },
       },
     })
     tagged.push({ ...created, year, quarterNumber: qNum })
