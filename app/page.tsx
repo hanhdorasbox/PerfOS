@@ -4,6 +4,7 @@ import GoalCard from '@/components/dashboard/GoalCard'
 import QuarterOverview from '@/components/dashboard/QuarterOverview'
 import AlertBanner from '@/components/dashboard/AlertBanner'
 import DailyCommandCenter from '@/components/dashboard/DailyCommandCenter'
+import CollapsibleSection from '@/components/dashboard/CollapsibleSection'
 import { ensureQuarterStatuses } from '@/lib/quarters'
 
 export const dynamic = 'force-dynamic'
@@ -171,50 +172,49 @@ export default async function Dashboard() {
 
       {/* ── SECTION 2: Strategic Overview ── */}
       <div className="animate-entrance-delay-1" style={{ marginTop: 4 }}>
-        <div style={{
-          fontSize: 11, fontWeight: 500, letterSpacing: '0.07em',
-          textTransform: 'uppercase', color: '#6E6E73', marginBottom: 18,
-        }}>
-          Strategic Overview
-        </div>
+        <CollapsibleSection
+          title="Strategic Overview"
+          defaultCollapsed={false}
+          badge={atRiskCount > 0 ? `${atRiskCount} at risk` : undefined}
+        >
+          {alerts.length > 0 && (
+            <AlertBanner
+              alerts={alerts.map(g => ({
+                goalTitle: g.title,
+                status: g.metrics.status,
+                message: g.metrics.recommendation,
+              }))}
+            />
+          )}
 
-        {alerts.length > 0 && (
-          <AlertBanner
-            alerts={alerts.map(g => ({
-              goalTitle: g.title,
-              status: g.metrics.status,
-              message: g.metrics.recommendation,
-            }))}
-          />
-        )}
-
-        <div style={{ marginTop: alerts.length > 0 ? 16 : 0 }}>
-          <QuarterOverview
-            quarter={quarter}
-            qProgress={qProgress}
-            weightedCompletion={weightedCompletion}
-            goalCount={quarter.goals.length}
-            atRiskCount={atRiskCount}
-            watchCount={watchCount}
-          />
-        </div>
-
-        {/* Active Goals — full width */}
-        <div style={{ marginTop: 20 }}>
-          <div style={{
-            fontSize: 11, fontWeight: 500, letterSpacing: '0.07em',
-            textTransform: 'uppercase', color: '#6E6E73', marginBottom: 14,
-          }}>
-            Active Goals
+          <div style={{ marginTop: alerts.length > 0 ? 16 : 0 }}>
+            <QuarterOverview
+              quarter={quarter}
+              qProgress={qProgress}
+              weightedCompletion={weightedCompletion}
+              goalCount={quarter.goals.length}
+              atRiskCount={atRiskCount}
+              watchCount={watchCount}
+            />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {goalsWithMetrics.map((goal, i) => (
-              <div key={goal.id} className={`animate-entrance-delay-${Math.min(i + 2, 6)}`}>
-                <GoalCard goal={goal} metrics={goal.metrics} />
-              </div>
-            ))}
+
+          {/* Active Goals — full width */}
+          <div style={{ marginTop: 20 }}>
+            <div style={{
+              fontSize: 11, fontWeight: 500, letterSpacing: '0.07em',
+              textTransform: 'uppercase', color: '#6E6E73', marginBottom: 14,
+            }}>
+              Active Goals
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {goalsWithMetrics.map((goal, i) => (
+                <div key={goal.id} className={`animate-entrance-delay-${Math.min(i + 2, 6)}`}>
+                  <GoalCard goal={goal} metrics={goal.metrics} />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        </CollapsibleSection>
       </div>
     </div>
   )
