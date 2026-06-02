@@ -7,9 +7,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const task = await prisma.weeklyTask.findUnique({
     where: { id },
-    include: { goal: true, weeklyPlan: true },
+    include: { goal: true, weeklyPlan: { include: { quarter: { select: { status: true } } } } },
   })
   if (!task) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  if (task.weeklyPlan?.quarter?.status === 'closed') {
+    return NextResponse.json({ error: 'Cannot update tasks in closed quarters' }, { status: 403 })
+  }
 
   const completed = !task.completed
   const updated = await prisma.weeklyTask.update({

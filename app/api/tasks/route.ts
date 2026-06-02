@@ -29,6 +29,15 @@ export async function POST(req: NextRequest) {
   // If a specific weeklyPlanId is supplied (e.g. from WeeklyPlanner), insert directly
   // without going through planTasks (which always targets the current week).
   if (weeklyPlanId) {
+    const plan = await prisma.weeklyPlan.findUnique({
+      where: { id: weeklyPlanId },
+      include: { quarter: { select: { status: true } } },
+    })
+    if (!plan) return NextResponse.json({ error: 'Weekly plan not found' }, { status: 404 })
+    if (plan.quarter.status === 'closed') {
+      return NextResponse.json({ error: 'Cannot create tasks in closed quarters' }, { status: 403 })
+    }
+
     // Dedup for direct planId insertion
     const resolvedSourceModule = sourceModule || (goalId ? 'goal' : 'manual')
     const resolvedSourceType   = sourceType   || (goalId ? 'goal_milestone' : 'manual_task')
