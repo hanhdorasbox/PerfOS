@@ -1302,18 +1302,21 @@ export default function DailyCommandCenter({
               const workRemMin = work
                 ? Math.max(0, work.end - Math.max(nowMin, work.start))
                 : 0
-              // Calculate minutes busy in calendar events from now until 22:00
+              // Calculate minutes busy in calendar events AFTER work hours
+              const workEndMin = work ? work.end : 22 * 60
               const busyInEvents = calendarEvents.reduce((busy, event) => {
                 const eventStart = event.start.getHours() * 60 + event.start.getMinutes()
                 const eventEnd = event.end.getHours() * 60 + event.end.getMinutes()
-                // Event overlaps with [nowMin, 22:00]
-                const overlapStart = Math.max(nowMin, eventStart)
+                // Only count time after work ends
+                if (eventEnd <= workEndMin) return busy // Event is during work
+                const overlapStart = Math.max(workEndMin, eventStart)
                 const overlapEnd = Math.min(22 * 60, eventEnd)
                 return busy + Math.max(0, overlapEnd - overlapStart)
               }, 0)
-              // Free minutes = time until 22:00, minus remaining work hours, minus calendar meetings
-              const untilEndOfDay = Math.max(0, 22 * 60 - nowMin)
-              const dayRemMin = Math.max(0, untilEndOfDay - workRemMin - busyInEvents)
+              // Free minutes = time from work end until 22:00, minus calendar meetings after work
+              const freeStartMin = Math.max(nowMin, workEndMin)
+              const untilEndOfDay = Math.max(0, 22 * 60 - freeStartMin)
+              const dayRemMin = Math.max(0, untilEndOfDay - busyInEvents)
               const tight = totalMin > dayRemMin
               const tH = Math.floor(totalMin / 60), tM = totalMin % 60
               const rH = Math.floor(dayRemMin / 60), rM = dayRemMin % 60
@@ -1344,14 +1347,20 @@ export default function DailyCommandCenter({
                       </span>
                     </>
                   )}
-                  {calendarEvents.length > 0 && (
-                    <>
-                      <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
-                      <span style={{ fontSize: 10, color: '#6E6E73' }}>
-                        {calendarEvents.length} meeting{calendarEvents.length === 1 ? '' : 's'}
-                      </span>
-                    </>
-                  )}
+                  {(() => {
+                    const meetsAfterWork = calendarEvents.filter(e => {
+                      const eEnd = e.end.getHours() * 60 + e.end.getMinutes()
+                      return eEnd > workEndMin
+                    }).length
+                    return meetsAfterWork > 0 ? (
+                      <>
+                        <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
+                        <span style={{ fontSize: 10, color: '#ECC666' }}>
+                          {meetsAfterWork} evening meeting{meetsAfterWork === 1 ? '' : 's'}
+                        </span>
+                      </>
+                    ) : null
+                  })()}
                   {tight && (
                     <span style={{ fontSize: 10, color: '#FF9B87', marginLeft: 'auto', fontWeight: 700 }}>
                       ⚠ Overloaded
