@@ -5,7 +5,9 @@ import QuarterOverview from '@/components/dashboard/QuarterOverview'
 import AlertBanner from '@/components/dashboard/AlertBanner'
 import DailyCommandCenter from '@/components/dashboard/DailyCommandCenter'
 import CollapsibleSection from '@/components/dashboard/CollapsibleSection'
+import EmptyWeekBanner from '@/components/dashboard/EmptyWeekBanner'
 import { ensureQuarterStatuses } from '@/lib/quarters'
+import { rolloverIncompleteTasks } from '@/lib/execution-planner'
 
 export const dynamic = 'force-dynamic'
 
@@ -133,9 +135,35 @@ export default async function Dashboard() {
   const atRiskCount  = goalsWithMetrics.filter(g => g.hasData && (g.metrics.status === 'at_risk' || g.metrics.status === 'critical')).length
   const watchCount   = goalsWithMetrics.filter(g => g.hasData && g.metrics.status === 'watch').length
 
-  const currentWeekPlan = quarter.weeklyPlans[0]
-  const weekTasks = currentWeekPlan?.tasks ?? []
+  let currentWeekPlan = quarter.weeklyPlans[0]
+  let weekTasks = currentWeekPlan?.tasks ?? []
   const weeklyPlanId = currentWeekPlan?.id
+
+  // Auto-rollover: when a new week plan is empty, carry forward incomplete tasks from last week
+  if (currentWeekPlan && weekTasks.length === 0) {
+    const planAge = Date.now() - new Date((currentWeekPlan as any).createdAt ?? 0).getTime()
+    const isNewPlan = planAge < 48 * 60 * 60 * 1000 // less than 2 days old
+
+    if (isNewPlan) {
+      const previousPlan = await prisma.weeklyPlan.findFirst({
+        where: {
+          quarterId: quarter.id,
+          weekStart: { lt: _mon },
+          id: { not: currentWeekPlan.id },
+        },
+        orderBy: { weekStart: 'desc' },
+      })
+
+      if (previousPlan) {
+        await rolloverIncompleteTasks(previousPlan.id, currentWeekPlan.id)
+        const refreshed = await prisma.weeklyPlan.findUnique({
+          where: { id: currentWeekPlan.id },
+          include: { tasks: { include: { goal: true } } },
+        })
+        weekTasks = refreshed?.tasks ?? []
+      }
+    }
+  }
 
   // Calendar connection status
   const calendarToken = await prisma.googleCalendarToken.findUnique({ where: { userId: user.id } })
@@ -169,6 +197,11 @@ export default async function Dashboard() {
         calendarIcsConnected={calendarIcsConnected}
       />
       </div>
+
+      {/* ── Empty week banner — auto-generate tasks from goals ── */}
+      {weekTasks.length === 0 && (
+        <EmptyWeekBanner userId={user.id} />
+      )}
 
       {/* ── SECTION 2: Strategic Overview ── */}
       <div className="animate-entrance-delay-1" style={{ marginTop: 4 }}>

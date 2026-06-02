@@ -2,13 +2,17 @@ import type { Metadata } from "next";
 import "./globals.css";
 import NavLinks from "@/components/NavLinks";
 import Link from "next/link";
+import QuickCapture from "@/components/QuickCapture";
+import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "Project Hanh — Performance Operating System",
   description: "Strategic performance command center",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const user = await prisma.user.findFirst()
+
   return (
     <html lang="en">
       <body style={{ background: '#000000', minHeight: '100vh' }}>
@@ -43,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main style={{ maxWidth: 1200, margin: '0 auto', padding: '36px 28px 100px' }}>
           {children}
         </main>
+        {user && <QuickCapture userId={user.id} />}
       </body>
     </html>
   );
