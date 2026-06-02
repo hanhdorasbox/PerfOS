@@ -7,10 +7,13 @@ interface Task {
   title: string
   completed: boolean
   effort: number
+  priority?: number
   goal?: { id: string; title: string; category: string } | null
 }
 
 const effortLabel: Record<number, string> = { 1: 'Easy', 2: 'Medium', 3: 'Deep work' }
+const effortColor: Record<number, string> = { 1: '#7FD5AA', 2: '#ECC666', 3: '#FF9B87' }
+const priorityLabel: Record<number, string> = { 1: 'must', 2: 'should', 3: 'optional' }
 
 function TaskRow({
   task,
@@ -28,7 +31,7 @@ function TaskRow({
   const isDone = task.completed
 
   return (
-    <div style={{ display: 'flex', gap: 6, padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', alignItems: 'flex-start' }}>
+    <div style={{ display: 'flex', gap: 6, padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', alignItems: 'flex-start', borderLeft: `3px solid ${effortColor[task.effort] || 'transparent'}`, paddingLeft: 8 }}>
       {/* Large hit-area button */}
       <button
         onClick={() => onToggle(task.id)}
@@ -100,6 +103,42 @@ function TaskRow({
   )
 }
 
+function CollapsibleTaskGroup({
+  label,
+  tasks,
+  onToggle,
+  toggling,
+  startIndex,
+}: {
+  label: string
+  tasks: Task[]
+  onToggle: (id: string) => void
+  toggling: string | null
+  startIndex: number
+}) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ marginTop: 6 }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: 5, width: '100%' }}
+      >
+        <span style={{ fontSize: 10, color: '#6E6E73' }}>{open ? '▲' : '▼'}</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#9E9EA6' }}>
+          {label}
+        </span>
+      </button>
+      {open && (
+        <div className="expand-enter" style={{ marginTop: 4 }}>
+          {tasks.map((t, i) => (
+            <TaskRow key={t.id} task={t} onToggle={onToggle} toggling={toggling} index={startIndex + i} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function CollapsedDone({ tasks, onToggle, toggling }: { tasks: Task[]; onToggle: (id: string) => void; toggling: string | null }) {
   const [open, setOpen] = useState(false)
   return (
@@ -143,6 +182,10 @@ export default function TodayTasks({
 
   const todo = tasks.filter(t => !t.completed)
   const done = tasks.filter(t => t.completed)
+
+  const mustTasks = todo.filter(t => t.priority === 1)
+  const shouldTasks = todo.filter(t => t.priority === 2)
+  const optionalTasks = todo.filter(t => t.priority === 3 || !t.priority)
 
   // Can add a task if we have either a direct planId or a userId to auto-create one
   const canAdd = !!(weeklyPlanId || userId)
@@ -262,12 +305,45 @@ export default function TodayTasks({
         </div>
       )}
 
-      {/* Normal in-progress state */}
+      {/* Normal in-progress state — grouped by priority */}
       {todo.length > 0 && (
         <>
-          {todo.map((t, i) => (
-            <TaskRow key={t.id} task={t} onToggle={toggleTask} toggling={toggling} index={i} />
-          ))}
+          {/* Must tasks — always visible */}
+          {mustTasks.length > 0 && (
+            <div>
+              {mustTasks.length > 0 && (
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#FF9B87', marginBottom: 6, marginTop: 6, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  Must Do ({mustTasks.length})
+                </div>
+              )}
+              {mustTasks.map((t, i) => (
+                <TaskRow key={t.id} task={t} onToggle={toggleTask} toggling={toggling} index={i} />
+              ))}
+            </div>
+          )}
+
+          {/* Should tasks — collapsible */}
+          {shouldTasks.length > 0 && (
+            <CollapsibleTaskGroup
+              label={`Should Do (${shouldTasks.length})`}
+              tasks={shouldTasks}
+              onToggle={toggleTask}
+              toggling={toggling}
+              startIndex={mustTasks.length}
+            />
+          )}
+
+          {/* Optional tasks — collapsible */}
+          {optionalTasks.length > 0 && (
+            <CollapsibleTaskGroup
+              label={`Optional (${optionalTasks.length})`}
+              tasks={optionalTasks}
+              onToggle={toggleTask}
+              toggling={toggling}
+              startIndex={mustTasks.length + shouldTasks.length}
+            />
+          )}
+
           {done.length > 0 && (
             <div style={{ marginTop: 8 }}>
               {done.map(t => (

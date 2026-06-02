@@ -80,7 +80,7 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
 
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-        <StatItem label="Zbývají dny" value={`${qProgress.daysRemaining}d`} />
+        <StatItem label="Days remaining" value={`${qProgress.daysRemaining}d`} />
         <StatItem
           label="Progres gap"
           value={`${gap >= 0 ? '+' : ''}${Math.round(gap)}%`}

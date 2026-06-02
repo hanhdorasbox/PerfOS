@@ -107,6 +107,8 @@ interface Props {
   weeklyPlanId?: string
   calendarConnected?: boolean
   calendarIcsConnected?: boolean
+  atRiskCount?: number
+  watchCount?: number
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -582,7 +584,89 @@ function FitnessSnapshot({ strategy }: { strategy: FitnessStrategy | null }) {
 
 // ─── Meal Preview ─────────────────────────────────────────────────────────────
 
-function MealPreview({ meals, label, href }: { meals: PlannedMeal[]; label: string; href?: string }) {
+function TodaysMeetings({ events, workStartMin, workEndMin }: { events: Array<{ start: Date; end: Date }>; workStartMin: number; workEndMin: number }) {
+  const now = new Date()
+  const todayEvents = events.filter(e => {
+    const eStart = e.start.getHours() * 60 + e.start.getMinutes()
+    return eStart >= now.getHours() * 60 + now.getMinutes() // Future events only
+  }).sort((a, b) => a.start.getTime() - b.start.getTime())
+
+  if (todayEvents.length === 0) {
+    return (
+      <div className="card">
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
+          Today's Meetings
+        </div>
+        <div style={{ fontSize: 12, color: '#6E6E73' }}>No upcoming meetings</div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="card">
+      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
+        Today's Meetings
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+        {todayEvents.map((event, i) => {
+          const startH = event.start.getHours(), startM = event.start.getMinutes()
+          const endH = event.end.getHours(), endM = event.end.getMinutes()
+          const startMin = startH * 60 + startM
+          const endMin = endH * 60 + endM
+          const isDuringWork = startMin >= workStartMin && endMin <= workEndMin
+          const isPostWork = startMin >= workEndMin
+          const eventColor = isPostWork ? '#ECC666' : isDuringWork ? '#80BDFF' : '#6E6E73'
+          const durationMin = endMin - startMin
+          const durationLabel = durationMin > 60
+            ? `${Math.floor(durationMin / 60)}h ${durationMin % 60}m`
+            : `${durationMin}m`
+
+          return (
+            <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ minWidth: 45, paddingTop: 2 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: eventColor, fontVariantNumeric: 'tabular-nums' }}>
+                  {String(startH).padStart(2, '0')}:{String(startM).padStart(2, '0')}
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>
+                  {event.start.toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })} – {event.end.toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })}
+                </div>
+                <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 1 }}>{durationLabel} · {isPostWork ? '⚠️ Post-work' : isDuringWork ? 'Work hours' : 'Personal'}</div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function getNextMealTime(meal: PlannedMeal): { minutesUntil: number; timeStr: string } | null {
+  const now = new Date()
+  const mealHour = meal.mealType.toLowerCase() === 'breakfast' ? 7
+    : meal.mealType.toLowerCase() === 'lunch' ? 12
+    : meal.mealType.toLowerCase() === 'dinner' ? 18
+    : meal.mealType.toLowerCase() === 'snack' ? 15
+    : null
+
+  if (!mealHour) return null
+
+  const today = new Date()
+  today.setHours(mealHour, 0, 0, 0)
+  const nextMeal = today > now ? today : new Date(today.getTime() + 24 * 60 * 60 * 1000)
+  const diff = nextMeal.getTime() - now.getTime()
+  const minutesUntil = Math.round(diff / (60 * 1000))
+
+  if (minutesUntil < 0) return null
+  const h = Math.floor(minutesUntil / 60)
+  const m = minutesUntil % 60
+  const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`
+
+  return { minutesUntil, timeStr }
+}
+
+function MealPreview({ meals, label, href, isTomorrow = false }: { meals: PlannedMeal[]; label: string; href?: string; isTomorrow?: boolean }) {
   const sorted = sortMeals(meals)
 
   return (
@@ -598,28 +682,42 @@ function MealPreview({ meals, label, href }: { meals: PlannedMeal[]; label: stri
 
       {sorted.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-          {sorted.map(meal => (
-            <div key={meal.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', minWidth: 60, paddingTop: 1 }}>
-                {meal.mealType}
-              </span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>{meal.title}</div>
-                {(meal.calories || meal.protein) && (
-                  <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 2 }}>
+          {sorted.map(meal => {
+            const timing = !isTomorrow ? getNextMealTime(meal) : null
+            const isOverdue = timing && timing.minutesUntil < 0
+            const isDueSoon = timing && timing.minutesUntil >= 0 && timing.minutesUntil < 30
+            const mealColor = isOverdue ? '#FF9B87' : isDueSoon ? '#ECC666' : '#6E6E73'
+
+            return (
+              <div key={meal.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: mealColor, minWidth: 60, paddingTop: 1 }}>
+                  {meal.mealType}
+                </span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>{meal.title}</div>
+                  <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 2, display: 'flex', gap: 6, alignItems: 'center' }}>
                     {meal.calories ? `${meal.calories} kcal` : ''}
                     {meal.calories && meal.protein ? ' · ' : ''}
                     {meal.protein ? `${meal.protein}g protein` : ''}
+                    {timing && timing.minutesUntil >= 0 && (
+                      <>
+                        <span style={{ color: '#3E3E44' }}>·</span>
+                        <span style={{ color: isDueSoon ? '#ECC666' : '#6E6E73', fontWeight: isDueSoon ? 600 : 400 }}>
+                          {isDueSoon ? `⏰ in ${timing.timeStr}` : `in ${timing.timeStr}`}
+                        </span>
+                      </>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       ) : (
         <div style={{ fontSize: 12, color: '#6E6E73' }}>
-          No meal plan.{' '}
-          <Link href="/meals" style={{ color: '#B8A4FF', textDecoration: 'none' }}>Generate →</Link>
+          {isTomorrow ? 'No meals scheduled.' : 'No meal plan.'} {!isTomorrow && (
+            <Link href="/meals" style={{ color: '#B8A4FF', textDecoration: 'none' }}>Generate →</Link>
+          )}
         </div>
       )}
     </div>
@@ -849,11 +947,14 @@ export default function DailyCommandCenter({
   tasks,
   strategy,
   todayMeals,
+  tomorrowMeals,
   userId,
   quarterName,
   weeklyPlanId,
   calendarConnected = false,
   calendarIcsConnected = false,
+  atRiskCount = 0,
+  watchCount = 0,
 }: Props) {
   const router = useRouter()
   const [, startTransition] = useTransition()
@@ -1219,6 +1320,30 @@ export default function DailyCommandCenter({
             </div>
           )}
 
+          {/* Health Summary Badge */}
+          {(atRiskCount > 0 || watchCount > 0) && (
+            <div style={{
+              marginBottom: 14, padding: '8px 12px', borderRadius: 10,
+              background: atRiskCount > 0 ? 'rgba(255,155,135,0.06)' : 'rgba(236,198,102,0.06)',
+              border: `1px solid ${atRiskCount > 0 ? 'rgba(255,155,135,0.15)' : 'rgba(236,198,102,0.15)'}`,
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              <span style={{ fontSize: 10, fontWeight: 600, color: atRiskCount > 0 ? '#FF9B87' : '#ECC666' }}>
+                {atRiskCount > 0 ? '⚠️ Goal Health' : atRiskCount === 0 && watchCount > 0 ? '~ Watch' : '✓ All Clear'}
+              </span>
+              {atRiskCount > 0 && (
+                <span style={{ fontSize: 10, color: '#FF9B87', fontWeight: 700 }}>
+                  {atRiskCount} at risk
+                </span>
+              )}
+              {atRiskCount === 0 && watchCount > 0 && (
+                <span style={{ fontSize: 10, color: '#ECC666' }}>
+                  {watchCount} {watchCount === 1 ? 'goal' : 'goals'} to watch
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Today's Priorities header row */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -1452,7 +1577,7 @@ export default function DailyCommandCenter({
           </div>
         </div>
 
-        {/* RIGHT — Calendar → Fitness → Meals */}
+        {/* RIGHT — Calendar → Fitness → Meals → Tomorrow */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <CalendarWidget
             userId={userId}
@@ -1460,8 +1585,24 @@ export default function DailyCommandCenter({
             calendarConnected={calendarConnected}
             calendarIcsConnected={calendarIcsConnected}
           />
+          {calendarEvents.length > 0 && (() => {
+            const now = new Date()
+            const dow = now.getDay()
+            const workSchedule: Record<number, { start: number; end: number } | null> = {
+              0: null, 1: { start: 7 * 60 + 30, end: 15 * 60 + 30 }, 2: { start: 9 * 60, end: 17 * 60 },
+              3: { start: 7 * 60 + 30, end: 15 * 60 + 30 }, 4: { start: 9 * 60, end: 17 * 60 },
+              5: { start: 9 * 60, end: 17 * 60 }, 6: null,
+            }
+            const work = workSchedule[dow]
+            const workStartMin = work?.start ?? 7 * 60
+            const workEndMin = work?.end ?? 17 * 60
+            return <TodaysMeetings events={calendarEvents} workStartMin={workStartMin} workEndMin={workEndMin} />
+          })()}
           <FitnessSnapshot strategy={strategy} />
           <MealPreview meals={todayMeals} label="Today's Meals" href="/meals" />
+          {tomorrowMeals.length > 0 && (
+            <MealPreview meals={tomorrowMeals} label="Tomorrow's Meals" isTomorrow={true} />
+          )}
         </div>
       </div>
     </div>

@@ -31,6 +31,12 @@ export default function GoalCard({ goal, metrics }: Props) {
   const accentColor = statusColors[metrics.status] || '#A1A1A6'
   const fillColor   = progressColor(metrics.status)
 
+  // Deadline urgency coloring
+  const daysUntilDeadline = goal.deadline ? Math.ceil((new Date(goal.deadline).getTime() - Date.now()) / (24 * 60 * 60 * 1000)) : null
+  const isDeadlineSoon = daysUntilDeadline !== null && daysUntilDeadline < 3
+  const isDeadlineCritical = daysUntilDeadline !== null && daysUntilDeadline < 1
+  const deadlineColor = isDeadlineCritical ? '#FF9B87' : isDeadlineSoon ? '#ECC666' : undefined
+
   // H8: inline quick-log for QUANTITATIVE goals
   const [logOpen, setLogOpen]   = useState(false)
   const [logValue, setLogValue] = useState('')
@@ -200,7 +206,11 @@ export default function GoalCard({ goal, metrics }: Props) {
           }}>
             {metrics.forecastedCompletionDate.toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
           </span>
-          {' · '}deadline {new Date(goal.deadline).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
+          {' · '}deadline {' '}
+          <span style={{ color: deadlineColor ?? '#52525A', fontWeight: deadlineColor ? 600 : 400 }}>
+            {new Date(goal.deadline).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
+            {isDeadlineCritical ? ' ⚠️' : isDeadlineSoon ? ' ⏰' : ''}
+          </span>
         </div>
       )}
 

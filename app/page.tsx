@@ -192,6 +192,8 @@ export default async function Dashboard() {
         weeklyPlanId={weeklyPlanId}
         calendarConnected={calendarConnected}
         calendarIcsConnected={calendarIcsConnected}
+        atRiskCount={atRiskCount}
+        watchCount={watchCount}
       />
       </div>
 
