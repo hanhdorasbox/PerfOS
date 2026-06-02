@@ -40,6 +40,19 @@ interface WeeklyTask {
   effort: number
   priority: number
   goal?: { id: string; title: string; category: string } | null
+  sourceModule?: string | null
+  sourceType?:   string | null
+  sourceId?:     string | null
+}
+
+const SOURCE_LINK: Record<string, { href: string; label: string }> = {
+  learning:  { href: '/learning',           label: 'Learning →' },
+  fitness:   { href: '/fitness/strategy',   label: 'Fitness →' },
+  career:    { href: '/career/trajectory',  label: 'Career →' },
+  report:    { href: '/reports',            label: 'Reports →' },
+  goal:      { href: '/quarterly',          label: 'Goals →' },
+  manual:    { href: '/weekly',             label: 'Weekly →' },
+  system:    { href: '/weekly',             label: 'Weekly →' },
 }
 
 interface FitnessStrategy {
@@ -441,11 +454,24 @@ function PriorityItem({
         {task.goal && (
           <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 2 }}>→ {task.goal.title}</div>
         )}
-        {briefItem?.whyToday ? (
-          <div style={{ fontSize: 11, color: '#6E6E73', fontStyle: 'italic', marginTop: 2, lineHeight: 1.4 }}>{briefItem.whyToday}</div>
-        ) : task.effort > 0 ? (
-          <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 2 }}>{EFFORT_LABEL[task.effort]}</div>
-        ) : null}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2, flexWrap: 'wrap' }}>
+          {task.effort > 0 && (
+            <span style={{ fontSize: 10, color: '#6E6E73' }}>{EFFORT_LABEL[task.effort]}</span>
+          )}
+          {briefItem?.whyToday && (
+            <span style={{ fontSize: 11, color: '#6E6E73', fontStyle: 'italic', lineHeight: 1.4 }}>{briefItem.whyToday}</span>
+          )}
+          {task.sourceModule && SOURCE_LINK[task.sourceModule] && (
+            <Link
+              href={SOURCE_LINK[task.sourceModule].href}
+              style={{ fontSize: 10, color: '#6E6E7380', textDecoration: 'none', letterSpacing: '0.02em' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#B8A4FF')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#6E6E7380')}
+            >
+              {SOURCE_LINK[task.sourceModule].label}
+            </Link>
+          )}
+        </div>
       </div>
 
       <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.12em', color, flexShrink: 0, marginTop: 4 }}>
