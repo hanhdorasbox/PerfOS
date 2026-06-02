@@ -1290,7 +1290,17 @@ export default function DailyCommandCenter({
             borderRight: '1px solid rgba(255,255,255,0.06)',
             paddingRight: 28, paddingTop: 4,
           }}>
-            <ActiveDayRing />
+            <img
+              src="/avatar.svg"
+              alt="Hanh"
+              style={{
+                width: 94,
+                height: 94,
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '2px solid rgba(255,255,255,0.12)',
+              }}
+            />
           </div>
 
           {loadingBrief && intelItems.length === 0 ? (
