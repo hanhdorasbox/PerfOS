@@ -345,7 +345,7 @@ function BioClock() {
           <div style={{
             position: 'absolute', top: nowPct * CLOCK_H - 1,
             left: 0, right: 0, height: 2,
-            background: '#FFFFFF', borderRadius: 1,
+            background: 'rgba(255,255,255,0.9)', borderRadius: 1,
             boxShadow: `0 0 8px 2px ${currentZone?.accent ?? '#fff'}99`,
             zIndex: 3, pointerEvents: 'none',
           }}>
@@ -355,6 +355,14 @@ function BioClock() {
               background: currentZone?.accent ?? '#FFFFFF',
               boxShadow: `0 0 10px 3px ${currentZone?.accent ?? '#fff'}`,
             }} />
+            <div style={{
+              position: 'absolute', right: 4, top: -8,
+              fontSize: 8, color: '#FFFFFF', fontWeight: 700,
+              fontVariantNumeric: 'tabular-nums', letterSpacing: '0.04em',
+              lineHeight: 1,
+            }}>
+              {h}:{String(m).padStart(2, '0')}
+            </div>
           </div>
         )}
       </div>
@@ -383,33 +391,34 @@ function IntelCard({ item }: { item: IntelItem }) {
     <div
       onClick={() => setOpen(v => !v)}
       style={{
-        padding: '10px 12px', borderRadius: 10,
-        background: `${catColor}1C`,
-        border: `1px solid ${catColor}${open ? '55' : '38'}`,
-        cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 5,
-        transition: 'border-color 0.15s, background 0.15s',
+        padding: '11px 13px', borderRadius: 12,
+        background: open ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.07)',
+        borderLeft: `3px solid ${catColor}`,
+        cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 6,
+        transition: 'background 0.15s',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {item.category && (
-          <span style={{
-            fontSize: 8, padding: '2px 5px', borderRadius: 3,
-            background: `${catColor}18`, color: catColor,
-            fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase',
-          }}>
-            {item.category}
-          </span>
-        )}
-        <span style={{ fontSize: 9, color: '#3A3A3C', marginLeft: 'auto' }}>{open ? '▲' : '▼'}</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
+        <span style={{
+          display: 'flex', alignItems: 'center', gap: 4,
+          fontSize: 8, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: catColor,
+        }}>
+          <span style={{ width: 4, height: 4, borderRadius: '50%', background: catColor, flexShrink: 0, display: 'inline-block' }} />
+          {item.category}
+        </span>
+        <svg width="10" height="10" viewBox="0 0 10 10" style={{ color: '#555', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+          <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
       </div>
-      <div style={{ fontSize: 12, color: '#F5F5F7', lineHeight: 1.45, fontWeight: 500 }}>{item.headline}</div>
+      <div style={{ fontSize: 12, color: '#E8E8ED', lineHeight: 1.5, fontWeight: 450 }}>{item.headline}</div>
       {open && item.why && (
         <div style={{
-          fontSize: 11, color: '#A1A1A6',
-          borderTop: '1px solid rgba(255,255,255,0.05)',
-          paddingTop: 6, marginTop: 1, lineHeight: 1.55, fontStyle: 'italic',
+          fontSize: 11, color: '#8E8E93', lineHeight: 1.6,
+          borderTop: `1px solid ${catColor}25`,
+          paddingTop: 7, marginTop: 1,
         }}>
-          → {item.why}
+          {item.why}
         </div>
       )}
     </div>
