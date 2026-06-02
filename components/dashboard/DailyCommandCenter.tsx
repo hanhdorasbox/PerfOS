@@ -587,24 +587,32 @@ function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: Fitn
             const done = loggedSessions.has(s)
             const isLogging = loggingSession === s
             return (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, opacity: done ? 0.5 : 1, transition: 'opacity 0.2s' }}>
-                <span style={{ fontSize: 11, color: done ? '#7FD5AA' : '#B8A4FF' }}>{done ? '✓' : '▸'}</span>
-                <span style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500, flex: 1, textDecoration: done ? 'line-through' : 'none' }}>{s}</span>
-                {!done && userId && (
-                  <button
-                    onClick={() => logSession(s)}
-                    disabled={isLogging}
-                    style={{
-                      fontSize: 9, padding: '3px 9px', borderRadius: 5, cursor: 'pointer',
-                      background: 'rgba(163,217,119,0.15)', border: '1px solid rgba(163,217,119,0.35)',
-                      color: '#A3D977', fontWeight: 700, opacity: isLogging ? 0.6 : 1,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {isLogging ? '…' : 'Log'}
-                  </button>
-                )}
-              </div>
+              <button
+                key={i}
+                onClick={() => !done && logSession(s)}
+                disabled={isLogging || done}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: 'none', border: 'none', cursor: done ? 'default' : 'pointer',
+                  padding: '3px 0', textAlign: 'left', width: '100%',
+                  opacity: isLogging ? 0.6 : 1, transition: 'opacity 0.15s',
+                }}
+              >
+                <div style={{
+                  width: 18, height: 18, borderRadius: 5, flexShrink: 0,
+                  border: `2px solid ${done ? '#7FD5AA' : 'rgba(255,255,255,0.2)'}`,
+                  background: done ? 'rgba(127,213,170,0.2)' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.15s',
+                }}>
+                  {done && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.5 7.5L8 3" stroke="#7FD5AA" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                  {isLogging && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#A3D977', animation: 'pulse 0.8s ease-in-out infinite' }} />}
+                </div>
+                <span style={{
+                  fontSize: 12, color: done ? '#6E6E73' : '#F5F5F7', fontWeight: 500,
+                  textDecoration: done ? 'line-through' : 'none', transition: 'all 0.2s',
+                }}>{s}</span>
+              </button>
             )
           })}
         </div>
