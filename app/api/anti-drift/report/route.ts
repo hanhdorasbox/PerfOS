@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { createAnthropicClient } from '@/lib/anthropic'
+import { getWeekBounds } from '@/lib/quarters'
 
 const client = createAnthropicClient()
 
@@ -19,11 +20,7 @@ export async function POST(req: NextRequest) {
   }
   const periodEnd = now
 
-  // Get weekStart (Monday of current week) for any created work items
-  const dayOfWeek = now.getDay()
-  const monday = new Date(now)
-  monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1))
-  monday.setHours(0, 0, 0, 0)
+  const { monday } = getWeekBounds()
 
   // ── Sync auto work items from milestone completions ─────────────────────────
   const completedMilestones = await prisma.milestone.findMany({
