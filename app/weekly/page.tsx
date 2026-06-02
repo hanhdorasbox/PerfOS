@@ -1,19 +1,8 @@
 import { prisma } from '@/lib/db'
+import { getWeekBounds } from '@/lib/quarters'
 import WeeklyPlanner from '@/components/weekly/WeeklyPlanner'
 
 export const dynamic = 'force-dynamic'
-
-function getWeekBounds() {
-  const now = new Date()
-  const dow = now.getDay()
-  const monday = new Date(now)
-  monday.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1))
-  monday.setHours(0, 0, 0, 0)
-  const sunday = new Date(monday)
-  sunday.setDate(monday.getDate() + 6)
-  sunday.setHours(23, 59, 59, 999)
-  return { monday, sunday }
-}
 
 export default async function WeeklyPage() {
   const user = await prisma.user.findFirst()
