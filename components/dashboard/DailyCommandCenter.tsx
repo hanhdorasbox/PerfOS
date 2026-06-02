@@ -872,6 +872,7 @@ export default function DailyCommandCenter({
   const [expandedSteps, setExpandedSteps] = useState<Record<string, MicroStep[]>>({})
   const [loadingSteps, setLoadingSteps] = useState<string | null>(null)
   const [celebTaskId, setCelebTaskId] = useState<string | null>(null)
+  const [calendarEvents, setCalendarEvents] = useState<Array<{ start: Date; end: Date }>>([])
 
   // Today string for localStorage keys
   const todayStr = new Date().toISOString().split('T')[0]
@@ -883,6 +884,25 @@ export default function DailyCommandCenter({
       if (stored) setEnergy(stored)
     } catch {}
   }, [])
+
+  // Fetch calendar events for today
+  useEffect(() => {
+    if (!calendarConnected && !calendarIcsConnected) return
+    const fetchCalendar = async () => {
+      try {
+        const res = await fetch(`/api/calendar/events?userId=${userId}&date=${todayStr}`)
+        if (res.ok) {
+          const data = await res.json()
+          const events = data.map((e: any) => ({
+            start: new Date(e.start),
+            end: new Date(e.end),
+          }))
+          setCalendarEvents(events)
+        }
+      } catch {}
+    }
+    fetchCalendar()
+  }, [userId, todayStr, calendarConnected, calendarIcsConnected])
 
   // Load morning dismissed state
   useEffect(() => {
@@ -1282,9 +1302,18 @@ export default function DailyCommandCenter({
               const workRemMin = work
                 ? Math.max(0, work.end - Math.max(nowMin, work.start))
                 : 0
-              // Free minutes = time until 22:00, minus remaining work hours
+              // Calculate minutes busy in calendar events from now until 22:00
+              const busyInEvents = calendarEvents.reduce((busy, event) => {
+                const eventStart = event.start.getHours() * 60 + event.start.getMinutes()
+                const eventEnd = event.end.getHours() * 60 + event.end.getMinutes()
+                // Event overlaps with [nowMin, 22:00]
+                const overlapStart = Math.max(nowMin, eventStart)
+                const overlapEnd = Math.min(22 * 60, eventEnd)
+                return busy + Math.max(0, overlapEnd - overlapStart)
+              }, 0)
+              // Free minutes = time until 22:00, minus remaining work hours, minus calendar meetings
               const untilEndOfDay = Math.max(0, 22 * 60 - nowMin)
-              const dayRemMin = Math.max(0, untilEndOfDay - workRemMin)
+              const dayRemMin = Math.max(0, untilEndOfDay - workRemMin - busyInEvents)
               const tight = totalMin > dayRemMin
               const tH = Math.floor(totalMin / 60), tM = totalMin % 60
               const rH = Math.floor(dayRemMin / 60), rM = dayRemMin % 60
@@ -1312,6 +1341,14 @@ export default function DailyCommandCenter({
                       <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
                       <span style={{ fontSize: 10, color: '#6E6E73' }}>
                         Work until {work!.end === 15 * 60 + 30 ? '15:30' : '17:00'}
+                      </span>
+                    </>
+                  )}
+                  {calendarEvents.length > 0 && (
+                    <>
+                      <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
+                      <span style={{ fontSize: 10, color: '#6E6E73' }}>
+                        {calendarEvents.length} meeting{calendarEvents.length === 1 ? '' : 's'}
                       </span>
                     </>
                   )}
