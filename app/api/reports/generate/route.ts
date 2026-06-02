@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { createAnthropicClient } from '@/lib/anthropic'
+import { getWeekBounds } from '@/lib/quarters'
 
 const client = createAnthropicClient()
 
@@ -12,15 +13,7 @@ export async function POST(req: NextRequest) {
   const sevenDaysAgo = new Date(now)
   sevenDaysAgo.setDate(now.getDate() - 7)
 
-  // Week boundaries
-  const day = now.getDay()
-  const diffToMon = day === 0 ? -6 : 1 - day
-  const weekStart = new Date(now)
-  weekStart.setDate(now.getDate() + diffToMon)
-  weekStart.setHours(0, 0, 0, 0)
-  const weekEnd = new Date(weekStart)
-  weekEnd.setDate(weekStart.getDate() + 6)
-  weekEnd.setHours(23, 59, 59, 999)
+  const { monday: weekStart, sunday: weekEnd } = getWeekBounds()
 
   // Fetch all data
   const [quarter, workoutLogs, proteinLogs, workItems, careerItems] = await Promise.all([
