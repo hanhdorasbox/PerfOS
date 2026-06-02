@@ -320,7 +320,7 @@ function BioClock() {
   const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 
   // Circular gauge constants
-  const SZ = 148, CX = 74, CY = 80, R = 54, SW = 8
+  const SZ = 160, CX = 80, CY = 92, R = 56, SW = 8
   const ARC_START = 225  // degrees from top, clockwise
   const ARC_SWEEP = 270  // total sweep
 
@@ -348,7 +348,7 @@ function BioClock() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {/* Arc + time */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <div style={{ position: 'relative', width: SZ, height: SZ }}>
+        <div style={{ position: 'relative', width: SZ, height: SZ, marginTop: 8 }}>
           <svg width={SZ} height={SZ} style={{ display: 'block', overflow: 'visible' }}>
             {/* Background arc */}
             <path d={bgPath} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={SW} strokeLinecap="round" />
@@ -385,7 +385,7 @@ function BioClock() {
           </svg>
           {/* Center text */}
           <div style={{
-            position: 'absolute', top: '46%', left: '50%',
+            position: 'absolute', top: '57%', left: '50%',
             transform: 'translate(-50%, -50%)',
             textAlign: 'center', pointerEvents: 'none',
           }}>
@@ -1492,7 +1492,7 @@ export default function DailyCommandCenter({
           <div style={{
             background: 'rgba(255,255,255,0.025)',
             borderRadius: 20, border: '1px solid rgba(255,255,255,0.07)',
-            padding: '18px 16px',
+            padding: '18px 16px 22px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
               <Timer size={11} color="#52525A" strokeWidth={2} />

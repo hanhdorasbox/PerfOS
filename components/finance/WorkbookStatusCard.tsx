@@ -138,7 +138,9 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
                 opacity: uploading ? 0.9 : 1, minWidth: 160,
               }}
             >
-              <span>{!uploading ? <><Cloud size={13} style={{ marginRight: 5 }} /> Upload Workbook</> : uploadPhase === 1 ? 'Preparing…' : uploadPhase === 3 ? 'Saving…' : uploadPct >= 98 ? 'Finalizing…' : `Uploading ${uploadPct}%`}</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+                {!uploading ? <><Cloud size={13} /> Upload Workbook</> : uploadPhase === 1 ? 'Preparing…' : uploadPhase === 3 ? 'Saving…' : uploadPct >= 98 ? 'Finalizing…' : `Uploading ${uploadPct}%`}
+              </span>
               {uploading && (
                 <div style={{ width: '100%', height: 3, background: 'rgba(184,164,255,0.2)', borderRadius: 2, overflow: 'hidden' }}>
                   {uploadPct >= 98 ? (
@@ -199,6 +201,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
             background: 'rgba(127,213,170,0.1)',
             border: '1px solid rgba(127,213,170,0.25)',
             color: '#7FD5AA',
@@ -207,7 +210,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
             fontSize: 11,
             fontWeight: 700,
           }}>
-            {isCloud ? <><Cloud size={10} style={{ marginRight: 3 }} />CLOUD</> : 'CONNECTED'}
+            {isCloud ? <><Cloud size={10} />CLOUD</> : 'CONNECTED'}
           </div>
           {/* Re-upload button */}
           <input
