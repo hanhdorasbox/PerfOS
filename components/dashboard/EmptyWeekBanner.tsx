@@ -41,7 +41,7 @@ export default function EmptyWeekBanner({ userId }: Props) {
         border: '1px solid rgba(127,213,170,0.2)',
         fontSize: 13, color: '#7FD5AA', fontWeight: 600,
       }}>
-        ✓ Vygenerováno {count} {count === 1 ? 'task' : count <= 4 ? 'tasky' : 'tasků'} z tvých cílů. Načítám…
+        ✓ Generated {count} {count === 1 ? 'task' : 'tasks'} from your goals. Loading…
       </div>
     )
   }
@@ -55,10 +55,10 @@ export default function EmptyWeekBanner({ userId }: Props) {
     }}>
       <div>
         <div style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', marginBottom: 4 }}>
-          Tento týden nemáš žádné tasky
+          No tasks this week
         </div>
         <div style={{ fontSize: 12, color: '#6E6E73' }}>
-          AI může vygenerovat tasky přímo z tvých čtvrtletních cílů.
+          AI can generate tasks directly from your quarterly goals.
         </div>
       </div>
       <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
@@ -69,7 +69,7 @@ export default function EmptyWeekBanner({ userId }: Props) {
           borderRadius: 8, padding: '8px 14px', cursor: 'pointer',
           textDecoration: 'none',
         }}>
-          Plánovat ručně →
+          Plan manually →
         </a>
         <button
           onClick={generate}
@@ -82,7 +82,7 @@ export default function EmptyWeekBanner({ userId }: Props) {
             transition: 'background 0.15s',
           }}
         >
-          {loading ? '⏳ Generuji…' : '✨ Generovat z cílů'}
+          {loading ? '⏳ Generating…' : '✨ Generate from goals'}
         </button>
       </div>
     </div>

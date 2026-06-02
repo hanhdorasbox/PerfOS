@@ -119,7 +119,7 @@ export default function QuickCapture({ userId }: Props) {
                     color: mode === m ? '#B8A4FF' : '#6E6E73',
                     fontSize: 12, fontWeight: 600, letterSpacing: '0.02em',
                   }}>
-                  {m === 'task' ? '✓ Task' : '💡 Nápad'}
+                  {m === 'task' ? '✓ Task' : '💡 Idea'}
                 </button>
               ))}
               <span style={{ fontSize: 10, color: '#3A3A3C', flexShrink: 0, marginLeft: 4 }}>⌘K</span>
@@ -131,7 +131,7 @@ export default function QuickCapture({ userId }: Props) {
               value={title}
               onChange={e => setTitle(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit() } }}
-              placeholder={mode === 'task' ? 'Co je potřeba udělat...' : 'Nápad nebo myšlenka...'}
+              placeholder={mode === 'task' ? 'What needs to be done...' : 'Idea or thought...'}
               style={{
                 width: '100%', padding: '10px 12px', borderRadius: 8, boxSizing: 'border-box',
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
@@ -143,7 +143,7 @@ export default function QuickCapture({ userId }: Props) {
             {mode === 'task' && (
               <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 9, color: '#52525A', marginBottom: 4, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Priorita</div>
+                  <div style={{ fontSize: 9, color: '#52525A', marginBottom: 4, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Priority</div>
                   <div style={{ display: 'flex', gap: 3 }}>
                     {(['must', 'should', 'optional'] as const).map(p => (
                       <button key={p} onClick={() => setPriority(p)}
@@ -159,7 +159,7 @@ export default function QuickCapture({ userId }: Props) {
                   </div>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 9, color: '#52525A', marginBottom: 4, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Čas</div>
+                  <div style={{ fontSize: 9, color: '#52525A', marginBottom: 4, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Effort</div>
                   <div style={{ display: 'flex', gap: 3 }}>
                     {(['low', 'medium', 'deep'] as const).map(e => (
                       <button key={e} onClick={() => setEffort(e)}
@@ -189,7 +189,7 @@ export default function QuickCapture({ userId }: Props) {
                 transition: 'background 0.2s',
               }}
             >
-              {saved ? '✓ Uloženo!' : loading ? '…' : mode === 'task' ? 'Přidat task  ↵' : 'Uložit nápad  ↵'}
+              {saved ? '✓ Saved!' : loading ? '…' : mode === 'task' ? 'Add task  ↵' : 'Save idea  ↵'}
             </button>
           </div>
         </div>

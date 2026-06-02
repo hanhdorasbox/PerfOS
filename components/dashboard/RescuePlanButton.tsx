@@ -45,8 +45,8 @@ export default function RescuePlanButton({ gap, weeksRemaining, quarterName }: P
         borderRadius: 10,
         border: '1px solid rgba(236,198,102,0.15)',
       }}>
-        Zbývají <strong>{weeksRemaining}</strong> {weeksRemaining === 1 ? 'týden' : weeksRemaining <= 4 ? 'týdny' : 'týdnů'}.
-        {' '}Na dohnání potřebuješ <strong>~{weeklyNeeded}% týdně</strong>.
+        <strong>{weeksRemaining}</strong> {weeksRemaining === 1 ? 'week' : 'weeks'} remaining.
+        {' '}To catch up you need <strong>~{weeklyNeeded}% per week</strong>.
       </div>
 
       {!plan ? (
@@ -62,7 +62,7 @@ export default function RescuePlanButton({ gap, weeksRemaining, quarterName }: P
             transition: 'opacity 0.15s',
           }}
         >
-          {loading ? '⏳ Generuji plán…' : '⚡ Vygeneruj záchranný plán'}
+          {loading ? '⏳ Generating plan…' : '⚡ Generate rescue plan'}
         </button>
       ) : (
         <>
@@ -76,7 +76,7 @@ export default function RescuePlanButton({ gap, weeksRemaining, quarterName }: P
               marginBottom: open ? 10 : 0,
             }}
           >
-            {open ? '▲ Skrýt záchranný plán' : '▼ Zobrazit záchranný plán'}
+            {open ? '▲ Hide rescue plan' : '▼ Show rescue plan'}
           </button>
 
           {open && (

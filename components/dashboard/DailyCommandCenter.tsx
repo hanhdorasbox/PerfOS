@@ -156,10 +156,10 @@ function parseSafeJson<T>(str: string | null | undefined): T | null {
 
 function getTimeLabel(): string | null {
   const h = new Date().getHours()
-  if (h >= 6 && h < 11)  return '🌅 Dobré ráno'
-  if (h >= 11 && h < 14) return '☀️ Dopoledne'
-  if (h >= 14 && h < 18) return '🌤 Odpoledne'
-  if (h >= 18 && h < 22) return '🌙 Večer'
+  if (h >= 6 && h < 11)  return '🌅 Good morning'
+  if (h >= 11 && h < 14) return '☀️ Late morning'
+  if (h >= 14 && h < 18) return '🌤 Afternoon'
+  if (h >= 18 && h < 22) return '🌙 Evening'
   return null
 }
 
@@ -661,7 +661,7 @@ function BulletDirective({ text, expanded, onToggle }: { text: string; expanded:
           ))}
           {sentences.length > 1 && (
             <button onClick={onToggle} style={{ alignSelf: 'flex-start', fontSize: 10, color: '#52525A', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>
-              {expanded ? 'Skrýt ↑' : 'Zobrazit vše ↓'}
+              {expanded ? 'Collapse ↑' : 'Show all ↓'}
             </button>
           )}
         </div>
@@ -698,7 +698,7 @@ function BulletDirective({ text, expanded, onToggle }: { text: string; expanded:
       ))}
       {(bullets.length > 1 || (framingShown.length > 0 && bullets.length > 0)) && (
         <button onClick={onToggle} style={{ alignSelf: 'flex-start', fontSize: 10, color: '#52525A', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>
-          {expanded ? 'Skrýt ↑' : 'Zobrazit vše ↓'}
+          {expanded ? 'Collapse ↑' : 'Show all ↓'}
         </button>
       )}
     </div>
@@ -822,7 +822,7 @@ function FocusModeOverlay({
             padding: '8px 20px', cursor: 'pointer',
           }}
         >
-          {running ? '⏸ Pauza' : '▶ Pokračovat'}
+          {running ? '⏸ Pause' : '▶ Resume'}
         </button>
 
         {/* Done button */}
@@ -1138,9 +1138,9 @@ export default function DailyCommandCenter({
               border: '1px solid rgba(127,213,170,0.18)',
               borderRadius: 12,
             }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#7FD5AA', marginBottom: 6 }}>Dobré ráno 🌅</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#7FD5AA', marginBottom: 6 }}>Good morning 🌅</div>
               <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6 }}>
-                Tvůj dnešní fokus:
+                Today&apos;s focus:
               </div>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 12, lineHeight: 1.35 }}>
                 {mustDo[0]?.title}
@@ -1153,7 +1153,7 @@ export default function DailyCommandCenter({
                   borderRadius: 7, padding: '6px 14px', cursor: 'pointer',
                 }}
               >
-                Rozumím, jdeme na to →
+                Got it, let&apos;s go →
               </button>
             </div>
           )}
@@ -1246,7 +1246,7 @@ export default function DailyCommandCenter({
                 background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
                 borderRadius: 10, fontSize: 12, color: '#7FD5AA', fontWeight: 600,
               }}>
-                Den splněn 🎉 Všechno hotovo!
+                Day complete 🎉 All done!
               </div>
             )}
             {!allDone && allMustDone && (
@@ -1255,7 +1255,7 @@ export default function DailyCommandCenter({
                 background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
                 borderRadius: 10, fontSize: 12, color: '#7FD5AA', fontWeight: 600,
               }}>
-                ✓ Must-have tasky hotovy. Skvělá práce 🎉
+                ✓ Must-have tasks done. Great work 🎉
               </div>
             )}
 
@@ -1265,10 +1265,30 @@ export default function DailyCommandCenter({
                 return sum + (t.estimatedMinutes ?? (t.effort === 1 ? 15 : t.effort === 2 ? 25 : 45))
               }, 0)
               const now = new Date()
-              const dayRemMin = Math.max(0, (22 - now.getHours()) * 60 - now.getMinutes())
+              const nowMin = now.getHours() * 60 + now.getMinutes()
+              const dow = now.getDay() // 0=Sun, 1=Mon, ..., 6=Sat
+              // Default work schedule: Mon/Wed 7:30-15:30, Tue/Thu/Fri 9:00-17:00
+              const workSchedule: Record<number, { start: number; end: number } | null> = {
+                0: null, // Sunday — no work
+                1: { start: 7 * 60 + 30, end: 15 * 60 + 30 }, // Monday
+                2: { start: 9 * 60,       end: 17 * 60 },       // Tuesday
+                3: { start: 7 * 60 + 30, end: 15 * 60 + 30 }, // Wednesday
+                4: { start: 9 * 60,       end: 17 * 60 },       // Thursday
+                5: { start: 9 * 60,       end: 17 * 60 },       // Friday (lighter but same hours)
+                6: null, // Saturday — no work
+              }
+              const work = workSchedule[dow]
+              // Remaining work minutes (if still within work hours)
+              const workRemMin = work
+                ? Math.max(0, work.end - Math.max(nowMin, work.start))
+                : 0
+              // Free minutes = time until 22:00, minus remaining work hours
+              const untilEndOfDay = Math.max(0, 22 * 60 - nowMin)
+              const dayRemMin = Math.max(0, untilEndOfDay - workRemMin)
               const tight = totalMin > dayRemMin
               const tH = Math.floor(totalMin / 60), tM = totalMin % 60
               const rH = Math.floor(dayRemMin / 60), rM = dayRemMin % 60
+              const isWorkHours = work && nowMin >= work.start && nowMin < work.end
               return (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
@@ -1277,19 +1297,27 @@ export default function DailyCommandCenter({
                   border: `1px solid ${tight ? 'rgba(255,155,135,0.14)' : 'rgba(127,213,170,0.1)'}`,
                 }}>
                   <span style={{ fontSize: 11, color: '#6E6E73' }}>
-                    Tasky: <strong style={{ color: tight ? '#FF9B87' : '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
+                    Tasks: <strong style={{ color: tight ? '#FF9B87' : '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
                       {tH > 0 ? `${tH}h ` : ''}{tM}m
                     </strong>
                   </span>
                   <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
                   <span style={{ fontSize: 11, color: '#6E6E73' }}>
-                    Do 22:00: <strong style={{ color: '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
+                    Free time: <strong style={{ color: '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
                       {rH}h {String(rM).padStart(2, '0')}m
                     </strong>
                   </span>
+                  {isWorkHours && workRemMin > 0 && (
+                    <>
+                      <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
+                      <span style={{ fontSize: 10, color: '#6E6E73' }}>
+                        Work until {work!.end === 15 * 60 + 30 ? '15:30' : '17:00'}
+                      </span>
+                    </>
+                  )}
                   {tight && (
                     <span style={{ fontSize: 10, color: '#FF9B87', marginLeft: 'auto', fontWeight: 700 }}>
-                      ⚠ Přetížen
+                      ⚠ Overloaded
                     </span>
                   )}
                 </div>
@@ -1299,9 +1327,9 @@ export default function DailyCommandCenter({
             {/* Energy selector */}
             <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
               {([
-                { key: 'low',    label: '🔋 Nízká' },
-                { key: 'medium', label: '⚡ Střední' },
-                { key: 'high',   label: '🚀 Vysoká' },
+                { key: 'low',    label: '🔋 Low' },
+                { key: 'medium', label: '⚡ Medium' },
+                { key: 'high',   label: '🚀 High' },
               ] as const).map(({ key, label }) => (
                 <button
                   key={key}
