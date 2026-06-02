@@ -623,13 +623,6 @@ function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: Fitn
         <div style={{ fontSize: 12, color: '#6E6E73' }}>Rest day</div>
       )}
 
-      {targetProtein && (
-        <div style={{ marginTop: 10, paddingTop: 9, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ fontSize: 17, fontWeight: 700, color: '#7FD5AA' }}>{targetProtein}g</div>
-          <div style={{ fontSize: 10, color: '#6E6E73' }}>protein target</div>
-        </div>
-      )}
-
       <Link href="/fitness" style={{ display: 'block', marginTop: 9, fontSize: 11, color: '#6E6E73', textDecoration: 'none' }}>
         Fitness details →
       </Link>
