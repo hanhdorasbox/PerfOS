@@ -538,7 +538,12 @@ function PriorityItem({
 
 // ─── Fitness Snapshot ─────────────────────────────────────────────────────────
 
-function FitnessSnapshot({ strategy }: { strategy: FitnessStrategy | null }) {
+function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: FitnessStrategy | null; userId?: string; onWorkoutLogged?: () => void }) {
+  const [logOpen, setLogOpen] = useState(false)
+  const [workoutType, setWorkoutType] = useState('cardio')
+  const [duration, setDuration] = useState('30')
+  const [logging, setLogging] = useState(false)
+
   const today = new Date()
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   const todayName = dayNames[today.getDay()]
@@ -549,6 +554,28 @@ function FitnessSnapshot({ strategy }: { strategy: FitnessStrategy | null }) {
 
   const nutritionDir = parseSafeJson<{ proteinTarget?: number; targetProtein?: number }>(strategy?.nutritionDir)
   const targetProtein = nutritionDir?.proteinTarget ?? nutritionDir?.targetProtein
+
+  async function logWorkout() {
+    if (!userId || !duration || !workoutType) return
+    setLogging(true)
+    try {
+      await fetch('/api/fitness/workout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          type: workoutType,
+          duration: parseInt(duration),
+          notes: null,
+        }),
+      })
+      setLogOpen(false)
+      setDuration('30')
+      onWorkoutLogged?.()
+    } finally {
+      setLogging(false)
+    }
+  }
 
   return (
     <div className="card">
@@ -575,9 +602,80 @@ function FitnessSnapshot({ strategy }: { strategy: FitnessStrategy | null }) {
         </div>
       )}
 
-      <Link href="/fitness" style={{ display: 'block', marginTop: 9, fontSize: 11, color: '#6E6E73', textDecoration: 'none' }}>
-        Fitness details →
-      </Link>
+      {/* Quick log workout */}
+      {!logOpen && userId && (
+        <button
+          onClick={() => setLogOpen(true)}
+          style={{
+            display: 'block', width: '100%', marginTop: 9, fontSize: 11, fontWeight: 600,
+            color: '#0A0A0C', background: '#A3D977', border: 'none', borderRadius: 6,
+            padding: '6px 0', cursor: 'pointer',
+          }}
+        >
+          + Log workout
+        </button>
+      )}
+
+      {logOpen && userId && (
+        <div style={{ marginTop: 10, padding: '8px 10px', background: 'rgba(163,217,119,0.1)', borderRadius: 6, border: '1px solid rgba(163,217,119,0.2)' }}>
+          <div style={{ display: 'flex', gap: 4, marginBottom: 6, flexWrap: 'wrap' }}>
+            {['cardio', 'strength', 'mobility'].map(t => (
+              <button
+                key={t}
+                onClick={() => setWorkoutType(t)}
+                style={{
+                  fontSize: 9, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
+                  background: workoutType === t ? 'rgba(163,217,119,0.3)' : 'transparent',
+                  border: workoutType === t ? '1px solid rgba(163,217,119,0.6)' : '1px solid rgba(255,255,255,0.1)',
+                  color: workoutType === t ? '#A3D977' : '#6E6E73',
+                }}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+            <input
+              type="number"
+              value={duration}
+              onChange={e => setDuration(e.target.value)}
+              min="5"
+              step="5"
+              style={{
+                flex: 1, padding: '4px 6px', borderRadius: 4,
+                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                color: '#F5F5F7', fontSize: 9, outline: 'none',
+              }}
+            />
+            <span style={{ fontSize: 9, color: '#6E6E73', minWidth: 18 }}>min</span>
+            <button
+              onClick={logWorkout}
+              disabled={logging}
+              style={{
+                padding: '4px 10px', borderRadius: 4, background: '#A3D977', border: 'none',
+                color: '#0A0A0C', fontSize: 9, fontWeight: 700, cursor: 'pointer', opacity: logging ? 0.6 : 1,
+              }}
+            >
+              {logging ? '…' : 'Log'}
+            </button>
+            <button
+              onClick={() => setLogOpen(false)}
+              style={{
+                padding: '4px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', fontSize: 9, cursor: 'pointer',
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!logOpen && (
+        <Link href="/fitness" style={{ display: 'block', marginTop: 9, fontSize: 11, color: '#6E6E73', textDecoration: 'none' }}>
+          Fitness details →
+        </Link>
+      )}
     </div>
   )
 }
@@ -1598,7 +1696,7 @@ export default function DailyCommandCenter({
             const workEndMin = work?.end ?? 17 * 60
             return <TodaysMeetings events={calendarEvents} workStartMin={workStartMin} workEndMin={workEndMin} />
           })()}
-          <FitnessSnapshot strategy={strategy} />
+          <FitnessSnapshot strategy={strategy} userId={userId} onWorkoutLogged={() => startTransition(() => router.refresh())} />
           <MealPreview meals={todayMeals} label="Today's Meals" href="/meals" />
           {tomorrowMeals.length > 0 && (
             <MealPreview meals={tomorrowMeals} label="Tomorrow's Meals" isTomorrow={true} />
