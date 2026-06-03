@@ -562,6 +562,8 @@ function PriorityItem({
   onBreakSteps,
   loadingSteps,
   expandedSteps,
+  completedSteps,
+  onToggleStep,
 }: {
   task: WeeklyTask
   briefItem?: BriefingPriority
@@ -571,6 +573,8 @@ function PriorityItem({
   onBreakSteps: (id: string) => void
   loadingSteps: string | null
   expandedSteps: Record<string, MicroStep[]>
+  completedSteps: Record<string, Set<number>>
+  onToggleStep: (taskId: string, index: number) => void
 }) {
   const [hovered, setHovered] = useState(false)
   const priority = briefItem?.priority ?? (task.priority === 1 ? 'must' : task.priority === 3 ? 'optional' : 'should')
@@ -704,13 +708,33 @@ function PriorityItem({
           background: 'rgba(184,164,255,0.05)', border: '1px solid rgba(184,164,255,0.15)',
           borderRadius: 8, borderTop: 'none', borderTopLeftRadius: 0, borderTopRightRadius: 0,
         }}>
-          {steps.map((step, i) => (
-            <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '3px 0' }}>
-              <span style={{ fontSize: 9, color: '#52525A', minWidth: 14, textAlign: 'right' }}>{i + 1}.</span>
-              <span style={{ fontSize: 11, color: '#A1A1A6', flex: 1, lineHeight: 1.45 }}>{step.title}</span>
-              <span style={{ fontSize: 9, color: '#52525A', flexShrink: 0 }}>~{step.estimatedMinutes}m</span>
-            </div>
-          ))}
+          {steps.map((step, i) => {
+            const done = completedSteps[task.id]?.has(i) ?? false
+            return (
+              <div
+                key={i}
+                onClick={() => onToggleStep(task.id, i)}
+                style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '5px 2px', cursor: 'pointer' }}
+              >
+                <div style={{
+                  width: 14, height: 14, borderRadius: '50%', flexShrink: 0,
+                  border: `1.5px solid ${done ? '#7FD5AA' : 'rgba(255,255,255,0.18)'}`,
+                  background: done ? 'rgba(127,213,170,0.18)' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.15s ease',
+                }}>
+                  {done && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#7FD5AA' }} />}
+                </div>
+                <span style={{
+                  fontSize: 11, flex: 1, lineHeight: 1.45,
+                  color: done ? '#3E3E44' : '#A1A1A6',
+                  textDecoration: done ? 'line-through' : 'none',
+                  transition: 'all 0.15s ease',
+                }}>{step.title}</span>
+                <span style={{ fontSize: 9, color: '#52525A', flexShrink: 0, opacity: done ? 0.35 : 1 }}>~{step.estimatedMinutes}m</span>
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
@@ -1228,7 +1252,17 @@ export default function DailyCommandCenter({
   const [energy, setEnergy] = useState<'low' | 'medium' | 'high' | null>(null)
   const [morningDismissed, setMorningDismissed] = useState(false)
   const [expandedSteps, setExpandedSteps] = useState<Record<string, MicroStep[]>>({})
+  const [completedSteps, setCompletedSteps] = useState<Record<string, Set<number>>>({})
   const [loadingSteps, setLoadingSteps] = useState<string | null>(null)
+
+  function toggleStep(taskId: string, index: number) {
+    setCompletedSteps(prev => {
+      const current = new Set(prev[taskId] ?? [])
+      if (current.has(index)) current.delete(index)
+      else current.add(index)
+      return { ...prev, [taskId]: new Set(current) }
+    })
+  }
   const [celebTaskId, setCelebTaskId] = useState<string | null>(null)
   const [calendarEvents, setCalendarEvents] = useState<Array<{ start: Date; end: Date }>>([])
 
@@ -1836,6 +1870,8 @@ export default function DailyCommandCenter({
                         onBreakSteps={loadMicroSteps}
                         loadingSteps={loadingSteps}
                         expandedSteps={expandedSteps}
+                        completedSteps={completedSteps}
+                        onToggleStep={toggleStep}
                       />
                     ))}
                   </div>
@@ -1851,6 +1887,8 @@ export default function DailyCommandCenter({
                         onBreakSteps={loadMicroSteps}
                         loadingSteps={loadingSteps}
                         expandedSteps={expandedSteps}
+                        completedSteps={completedSteps}
+                        onToggleStep={toggleStep}
                       />
                     ))}
                   </div>
@@ -1866,6 +1904,8 @@ export default function DailyCommandCenter({
                         onBreakSteps={loadMicroSteps}
                         loadingSteps={loadingSteps}
                         expandedSteps={expandedSteps}
+                        completedSteps={completedSteps}
+                        onToggleStep={toggleStep}
                       />
                     ))}
                   </div>
