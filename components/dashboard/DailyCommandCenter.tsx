@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import CalendarWidget from '@/components/calendar/CalendarWidget'
 import Spinner from '@/components/ui/Spinner'
-import { Globe, Cpu, TrendingUp, Briefcase, Users, Activity, Timer, RotateCw, ChevronDown } from 'lucide-react'
+import { Globe, Cpu, TrendingUp, Briefcase, Users, Activity, Timer, RotateCw, ChevronDown, Target } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
