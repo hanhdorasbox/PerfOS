@@ -208,7 +208,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
     <div>
       {/* ── Header card ── */}
       <div className="card" style={{ marginBottom: 16, padding: '20px 24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+        <div className="mob-stack" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
           <div style={{ flex: 1 }}>
             {/* Chips row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
@@ -229,16 +229,16 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
                 <span style={{ background: 'rgba(236,198,102,0.1)', color: '#ECC666', border: '1px solid rgba(236,198,102,0.25)', padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700 }}>ELI5</span>
               )}
             </div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: '#F5F5F7', marginBottom: 5 }}>
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: '#F5F5F7', marginBottom: 5, lineHeight: 1.3 }}>
               {strategicRoadmap?.title || goal.title}
             </h1>
             <p style={{ color: '#A1A1A6', fontSize: 14 }}>{goal.capabilityStatement}</p>
           </div>
 
           {/* Action buttons */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end', flexShrink: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end', flexShrink: 0, minWidth: 0 }}>
             {regenError && <p style={{ color: '#FF9B87', fontSize: 12, maxWidth: 280, textAlign: 'right', display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end' }}><AlertTriangle size={12} />{regenError}</p>}
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
               {goal.status === 'active' && (
                 <>
                   <button onClick={completeGoal} style={{ ...btnStyle, color: '#7FD5AA', border: '1px solid rgba(127,213,170,0.3)' }}>✓ Complete</button>
@@ -282,7 +282,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
         )}
 
         {/* Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 16, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 16, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <div>
             <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Level</p>
             <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, marginTop: 3 }}>{goal.startingLevel} → {goal.targetLevel}</p>

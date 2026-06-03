@@ -584,6 +584,9 @@ function PriorityItem({
   const timeLabel = task.estimatedMinutes ? `~${task.estimatedMinutes}m` : effortTimeLabel(task.effort)
   const steps = expandedSteps[task.id]
   const isLoadingThisStep = loadingSteps === task.id
+  const doneStepCount = completedSteps[task.id]?.size ?? 0
+  const totalStepCount = steps?.length ?? 0
+  const hasStepProgress = totalStepCount > 0 && doneStepCount > 0
 
   return (
     <div>
@@ -614,8 +617,8 @@ function PriorityItem({
         >
           <div style={{
             width: 18, height: 18, borderRadius: '50%',
-            border: `2px solid ${isCelebrating ? color : hovered ? color : `${color}66`}`,
-            background: isToggling ? `${color}20` : 'transparent',
+            border: `2px solid ${isCelebrating || hasStepProgress ? color : hovered ? color : `${color}66`}`,
+            background: hasStepProgress ? `${color}15` : isToggling ? `${color}20` : 'transparent',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'border-color 0.12s, background 0.12s', pointerEvents: 'none',
           }}>
@@ -623,10 +626,12 @@ function PriorityItem({
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, animation: 'pulse 0.8s ease-in-out infinite' }} />
             )}
             {isCelebrating && !isToggling && (
-              <span style={{
-                fontSize: 10, color, fontWeight: 900,
-                animation: 'celebFlash 1.2s ease-out forwards',
-              }}>✓</span>
+              <span style={{ fontSize: 10, color, fontWeight: 900, animation: 'celebFlash 1.2s ease-out forwards' }}>✓</span>
+            )}
+            {hasStepProgress && !isToggling && !isCelebrating && (
+              <span style={{ fontSize: 7, color, fontWeight: 800, lineHeight: 1, letterSpacing: '-0.02em' }}>
+                {doneStepCount}/{totalStepCount}
+              </span>
             )}
           </div>
         </button>
@@ -1260,7 +1265,16 @@ export default function DailyCommandCenter({
       const current = new Set(prev[taskId] ?? [])
       if (current.has(index)) current.delete(index)
       else current.add(index)
-      return { ...prev, [taskId]: new Set(current) }
+      const next = new Set(current)
+
+      // Auto-complete task when all micro-steps are checked
+      const steps = expandedSteps[taskId] ?? []
+      const task = tasks.find(t => t.id === taskId)
+      if (steps.length > 0 && next.size === steps.length && task && !task.completed) {
+        setTimeout(() => toggleTask(taskId), 500)
+      }
+
+      return { ...prev, [taskId]: next }
     })
   }
   const [celebTaskId, setCelebTaskId] = useState<string | null>(null)
