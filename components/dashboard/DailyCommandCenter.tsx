@@ -1260,12 +1260,44 @@ export default function DailyCommandCenter({
   const [completedSteps, setCompletedSteps] = useState<Record<string, Set<number>>>({})
   const [loadingSteps, setLoadingSteps] = useState<string | null>(null)
 
+  // Load persisted steps + completions from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedExpanded: Record<string, MicroStep[]> = {}
+      const savedCompleted: Record<string, Set<number>> = {}
+      for (const task of tasks) {
+        const raw = localStorage.getItem(`steps_${task.id}_${todayStr}`)
+        if (!raw) continue
+        const { steps, completed } = JSON.parse(raw) as { steps?: MicroStep[]; completed?: number[] }
+        if (steps?.length) savedExpanded[task.id] = steps
+        if (completed?.length) savedCompleted[task.id] = new Set(completed)
+      }
+      if (Object.keys(savedExpanded).length) setExpandedSteps(savedExpanded)
+      if (Object.keys(savedCompleted).length) setCompletedSteps(savedCompleted)
+    } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todayStr])
+
+  function saveStepsToStorage(taskId: string, steps?: MicroStep[], completed?: Set<number>) {
+    try {
+      const key = `steps_${taskId}_${todayStr}`
+      const existing = JSON.parse(localStorage.getItem(key) ?? '{}') as { steps?: MicroStep[]; completed?: number[] }
+      localStorage.setItem(key, JSON.stringify({
+        steps: steps ?? existing.steps,
+        completed: completed != null ? [...completed] : existing.completed,
+      }))
+    } catch {}
+  }
+
   function toggleStep(taskId: string, index: number) {
     setCompletedSteps(prev => {
       const current = new Set(prev[taskId] ?? [])
       if (current.has(index)) current.delete(index)
       else current.add(index)
       const next = new Set(current)
+
+      // Persist completed state
+      saveStepsToStorage(taskId, undefined, next)
 
       // Auto-complete task when all micro-steps are checked
       const steps = expandedSteps[taskId] ?? []
@@ -1393,6 +1425,7 @@ export default function DailyCommandCenter({
       if (res.ok) {
         const data = await res.json()
         setExpandedSteps(prev => ({ ...prev, [taskId]: data.steps }))
+        saveStepsToStorage(taskId, data.steps, completedSteps[taskId])
       }
     } finally {
       setLoadingSteps(null)
