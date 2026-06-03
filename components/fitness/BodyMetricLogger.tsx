@@ -131,7 +131,7 @@ export default function BodyMetricLogger({ userId, logs: initLogs }: Props) {
 
       {showForm && (
         <form onSubmit={save} style={{ marginTop: 16 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 10 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10, marginBottom: 10 }}>
             <div>
               <label style={{ fontSize: 10, color: '#6E6E73', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>Date</label>
               <input type="date" style={inputStyle} value={date} onChange={e => setDate(e.target.value)} />

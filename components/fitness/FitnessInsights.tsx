@@ -398,7 +398,7 @@ export default function FitnessInsights({
   alcoholLogs, alcoholBudget, alcoholBudgetType,
 }: FitnessInsightsProps) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+    <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12 }}>
       <WeeklyConsistencyCard
         planned={planned} completed={completed}
         alcoholLogs={alcoholLogs} alcoholBudget={alcoholBudget}

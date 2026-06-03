@@ -248,7 +248,7 @@ function RoadmapPhase({ phase, index }: { phase: RoadmapPhaseData; index: number
               </div>
             </div>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div style={{ padding: '11px 14px', background: 'rgba(128,189,255,0.04)', borderRadius: 14, border: '1px solid rgba(128,189,255,0.11)' }}>
               <div style={{ fontSize: 10, fontWeight: 500, color: '#80BDFF', letterSpacing: '0.04em', marginBottom: 6, opacity: 0.8 }}>Monitor</div>
               <p style={{ fontSize: 12, color: '#7E7E88', margin: 0, lineHeight: 1.58 }}>{phase.monitor}</p>
@@ -1038,7 +1038,7 @@ export default function FitnessStrategyView({ strategy }: Props) {
           </div>
 
           {(workoutPlan.progressionRule || workoutPlan.trackingNote) && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 18 }}>
+            <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 18 }}>
               {workoutPlan.progressionRule && (
                 <div style={{ padding: '12px 14px', background: 'rgba(127,213,170,0.04)', borderRadius: 14, border: '1px solid rgba(127,213,170,0.11)' }}>
                   <div style={{ fontSize: 10, fontWeight: 500, color: '#7FD5AA', letterSpacing: '0.04em', marginBottom: 6, opacity: 0.75 }}>Progression rule</div>
@@ -1083,7 +1083,7 @@ export default function FitnessStrategyView({ strategy }: Props) {
       )}
 
       {/* ══ F. STRATEGY PILLARS ══════════════════════════════════════════════════ */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
 
         {sp && (
           <PillarCard title="Strength Training" accent="#7FD5AA" rationale={sp.notes}>
@@ -1136,7 +1136,7 @@ export default function FitnessStrategyView({ strategy }: Props) {
       )}
 
       {/* ══ H. TRACKING + DECISION RULES ══════════════════════════════════════════ */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
 
         {trackingMetrics.length > 0 && (
           <div className="card" style={{ padding: '20px 22px' }}>

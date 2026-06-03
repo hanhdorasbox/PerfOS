@@ -497,6 +497,20 @@ body {
   .scroll-mobile { overflow-x: auto; }
 }
 
+/* ─── Phone-only (≤640px) ─────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Collapse any multi-column grid to single column */
+  .mob-1col {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .mob-1col > * {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+}
+
 /* ─── Avatar gamification — floating coins ───────────────────────────────────── */
 @keyframes float-coin {
   0%   { transform: translateY(0) scale(1);    opacity: 1; }
