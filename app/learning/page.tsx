@@ -84,7 +84,7 @@ export default async function LearningPage() {
 
       {/* Stats bar — only show if there are active goals */}
       {activeGoalsList.length > 0 && (
-        <div style={{
+        <div className="mob-2col" style={{
           display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 20,
         }}>
           {[

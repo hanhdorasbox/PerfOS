@@ -352,7 +352,7 @@ export default function RoadmapDetailView({ goal: initialGoal }: Props) {
               <p style={{ color: '#F5F5F7', fontSize: 14 }}>{goal.whyItMatters}</p>
             </div>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {goal.evidenceOfMastery && (
               <div style={{ background: 'rgba(127,213,170,0.06)', border: '1px solid rgba(127,213,170,0.15)', borderRadius: 8, padding: '12px 14px' }}>
                 <p style={{ color: '#7FD5AA', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Evidence of Mastery</p>
@@ -559,7 +559,7 @@ function StrategicPhaseCard({ phase, index, color }: { phase: StrategicPhase; in
             </div>
           )}
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {phase.deliverable && (
               <div style={{ padding: '10px 12px', background: `${color}08`, borderRadius: 8, border: `1px solid ${color}20` }}>
                 <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>Deliverable</div>
@@ -758,7 +758,7 @@ function HealthTab({ goal, onUpdateHealth }: { goal: GoalFull; onUpdateHealth: (
     <div className="card" style={{ display: 'grid', gap: 16 }}>
       <div>
         <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Progress Summary</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
           <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 14px' }}>
             <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Steps Done</p>
             <p style={{ color: '#F5F5F7', fontSize: 20, fontWeight: 700, marginTop: 4 }}>{completedSteps}<span style={{ color: '#6E6E73', fontSize: 13 }}>/{totalSteps}</span></p>
@@ -988,7 +988,7 @@ function EditGoalForm({ goal, onSave }: { goal: GoalFull; onSave: (data: Partial
       <div><label style={labelStyle}>Title</label><input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} style={inputStyle} /></div>
       <div><label style={labelStyle}>Capability Statement</label><input value={form.capabilityStatement} onChange={e => setForm(f => ({ ...f, capabilityStatement: e.target.value }))} style={inputStyle} /></div>
       <div><label style={labelStyle}>Why It Matters</label><input value={form.whyItMatters} onChange={e => setForm(f => ({ ...f, whyItMatters: e.target.value }))} style={inputStyle} /></div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div>
           <label style={labelStyle}>Roadmap Type</label>
           <select value={form.roadmapType} onChange={e => setForm(f => ({ ...f, roadmapType: e.target.value }))} style={inputStyle}>

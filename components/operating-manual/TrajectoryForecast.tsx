@@ -126,7 +126,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
       {loading && !data && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Domain skeleton */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
             {[1,2,3].map(i => (
               <div key={i} style={{ height: 110, borderRadius: 14, background: 'rgba(255,255,255,0.04)', animation: 'pulse 1.6s ease-in-out infinite' }} />
             ))}
@@ -145,7 +145,7 @@ export default function TrajectoryForecast({ userId, hasPatterns }: Props) {
             <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 14 }}>
               Domain Outlook
             </div>
-            <div style={{
+            <div className="mob-1col" style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${Math.min(data.domains.length, 4)}, 1fr)`,
               gap: 14,

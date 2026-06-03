@@ -95,7 +95,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
 
       {/* Quick stats bar */}
       {goalBreakdown.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 20 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 20 }}>
           {[
             { label: 'Goals tracked', value: goalBreakdown.length, color: '#B8A4FF' },
             { label: 'On track',      value: onTrack,              color: '#7FD5AA' },
@@ -200,7 +200,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
 
       {/* Fitness + Career side by side */}
       {(fitnessBullets.length > 0 || careerBullets.length > 0) && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
           {fitnessBullets.length > 0 && (
             <div className="card" style={{ padding: '16px 20px' }}>
               <h2 style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>

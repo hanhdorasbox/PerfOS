@@ -145,7 +145,7 @@ export default function AddCapabilityGoalForm({ userId, goals }: Props) {
       </div>
 
       {/* Core fields */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
         <div style={{ gridColumn: '1 / -1' }}>
           <label style={labelStyle}>Goal Title *</label>
           <input

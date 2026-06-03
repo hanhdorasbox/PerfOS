@@ -78,6 +78,7 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
   const gapColor = goal.metrics.gap >= 0 ? '#7FD5AA' : goal.metrics.gap >= -10 ? '#ECC666' : '#FF9B87'
 
   return (
+    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
     <div
       style={{
         display: 'grid',
@@ -88,6 +89,7 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
         background: 'rgba(255,255,255,0.02)',
         border: '1px solid rgba(255,255,255,0.04)',
         alignItems: 'center',
+        minWidth: 640,
       }}
     >
       {/* Status dot */}
@@ -227,6 +229,7 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
           {goal.metrics.statusLabel}
         </span>
       </div>
+    </div>
     </div>
   )
 }

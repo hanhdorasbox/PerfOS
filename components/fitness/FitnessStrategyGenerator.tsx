@@ -147,7 +147,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
   const sectionContent = [
     // Section A
     <div key="A" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field>
           <Label>Current waist (cm)</Label>
           <input style={inputStyle} value={waist} onChange={e => setWaist(e.target.value)} placeholder="e.g. 74" />
@@ -159,7 +159,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
       </div>
       <Field>
         <Label>Main objective for this quarter</Label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {['Body recomposition', 'Reduce waist / body composition', 'Build muscle', 'Improve strength', 'Improve conditioning', 'Maintain current regime'].map(opt => (
             <ChoiceButton key={opt} label={opt} selected={mainObjective === opt} onClick={() => setMainObjective(opt)} />
           ))}
@@ -168,7 +168,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
       </Field>
       <Field>
         <Label>What type of change are you primarily after?</Label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {[['measurement-change', 'Measurement change (waist/hip)'], ['body-shape', 'Body shape / composition'], ['performance', 'Performance / strength'], ['consistency', 'Routine consistency']].map(([val, lbl]) => (
             <ChoiceButton key={val} label={lbl} selected={changeType === val} onClick={() => setChangeType(val)} />
           ))}
@@ -178,7 +178,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
 
     // Section B
     <div key="B" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field>
           <Label>Planned sessions/week last quarter</Label>
           <input style={inputStyle} value={plannedSessions} onChange={e => setPlannedSessions(e.target.value)} placeholder="e.g. 4" />
@@ -200,7 +200,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
         <Label>Progress on body metrics</Label>
         <input style={inputStyle} value={metricProgress} onChange={e => setMetricProgress(e.target.value)} placeholder="e.g. Waist down 2cm, training consistent" />
       </Field>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field>
           <Label>Was the regime sustainable?</Label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -228,7 +228,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
       </Field>
       <Field>
         <Label>Direction for next quarter</Label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {[['continue', 'Continue same approach'], ['intensify', 'Intensify'], ['simplify', 'Simplify'], ['restructure', 'Restructure entirely']].map(([val, lbl]) => (
             <ChoiceButton key={val} label={lbl} selected={nextPlanDirection === val} onClick={() => setNextPlanDirection(val)} />
           ))}
@@ -238,7 +238,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
 
     // Section C
     <div key="C" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field>
           <Label>Preferred sessions/week</Label>
           <input style={inputStyle} value={preferredFreq} onChange={e => setPreferredFreq(e.target.value)} placeholder="e.g. 3" />
@@ -265,7 +265,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
       </Field>
       <Field>
         <Label>Training focus priorities (select all that apply)</Label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {focusOptions.map(opt => (
             <ChoiceButton key={opt} label={opt} selected={trainingFocus.includes(opt)} onClick={() => toggleFocus(opt)} />
           ))}
@@ -289,7 +289,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
       </Field>
       {wantsCardio !== 'no' && (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <Field>
               <Label>Preferred cardio type</Label>
               <input style={inputStyle} value={cardioTypes} onChange={e => setCardioTypes(e.target.value)} placeholder="e.g. Stairmaster, walking, cycling" />
@@ -348,7 +348,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
     <div key="E" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <Field>
         <Label>Nutrition structure this quarter</Label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {[['calorie-tracking', 'Full calorie tracking'], ['protein-only', 'Protein-focused only'], ['meal-plan', 'Use Project Hanh meal planning'], ['minimal', 'Minimal structure']].map(([val, lbl]) => (
             <ChoiceButton key={val} label={lbl} selected={nutritionStructure === val} onClick={() => setNutritionStructure(val)} />
           ))}
@@ -356,7 +356,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
       </Field>
       <Field>
         <Label>Caloric intent</Label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {[['deficit', 'Deficit (lose body fat)'], ['maintenance', 'Maintenance'], ['surplus', 'Slight surplus (build)'], ['ai-recommend', 'Let AI recommend based on goal']].map(([val, lbl]) => (
             <ChoiceButton key={val} label={lbl} selected={caloricIntent === val} onClick={() => setCaloricIntent(val)} />
           ))}
@@ -383,7 +383,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
     <div key="F" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <Field>
         <Label>Primary success metric for this quarter</Label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {['Waist circumference', 'Hip circumference', 'Strength progression', 'Training adherence', 'Body composition (visual)'].map(opt => (
             <ChoiceButton key={opt} label={opt} selected={primaryMetric === opt} onClick={() => setPrimaryMetric(opt)} />
           ))}
@@ -392,7 +392,7 @@ export default function FitnessStrategyGenerator({ userId, quarterId, label, pre
       </Field>
       <Field>
         <Label>Secondary metrics (select all relevant)</Label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {secondaryMetricOptions.map(opt => (
             <ChoiceButton key={opt} label={opt} selected={secondaryMetrics.includes(opt)} onClick={() => toggleSecondary(opt)} />
           ))}

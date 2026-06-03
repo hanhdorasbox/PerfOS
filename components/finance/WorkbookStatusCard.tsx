@@ -255,7 +255,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
         </div>
       )}
 
-      <div style={{
+      <div className="mob-1col" style={{
         display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12,
         marginTop: 20,
         paddingTop: 16,

@@ -250,7 +250,7 @@ export default async function QuarterlyPage({
           <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 16 }}>
             {isActive ? 'Quarter Health' : 'Final Results'}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 20 }}>
+          <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 20 }}>
             {[
               { label: 'Weighted Progress', value: `${Math.round(weightedCompletion)}%`, color: '#F5F5F7' },
               { label: 'Expected', value: `${Math.round(expectedPct)}%`, color: '#A1A1A6' },
@@ -300,7 +300,7 @@ export default async function QuarterlyPage({
           <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 16 }}>
             Planning Overview
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
             {[
               { label: 'Goals Planned', value: String(goalsWithMetrics.length), color: '#80BDFF' },
               { label: 'Activates', value: activatesOn ?? '—', color: '#F5F5F7', small: true },
@@ -321,7 +321,7 @@ export default async function QuarterlyPage({
           <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 16 }}>
             Portfolio Balance
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
+          <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
             {portfolioBuckets.map(bucket => (
               <div key={bucket.label} style={{
                 padding: '12px 14px', background: 'rgba(255,255,255,0.03)',
@@ -356,10 +356,12 @@ export default async function QuarterlyPage({
 
         {goalsWithMetrics.length > 0 ? (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: '28px 1fr 120px 80px 60px 80px 80px 90px', gap: 8, padding: '4px 8px', marginBottom: 4 }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '28px 1fr 120px 80px 60px 80px 80px 90px', gap: 8, padding: '4px 8px', marginBottom: 4, minWidth: 640 }}>
               {['', 'Goal', 'Role', 'Progress', 'Gap', 'Expected', 'Deadline', 'Action'].map((h, i) => (
                 <div key={i} style={{ fontSize: 10, color: '#6E6E73', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{h}</div>
               ))}
+            </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {goalsWithMetrics.map(goal => (

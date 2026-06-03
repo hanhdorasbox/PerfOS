@@ -471,7 +471,7 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
         <div style={cardStyle}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#F5F5F7', marginBottom: 16 }}>Log a drinking occasion</div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
             {/* Date */}
             <div>
               <label style={{ fontSize: 11, color: '#6E6E73', display: 'block', marginBottom: 4 }}>Date</label>
@@ -568,7 +568,7 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 16 }}>
               <div style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
                   <label style={{ fontSize: 11, color: '#6E6E73', display: 'block', marginBottom: 4 }}>Sleep hours</label>
                   <input
@@ -601,7 +601,7 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+              <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
                 <StarRating value={form.sleepQuality} onChange={v => setForm(f => ({ ...f, sleepQuality: v }))} label="Sleep quality" />
                 <StarRating value={form.nextDayEnergy} onChange={v => setForm(f => ({ ...f, nextDayEnergy: v }))} label="Next-day energy" />
                 <StarRating value={form.moodScore} onChange={v => setForm(f => ({ ...f, moodScore: v }))} label="Mood next day" />
@@ -685,7 +685,7 @@ export default function AlcoholTracker({ userId, initialLogs, initialSettings }:
           {logs.length > 0 && (
             <div style={cardStyle}>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#F5F5F7', marginBottom: 12 }}>8-week summary</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+              <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                 <StatCard label="Total drinks" value={logs.reduce((s, l) => s + l.drinks, 0).toFixed(1)} />
                 <StatCard label="Missed workouts" value={String(logs.filter(l => l.missedWorkout).length)} />
                 <StatCard label="Craving episodes" value={String(logs.filter(l => l.hadCravings).length)} />
@@ -873,7 +873,7 @@ function LogRow({ log, onDelete }: { log: AlcoholLogRow; onDelete: (id: string) 
           )}
 
           {hasNextDay && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 8 }}>
+            <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 8 }}>
               {log.sleepHours != null && <MiniStat label="Sleep" value={`${log.sleepHours}h`} />}
               {log.sleepQuality != null && <MiniStat label="Sleep quality" value={`${log.sleepQuality}/5`} />}
               {log.nextDayEnergy != null && <MiniStat label="Energy" value={`${log.nextDayEnergy}/5`} />}

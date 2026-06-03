@@ -179,7 +179,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
         {/* Snapshot skeleton */}
         <div style={{ background: 'rgba(128,189,255,0.06)', border: '1px solid rgba(128,189,255,0.15)', borderRadius: 14, padding: '18px 20px', marginBottom: 16 }}>
           <div style={{ height: 14, width: 80, background: 'rgba(255,255,255,0.08)', borderRadius: 4, marginBottom: 14 }} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             {[0, 1].map(i => (
               <div key={i}>
                 <div style={{ height: 10, width: 60, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 10 }} />
@@ -191,7 +191,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
           </div>
         </div>
         {/* KPI row skeleton */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
+        <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
           {[0,1,2,3].map(i => (
             <div key={i} className="card" style={{ padding: '12px 14px', textAlign: 'center' }}>
               <div style={{ height: 9, width: '60%', background: 'rgba(255,255,255,0.06)', borderRadius: 3, margin: '0 auto 8px' }} />
@@ -275,7 +275,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
             {statusCfg.icon} {statusCfg.label.toUpperCase()}
           </span>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {data.snapshot.wins.length > 0 && (
             <div>
               <p style={{ color: '#7FD5AA', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>✓ Wins</p>
@@ -306,7 +306,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
       </div>
 
       {/* ── Avatar metrics row ────────────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
+      <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
         {[
           { label: 'XP This Week', value: `+${data.avatar.xpThisWeek}`, color: '#B8A4FF' },
           { label: 'Tasks Done', value: data.avatar.tasksCompleted, color: '#80BDFF' },
@@ -363,7 +363,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
       {data.tasks && (
         <div className="card" style={{ marginBottom: 16, padding: '16px 20px' }}>
           <SectionLabel>C · Task Execution</SectionLabel>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 14 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 14 }}>
             {[
               { label: 'Completion', value: `${data.tasks.rate}%`, sub: `${data.tasks.completed}/${data.tasks.planned} done`, color: data.tasks.rate >= 70 ? '#7FD5AA' : data.tasks.rate >= 50 ? '#ECC666' : '#FF9B87' },
               { label: 'Priority-1', value: `${data.tasks.p1Rate}%`, sub: `${data.tasks.p1Completed}/${data.tasks.p1Planned} must-do`, color: data.tasks.p1Rate >= 80 ? '#7FD5AA' : data.tasks.p1Rate >= 50 ? '#ECC666' : '#FF9B87' },
@@ -384,7 +384,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
       {data.domains.length > 0 && (
         <div style={{ marginBottom: 16 }}>
           <p style={{ color: '#6E6E73', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>E · Domain Breakdown</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
             {data.domains.map(d => {
               const dColor = DOMAIN_STATUS_COLOR[d.status] || '#6E6E73'
               return (
@@ -412,7 +412,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
       {data.antiDrift.total > 0 && (
         <div className="card" style={{ marginBottom: 16, padding: '16px 20px' }}>
           <SectionLabel>F · Anti-Drift — {data.antiDrift.total} work items</SectionLabel>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 12 }}>
+          <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 12 }}>
             {[
               { label: 'Advancement', value: data.antiDrift.advancementPct, color: '#7FD5AA' },
               { label: 'Maintenance', value: data.antiDrift.maintenancePct, color: '#80BDFF' },
@@ -556,7 +556,7 @@ export default function LiveWeekReport({ initialReport, userId }: Props) {
           {/* ── I. AVATAR IMPACT ───────────────────────────────────────── */}
           <div className="card" style={{ marginBottom: 16, padding: '16px 20px' }}>
             <SectionLabel>I · Avatar Impact</SectionLabel>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 12 }}>
+            <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 12 }}>
               {[
                 { label: 'XP Gained',       value: `+${data.avatar.xpThisWeek}`,            color: '#B8A4FF' },
                 { label: 'Strongest Domain', value: data.avatar.strongestDomain ?? '—',      color: '#7FD5AA' },

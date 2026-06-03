@@ -238,7 +238,7 @@ export default function MealPlanView({ plan, userId }: Props) {
                         <span style={{ fontSize: 12, fontWeight: 700, color: '#B8A4FF', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Buy {group.buyDay}</span>
                         {group.reason && <span style={{ fontSize: 11, color: '#6E6E73', marginLeft: 8 }}>— {group.reason}</span>}
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+                      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                         {(group.items || []).map((item, ii) => (
                           <div key={ii} style={{ fontSize: 13, color: '#A1A1A6', padding: '3px 0', display: 'flex', gap: 6, alignItems: 'flex-start' }}>
                             <span style={{ color: '#7FD5AA', flexShrink: 0 }}>□</span>
@@ -251,7 +251,7 @@ export default function MealPlanView({ plan, userId }: Props) {
                 </div>
               ) : (
                 // Old flat format fallback
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                   {(shoppingList as Array<{ item: string; quantity?: string; unit?: string }>).map((item, i) => (
                     <div key={i} style={{ fontSize: 13, color: '#A1A1A6', padding: '4px 0', display: 'flex', gap: 6 }}>
                       <span style={{ color: '#7FD5AA', flexShrink: 0 }}>□</span>

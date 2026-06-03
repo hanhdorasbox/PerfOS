@@ -125,7 +125,7 @@ export default function FinancialReport({ report }: Props) {
       </div>
 
       {/* KPI row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
+      <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
         {[
           { label: 'Income',       value: formatKc(incomeVsExpense.income), color: '#7FD5AA' },
           { label: 'Expenses',     value: formatKc(incomeVsExpense.expense), color: '#FF9B87' },
@@ -140,7 +140,7 @@ export default function FinancialReport({ report }: Props) {
       </div>
 
       {/* Two-column: TL;DR + Category breakdown */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
 
         {/* TL;DR / What matters */}
         {parsed?.tldr && parsed.tldr.length > 0 ? (

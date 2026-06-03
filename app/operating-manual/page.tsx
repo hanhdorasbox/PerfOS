@@ -380,7 +380,7 @@ export default async function OperatingManualPage() {
       </div>
 
       {/* ── Two-column layout: patterns (75%) + snapshot (25%) ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 24, alignItems: 'start' }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 24, alignItems: 'start' }}>
 
         {/* LEFT — Pattern cards */}
         <div>

@@ -386,7 +386,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(184,164,255,0.2)' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
                     <label style={labelStyle}>Name</label>
                     <input style={inputStyle} value={profileName} onChange={e => setProfileName(e.target.value)} />
@@ -578,7 +578,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
               </div>
 
               {/* Category + Role */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+              <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
                 <div>
                   <label style={labelStyle}>Category</label>
                   <select
@@ -645,7 +645,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
 
               {/* Quantitative fields */}
               {form.trackingType === 'QUANTITATIVE' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 10, marginBottom: 14 }}>
+                <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 10, marginBottom: 14 }}>
                   <div>
                     <label style={labelStyle}>Start Value</label>
                     <input style={inputStyle} type="number" step="any" placeholder="0" value={form.startValue} onChange={e => setForm(p => ({ ...p, startValue: e.target.value }))} />
@@ -696,7 +696,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
               )}
 
               {/* Deadline + Weight */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
+              <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
                 <div>
                   <label style={labelStyle}>Deadline *</label>
                   <input required style={inputStyle} type="date" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} />
