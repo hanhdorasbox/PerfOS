@@ -117,7 +117,7 @@ export default function WorkItemLogger({ userId, existingItems, manualItems }: P
             onChange={e => setTitle(e.target.value)}
             style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', color: '#F5F5F7', fontSize: 13, width: '100%', boxSizing: 'border-box' }}
           />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <select
               value={category}
               onChange={e => setCategory(e.target.value)}

@@ -89,7 +89,7 @@ export default function CreateQuarterForm() {
           />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <label style={{ color: '#6E6E73', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
               Start date
