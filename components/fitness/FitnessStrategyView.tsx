@@ -951,7 +951,8 @@ export default function FitnessStrategyView({ strategy }: Props) {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(90px, 1fr))', gap: 6, minWidth: 500 }}>
             {schedule.map((day, di) => (
               <div key={di}
                 onDragOver={e => { e.preventDefault(); setDragOverDay(di) }}
@@ -1010,6 +1011,7 @@ export default function FitnessStrategyView({ strategy }: Props) {
                 </div>
               </div>
             ))}
+          </div>
           </div>
 
           <WeeklyChips schedule={schedule} completedKeys={completedKeys} removedKeys={removedKeys} weeklyTargets={weeklyTargets} />

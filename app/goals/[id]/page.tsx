@@ -54,7 +54,7 @@ export default async function GoalDetail({ params }: { params: Promise<{ id: str
       </div>
 
       {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px' }}>
+      <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px' }}>
         {[
           { label: 'Progress', value: `${Math.round(progressPct)}%`, color },
           { label: 'Expected', value: `${Math.round(metrics.expectedPct)}%`, color: '#A1A1A6' },

@@ -85,7 +85,7 @@ export default function FinancialReportView({ report, userId }: Props) {
       </div>
 
       {/* KPI row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
+      <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
         {[
           { label: 'Income',      value: `+${fmt(report.totalIncome)}`,       color: '#7FD5AA' },
           { label: 'Expenses',    value: `-${fmt(Math.abs(report.totalExpenses))}`, color: '#FF9B87' },

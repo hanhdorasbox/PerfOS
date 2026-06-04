@@ -305,7 +305,7 @@ function RecipeForm({ initial, userId, onSave, onCancel }: {
       {error && <div style={{ background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.3)', borderRadius: 8, padding: '8px 12px', color: '#FF9B87', fontSize: 12, marginBottom: 14 }}>{error}</div>}
 
       {/* Basic info */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
         <div style={{ gridColumn: '1 / -1' }}>
           <label style={labelStyle}>Recipe name *</label>
           <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Chicken Rice Bowl" style={inputStyle} />
@@ -329,7 +329,7 @@ function RecipeForm({ initial, userId, onSave, onCancel }: {
           <label style={labelStyle}>Portions</label>
           <input type="number" value={portions} onChange={e => setPortions(e.target.value)} min={1} style={inputStyle} />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <div><label style={labelStyle}>Prep (min)</label><input type="number" value={prepMinutes} onChange={e => setPrepMinutes(e.target.value)} placeholder="15" min={0} style={inputStyle} /></div>
           <div><label style={labelStyle}>Cook (min)</label><input type="number" value={cookMinutes} onChange={e => setCookMinutes(e.target.value)} placeholder="20" min={0} style={inputStyle} /></div>
         </div>
@@ -482,7 +482,7 @@ function RecipeDetail({ recipe, onEdit, onBack }: { recipe: Recipe; onEdit: () =
       {totals.kcal > 0 && (
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '12px 16px', marginBottom: 16 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#6E6E73', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Nutrition{p > 1 ? ' per portion' : ''}</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+          <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
             {[
               { label: 'Calories', value: perPortion(totals.kcal, p), unit: 'kcal', color: '#ECC666' },
               { label: 'Protein', value: perPortion(totals.protein, p), unit: 'g', color: '#7FD5AA' },

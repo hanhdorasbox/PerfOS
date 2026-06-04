@@ -67,7 +67,7 @@ export default async function AntiDriftPage() {
         </>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 20 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 20 }}>
         <WorkItemLogger
           userId={user.id}
           existingItems={serializedAll}

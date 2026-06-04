@@ -14,7 +14,7 @@ export default function FitnessCharts({ fitnessLogs }: { fitnessLogs: FitnessLog
   const tooltipStyle = { background: '#0A0A0B', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '12px', color: '#F5F5F7' }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: hasHip ? '1fr 1fr' : '1fr', gap: '16px' }}>
+    <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: hasHip ? '1fr 1fr' : '1fr', gap: '16px' }}>
       <div className="card">
         <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '14px' }}>Waist (cm)</div>
         <ResponsiveContainer width="100%" height={160}>

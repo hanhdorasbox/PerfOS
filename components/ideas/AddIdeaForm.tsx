@@ -51,7 +51,7 @@ export default function AddIdeaForm({ userId }: { userId: string }) {
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12 }}>
+      <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12 }}>
         <div>
           <label style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Title *</label>
           <input

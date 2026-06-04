@@ -14,7 +14,7 @@ export default function ReportsLoading() {
       {/* Status card */}
       <div style={{ background: 'rgba(128,189,255,0.06)', border: '1px solid rgba(128,189,255,0.12)', borderRadius: 14, padding: '18px 20px', marginBottom: 16 }}>
         <div style={{ height: 14, width: 80, background: 'rgba(255,255,255,0.08)', borderRadius: 4, marginBottom: 14, animation: 'sk 1.4s ease-in-out infinite' }} />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {[0, 1].map(i => (
             <div key={i}>
               {[0, 1, 2].map(j => (
@@ -26,7 +26,7 @@ export default function ReportsLoading() {
       </div>
 
       {/* KPI row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
+      <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
         {[0,1,2,3].map(i => (
           <div key={i} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '14px', textAlign: 'center' }}>
             <div style={{ height: 9, width: '55%', background: 'rgba(255,255,255,0.06)', borderRadius: 3, margin: '0 auto 10px' }} />
