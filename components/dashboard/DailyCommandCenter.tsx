@@ -1292,25 +1292,40 @@ export default function DailyCommandCenter({
     } catch {}
   }
 
-  function toggleStep(taskId: string, index: number) {
-    setCompletedSteps(prev => {
-      const current = new Set(prev[taskId] ?? [])
-      if (current.has(index)) current.delete(index)
-      else current.add(index)
-      const next = new Set(current)
-
-      // Persist completed state
-      saveStepsToStorage(taskId, undefined, next)
-
-      // Auto-complete task when all micro-steps are checked
-      const steps = expandedSteps[taskId] ?? []
-      const task = tasks.find(t => t.id === taskId)
-      if (steps.length > 0 && next.size === steps.length && task && !task.completed) {
-        setTimeout(() => toggleTask(taskId), 500)
+  // Persist completedSteps to localStorage whenever they change
+  useEffect(() => {
+    try {
+      for (const [taskId, completed] of Object.entries(completedSteps)) {
+        saveStepsToStorage(taskId, undefined, completed)
       }
+    } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completedSteps])
 
-      return { ...prev, [taskId]: next }
-    })
+  // Persist expandedSteps (step content) to localStorage whenever they change
+  useEffect(() => {
+    try {
+      for (const [taskId, steps] of Object.entries(expandedSteps)) {
+        saveStepsToStorage(taskId, steps, undefined)
+      }
+    } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expandedSteps])
+
+  function toggleStep(taskId: string, index: number) {
+    // Compute new set outside updater so we can run side-effects safely
+    const current = new Set(completedSteps[taskId] ?? [])
+    if (current.has(index)) current.delete(index)
+    else current.add(index)
+
+    setCompletedSteps(prev => ({ ...prev, [taskId]: current }))
+
+    // Auto-complete task when all micro-steps are checked
+    const steps = expandedSteps[taskId] ?? []
+    const task = tasks.find(t => t.id === taskId)
+    if (steps.length > 0 && current.size === steps.length && task && !task.completed) {
+      setTimeout(() => toggleTask(taskId), 500)
+    }
   }
   const [celebTaskId, setCelebTaskId] = useState<string | null>(null)
   const [calendarEvents, setCalendarEvents] = useState<Array<{ start: Date; end: Date }>>([])
@@ -1425,7 +1440,7 @@ export default function DailyCommandCenter({
       if (res.ok) {
         const data = await res.json()
         setExpandedSteps(prev => ({ ...prev, [taskId]: data.steps }))
-        saveStepsToStorage(taskId, data.steps, completedSteps[taskId])
+        // localStorage save is handled by the expandedSteps useEffect
       }
     } finally {
       setLoadingSteps(null)
