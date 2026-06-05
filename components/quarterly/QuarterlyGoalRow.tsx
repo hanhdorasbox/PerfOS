@@ -116,15 +116,20 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
             onChange={e => handleRoleChange(e.target.value)}
             disabled={saving}
             style={{
+              appearance: 'none' as const,
+              WebkitAppearance: 'none' as const,
               background: roleMeta.bg,
               border: `1px solid ${roleMeta.color}40`,
-              borderRadius: 6,
-              padding: '3px 6px',
+              borderRadius: 999,
+              padding: '3px 20px 3px 8px',
               fontSize: 10,
               fontWeight: 700,
               color: roleMeta.color,
               cursor: 'pointer',
               width: '100%',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath d='M1 2.5L4 5.5L7 2.5' stroke='${encodeURIComponent(roleMeta.color)}' strokeWidth='1.5' fill='none' strokeLinecap='round'/%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 6px center',
             }}
           >
             {ROLE_OPTIONS.map(opt => (
@@ -139,14 +144,19 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
             onChange={e => handleRoleChange(e.target.value)}
             disabled={saving}
             style={{
+              appearance: 'none' as const,
+              WebkitAppearance: 'none' as const,
               background: 'rgba(255,255,255,0.04)',
               border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 6,
-              padding: '3px 6px',
+              borderRadius: 999,
+              padding: '3px 20px 3px 8px',
               fontSize: 10,
               color: '#6E6E73',
               cursor: 'pointer',
               width: '100%',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath d='M1 2.5L4 5.5L7 2.5' stroke='%236E6E73' strokeWidth='1.5' fill='none' strokeLinecap='round'/%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 6px center',
             }}
           >
             {ROLE_OPTIONS.map(opt => (
