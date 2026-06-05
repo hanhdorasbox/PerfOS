@@ -1260,6 +1260,9 @@ export default function DailyCommandCenter({
   const [completedSteps, setCompletedSteps] = useState<Record<string, Set<number>>>({})
   const [loadingSteps, setLoadingSteps] = useState<string | null>(null)
 
+  // Today string for localStorage keys — local timezone so it matches the user's day
+  const todayStr = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` })()
+
   // Load persisted steps + completions from localStorage on mount
   useEffect(() => {
     try {
@@ -1311,9 +1314,6 @@ export default function DailyCommandCenter({
   }
   const [celebTaskId, setCelebTaskId] = useState<string | null>(null)
   const [calendarEvents, setCalendarEvents] = useState<Array<{ start: Date; end: Date }>>([])
-
-  // Today string for localStorage keys
-  const todayStr = new Date().toISOString().split('T')[0]
 
   // Load energy from sessionStorage on mount
   useEffect(() => {
