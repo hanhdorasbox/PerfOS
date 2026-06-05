@@ -95,11 +95,11 @@ export const AI_TOOLS: Anthropic.Tool[] = [
   },
   {
     name: 'log_workout',
-    description: 'Log a completed workout session.',
+    description: 'Log a completed workout session. Use the EXACT session name from the fitness schedule (e.g. if schedule shows "Lower Body A", use "Lower Body A"). For sauna use the exact label from schedule (e.g. "Sauna (15-20 min)").',
     input_schema: {
       type: 'object' as const,
       properties: {
-        type: { type: 'string', description: 'Workout type, e.g. "Strength - Lower Body A", "Cardio - Stairmaster"' },
+        type: { type: 'string', description: 'Exact workout type matching the schedule session name, e.g. "Lower Body A", "Sauna (15-20 min)", "Stairmaster Cardio"' },
         date: { type: 'string', description: 'ISO date string, e.g. "2026-05-29"' },
         duration: { type: 'number', description: 'Duration in minutes' },
         notes: { type: 'string' },
@@ -308,15 +308,49 @@ export async function executeAction(
       }
 
       case 'log_workout': {
+        const workoutDate = new Date(input.date as string)
         const w = await prisma.workoutLog.create({
           data: {
             userId,
             type: input.type as string,
-            date: new Date(input.date as string),
+            date: workoutDate,
             duration: (input.duration as number) ?? null,
             notes: (input.notes as string) ?? null,
           },
         })
+
+        // Also create FitnessScheduleChange so it shows as done in the strategy view
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        const sessionDay = dayNames[workoutDate.getDay()]
+        const wDay = workoutDate.getDay()
+        const wDiff = wDay === 0 ? -6 : 1 - wDay
+        const mon = new Date(workoutDate)
+        mon.setDate(workoutDate.getDate() + wDiff)
+        const weekId = `${mon.getFullYear()}-${String(mon.getMonth()+1).padStart(2,'0')}-${String(mon.getDate()).padStart(2,'0')}`
+        const typeLC = (input.type as string).toLowerCase()
+        const sessionType = typeLC.includes('sauna') || typeLC.includes('recovery') || typeLC.includes('stretch') ? 'recovery'
+          : typeLC.includes('cardio') || typeLC.includes('stairmaster') || typeLC.includes('run') || typeLC.includes('bike') || typeLC.includes('swim') ? 'cardio'
+          : 'strength'
+        await prisma.fitnessScheduleChange.create({
+          data: { userId, weekId, sessionLabel: input.type as string, sessionDay, sessionType, action: 'completed', notes: (input.notes as string) ?? null },
+        }).catch(() => {})
+
+        // Auto-complete matching fitness weekly task
+        const plan = await prisma.weeklyPlan.findFirst({
+          where: { userId, status: 'active' },
+          include: { tasks: { where: { completed: false, sourceModule: 'fitness' }, select: { id: true, title: true } } },
+          orderBy: { weekStart: 'desc' },
+        })
+        if (plan?.tasks.length) {
+          const words = typeLC.split(/\s+/).filter(w => w.length > 3)
+          const match = plan.tasks.find(t => t.title.toLowerCase() === typeLC)
+            ?? plan.tasks.find(t => typeLC.includes(t.title.toLowerCase()) || t.title.toLowerCase().includes(typeLC))
+            ?? plan.tasks.find(t => words.some(w => t.title.toLowerCase().includes(w)))
+          if (match) {
+            await prisma.weeklyTask.update({ where: { id: match.id }, data: { completed: true, completedAt: new Date(), status: 'done' } }).catch(() => {})
+          }
+        }
+
         return { success: true, message: `Workout logged: ${input.type} on ${input.date}`, data: { workoutId: w.id } }
       }
 

@@ -655,6 +655,8 @@ export default function FitnessStrategyView({ strategy }: Props) {
       } else {
         setCompletedKeys(prev => new Set([...prev, labelKey]))
         await fetch('/api/fitness/schedule-change', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: strategy.userId, weekId, sessionLabel: session, sessionDay: day, sessionType: classifySession(session), action: 'completed', reason: null }) })
+        // Also log to WorkoutLog so the dashboard FitnessSnapshot and weekly task auto-complete
+        await fetch('/api/fitness/workout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: strategy.userId, type: session, duration: 30, notes: null }) }).catch(() => {})
         setFeedback({ text: `${session} marked as done.`, type: 'ok' })
         setTimeout(() => setFeedback(null), 4000)
       }
