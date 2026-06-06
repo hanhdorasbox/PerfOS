@@ -9,7 +9,7 @@ import {
   Briefcase, Activity, Settings,
   TrendingUp, BookOpen, Lightbulb, Target,
   Dumbbell, UtensilsCrossed, ClipboardList, Shield,
-  Compass, Settings2, Wallet,
+  Compass, Settings2, Wallet, Star,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -48,6 +48,7 @@ const menuGroups: Array<{ label: string; icon: LucideIcon; links: NavLink[] }> =
       { href: '/anti-drift',       label: 'Anti-Drift',       icon: Compass },
       { href: '/operating-manual', label: 'Operating Manual', icon: Settings2 },
       { href: '/finance',          label: 'Finance',          icon: Wallet },
+      { href: '/life-menu',        label: 'Life Menu',        icon: Star, separator: true },
     ],
   },
 ]

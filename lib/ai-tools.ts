@@ -199,6 +199,28 @@ export const AI_TOOLS: Anthropic.Tool[] = [
       required: ['patternId'],
     },
   },
+
+  // ── Life Menu ──────────────────────────────────────────────────────────────
+  {
+    name: 'add_life_menu_item',
+    description: 'Add an item to the Life Menu / Curiosity Budget. Use this when the user mentions something they want to try, buy, experience, learn, or do.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        title: { type: 'string', description: 'Name of the experience, purchase, activity, etc.' },
+        type: {
+          type: 'string',
+          enum: ['try', 'buy', 'go', 'eat_drink', 'learn', 'build', 'social', 'recovery', 'beauty_identity', 'fitness', 'guilty_pleasure', 'big_want'],
+          description: 'Category: try=experience/activity, buy=purchase, go=place/travel, eat_drink=food/restaurant, learn=skill/course, build=project, social=people/event, recovery=rest/self-care, beauty_identity=appearance, fitness=training goal, guilty_pleasure=indulgence, big_want=major aspiration',
+        },
+        description: { type: 'string', description: 'More details about the item' },
+        estimatedCost: { type: 'number', description: 'Estimated cost in CZK' },
+        timeNeededMinutes: { type: 'number', description: 'How long it would take in minutes' },
+        tags: { type: 'string', description: 'Comma-separated tags, e.g. "solo,wellness,weekend"' },
+      },
+      required: ['title', 'type'],
+    },
+  },
 ]
 
 // ─── Tools that require confirmation ─────────────────────────────────────────
@@ -457,6 +479,25 @@ export async function executeAction(
           data: { active: false },
         })
         return { success: true, message: 'Pattern dismissed' }
+      }
+
+      // ── Life Menu ───────────────────────────────────────────────────────────
+      case 'add_life_menu_item': {
+        const tagsRaw = input.tags as string | undefined
+        const tagsJson = tagsRaw ? JSON.stringify(tagsRaw.split(',').map(t => t.trim()).filter(Boolean)) : null
+        const item = await prisma.lifeMenuItem.create({
+          data: {
+            userId,
+            title: input.title as string,
+            type: input.type as string,
+            description: (input.description as string) ?? null,
+            estimatedCost: (input.estimatedCost as number) ?? null,
+            timeNeededMinutes: (input.timeNeededMinutes as number) ?? null,
+            tags: tagsJson,
+            status: 'idea',
+          },
+        })
+        return { success: true, message: `Added "${input.title}" to Life Menu`, data: { itemId: item.id } }
       }
 
       default:

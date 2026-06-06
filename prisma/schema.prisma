@@ -50,6 +50,8 @@ model User {
   capabilityGoals  CapabilityGoal[]
   // Ideas
   ideas            Idea[]
+  // Life Menu
+  lifeMenuItems    LifeMenuItem[]
   // Google Calendar
   calendarToken    GoogleCalendarToken?
   // Daily Briefings (cached)
@@ -923,4 +925,60 @@ model AlcoholSettings {
   damageControlEnabled Boolean  @default(true)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @default(now()) @updatedAt
+}
+
+// ─── LIFE MENU ────────────────────────────────────────────────────────────────
+
+model LifeMenuItem {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+
+  title         String
+  type          String   // try|buy|go|eat_drink|learn|build|social|recovery|beauty_identity|fitness|guilty_pleasure|big_want
+  description   String?
+  tags          String?  // JSON: string[]
+
+  estimatedCost    Float?
+  actualCost       Float?
+  currency         String  @default("CZK")
+  timeNeededMinutes Int?
+
+  energyNeeded  String  @default("medium") // low|medium|high
+  socialMode    String  @default("either") // solo|friend|group|date|either
+
+  // Scores 1–10 (all optional)
+  curiosityScore    Int?
+  joyScore          Int?
+  utilityScore      Int?
+  goalSupportScore  Int?
+  regretRisk        Int?
+  comfortZoneLevel  Int?
+  repeatPotential   Int?
+  recoveryValue     Int?
+  careerValue       Int?
+
+  // Impact
+  fitnessImpact String  @default("neutral") // positive|neutral|negative
+  alcoholImpact String  @default("none")    // none|low|medium|high
+
+  // Status
+  status        String  @default("idea")
+  // idea | want_to_try | wishlist | planned | scheduled
+  // tried | loved | meh | not_again | repeat
+  // approved | earned | bought | postponed | rejected
+
+  // Dates & review
+  plannedDate   DateTime?
+  triedAt       DateTime?
+  ratingAfter   Int?      // 1-10
+  notesBefore   String?
+  notesAfter    String?
+
+  // Links
+  linkedGoalId          String?
+  linkedFinanceCategory String?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
