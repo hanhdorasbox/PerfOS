@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 /** Find and complete the best-matching uncompleted fitness task for this workout. */
 async function autoCompleteWorkoutTask(userId: string, workoutType: string): Promise<void> {
   const plan = await prisma.weeklyPlan.findFirst({
-    where: { userId, status: 'active' },
+    where: { quarter: { userId }, status: 'active' },
     include: {
       tasks: {
         where: { completed: false, sourceModule: 'fitness' },

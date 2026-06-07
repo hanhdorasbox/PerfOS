@@ -359,7 +359,7 @@ export async function executeAction(
 
         // Auto-complete matching fitness weekly task
         const plan = await prisma.weeklyPlan.findFirst({
-          where: { userId, status: 'active' },
+          where: { quarter: { userId }, status: 'active' },
           include: { tasks: { where: { completed: false, sourceModule: 'fitness' }, select: { id: true, title: true } } },
           orderBy: { weekStart: 'desc' },
         })
