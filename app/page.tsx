@@ -136,23 +136,21 @@ export default async function Dashboard() {
   let weekTasks = currentWeekPlan?.tasks ?? []
   const weeklyPlanId = currentWeekPlan?.id
 
-  // Auto-rollover: when a new week plan is empty, carry forward incomplete tasks from last week
-  if (currentWeekPlan && weekTasks.length === 0) {
-    const planAge = Date.now() - new Date((currentWeekPlan as any).createdAt ?? 0).getTime()
-    const isNewPlan = planAge < 48 * 60 * 60 * 1000 // less than 2 days old
+  // Auto-rollover: carry incomplete tasks from previous week into the current plan.
+  // Runs on every load but is idempotent — already-moved tasks are skipped.
+  if (currentWeekPlan) {
+    const previousPlan = await prisma.weeklyPlan.findFirst({
+      where: {
+        quarterId: quarter.id,
+        weekStart: { lt: _mon },
+        id: { not: currentWeekPlan.id },
+      },
+      orderBy: { weekStart: 'desc' },
+    })
 
-    if (isNewPlan) {
-      const previousPlan = await prisma.weeklyPlan.findFirst({
-        where: {
-          quarterId: quarter.id,
-          weekStart: { lt: _mon },
-          id: { not: currentWeekPlan.id },
-        },
-        orderBy: { weekStart: 'desc' },
-      })
-
-      if (previousPlan) {
-        await rolloverIncompleteTasks(previousPlan.id, currentWeekPlan.id)
+    if (previousPlan) {
+      const { rolled } = await rolloverIncompleteTasks(previousPlan.id, currentWeekPlan.id)
+      if (rolled > 0) {
         const refreshed = await prisma.weeklyPlan.findUnique({
           where: { id: currentWeekPlan.id },
           include: { tasks: { include: { goal: true } } },

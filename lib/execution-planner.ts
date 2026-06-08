@@ -177,12 +177,7 @@ export async function planTasks(
 
 /**
  * Carry incomplete tasks from a previous WeeklyPlan into the next one.
- *
- * Rules:
- *   priority=must (1): auto-roll if rolloverCount < 2
- *   priority=should (2): roll once (rolloverCount < 1)
- *   priority=optional (3): drop
- *   any task with rolloverCount >= limit: drop (mark as dropped)
+ * All incomplete tasks roll forward indefinitely until the user marks them done.
  */
 export async function rolloverIncompleteTasks(
   fromPlanId: string,
@@ -199,69 +194,56 @@ export async function rolloverIncompleteTasks(
   let rolled = 0, dropped = 0
 
   for (const task of tasks) {
-    // Optional recurring tasks (marked by sourceType) can roll once
-    const isRecurring = task.sourceType === 'recurring_task'
-    const maxRollovers = task.priority === 1 ? 2 : task.priority === 2 ? 1 : isRecurring ? 1 : 0
-    const shouldRoll = task.rolloverCount < maxRollovers
-
-    if (shouldRoll) {
-      // Check dedup — don't create if already exists in target plan
-      const existing = task.sourceId
-        ? await prisma.weeklyTask.findFirst({
-            where: {
-              weeklyPlanId: toPlanId,
-              sourceModule: task.sourceModule,
-              sourceType: task.sourceType,
-              sourceId: task.sourceId,
-            },
-          })
-        : await prisma.weeklyTask.findFirst({
-            where: {
-              weeklyPlanId: toPlanId,
-              sourceModule: task.sourceModule,
-              sourceType: task.sourceType,
-              title: task.title,
-            },
-          })
-
-      if (!existing) {
-        await prisma.weeklyTask.create({
-          data: {
-            weeklyPlanId:        toPlanId,
-            title:               task.title,
-            description:         task.description,
-            domain:              task.domain,
-            taskType:            task.taskType,
-            priority:            task.priority,
-            effort:              task.effort,
-            estimatedMinutes:    task.estimatedMinutes,
-            doneCriteria:        task.doneCriteria,
-            status:              'planned',
-            completed:           false,
-            sourceModule:        task.sourceModule,
-            sourceType:          task.sourceType,
-            sourceId:            task.sourceId,
-            goalId:              task.goalId,
-            createdBy:           task.createdBy,
-            rolloverCount:       task.rolloverCount + 1,
-            rolledFromTaskId:    task.id,
-            originalWeekPlanId:  task.originalWeekPlanId ?? fromPlanId,
+    // Check dedup — don't create if already exists in target plan
+    const existing = task.sourceId
+      ? await prisma.weeklyTask.findFirst({
+          where: {
+            weeklyPlanId: toPlanId,
+            sourceModule: task.sourceModule,
+            sourceType: task.sourceType,
+            sourceId: task.sourceId,
           },
         })
-        rolled++
-      }
+      : await prisma.weeklyTask.findFirst({
+          where: {
+            weeklyPlanId: toPlanId,
+            sourceModule: task.sourceModule,
+            sourceType: task.sourceType,
+            title: task.title,
+          },
+        })
 
-      await prisma.weeklyTask.update({
-        where: { id: task.id },
-        data: { status: 'moved' },
+    if (!existing) {
+      await prisma.weeklyTask.create({
+        data: {
+          weeklyPlanId:        toPlanId,
+          title:               task.title,
+          description:         task.description,
+          domain:              task.domain,
+          taskType:            task.taskType,
+          priority:            task.priority,
+          effort:              task.effort,
+          estimatedMinutes:    task.estimatedMinutes,
+          doneCriteria:        task.doneCriteria,
+          status:              'planned',
+          completed:           false,
+          sourceModule:        task.sourceModule,
+          sourceType:          task.sourceType,
+          sourceId:            task.sourceId,
+          goalId:              task.goalId,
+          createdBy:           task.createdBy,
+          rolloverCount:       task.rolloverCount + 1,
+          rolledFromTaskId:    task.id,
+          originalWeekPlanId:  task.originalWeekPlanId ?? fromPlanId,
+        },
       })
-    } else {
-      await prisma.weeklyTask.update({
-        where: { id: task.id },
-        data: { status: 'dropped' },
-      })
-      dropped++
+      rolled++
     }
+
+    await prisma.weeklyTask.update({
+      where: { id: task.id },
+      data: { status: 'moved' },
+    })
   }
 
   return { rolled, dropped }
