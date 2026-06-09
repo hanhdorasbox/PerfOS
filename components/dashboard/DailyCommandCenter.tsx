@@ -1313,11 +1313,12 @@ export default function DailyCommandCenter({
   }, [expandedSteps])
 
   function toggleStep(taskId: string, index: number) {
-    // Compute new set outside updater so we can run side-effects safely
     const current = new Set(completedSteps[taskId] ?? [])
     if (current.has(index)) current.delete(index)
     else current.add(index)
 
+    // Write synchronously — don't rely on useEffect scheduling
+    saveStepsToStorage(taskId, undefined, current)
     setCompletedSteps(prev => ({ ...prev, [taskId]: current }))
 
     // Auto-complete task when all micro-steps are checked
@@ -1440,7 +1441,8 @@ export default function DailyCommandCenter({
       if (res.ok) {
         const data = await res.json()
         setExpandedSteps(prev => ({ ...prev, [taskId]: data.steps }))
-        // localStorage save is handled by the expandedSteps useEffect
+        // Write synchronously so steps survive a refresh
+        saveStepsToStorage(taskId, data.steps, completedSteps[taskId])
       }
     } finally {
       setLoadingSteps(null)
