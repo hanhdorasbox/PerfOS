@@ -224,6 +224,7 @@ IMPORTANT for workoutPlan:
 - The "label" must match what appears in the weeklySchedule sessions array for that day (e.g. "Lower Body A", "Upper Body A", "Full Body A").
 - Select exercises specifically suited to the user's focus priorities, limitations, and split.
 - If the user has lower body / glute focus, program accordingly (more hip hinge, glute isolation, unilateral work).
+- UPPER BODY DAYS must ALWAYS include: (1) at least 2 bicep curl variations (e.g. Barbell curl, Incline dumbbell curl, Cable curl, Hammer curl), (2) at least 2 core/abs exercises (e.g. Cable crunch, Hanging leg raise, Ab wheel rollout, Plank variations, Decline crunch). Do NOT skip biceps or abs on any Upper day — they are mandatory.
 - Each day must have at least 5 exercises.
 - Rep ranges must reflect the training goal: strength = 4–6 / 5–8, hypertrophy = 8–12, conditioning = 12–15.
 - Do NOT use generic labels — use real exercise names: "Barbell back squat", "Cable lateral raise", "Lat pulldown", etc.`

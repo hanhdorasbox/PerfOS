@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { strategyId, mode, frequencyConfig } = body as {
       strategyId: string
-      mode: 'realistic' | 'ambitious' | 'frequency'
+      mode: 'realistic' | 'ambitious' | 'frequency' | 'fix_upper_body'
       frequencyConfig?: {
         strength?: number
         cardio?: number
@@ -42,7 +42,13 @@ export async function POST(req: NextRequest) {
 
     let adjustmentInstruction = ''
 
-    if (mode === 'realistic') {
+    if (mode === 'fix_upper_body') {
+      adjustmentInstruction = `Fix the workoutPlan for ALL Upper Body days:
+- Every Upper Body day MUST include at least 2 bicep exercises. Good choices: Barbell curl, EZ-bar curl, Incline dumbbell curl, Cable curl (low pulley), Hammer curl, Concentration curl. Add them as finisher sets (3×10–12).
+- Every Upper Body day MUST include at least 2 core/abs exercises. Good choices: Cable crunch, Hanging leg raise, Ab wheel rollout, Decline sit-up, Plank with weight, Russian twist with plate. Add them at the end (3×12–15 or timed).
+- Do NOT remove any existing exercises. Only ADD the missing biceps and abs work.
+- Keep everything else (schedule, cardio, nutrition, etc.) exactly the same.`
+    } else if (mode === 'realistic') {
       adjustmentInstruction = `Make this strategy LESS intensive and MORE realistic:
 - Reduce strength sessions by 1 if currently 4+, or reduce session duration by 10-15 min
 - Reduce cardio frequency by 1 if currently 3+, or shorten cardio sessions
@@ -76,7 +82,9 @@ Recalculate and update the weekly schedule, workout plan, training targets, and 
 
 Return ONLY valid JSON with the exact same structure as the original strategy. Do not add new fields. Do not omit any fields.
 Keep all unchanged fields identical to their original values. Only modify what the adjustment instruction requires.
-Always use metric units.`
+Always use metric units.
+
+MANDATORY RULE FOR UPPER BODY DAYS: Every Upper Body workout day must include at least 2 bicep exercises (e.g. Barbell curl, Incline dumbbell curl, Cable curl, Hammer curl) and at least 2 core/abs exercises (e.g. Cable crunch, Hanging leg raise, Ab wheel rollout, Decline crunch). Never omit biceps or abs from an Upper Body day.`
 
     const userMessage = `Here is the current strategy:
 ${JSON.stringify({

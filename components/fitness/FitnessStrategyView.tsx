@@ -851,6 +851,12 @@ export default function FitnessStrategyView({ strategy }: Props) {
               Adjust Frequency
             </button>
 
+            <button onClick={() => adjustStrategy('fix_upper_body')} disabled={!!adjusting} className="btn-motion"
+              style={{ padding: '8px 16px', borderRadius: 12, fontSize: 13, cursor: 'pointer', background: 'rgba(127,213,170,0.06)', border: '1px solid rgba(127,213,170,0.2)', color: '#7FD5AA', opacity: adjusting === 'fix_upper_body' ? 0.55 : 1, display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.15s' }}>
+              {adjusting === 'fix_upper_body' && <Spinner size={12} color="#7FD5AA" strokeWidth={2} />}
+              {adjusting === 'fix_upper_body' ? 'Fixing…' : '💪 Add Biceps & Abs'}
+            </button>
+
             <div style={{ marginLeft: 'auto' }}>
               {confirmDelete ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
