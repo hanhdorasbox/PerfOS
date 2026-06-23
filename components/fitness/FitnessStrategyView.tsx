@@ -264,7 +264,7 @@ function RoadmapPhase({ phase, index }: { phase: RoadmapPhaseData; index: number
   )
 }
 
-function WorkoutDayPanel({ day, onClose }: { day: WorkoutDay; onClose: () => void }) {
+function WorkoutDayPanel({ day, onClose, onSwap }: { day: WorkoutDay; onClose: () => void; onSwap: (exerciseIndex: number) => void }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(4,4,6,0.86)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{ background: '#161618', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 24, padding: 28, maxWidth: 560, width: '100%', maxHeight: '80vh', overflowY: 'auto', boxShadow: '0 32px 80px rgba(0,0,0,0.65)' }}>
@@ -285,7 +285,17 @@ function WorkoutDayPanel({ day, onClose }: { day: WorkoutDay; onClose: () => voi
                 </span>
               </div>
               {ex.notes && <div style={{ fontSize: 12, color: '#52525A', lineHeight: 1.55 }}>{ex.notes}</div>}
-              {ex.substitution && <div style={{ fontSize: 11, color: '#B8A4FF', marginTop: 5, opacity: 0.8 }}>↔ {ex.substitution}</div>}
+              {ex.substitution && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+                  <span style={{ fontSize: 11, color: '#6E6E76' }}>Alt:</span>
+                  <button
+                    onClick={() => onSwap(i)}
+                    style={{ fontSize: 11, color: '#B8A4FF', background: 'rgba(184,164,255,0.08)', border: '1px solid rgba(184,164,255,0.2)', borderRadius: 6, padding: '3px 9px', cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    ↔ Use {ex.substitution}
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -515,11 +525,31 @@ export default function FitnessStrategyView({ strategy }: Props) {
   const weeklyTargets  = tryParse(strategy.weeklyTargets)
   const trackingMetrics: string[] = tryParse(strategy.trackingMetrics) ?? []
   const roadmap: RoadmapPhaseData[] = tryParse(strategy.roadmap) ?? []
-  const workoutPlan: WorkoutPlan | null = tryParse(strategy.workoutPlan)
+  const [workoutPlan, setWorkoutPlan] = useState<WorkoutPlan | null>(() => tryParse(strategy.workoutPlan))
 
   const workoutByLabel = new Map<string, WorkoutDay>()
   if (workoutPlan?.days) {
     for (const d of workoutPlan.days) workoutByLabel.set(d.label.toLowerCase(), d)
+  }
+
+  async function handleSwapExercise(dayLabel: string, exerciseIndex: number) {
+    if (!workoutPlan) return
+    const updatedDays = workoutPlan.days.map(d => {
+      if (d.label.toLowerCase() !== dayLabel.toLowerCase()) return d
+      const updatedExercises = d.exercises.map((ex, i) => {
+        if (i !== exerciseIndex || !ex.substitution) return ex
+        // Swap name ↔ substitution
+        return { ...ex, name: ex.substitution, substitution: ex.name }
+      })
+      return { ...d, exercises: updatedExercises }
+    })
+    const updated = { ...workoutPlan, days: updatedDays }
+    setWorkoutPlan(updated)
+    await fetch('/api/fitness/strategy/update', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ strategyId: strategy.id, workoutPlan: updated }),
+    }).catch(() => {})
   }
 
   const isDraft = strategy.status === 'draft'
@@ -764,7 +794,13 @@ export default function FitnessStrategyView({ strategy }: Props) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
       {/* ── Modals ── */}
-      {openWorkoutDay && <WorkoutDayPanel day={openWorkoutDay} onClose={() => setOpenWorkoutDay(null)} />}
+      {openWorkoutDay && (
+        <WorkoutDayPanel
+          day={workoutByLabel.get(openWorkoutDay.label.toLowerCase()) ?? openWorkoutDay}
+          onClose={() => setOpenWorkoutDay(null)}
+          onSwap={(idx) => handleSwapExercise(openWorkoutDay.label, idx)}
+        />
+      )}
 
       {showFreqModal && (
         <AdjustFreqModal
@@ -851,11 +887,6 @@ export default function FitnessStrategyView({ strategy }: Props) {
               Adjust Frequency
             </button>
 
-            <button onClick={() => adjustStrategy('fix_upper_body')} disabled={!!adjusting} className="btn-motion"
-              style={{ padding: '8px 16px', borderRadius: 12, fontSize: 13, cursor: 'pointer', background: 'rgba(127,213,170,0.06)', border: '1px solid rgba(127,213,170,0.2)', color: '#7FD5AA', opacity: adjusting === 'fix_upper_body' ? 0.55 : 1, display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.15s' }}>
-              {adjusting === 'fix_upper_body' && <Spinner size={12} color="#7FD5AA" strokeWidth={2} />}
-              {adjusting === 'fix_upper_body' ? 'Fixing…' : '💪 Add Biceps & Abs'}
-            </button>
 
             <div style={{ marginLeft: 'auto' }}>
               {confirmDelete ? (
