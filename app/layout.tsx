@@ -15,7 +15,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="en">
-      <body style={{ background: '#000000', minHeight: '100vh', overflowX: 'hidden' }}>
+      <body style={{ minHeight: '100vh', overflowX: 'hidden' }}>
         <nav style={{
           position: 'sticky',
           top: 0,

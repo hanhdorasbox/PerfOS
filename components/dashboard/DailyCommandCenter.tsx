@@ -118,9 +118,9 @@ interface Props {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const PRIORITY_COLOR: Record<string, string> = {
-  must:     '#FF9B87',
-  should:   '#ECC666',
-  optional: '#6E6E73',
+  must:     '#E8907A',
+  should:   '#DDB96A',
+  optional: '#6E6E76',
 }
 const PRIORITY_LABEL: Record<string, string> = {
   must: 'MUST',
@@ -160,13 +160,12 @@ function parseSafeJson<T>(str: string | null | undefined): T | null {
   try { return JSON.parse(str) as T } catch { return null }
 }
 
-function getTimeLabel(): string | null {
+function getGreeting(): string {
   const h = new Date().getHours()
-  if (h >= 6 && h < 11)  return '🌅 Good morning'
-  if (h >= 11 && h < 14) return '☀️ Late morning'
-  if (h >= 14 && h < 18) return '🌤 Afternoon'
-  if (h >= 18 && h < 22) return '🌙 Evening'
-  return null
+  if (h >= 5 && h < 12)  return 'Good morning'
+  if (h >= 12 && h < 18) return 'Good afternoon'
+  if (h >= 18 && h < 23) return 'Good evening'
+  return 'Late night'
 }
 
 function effortTimeLabel(effort: number): string {
@@ -229,7 +228,7 @@ function ActiveDayRing() {
   const SZ = (R + SW) * 2 + 4
   const CIRC = 2 * Math.PI * R
   const offset = CIRC * (1 - remainPct)
-  const ringColor = remainPct > 0.4 ? '#7FD5AA' : remainPct > 0.2 ? '#ECC666' : '#FF9B87'
+  const ringColor = remainPct > 0.4 ? '#7FD5AA' : remainPct > 0.2 ? '#DDB96A' : '#E8907A'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
@@ -253,29 +252,29 @@ function ActiveDayRing() {
               <div style={{ fontSize: 20, fontWeight: 800, color: ringColor, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em' }}>
                 {Math.round(remainPct * 100)}%
               </div>
-              <div style={{ fontSize: 9, color: '#6E6E73', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 1 }}>left</div>
+              <div style={{ fontSize: 9, color: '#6E6E76', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 1 }}>left</div>
             </>
           )}
           {phase === 'before' && (
             <div style={{ fontSize: 10, fontWeight: 700, color: '#B8A4FF', lineHeight: 1.5 }}>Starts<br />07:00</div>
           )}
           {phase === 'after' && (
-            <div style={{ fontSize: 10, color: '#6E6E73', lineHeight: 1.5 }}>Day<br />done</div>
+            <div style={{ fontSize: 10, color: '#6E6E76', lineHeight: 1.5 }}>Day<br />done</div>
           )}
         </div>
       </div>
       <div style={{ textAlign: 'center' }}>
         {phase === 'active' ? (
           <>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#EEEEF2', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}>
               {remH}h&nbsp;{String(remM).padStart(2, '0')}m
             </div>
-            <div style={{ fontSize: 9, color: '#6E6E73', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>remaining</div>
+            <div style={{ fontSize: 9, color: '#6E6E76', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>remaining</div>
           </>
         ) : phase === 'before' ? (
-          <div style={{ fontSize: 10, color: '#6E6E73' }}>07:00 – 22:00</div>
+          <div style={{ fontSize: 10, color: '#6E6E76' }}>07:00 – 22:00</div>
         ) : (
-          <div style={{ fontSize: 10, color: '#6E6E73' }}>Reset 07:00</div>
+          <div style={{ fontSize: 10, color: '#6E6E76' }}>Reset 07:00</div>
         )}
       </div>
     </div>
@@ -296,7 +295,7 @@ function toPct(h: number, m = 0) {
 const BIO_ZONES = [
   { start: 7,  end: 9,  accent: '#C8A06A', label: 'Ramp Up',    bestFor: 'Light tasks, admin, morning routine' },
   { start: 9,  end: 12, accent: '#5EAA88', label: 'Peak Focus', bestFor: 'Deep work, complex decisions, writing' },
-  { start: 12, end: 14, accent: '#6E6E73', label: 'Low Tide',   bestFor: 'Lunch, light reading, short breaks' },
+  { start: 12, end: 14, accent: '#6E6E76', label: 'Low Tide',   bestFor: 'Lunch, light reading, short breaks' },
   { start: 14, end: 17, accent: '#5E94BB', label: '2nd Wind',   bestFor: 'Collaboration, calls, creative work' },
   { start: 17, end: 20, accent: '#C8906A', label: 'Wind Down',  bestFor: 'Review, planning, low-intensity work' },
   { start: 20, end: 22, accent: '#8E80C4', label: 'Recovery',   bestFor: 'Rest, reading, reflection' },
@@ -304,9 +303,12 @@ const BIO_ZONES = [
 
 function BioClock() {
   const [now, setNow] = useState(() => new Date())
+  const [drawn, setDrawn] = useState(false)
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60_000)
-    return () => clearInterval(id)
+    // Trigger the arc draw-in on mount
+    const raf = requestAnimationFrame(() => setDrawn(true))
+    return () => { clearInterval(id); cancelAnimationFrame(raf) }
   }, [])
 
   const h = now.getHours()
@@ -316,7 +318,7 @@ function BioClock() {
   const currentZone = BIO_ZONES.find(z => h >= z.start && h < z.end)
   const nextZone = BIO_ZONES.find(z => z.start > h) ?? null
   const minsToNext = nextZone ? (nextZone.start * 60) - (h * 60 + m) : null
-  const accent = currentZone?.accent ?? '#6E6E73'
+  const accent = currentZone?.accent ?? '#6E6E76'
   const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 
   // Circular gauge constants
@@ -361,10 +363,14 @@ function BioClock() {
                   stroke={z.accent + '28'} strokeWidth={SW} />
               )
             })}
-            {/* Progress arc */}
+            {/* Progress arc — draws in on mount via pathLength normalization */}
             {progressPath && (
               <path d={progressPath} fill="none" stroke={accent} strokeWidth={SW} strokeLinecap="round"
-                style={{ filter: `drop-shadow(0 0 5px ${accent}70)`, transition: 'stroke 1s ease' }} />
+                pathLength={1} strokeDasharray={1} strokeDashoffset={drawn ? 0 : 1}
+                style={{
+                  filter: `drop-shadow(0 0 5px ${accent}70)`,
+                  transition: 'stroke 1s ease, stroke-dashoffset 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s',
+                }} />
             )}
             {/* Zone separator ticks */}
             {BIO_ZONES.slice(1).map(z => {
@@ -377,10 +383,14 @@ function BioClock() {
                   stroke="rgba(10,10,12,0.9)" strokeWidth={1.5} />
               )
             })}
-            {/* Current position dot */}
+            {/* Current position dot — fades in after the arc finishes drawing */}
             {dotPos && (
               <circle cx={dotPos.x.toFixed(2)} cy={dotPos.y.toFixed(2)} r={5} fill={accent}
-                style={{ filter: `drop-shadow(0 0 7px ${accent})` }} />
+                style={{
+                  filter: `drop-shadow(0 0 7px ${accent})`,
+                  opacity: drawn ? 1 : 0,
+                  transition: 'opacity 0.5s ease 1.3s',
+                }} />
             )}
           </svg>
           {/* Center text */}
@@ -389,7 +399,7 @@ function BioClock() {
             transform: 'translate(-50%, -50%)',
             textAlign: 'center', pointerEvents: 'none',
           }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: '#F5F5F7', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: '#EEEEF2', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
               {timeStr}
             </div>
             <div style={{ fontSize: 9, color: accent, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 5 }}>
@@ -466,21 +476,23 @@ const INTEL_ICON_MAP: Record<string, LucideIcon> = {
 
 function IntelCard({ item }: { item: IntelItem }) {
   const [open, setOpen] = useState(false)
-  const catColor = INTEL_COLORS[item.category?.toLowerCase()] ?? '#6E6E73'
+  const catColor = INTEL_COLORS[item.category?.toLowerCase()] ?? '#6E6E76'
   const IconComp = INTEL_ICON_MAP[item.category?.toLowerCase()] ?? Globe
 
   return (
     <div
       onClick={() => setOpen(v => !v)}
       style={{
-        padding: '12px 13px', borderRadius: 16,
+        padding: '12px 13px', borderRadius: 16, flex: 1, minWidth: 0,
         background: open ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.025)',
         border: '1px solid rgba(255,255,255,0.07)',
         borderLeft: `3px solid ${catColor}AA`,
         cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 7,
-        transition: 'background 0.15s',
+        transition: 'background 0.15s, transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1)',
         boxShadow: open ? '0 4px 24px rgba(0,0,0,0.25)' : 'none',
       }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)' }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'none' }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -535,7 +547,7 @@ function RelevantUpdateItem({ item }: { item: RelevantItem }) {
       <div style={{ fontSize: 9, fontWeight: 800, color: '#B8A4FF', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
         {item.topic}
       </div>
-      <div style={{ fontSize: 12, color: '#A1A1A6', lineHeight: 1.45 }}>{item.update}</div>
+      <div style={{ fontSize: 12, color: '#9E9EA6', lineHeight: 1.45 }}>{item.update}</div>
     </div>
   )
 }
@@ -638,7 +650,7 @@ function PriorityItem({
 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
-            fontSize: 13, color: '#F5F5F7', fontWeight: 600, lineHeight: 1.4,
+            fontSize: 13, color: '#EEEEF2', fontWeight: 600, lineHeight: 1.4,
             position: 'relative',
           }}>
             {task.title}
@@ -653,11 +665,11 @@ function PriorityItem({
             )}
           </div>
           {task.goal && (
-            <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 2 }}>→ {task.goal.title}</div>
+            <div style={{ fontSize: 11, color: '#6E6E76', marginTop: 2 }}>→ {task.goal.title}</div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2, flexWrap: 'wrap' }}>
             {task.effort > 0 && (
-              <span style={{ fontSize: 10, color: '#6E6E73' }}>{EFFORT_LABEL[task.effort]}</span>
+              <span style={{ fontSize: 10, color: '#6E6E76' }}>{EFFORT_LABEL[task.effort]}</span>
             )}
             {timeLabel && (
               <span style={{
@@ -668,14 +680,14 @@ function PriorityItem({
               </span>
             )}
             {briefItem?.whyToday && (
-              <span style={{ fontSize: 11, color: '#6E6E73', fontStyle: 'italic', lineHeight: 1.4 }}>{briefItem.whyToday}</span>
+              <span style={{ fontSize: 11, color: '#6E6E76', fontStyle: 'italic', lineHeight: 1.4 }}>{briefItem.whyToday}</span>
             )}
             {task.sourceModule && SOURCE_LINK[task.sourceModule] && (
               <Link
                 href={SOURCE_LINK[task.sourceModule].href}
-                style={{ fontSize: 10, color: '#6E6E7380', textDecoration: 'none', letterSpacing: '0.02em' }}
+                style={{ fontSize: 10, color: '#6E6E7680', textDecoration: 'none', letterSpacing: '0.02em' }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#B8A4FF')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#6E6E7380')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#6E6E7680')}
               >
                 {SOURCE_LINK[task.sourceModule].label}
               </Link>
@@ -708,7 +720,7 @@ function PriorityItem({
 
       {/* Micro-steps expansion */}
       {steps && (
-        <div style={{
+        <div className="expand-enter" style={{
           marginLeft: 30, marginBottom: 8, padding: '8px 10px',
           background: 'rgba(184,164,255,0.05)', border: '1px solid rgba(184,164,255,0.15)',
           borderRadius: 8, borderTop: 'none', borderTopLeftRadius: 0, borderTopRightRadius: 0,
@@ -732,7 +744,7 @@ function PriorityItem({
                 </div>
                 <span style={{
                   fontSize: 11, flex: 1, lineHeight: 1.45,
-                  color: done ? '#3E3E44' : '#A1A1A6',
+                  color: done ? '#3E3E44' : '#9E9EA6',
                   textDecoration: done ? 'line-through' : 'none',
                   transition: 'all 0.15s ease',
                 }}>{step.title}</span>
@@ -796,7 +808,7 @@ function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: Fitn
 
   return (
     <div className="card">
-      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
+      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 10 }}>
         Today&apos;s Fitness
       </div>
       {todaySessions.length > 0 ? (
@@ -827,7 +839,7 @@ function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: Fitn
                   {isLogging && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#A3D977', animation: 'pulse 0.8s ease-in-out infinite' }} />}
                 </div>
                 <span style={{
-                  fontSize: 12, color: done ? '#6E6E73' : '#F5F5F7', fontWeight: 500,
+                  fontSize: 12, color: done ? '#6E6E76' : '#EEEEF2', fontWeight: 500,
                   textDecoration: done ? 'line-through' : 'none', transition: 'all 0.2s',
                 }}>{s}</span>
               </button>
@@ -835,10 +847,10 @@ function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: Fitn
           })}
         </div>
       ) : (
-        <div style={{ fontSize: 12, color: '#6E6E73' }}>Rest day</div>
+        <div style={{ fontSize: 12, color: '#6E6E76' }}>Rest day</div>
       )}
 
-      <Link href="/fitness" style={{ display: 'block', marginTop: 9, fontSize: 11, color: '#6E6E73', textDecoration: 'none' }}>
+      <Link href="/fitness" style={{ display: 'block', marginTop: 9, fontSize: 11, color: '#6E6E76', textDecoration: 'none' }}>
         Fitness details →
       </Link>
     </div>
@@ -857,17 +869,17 @@ function TodaysMeetings({ events, workStartMin, workEndMin }: { events: Array<{ 
   if (todayEvents.length === 0) {
     return (
       <div className="card">
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 10 }}>
           Today's Meetings
         </div>
-        <div style={{ fontSize: 12, color: '#6E6E73' }}>No upcoming meetings</div>
+        <div style={{ fontSize: 12, color: '#6E6E76' }}>No upcoming meetings</div>
       </div>
     )
   }
 
   return (
     <div className="card">
-      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
+      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 10 }}>
         Today's Meetings
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
@@ -878,7 +890,7 @@ function TodaysMeetings({ events, workStartMin, workEndMin }: { events: Array<{ 
           const endMin = endH * 60 + endM
           const isDuringWork = startMin >= workStartMin && endMin <= workEndMin
           const isPostWork = startMin >= workEndMin
-          const eventColor = isPostWork ? '#ECC666' : isDuringWork ? '#80BDFF' : '#6E6E73'
+          const eventColor = isPostWork ? '#DDB96A' : isDuringWork ? '#80BDFF' : '#6E6E76'
           const durationMin = endMin - startMin
           const durationLabel = durationMin > 60
             ? `${Math.floor(durationMin / 60)}h ${durationMin % 60}m`
@@ -892,10 +904,10 @@ function TodaysMeetings({ events, workStartMin, workEndMin }: { events: Array<{ 
                 </div>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>
+                <div style={{ fontSize: 12, color: '#EEEEF2', fontWeight: 500 }}>
                   {event.start.toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })} – {event.end.toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })}
                 </div>
-                <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 1 }}>{durationLabel} · {isPostWork ? '⚠️ Post-work' : isDuringWork ? 'Work hours' : 'Personal'}</div>
+                <div style={{ fontSize: 10, color: '#6E6E76', marginTop: 1 }}>{durationLabel} · {isPostWork ? 'Post-work' : isDuringWork ? 'Work hours' : 'Personal'}</div>
               </div>
             </div>
           )
@@ -933,12 +945,12 @@ function MealPreview({ meals, label, href, isTomorrow = false, todayProtein = 0,
   const sorted = sortMeals(meals)
   const showProtein = !isTomorrow && proteinTarget && proteinTarget > 0
   const proteinPct = showProtein ? Math.min(100, Math.round((todayProtein / proteinTarget!) * 100)) : 0
-  const proteinColor = proteinPct >= 100 ? '#7FD5AA' : proteinPct >= 70 ? '#ECC666' : '#FF9B87'
+  const proteinColor = proteinPct >= 100 ? '#7FD5AA' : proteinPct >= 70 ? '#DDB96A' : '#E8907A'
 
   return (
     <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: showProtein ? 8 : 10 }}>
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73' }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76' }}>
           {label}
         </div>
         {href && (
@@ -949,16 +961,16 @@ function MealPreview({ meals, label, href, isTomorrow = false, todayProtein = 0,
       {showProtein && (
         <div style={{ marginBottom: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-            <span style={{ fontSize: 10, color: '#6E6E73' }}>Protein today</span>
+            <span style={{ fontSize: 10, color: '#6E6E76' }}>Protein today</span>
             <span style={{ fontSize: 12, fontWeight: 700, color: proteinColor, fontVariantNumeric: 'tabular-nums' }}>
               {todayProtein}g
               <span style={{ fontSize: 10, fontWeight: 400, color: '#52525A' }}> / {proteinTarget}g</span>
             </span>
           </div>
           <div style={{ height: 4, borderRadius: 999, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
-            <div style={{
+            <div className="progress-fill" style={{
               height: '100%', width: `${proteinPct}%`, borderRadius: 999,
-              background: proteinColor, transition: 'width 0.4s ease',
+              background: proteinColor,
             }} />
           </div>
         </div>
@@ -970,7 +982,7 @@ function MealPreview({ meals, label, href, isTomorrow = false, todayProtein = 0,
             const timing = !isTomorrow ? getNextMealTime(meal) : null
             const isOverdue = timing && timing.minutesUntil < 0
             const isDueSoon = timing && timing.minutesUntil >= 0 && timing.minutesUntil < 30
-            const mealColor = isOverdue ? '#FF9B87' : isDueSoon ? '#ECC666' : '#6E6E73'
+            const mealColor = isOverdue ? '#E8907A' : isDueSoon ? '#DDB96A' : '#6E6E76'
 
             return (
               <div key={meal.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
@@ -978,16 +990,16 @@ function MealPreview({ meals, label, href, isTomorrow = false, todayProtein = 0,
                   {meal.mealType}
                 </span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>{meal.title}</div>
-                  <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 2, display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <div style={{ fontSize: 12, color: '#EEEEF2', fontWeight: 500 }}>{meal.title}</div>
+                  <div style={{ fontSize: 10, color: '#6E6E76', marginTop: 2, display: 'flex', gap: 6, alignItems: 'center' }}>
                     {meal.calories ? `${meal.calories} kcal` : ''}
                     {meal.calories && meal.protein ? ' · ' : ''}
                     {meal.protein ? `${meal.protein}g protein` : ''}
                     {timing && timing.minutesUntil >= 0 && (
                       <>
                         <span style={{ color: '#3E3E44' }}>·</span>
-                        <span style={{ color: isDueSoon ? '#ECC666' : '#6E6E73', fontWeight: isDueSoon ? 600 : 400 }}>
-                          {isDueSoon ? `⏰ in ${timing.timeStr}` : `in ${timing.timeStr}`}
+                        <span style={{ color: isDueSoon ? '#DDB96A' : '#6E6E76', fontWeight: isDueSoon ? 600 : 400 }}>
+                          {isDueSoon ? `in ${timing.timeStr}` : `in ${timing.timeStr}`}
                         </span>
                       </>
                     )}
@@ -998,7 +1010,7 @@ function MealPreview({ meals, label, href, isTomorrow = false, todayProtein = 0,
           })}
         </div>
       ) : (
-        <div style={{ fontSize: 12, color: '#6E6E73' }}>
+        <div style={{ fontSize: 12, color: '#6E6E76' }}>
           {isTomorrow ? 'No meals scheduled.' : 'No meal plan.'} {!isTomorrow && (
             <Link href="/meals" style={{ color: '#B8A4FF', textDecoration: 'none' }}>Generate →</Link>
           )}
@@ -1038,7 +1050,7 @@ function BulletDirective({ text, expanded, onToggle }: { text: string; expanded:
           {shown.filter(Boolean).map((s, i) => (
             <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
               <span style={{ color: '#B8A4FF', flexShrink: 0, fontSize: 11, marginTop: 2, fontWeight: 800 }}>→</span>
-              <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.6 }}>{s.trim()}</span>
+              <span style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.6 }}>{s.trim()}</span>
             </div>
           ))}
           {sentences.length > 1 && (
@@ -1049,7 +1061,7 @@ function BulletDirective({ text, expanded, onToggle }: { text: string; expanded:
         </div>
       )
     }
-    return <div style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.65 }}>{text}</div>
+    return <div style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.65 }}>{text}</div>
   }
 
   // Has framing + bullets
@@ -1060,7 +1072,7 @@ function BulletDirective({ text, expanded, onToggle }: { text: string; expanded:
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       {framingShown.map((line, i) => (
-        <div key={`f${i}`} style={{ fontSize: 13, color: '#F5F5F7', fontWeight: 600, lineHeight: 1.5 }}>
+        <div key={`f${i}`} style={{ fontSize: 13, color: '#EEEEF2', fontWeight: 600, lineHeight: 1.5 }}>
           {line}
         </div>
       ))}
@@ -1068,14 +1080,14 @@ function BulletDirective({ text, expanded, onToggle }: { text: string; expanded:
       {(framingShown.length === 0 ? firstBullet : (expanded ? bullets : firstBullet)).map((b, i) => (
         <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
           <span style={{ color: '#B8A4FF', flexShrink: 0, fontSize: 13, marginTop: 1, lineHeight: 1, fontWeight: 700 }}>•</span>
-          <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.6 }}>{b}</span>
+          <span style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.6 }}>{b}</span>
         </div>
       ))}
       {/* If framing exists, show rest of bullets only when expanded */}
       {framingShown.length > 0 && expanded && restBullets.map((b, i) => (
         <div key={`rb${i}`} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
           <span style={{ color: '#B8A4FF', flexShrink: 0, fontSize: 13, marginTop: 1, lineHeight: 1, fontWeight: 700 }}>•</span>
-          <span style={{ fontSize: 13, color: '#A1A1A6', lineHeight: 1.6 }}>{b}</span>
+          <span style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.6 }}>{b}</span>
         </div>
       ))}
       {(bullets.length > 1 || (framingShown.length > 0 && bullets.length > 0)) && (
@@ -1147,9 +1159,10 @@ function FocusModeOverlay({
     : task.effort === 1 ? '~15 min' : task.effort === 2 ? '~25 min' : task.effort === 3 ? '~45 min' : null
 
   return (
-    <div style={{
+    <div className="overlay-enter" style={{
       position: 'fixed', inset: 0, zIndex: 9999,
-      background: 'rgba(10,10,12,0.97)',
+      background: 'rgba(10,10,12,0.96)',
+      backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
     }}>
@@ -1167,18 +1180,18 @@ function FocusModeOverlay({
       </button>
 
       {/* Center content */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 28, maxWidth: 480, padding: '0 24px', textAlign: 'center' }}>
+      <div className="overlay-content-enter" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 28, maxWidth: 480, padding: '0 24px', textAlign: 'center' }}>
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#52525A' }}>
           Focus Mode
         </div>
 
-        <div style={{ fontSize: 24, fontWeight: 700, color: '#F5F5F7', lineHeight: 1.35 }}>
+        <div style={{ fontSize: 24, fontWeight: 700, color: '#EEEEF2', lineHeight: 1.35 }}>
           {task.title}
         </div>
 
         {timeLabel && (
           <span style={{
-            fontSize: 12, color: '#A1A1A6', background: 'rgba(255,255,255,0.06)',
+            fontSize: 12, color: '#9E9EA6', background: 'rgba(255,255,255,0.06)',
             border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6,
             padding: '4px 12px',
           }}>
@@ -1188,7 +1201,7 @@ function FocusModeOverlay({
 
         {/* Timer */}
         <div style={{
-          fontSize: 64, fontWeight: 800, color: secondsLeft === 0 ? '#7FD5AA' : '#F5F5F7',
+          fontSize: 64, fontWeight: 800, color: secondsLeft === 0 ? '#7FD5AA' : '#EEEEF2',
           fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em',
           lineHeight: 1,
         }}>
@@ -1199,12 +1212,12 @@ function FocusModeOverlay({
         <button
           onClick={() => setRunning(r => !r)}
           style={{
-            fontSize: 13, color: '#A1A1A6', background: 'rgba(255,255,255,0.06)',
+            fontSize: 13, color: '#9E9EA6', background: 'rgba(255,255,255,0.06)',
             border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
             padding: '8px 20px', cursor: 'pointer',
           }}
         >
-          {running ? '⏸ Pause' : '▶ Resume'}
+          {running ? 'Pause' : 'Resume'}
         </button>
 
         {/* Done button */}
@@ -1521,8 +1534,9 @@ export default function DailyCommandCenter({
   const allMustDone = mustDo.length === 0 && doneTodayCount > 0
   const allDone = incompleteTasks.length === 0 && doneTodayCount > 0
 
-  const dateStr = new Date().toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' })
-  const timeContextLabel = getTimeLabel()
+  const rawDateStr = new Date().toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' })
+  const dateStr = rawDateStr.charAt(0).toUpperCase() + rawDateStr.slice(1)
+  const greeting = getGreeting()
 
   // Focus mode task = first must-do
   const focusTask = mustDo[0] ?? shouldDo[0] ?? null
@@ -1549,17 +1563,17 @@ export default function DailyCommandCenter({
         padding: '20px 22px',
         marginBottom: 20,
       }}>
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
+        {/* Header — time-based greeting */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#F0F0F2', letterSpacing: '-0.02em', marginBottom: 4, lineHeight: 1 }}>
-              Daily Intelligence
+            <div className="hero-enter" style={{ fontSize: 26, fontWeight: 600, color: '#EEEEF2', letterSpacing: '-0.03em', marginBottom: 6, lineHeight: 1.1 }}>
+              {greeting}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 11, color: '#52525A' }}>{dateStr}</span>
-              {quarterName && <span style={{ fontSize: 10, color: '#3E3E44' }}>· {quarterName}</span>}
+              <span style={{ fontSize: 12, color: '#6E6E76' }}>{dateStr}</span>
+              {quarterName && <span style={{ fontSize: 11, color: '#52525A' }}>· {quarterName}</span>}
               {lastRefreshedAt && !loadingBrief && (
-                <span style={{ fontSize: 10, color: '#3A3A3C' }}>
+                <span style={{ fontSize: 11, color: '#44444A' }}>
                   · updated {formatAge(Date.now() - lastRefreshedAt.getTime())}
                 </span>
               )}
@@ -1570,7 +1584,7 @@ export default function DailyCommandCenter({
             disabled={loadingBrief}
             style={{
               display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,
-              fontSize: 11, color: loadingBrief ? '#3E3E44' : '#6E6E73',
+              fontSize: 11, color: loadingBrief ? '#3E3E44' : '#6E6E76',
               background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: 9, padding: '7px 13px', cursor: loadingBrief ? 'default' : 'pointer',
               transition: 'color 0.15s, background 0.15s',
@@ -1613,8 +1627,12 @@ export default function DailyCommandCenter({
               ))}
             </div>
           ) : intelItems.length > 0 ? (
-            <div key={briefing?.id ?? 'empty'} className="intel-cards-grid animate-fade-in">
-              {intelItems.map((item, i) => <IntelCard key={i} item={item} />)}
+            <div key={briefing?.id ?? 'empty'} className="intel-cards-grid">
+              {intelItems.map((item, i) => (
+                <div key={i} className="animate-entrance" style={{ animationDelay: `${0.08 + i * 0.055}s`, display: 'flex' }}>
+                  <IntelCard item={item} />
+                </div>
+              ))}
             </div>
           ) : (
             <div style={{
@@ -1629,7 +1647,7 @@ export default function DailyCommandCenter({
                 onClick={generateBriefing}
                 disabled={loadingBrief}
                 style={{
-                  fontSize: 11, color: '#6E6E73', background: 'rgba(255,255,255,0.04)',
+                  fontSize: 11, color: '#6E6E76', background: 'rgba(255,255,255,0.04)',
                   border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '6px 14px', cursor: 'pointer',
                 }}
               >
@@ -1655,11 +1673,11 @@ export default function DailyCommandCenter({
               border: '1px solid rgba(127,213,170,0.18)',
               borderRadius: 12,
             }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#7FD5AA', marginBottom: 6 }}>Good morning 🌅</div>
-              <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#7FD5AA', marginBottom: 6 }}>Morning check-in</div>
+              <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 6 }}>
                 Today&apos;s focus:
               </div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 12, lineHeight: 1.35 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#EEEEF2', marginBottom: 12, lineHeight: 1.35 }}>
                 {mustDo[0]?.title}
               </div>
               <button
@@ -1677,12 +1695,7 @@ export default function DailyCommandCenter({
 
           {/* Strategic Directive */}
           <div style={{ borderLeft: '3px solid #B8A4FF', paddingLeft: 14, marginBottom: briefing?.instruction ? 10 : 18 }}>
-            {timeContextLabel && (
-              <div style={{ fontSize: 10, color: '#52525A', marginBottom: 4, letterSpacing: '0.04em' }}>
-                {timeContextLabel}
-              </div>
-            )}
-            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6 }}>
+            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 6 }}>
               This Week&apos;s Directive
             </div>
             {loadingBrief && !briefing ? (
@@ -1700,7 +1713,7 @@ export default function DailyCommandCenter({
                 />
               </div>
             ) : (
-              <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic' }}>
+              <div style={{ fontSize: 12, color: '#6E6E76', fontStyle: 'italic' }}>
                 Click ↻ above to generate today&apos;s briefing.
               </div>
             )}
@@ -1720,20 +1733,20 @@ export default function DailyCommandCenter({
           {(atRiskCount > 0 || watchCount > 0) && (
             <div style={{
               marginBottom: 14, padding: '8px 12px', borderRadius: 10,
-              background: atRiskCount > 0 ? 'rgba(255,155,135,0.06)' : 'rgba(236,198,102,0.06)',
-              border: `1px solid ${atRiskCount > 0 ? 'rgba(255,155,135,0.15)' : 'rgba(236,198,102,0.15)'}`,
+              background: atRiskCount > 0 ? 'rgba(232,144,122,0.06)' : 'rgba(221,185,106,0.06)',
+              border: `1px solid ${atRiskCount > 0 ? 'rgba(232,144,122,0.15)' : 'rgba(221,185,106,0.15)'}`,
               display: 'flex', alignItems: 'center', gap: 6,
             }}>
-              <span style={{ fontSize: 10, fontWeight: 600, color: atRiskCount > 0 ? '#FF9B87' : '#ECC666' }}>
-                {atRiskCount > 0 ? '⚠️ Goal Health' : atRiskCount === 0 && watchCount > 0 ? '~ Watch' : '✓ All Clear'}
+              <span style={{ fontSize: 10, fontWeight: 600, color: atRiskCount > 0 ? '#E8907A' : '#DDB96A' }}>
+                {atRiskCount > 0 ? 'Goal health' : atRiskCount === 0 && watchCount > 0 ? 'Watch' : 'All clear'}
               </span>
               {atRiskCount > 0 && (
-                <span style={{ fontSize: 10, color: '#FF9B87', fontWeight: 700 }}>
+                <span style={{ fontSize: 10, color: '#E8907A', fontWeight: 700 }}>
                   {atRiskCount} at risk
                 </span>
               )}
               {atRiskCount === 0 && watchCount > 0 && (
-                <span style={{ fontSize: 10, color: '#ECC666' }}>
+                <span style={{ fontSize: 10, color: '#DDB96A' }}>
                   {watchCount} {watchCount === 1 ? 'goal' : 'goals'} to watch
                 </span>
               )}
@@ -1758,7 +1771,7 @@ export default function DailyCommandCenter({
                     borderRadius: 6, padding: '3px 8px', cursor: 'pointer',
                   }}
                 >
-                  ◎ Focus Mode
+                  Focus mode
                 </button>
               )}
             </div>
@@ -1768,14 +1781,14 @@ export default function DailyCommandCenter({
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                 {doneTodayCount > 0 && (
                   <span style={{ fontSize: 10, color: '#7FD5AA', fontWeight: 600 }}>
-                    🔥 ✓ {doneTodayCount} done
+                    ✓ {doneTodayCount} done
                   </span>
                 )}
                 {doneTodayCount > 0 && remainingCount > 0 && (
                   <span style={{ fontSize: 10, color: '#3E3E44' }}>·</span>
                 )}
                 {remainingCount > 0 && (
-                  <span style={{ fontSize: 10, color: '#6E6E73' }}>{remainingCount} remaining</span>
+                  <span style={{ fontSize: 10, color: '#6E6E76' }}>{remainingCount} remaining</span>
                 )}
               </div>
             )}
@@ -1787,7 +1800,7 @@ export default function DailyCommandCenter({
                 background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
                 borderRadius: 10, fontSize: 12, color: '#7FD5AA', fontWeight: 600,
               }}>
-                Day complete 🎉 All done!
+                Day complete — everything&apos;s done.
               </div>
             )}
             {!allDone && allMustDone && (
@@ -1796,7 +1809,7 @@ export default function DailyCommandCenter({
                 background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
                 borderRadius: 10, fontSize: 12, color: '#7FD5AA', fontWeight: 600,
               }}>
-                ✓ Must-have tasks done. Great work 🎉
+                ✓ Must-dos done. Nice work.
               </div>
             )}
 
@@ -1846,24 +1859,24 @@ export default function DailyCommandCenter({
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
                   padding: '7px 11px', borderRadius: 8, marginBottom: 10,
-                  background: tight ? 'rgba(255,155,135,0.05)' : 'rgba(127,213,170,0.04)',
-                  border: `1px solid ${tight ? 'rgba(255,155,135,0.14)' : 'rgba(127,213,170,0.1)'}`,
+                  background: tight ? 'rgba(232,144,122,0.05)' : 'rgba(127,213,170,0.04)',
+                  border: `1px solid ${tight ? 'rgba(232,144,122,0.14)' : 'rgba(127,213,170,0.1)'}`,
                 }}>
-                  <span style={{ fontSize: 11, color: '#6E6E73' }}>
-                    Tasks: <strong style={{ color: tight ? '#FF9B87' : '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
+                  <span style={{ fontSize: 11, color: '#6E6E76' }}>
+                    Tasks: <strong style={{ color: tight ? '#E8907A' : '#9E9EA6', fontVariantNumeric: 'tabular-nums' }}>
                       {tH > 0 ? `${tH}h ` : ''}{tM}m
                     </strong>
                   </span>
                   <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
-                  <span style={{ fontSize: 11, color: '#6E6E73' }}>
-                    Free time: <strong style={{ color: '#A1A1A6', fontVariantNumeric: 'tabular-nums' }}>
+                  <span style={{ fontSize: 11, color: '#6E6E76' }}>
+                    Free time: <strong style={{ color: '#9E9EA6', fontVariantNumeric: 'tabular-nums' }}>
                       {rH}h {String(rM).padStart(2, '0')}m
                     </strong>
                   </span>
                   {isWorkHours && workRemMin > 0 && (
                     <>
                       <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
-                      <span style={{ fontSize: 10, color: '#6E6E73' }}>
+                      <span style={{ fontSize: 10, color: '#6E6E76' }}>
                         Work until {work!.end === 15 * 60 + 30 ? '15:30' : '17:00'}
                       </span>
                     </>
@@ -1876,15 +1889,15 @@ export default function DailyCommandCenter({
                     return meetsAfterWork > 0 ? (
                       <>
                         <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
-                        <span style={{ fontSize: 10, color: '#ECC666' }}>
+                        <span style={{ fontSize: 10, color: '#DDB96A' }}>
                           {meetsAfterWork} evening meeting{meetsAfterWork === 1 ? '' : 's'}
                         </span>
                       </>
                     ) : null
                   })()}
                   {tight && (
-                    <span style={{ fontSize: 10, color: '#FF9B87', marginLeft: 'auto', fontWeight: 700 }}>
-                      ⚠ Overloaded
+                    <span style={{ fontSize: 10, color: '#E8907A', marginLeft: 'auto', fontWeight: 700 }}>
+                      Overloaded
                     </span>
                   )}
                 </div>
@@ -1892,23 +1905,31 @@ export default function DailyCommandCenter({
             })()}
 
             {/* Energy selector */}
-            <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#52525A', marginRight: 2 }}>
+                Energy
+              </span>
               {([
-                { key: 'low',    label: '🔋 Low' },
-                { key: 'medium', label: '⚡ Medium' },
-                { key: 'high',   label: '🚀 High' },
-              ] as const).map(({ key, label }) => (
+                { key: 'low',    label: 'Low',    dot: '#E8907A' },
+                { key: 'medium', label: 'Medium', dot: '#DDB96A' },
+                { key: 'high',   label: 'High',   dot: '#7FD5AA' },
+              ] as const).map(({ key, label, dot }) => (
                 <button
                   key={key}
                   onClick={() => setEnergyAndPersist(energy === key ? null : key)}
                   style={{
-                    fontSize: 10, padding: '4px 10px', borderRadius: 20,
-                    border: energy === key ? '1px solid rgba(184,164,255,0.5)' : '1px solid rgba(255,255,255,0.08)',
-                    background: energy === key ? 'rgba(184,164,255,0.12)' : 'rgba(255,255,255,0.03)',
-                    color: energy === key ? '#B8A4FF' : '#6E6E73',
+                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                    fontSize: 10, fontWeight: 500, padding: '4px 11px', borderRadius: 20,
+                    border: energy === key ? '1px solid rgba(255,255,255,0.16)' : '1px solid rgba(255,255,255,0.07)',
+                    background: energy === key ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.025)',
+                    color: energy === key ? '#EEEEF2' : '#6E6E76',
                     cursor: 'pointer', transition: 'all 0.12s',
                   }}
                 >
+                  <span style={{
+                    width: 5, height: 5, borderRadius: '50%', background: dot,
+                    opacity: energy === key ? 1 : 0.4, transition: 'opacity 0.12s',
+                  }} />
                   {label}
                 </button>
               ))}
@@ -1917,7 +1938,7 @@ export default function DailyCommandCenter({
             {loadingBrief && incompleteTasks.length === 0 ? (
               <PrioritySkeleton />
             ) : incompleteTasks.length === 0 && doneTodayCount === 0 ? (
-              <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic' }}>
+              <div style={{ fontSize: 12, color: '#6E6E76', fontStyle: 'italic' }}>
                 No tasks this week.{' '}
                 <Link href="/weekly" style={{ color: '#B8A4FF', textDecoration: 'none' }}>Plan this week →</Link>
               </div>

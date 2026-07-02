@@ -119,6 +119,21 @@ body {
 /* Selection */
 ::selection { background: rgba(128, 189, 255, 0.28); color: var(--text-primary); }
 
+/* Keyboard focus — visible but quiet */
+:focus-visible {
+  outline: 2px solid rgba(128, 189, 255, 0.45);
+  outline-offset: 2px;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ─── Card ───────────────────────────────────────────────────────────────────── */
 
 .card {
@@ -152,15 +167,16 @@ body {
 
 .card-interactive {
   cursor: pointer;
-  transition: box-shadow 0.24s ease, transform 0.24s ease, border-color 0.24s ease;
+  transition: box-shadow 0.28s ease, border-color 0.28s ease,
+              transform 0.34s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 .card-interactive:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.003);
   box-shadow: var(--shadow-raised);
-  border-color: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.11);
 }
 .card-interactive:active {
-  transform: translateY(0px);
+  transform: translateY(-1px) scale(0.998);
   transition: transform 0.08s ease;
 }
 
@@ -277,6 +293,8 @@ body {
   border-radius: 999px;
   transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: width;
+  transform-origin: left center;
+  animation: progressGrow 1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
 }
 
 /* ─── Section labels ─────────────────────────────────────────────────────────── */
@@ -293,8 +311,24 @@ body {
 /* ─── Keyframes ───────────────────────────────────────────────────────────────── */
 
 @keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(14px) scale(0.985); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@keyframes heroEnter {
+  from { opacity: 0; transform: translateY(10px); filter: blur(10px); letter-spacing: 0.02em; }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); letter-spacing: -0.03em; }
+}
+@keyframes progressGrow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes overlayContentIn {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); filter: blur(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
 }
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -349,6 +383,13 @@ body {
   border-radius: 8px;
 }
 .pulse-loading { animation: pulse 1.6s ease-in-out infinite; }
+
+/* ─── Hero greeting entrance ──────────────────────────────────────────────────── */
+.hero-enter { animation: heroEnter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* ─── Full-screen overlay entrance (Focus Mode) ───────────────────────────────── */
+.overlay-enter         { animation: overlayIn 0.28s ease both; }
+.overlay-content-enter { animation: overlayContentIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both; }
 
 /* ─── Expand / collapse ───────────────────────────────────────────────────────── */
 .expand-enter { animation: expandDown 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }

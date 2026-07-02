@@ -1,4 +1,5 @@
 import RescuePlanButton from './RescuePlanButton'
+import CountUp from '@/components/ui/CountUp'
 
 interface Props {
   quarter: any
@@ -12,7 +13,7 @@ interface Props {
 export default function QuarterOverview({ quarter, qProgress, weightedCompletion, goalCount, atRiskCount = 0, watchCount = 0 }: Props) {
   const gap = weightedCompletion - qProgress.pct
   const onTrack = gap >= -5 && atRiskCount === 0
-  const statusColor = onTrack ? '#7FD5AA' : '#ECC666'
+  const statusColor = onTrack ? '#7FD5AA' : '#DDB96A'
   const weeksRemaining = Math.ceil(qProgress.daysRemaining / 7)
 
   return (
@@ -23,16 +24,16 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
         <div>
           <div style={{
             fontSize: 11, fontWeight: 500, letterSpacing: '0.06em',
-            textTransform: 'uppercase', color: '#6E6E73', marginBottom: 6,
+            textTransform: 'uppercase', color: '#6E6E76', marginBottom: 6,
           }}>
             Active Quarter
           </div>
           <div style={{
-            fontSize: 22, fontWeight: 700, color: '#F5F5F7', letterSpacing: '-0.025em',
+            fontSize: 22, fontWeight: 700, color: '#EEEEF2', letterSpacing: '-0.025em',
           }}>
             {quarter.name}
           </div>
-          <div style={{ fontSize: 13, color: '#6E6E73', marginTop: 4, letterSpacing: '-0.01em' }}>
+          <div style={{ fontSize: 13, color: '#6E6E76', marginTop: 4, letterSpacing: '-0.01em' }}>
             {new Date(quarter.startDate).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
             {' – '}
             {new Date(quarter.endDate).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
@@ -45,16 +46,16 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
             fontSize: 38, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
             color: statusColor, lineHeight: 1, letterSpacing: '-0.04em',
           }}>
-            {Math.round(weightedCompletion)}%
+            <CountUp value={Math.round(weightedCompletion)} suffix="%" />
           </div>
-          <div style={{ fontSize: 12, color: '#6E6E73', marginTop: 4 }}>weighted completion</div>
+          <div style={{ fontSize: 12, color: '#6E6E76', marginTop: 4 }}>weighted completion</div>
         </div>
       </div>
 
       {/* Dual progress track */}
       <div style={{ marginBottom: 18 }}>
         {/* Quarter elapsed track */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6E6E73', marginBottom: 5 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6E6E76', marginBottom: 5 }}>
           <span>Quarter elapsed</span>
           <span>{Math.round(qProgress.pct)}%</span>
         </div>
@@ -66,7 +67,7 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
         </div>
 
         {/* Goals completion track */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6E6E73', marginBottom: 5 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6E6E76', marginBottom: 5 }}>
           <span>Goals completion</span>
           <span>{Math.round(weightedCompletion)}%</span>
         </div>
@@ -82,30 +83,30 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
       <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
         <StatItem label="Days remaining" value={`${qProgress.daysRemaining}d`} />
         <StatItem
-          label="Progres gap"
+          label="Progress gap"
           value={`${gap >= 0 ? '+' : ''}${Math.round(gap)}%`}
-          valueColor={gap >= 0 ? '#7FD5AA' : '#ECC666'}
+          valueColor={gap >= 0 ? '#7FD5AA' : '#DDB96A'}
         />
         <div style={{ flex: 1, minWidth: 180 }}>
           <div style={{
-            fontSize: 13, color: '#A1A1A6', lineHeight: 1.55,
+            fontSize: 13, color: '#9E9EA6', lineHeight: 1.55,
             padding: '9px 13px',
-            background: onTrack ? 'rgba(127,213,170,0.06)' : 'rgba(236,198,102,0.06)',
+            background: onTrack ? 'rgba(127,213,170,0.06)' : 'rgba(221,185,106,0.06)',
             borderRadius: 12,
-            border: `1px solid ${onTrack ? 'rgba(127,213,170,0.15)' : 'rgba(236,198,102,0.15)'}`,
+            border: `1px solid ${onTrack ? 'rgba(127,213,170,0.15)' : 'rgba(221,185,106,0.15)'}`,
           }}>
             {Math.round(qProgress.pct)}% of quarter elapsed.{' '}
             {onTrack
               ? <span style={{ color: '#7FD5AA', fontWeight: 600 }}>On track.</span>
-              : <span style={{ color: '#ECC666', fontWeight: 600 }}>
+              : <span style={{ color: '#DDB96A', fontWeight: 600 }}>
                   Behind by {Math.round(Math.abs(gap))}%.
                 </span>
             }
             {atRiskCount > 0 && (
-              <span style={{ color: '#FF9B87', fontWeight: 600 }}> · {atRiskCount} {atRiskCount === 1 ? 'goal at risk' : 'goals at risk'}.</span>
+              <span style={{ color: '#E8907A', fontWeight: 600 }}> · {atRiskCount} {atRiskCount === 1 ? 'goal at risk' : 'goals at risk'}.</span>
             )}
             {watchCount > 0 && atRiskCount === 0 && (
-              <span style={{ color: '#ECC666' }}> · {watchCount} {watchCount === 1 ? 'goal' : 'goals'} to watch.</span>
+              <span style={{ color: '#DDB96A' }}> · {watchCount} {watchCount === 1 ? 'goal' : 'goals'} to watch.</span>
             )}
           </div>
         </div>
@@ -123,8 +124,8 @@ export default function QuarterOverview({ quarter, qProgress, weightedCompletion
 function StatItem({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
   return (
     <div>
-      <div style={{ fontSize: 11, color: '#6E6E73', marginBottom: 2 }}>{label}</div>
-      <div style={{ fontSize: 17, fontWeight: 600, color: valueColor ?? '#F5F5F7', letterSpacing: '-0.02em' }}>{value}</div>
+      <div style={{ fontSize: 11, color: '#6E6E76', marginBottom: 2 }}>{label}</div>
+      <div style={{ fontSize: 17, fontWeight: 600, color: valueColor ?? '#EEEEF2', letterSpacing: '-0.02em' }}>{value}</div>
     </div>
   )
 }

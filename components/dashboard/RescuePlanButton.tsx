@@ -39,11 +39,11 @@ export default function RescuePlanButton({ gap, weeksRemaining, quarterName }: P
     <div style={{ marginTop: 14 }}>
       {/* Context line */}
       <div style={{
-        fontSize: 12, color: '#ECC666', marginBottom: 10, lineHeight: 1.55,
+        fontSize: 12, color: '#DDB96A', marginBottom: 10, lineHeight: 1.55,
         padding: '9px 13px',
-        background: 'rgba(236,198,102,0.06)',
+        background: 'rgba(221,185,106,0.06)',
         borderRadius: 10,
-        border: '1px solid rgba(236,198,102,0.15)',
+        border: '1px solid rgba(221,185,106,0.15)',
       }}>
         <strong>{weeksRemaining}</strong> {weeksRemaining === 1 ? 'week' : 'weeks'} remaining.
         {' '}To catch up you need <strong>~{weeklyNeeded}% per week</strong>.
@@ -54,15 +54,15 @@ export default function RescuePlanButton({ gap, weeksRemaining, quarterName }: P
           onClick={generate}
           disabled={loading}
           style={{
-            fontSize: 12, fontWeight: 700, color: '#ECC666',
-            background: 'rgba(236,198,102,0.08)',
-            border: '1px solid rgba(236,198,102,0.25)',
+            fontSize: 12, fontWeight: 700, color: '#DDB96A',
+            background: 'rgba(221,185,106,0.08)',
+            border: '1px solid rgba(221,185,106,0.25)',
             borderRadius: 8, padding: '8px 16px', cursor: loading ? 'default' : 'pointer',
             opacity: loading ? 0.7 : 1,
             transition: 'opacity 0.15s',
           }}
         >
-          {loading ? '⏳ Generating plan…' : '⚡ Generate rescue plan'}
+          {loading ? 'Generating plan…' : 'Generate rescue plan'}
         </button>
       ) : (
         <>
@@ -76,7 +76,7 @@ export default function RescuePlanButton({ gap, weeksRemaining, quarterName }: P
               marginBottom: open ? 10 : 0,
             }}
           >
-            {open ? '▲ Hide rescue plan' : '▼ Show rescue plan'}
+            {open ? 'Hide rescue plan' : 'Show rescue plan'}
           </button>
 
           {open && (
@@ -84,7 +84,7 @@ export default function RescuePlanButton({ gap, weeksRemaining, quarterName }: P
               padding: '14px 16px', borderRadius: 12,
               background: 'rgba(127,213,170,0.04)',
               border: '1px solid rgba(127,213,170,0.15)',
-              fontSize: 13, color: '#A1A1A6', lineHeight: 1.7,
+              fontSize: 13, color: '#9E9EA6', lineHeight: 1.7,
               whiteSpace: 'pre-wrap',
             }}>
               {plan}

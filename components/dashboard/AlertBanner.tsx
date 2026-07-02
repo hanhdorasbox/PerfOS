@@ -9,9 +9,9 @@ export default function AlertBanner({ alerts }: { alerts: Alert[] }) {
         const isCritical = a.status === 'critical'
         const isAtRisk   = a.status === 'at_risk'
         const isWatch    = a.status === 'watch'
-        const color   = isCritical ? '#FF9B87' : isAtRisk ? '#F5A56A' : '#ECC666'
-        const bgColor = isCritical ? 'rgba(255,155,135,0.07)' : isAtRisk ? 'rgba(245,165,106,0.07)' : 'rgba(236,198,102,0.05)'
-        const border  = isCritical ? 'rgba(255,155,135,0.2)' : isAtRisk ? 'rgba(245,165,106,0.2)' : 'rgba(236,198,102,0.15)'
+        const color   = isCritical ? '#E8907A' : isAtRisk ? '#E8966A' : '#DDB96A'
+        const bgColor = isCritical ? 'rgba(232,144,122,0.07)' : isAtRisk ? 'rgba(232,150,106,0.07)' : 'rgba(221,185,106,0.05)'
+        const border  = isCritical ? 'rgba(232,144,122,0.2)' : isAtRisk ? 'rgba(232,150,106,0.2)' : 'rgba(221,185,106,0.15)'
         const icon    = isCritical ? '!' : isAtRisk ? '↑' : '~'
         return (
           <div key={i} style={{
@@ -27,7 +27,7 @@ export default function AlertBanner({ alerts }: { alerts: Alert[] }) {
             </div>
             <div>
               <span style={{ fontSize: isWatch ? 12 : 13, fontWeight: 600, color }}>{a.goalTitle}: </span>
-              <span style={{ fontSize: isWatch ? 12 : 13, color: '#A1A1A6' }}>{a.message}</span>
+              <span style={{ fontSize: isWatch ? 12 : 13, color: '#9E9EA6' }}>{a.message}</span>
             </div>
           </div>
         )

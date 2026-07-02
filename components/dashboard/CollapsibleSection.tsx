@@ -43,7 +43,7 @@ export default function CollapsibleSection({ title, defaultCollapsed = false, ch
       >
         <span style={{
           fontSize: 11, fontWeight: 500, letterSpacing: '0.07em',
-          textTransform: 'uppercase', color: '#6E6E73',
+          textTransform: 'uppercase', color: '#6E6E76',
         }}>
           {title}
         </span>
@@ -51,15 +51,22 @@ export default function CollapsibleSection({ title, defaultCollapsed = false, ch
           <span style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
             padding: '2px 6px', borderRadius: 4,
-            background: 'rgba(255,155,135,0.15)', color: '#FF9B87',
+            background: 'rgba(232,144,122,0.15)', color: '#E8907A',
             textTransform: 'uppercase',
           }}>
             {badge}
           </span>
         )}
-        <span style={{ marginLeft: 'auto', fontSize: 10, color: '#52525A' }}>
-          {collapsed ? '▸' : '▾'}
-        </span>
+        <svg
+          width="10" height="10" viewBox="0 0 10 10" fill="none"
+          style={{
+            marginLeft: 'auto', flexShrink: 0,
+            transform: collapsed ? 'rotate(-90deg)' : 'none',
+            transition: 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+        >
+          <path d="M2 3.5L5 6.5L8 3.5" stroke="#52525A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </button>
       {!collapsed && children}
     </div>

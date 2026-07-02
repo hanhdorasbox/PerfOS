@@ -13,7 +13,7 @@ interface Task {
 }
 
 const effortLabel: Record<number, string> = { 1: 'Easy', 2: 'Medium', 3: 'Deep work' }
-const effortColor: Record<number, string> = { 1: '#7FD5AA', 2: '#ECC666', 3: '#FF9B87' }
+const effortColor: Record<number, string> = { 1: '#7FD5AA', 2: '#DDB96A', 3: '#E8907A' }
 const priorityLabel: Record<number, string> = { 1: 'must', 2: 'should', 3: 'optional' }
 
 function TaskRow({
@@ -73,7 +73,7 @@ function TaskRow({
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: 10,
-            color: isDone ? '#7FD5AA' : '#6E6E73',
+            color: isDone ? '#7FD5AA' : '#6E6E76',
             fontWeight: 700,
             transition: 'all 0.12s',
             pointerEvents: 'none',
@@ -86,7 +86,7 @@ function TaskRow({
       <div style={{ flex: 1, minWidth: 0, opacity: isDone ? 0.45 : 1, transition: 'opacity 0.2s ease' }}>
         <div style={{
           fontSize: 13,
-          color: '#F5F5F7',
+          color: '#EEEEF2',
           fontWeight: 600,
           textDecoration: isDone ? 'line-through' : 'none',
           lineHeight: 1.35,
@@ -94,14 +94,14 @@ function TaskRow({
           {task.title}
         </div>
         {task.goal && (
-          <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 2 }}>→ {task.goal.title}</div>
+          <div style={{ fontSize: 11, color: '#6E6E76', marginTop: 2 }}>→ {task.goal.title}</div>
         )}
         {!isDone && (
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
-            {task.effort > 0 && <span style={{ fontSize: 10, color: '#6E6E73' }}>{effortLabel[task.effort]}</span>}
+            {task.effort > 0 && <span style={{ fontSize: 10, color: '#6E6E76' }}>{effortLabel[task.effort]}</span>}
             {task.estimatedMinutes
-              ? <span style={{ fontSize: 9, color: '#48484A', background: 'rgba(255,255,255,0.04)', borderRadius: 4, padding: '1px 5px' }}>~{task.estimatedMinutes}m</span>
-              : task.effort > 0 && <span style={{ fontSize: 9, color: '#48484A', background: 'rgba(255,255,255,0.04)', borderRadius: 4, padding: '1px 5px' }}>{task.effort === 1 ? '~15m' : task.effort === 2 ? '~25m' : '~45m'}</span>
+              ? <span style={{ fontSize: 9, color: '#44444A', background: 'rgba(255,255,255,0.04)', borderRadius: 4, padding: '1px 5px' }}>~{task.estimatedMinutes}m</span>
+              : task.effort > 0 && <span style={{ fontSize: 9, color: '#44444A', background: 'rgba(255,255,255,0.04)', borderRadius: 4, padding: '1px 5px' }}>{task.effort === 1 ? '~15m' : task.effort === 2 ? '~25m' : '~45m'}</span>
             }
           </div>
         )}
@@ -130,7 +130,7 @@ function CollapsibleTaskGroup({
         onClick={() => setOpen(v => !v)}
         style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: 5, width: '100%' }}
       >
-        <span style={{ fontSize: 10, color: '#6E6E73' }}>{open ? '▲' : '▼'}</span>
+        <span style={{ fontSize: 10, color: '#6E6E76' }}>{open ? '▲' : '▼'}</span>
         <span style={{ fontSize: 11, fontWeight: 600, color: '#9E9EA6' }}>
           {label}
         </span>
@@ -154,8 +154,8 @@ function CollapsedDone({ tasks, onToggle, toggling }: { tasks: Task[]; onToggle:
         onClick={() => setOpen(v => !v)}
         style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0', display: 'flex', alignItems: 'center', gap: 5 }}
       >
-        <span style={{ fontSize: 10, color: '#6E6E73' }}>{open ? '▲' : '▼'}</span>
-        <span style={{ fontSize: 11, color: '#6E6E73' }}>
+        <span style={{ fontSize: 10, color: '#6E6E76' }}>{open ? '▲' : '▼'}</span>
+        <span style={{ fontSize: 11, color: '#6E6E76' }}>
           {open ? 'Hide completed' : `Show ${tasks.length} completed task${tasks.length !== 1 ? 's' : ''}`}
         </span>
       </button>
@@ -232,7 +232,7 @@ export default function TodayTasks({
   return (
     <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73' }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76' }}>
           This Week — Tasks
         </div>
         {canAdd && (
@@ -254,7 +254,7 @@ export default function TodayTasks({
             onKeyDown={e => e.key === 'Enter' && addTask()}
             placeholder="Task title…"
             autoFocus
-            style={{ width: '100%', background: 'transparent', border: 'none', color: '#F5F5F7', fontSize: 13, outline: 'none', marginBottom: 8, boxSizing: 'border-box' }}
+            style={{ width: '100%', background: 'transparent', border: 'none', color: '#EEEEF2', fontSize: 13, outline: 'none', marginBottom: 8, boxSizing: 'border-box' }}
           />
           <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
             {[1, 2, 3].map(e => (
@@ -266,7 +266,7 @@ export default function TodayTasks({
                   cursor: 'pointer',
                   background: newEffort === e ? 'rgba(184,164,255,0.15)' : 'transparent',
                   borderColor: newEffort === e ? 'rgba(184,164,255,0.4)' : 'rgba(255,255,255,0.08)',
-                  color: newEffort === e ? '#B8A4FF' : '#6E6E73',
+                  color: newEffort === e ? '#B8A4FF' : '#6E6E76',
                 }}
               >
                 {effortLabel[e]}
@@ -285,7 +285,7 @@ export default function TodayTasks({
       )}
 
       {!tasks.length && (
-        <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic' }}>No tasks this week. Add one above.</div>
+        <div style={{ fontSize: 12, color: '#6E6E76', fontStyle: 'italic' }}>No tasks this week. Add one above.</div>
       )}
 
       {/* When ALL tasks are done, show week-complete state */}
@@ -300,7 +300,7 @@ export default function TodayTasks({
             <div style={{ fontSize: 13, fontWeight: 700, color: '#7FD5AA', marginBottom: 3 }}>
               ✓ This week complete
             </div>
-            <div style={{ fontSize: 11, color: '#6E6E73' }}>
+            <div style={{ fontSize: 11, color: '#6E6E76' }}>
               All {done.length} task{done.length !== 1 ? 's' : ''} done.
             </div>
             <a href="/weekly" style={{ fontSize: 11, color: '#B8A4FF', textDecoration: 'none', display: 'block', marginTop: 2 }}>
@@ -319,7 +319,7 @@ export default function TodayTasks({
           {mustTasks.length > 0 && (
             <div>
               {mustTasks.length > 0 && (
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#FF9B87', marginBottom: 6, marginTop: 6, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#E8907A', marginBottom: 6, marginTop: 6, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                   Must Do ({mustTasks.length})
                 </div>
               )}

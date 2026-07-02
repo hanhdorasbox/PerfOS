@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { GoalMetrics } from '@/lib/calculations'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import CountUp from '@/components/ui/CountUp'
 
 interface Props {
   goal: any
@@ -13,9 +14,9 @@ interface Props {
 const statusColors: Record<string, string> = {
   ahead:     '#7FD5AA',
   on_track:  '#80BDFF',
-  watch:     '#ECC666',
-  at_risk:   '#F5A56A',
-  critical:  '#FF9B87',
+  watch:     '#DDB96A',
+  at_risk:   '#E8966A',
+  critical:  '#E8907A',
   completed: '#7FD5AA',
 }
 
@@ -28,14 +29,14 @@ function progressColor(status: string): string {
 export default function GoalCard({ goal, metrics }: Props) {
   const router = useRouter()
   const [, startTransition] = useTransition()
-  const accentColor = statusColors[metrics.status] || '#A1A1A6'
+  const accentColor = statusColors[metrics.status] || '#9E9EA6'
   const fillColor   = progressColor(metrics.status)
 
   // Deadline urgency coloring
   const daysUntilDeadline = goal.deadline ? Math.ceil((new Date(goal.deadline).getTime() - Date.now()) / (24 * 60 * 60 * 1000)) : null
   const isDeadlineSoon = daysUntilDeadline !== null && daysUntilDeadline < 3
   const isDeadlineCritical = daysUntilDeadline !== null && daysUntilDeadline < 1
-  const deadlineColor = isDeadlineCritical ? '#FF9B87' : isDeadlineSoon ? '#ECC666' : undefined
+  const deadlineColor = isDeadlineCritical ? '#E8907A' : isDeadlineSoon ? '#DDB96A' : undefined
 
   // H8: inline quick-log for QUANTITATIVE goals
   const [logOpen, setLogOpen]   = useState(false)
@@ -98,7 +99,7 @@ export default function GoalCard({ goal, metrics }: Props) {
       {/* C2: No-data callout for brand-new QUANTITATIVE goals */}
       {hasNoData && (
         <div style={{ marginBottom: 14, padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.07)' }}>
-          <span style={{ fontSize: 12, color: '#6E6E73' }}>No data logged yet — </span>
+          <span style={{ fontSize: 12, color: '#6E6E76' }}>No data logged yet — </span>
           <button onClick={() => setLogOpen(v => !v)} style={{ fontSize: 12, color: '#B8A4FF', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
             log first value
           </button>
@@ -110,9 +111,9 @@ export default function GoalCard({ goal, metrics }: Props) {
         <div>
           <div style={{
             fontSize: 34, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
-            color: hasNoData ? '#48484A' : '#F5F5F7', lineHeight: 1, letterSpacing: '-0.03em',
+            color: hasNoData ? '#44444A' : '#EEEEF2', lineHeight: 1, letterSpacing: '-0.03em',
           }}>
-            {Math.round(metrics.progressPct)}%
+            <CountUp value={Math.round(metrics.progressPct)} suffix="%" />
           </div>
           <div style={{ fontSize: 10, color: '#52525A', marginTop: 4, letterSpacing: '0.02em' }}>complete</div>
         </div>
@@ -177,7 +178,7 @@ export default function GoalCard({ goal, metrics }: Props) {
               />
               <Tooltip contentStyle={{
                 background: '#1C1C1E', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 10, fontSize: 11, color: '#F5F5F7',
+                borderRadius: 10, fontSize: 11, color: '#EEEEF2',
                 boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
               }} />
             </LineChart>
@@ -209,7 +210,6 @@ export default function GoalCard({ goal, metrics }: Props) {
           {' · '}deadline {' '}
           <span style={{ color: deadlineColor ?? '#52525A', fontWeight: deadlineColor ? 600 : 400 }}>
             {new Date(goal.deadline).toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
-            {isDeadlineCritical ? ' ⚠️' : isDeadlineSoon ? ' ⏰' : ''}
           </span>
         </div>
       )}
@@ -230,12 +230,12 @@ export default function GoalCard({ goal, metrics }: Props) {
                 onKeyDown={e => e.key === 'Enter' && quickLog()}
                 placeholder={`New value${goal.unit ? ` (${goal.unit})` : ''}`}
                 autoFocus
-                style={{ flex: 1, padding: '6px 10px', borderRadius: 7, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(184,164,255,0.3)', color: '#F5F5F7', fontSize: 13, outline: 'none' }}
+                style={{ flex: 1, padding: '6px 10px', borderRadius: 7, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(184,164,255,0.3)', color: '#EEEEF2', fontSize: 13, outline: 'none' }}
               />
               <button onClick={quickLog} disabled={logSaving || !logValue.trim()} style={{ padding: '6px 14px', borderRadius: 7, background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.35)', color: '#B8A4FF', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
                 {logSaving ? '…' : 'Save'}
               </button>
-              <button onClick={() => setLogOpen(false)} style={{ padding: '6px 10px', borderRadius: 7, background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', fontSize: 12, cursor: 'pointer' }}>✕</button>
+              <button onClick={() => setLogOpen(false)} style={{ padding: '6px 10px', borderRadius: 7, background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E76', fontSize: 12, cursor: 'pointer' }}>✕</button>
             </div>
           )}
         </div>
@@ -246,7 +246,7 @@ export default function GoalCard({ goal, metrics }: Props) {
         <div style={{ marginTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14 }}>
           <div style={{
             fontSize: 10, fontWeight: 600, letterSpacing: '0.08em',
-            textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10,
+            textTransform: 'uppercase', color: '#6E6E76', marginBottom: 10,
           }}>
             Milestones
           </div>
@@ -269,10 +269,10 @@ export default function GoalCard({ goal, metrics }: Props) {
               </div>
               <span style={{
                 fontSize: 13, flex: 1,
-                color: m.completed ? '#6E6E73' : '#A1A1A6',
+                color: m.completed ? '#6E6E76' : '#9E9EA6',
                 textDecoration: m.completed ? 'line-through' : 'none',
               }}>{m.title}</span>
-              <span style={{ fontSize: 11, color: '#48484A' }}>{m.weight}%</span>
+              <span style={{ fontSize: 11, color: '#44444A' }}>{m.weight}%</span>
             </div>
           ))}
         </div>

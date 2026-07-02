@@ -43,25 +43,25 @@ export default function FitnessSummary({ fitnessLog, workoutsThisWeek, userId }:
   }
   return (
     <div className="card">
-      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: 5 }}>
+      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: 5 }}>
         <Dumbbell size={12} /> Fitness
       </div>
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
         {fitnessLog?.weight && (
           <div>
-            <div style={{ fontSize: '22px', fontWeight: 700, color: '#F5F5F7' }}>{fitnessLog.weight} kg</div>
-            <div style={{ fontSize: '11px', color: '#6E6E73' }}>weight</div>
+            <div style={{ fontSize: '22px', fontWeight: 700, color: '#EEEEF2' }}>{fitnessLog.weight} kg</div>
+            <div style={{ fontSize: '11px', color: '#6E6E76' }}>weight</div>
           </div>
         )}
         {fitnessLog?.waist && (
           <div>
-            <div style={{ fontSize: '22px', fontWeight: 700, color: '#F5F5F7' }}>{fitnessLog.waist} cm</div>
-            <div style={{ fontSize: '11px', color: '#6E6E73' }}>waist</div>
+            <div style={{ fontSize: '22px', fontWeight: 700, color: '#EEEEF2' }}>{fitnessLog.waist} cm</div>
+            <div style={{ fontSize: '11px', color: '#6E6E76' }}>waist</div>
           </div>
         )}
         <div>
-          <div style={{ fontSize: '22px', fontWeight: 700, color: workoutsThisWeek >= 3 ? '#7FD5AA' : '#ECC666' }}>{workoutsThisWeek}/3</div>
-          <div style={{ fontSize: '11px', color: '#6E6E73' }}>workouts/week</div>
+          <div style={{ fontSize: '22px', fontWeight: 700, color: workoutsThisWeek >= 3 ? '#7FD5AA' : '#DDB96A' }}>{workoutsThisWeek}/3</div>
+          <div style={{ fontSize: '11px', color: '#6E6E76' }}>workouts/week</div>
         </div>
       </div>
 
@@ -79,7 +79,7 @@ export default function FitnessSummary({ fitnessLog, workoutsThisWeek, userId }:
               + Log workout
             </button>
           )}
-          <Link href="/fitness" style={{ fontSize: '12px', color: '#6E6E73', textDecoration: 'none' }}>Details →</Link>
+          <Link href="/fitness" style={{ fontSize: '12px', color: '#6E6E76', textDecoration: 'none' }}>Details →</Link>
         </div>
       ) : (
         <div style={{ marginTop: '12px', padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
@@ -92,7 +92,7 @@ export default function FitnessSummary({ fitnessLog, workoutsThisWeek, userId }:
                   fontSize: 10, padding: '4px 10px', borderRadius: 5, cursor: 'pointer',
                   background: workoutType === t ? 'rgba(163,217,119,0.2)' : 'transparent',
                   border: workoutType === t ? '1px solid rgba(163,217,119,0.5)' : '1px solid rgba(255,255,255,0.1)',
-                  color: workoutType === t ? '#A3D977' : '#6E6E73',
+                  color: workoutType === t ? '#A3D977' : '#6E6E76',
                   fontWeight: workoutType === t ? 600 : 400,
                 }}
               >
@@ -111,10 +111,10 @@ export default function FitnessSummary({ fitnessLog, workoutsThisWeek, userId }:
               style={{
                 flex: 1, padding: '6px 10px', borderRadius: 6,
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                color: '#F5F5F7', fontSize: 11, outline: 'none',
+                color: '#EEEEF2', fontSize: 11, outline: 'none',
               }}
             />
-            <span style={{ fontSize: 10, color: '#6E6E73' }}>min</span>
+            <span style={{ fontSize: 10, color: '#6E6E76' }}>min</span>
             <button
               onClick={logWorkout}
               disabled={logging}
@@ -130,7 +130,7 @@ export default function FitnessSummary({ fitnessLog, workoutsThisWeek, userId }:
               onClick={() => setLogOpen(false)}
               style={{
                 padding: '6px 10px', borderRadius: 6, background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', fontSize: 10, cursor: 'pointer',
+                border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E76', fontSize: 10, cursor: 'pointer',
               }}
             >
               ✕

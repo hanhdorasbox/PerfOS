@@ -54,16 +54,16 @@ export default function EmptyWeekBanner({ userId }: Props) {
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap',
     }}>
       <div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: '#F5F5F7', marginBottom: 4 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: '#EEEEF2', marginBottom: 4 }}>
           No tasks this week
         </div>
-        <div style={{ fontSize: 12, color: '#6E6E73' }}>
+        <div style={{ fontSize: 12, color: '#6E6E76' }}>
           AI can generate tasks directly from your quarterly goals.
         </div>
       </div>
       <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
         <a href="/weekly" style={{
-          fontSize: 12, fontWeight: 600, color: '#6E6E73',
+          fontSize: 12, fontWeight: 600, color: '#6E6E76',
           background: 'rgba(255,255,255,0.05)',
           border: '1px solid rgba(255,255,255,0.08)',
           borderRadius: 8, padding: '8px 14px', cursor: 'pointer',
@@ -82,7 +82,7 @@ export default function EmptyWeekBanner({ userId }: Props) {
             transition: 'background 0.15s',
           }}
         >
-          {loading ? '⏳ Generating…' : '✨ Generate from goals'}
+          {loading ? 'Generating…' : 'Generate from goals'}
         </button>
       </div>
     </div>

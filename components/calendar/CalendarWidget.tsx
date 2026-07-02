@@ -183,13 +183,13 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
   const icsAddForm = showIcsForm ? (
     <div style={{ marginTop: 14, padding: '14px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#A1A1A6' }}>Add calendar source</span>
-        <button onClick={() => { setShowIcsForm(false); setIcsError('') }} style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 14, lineHeight: 1 }}>×</button>
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#9E9EA6' }}>Add calendar source</span>
+        <button onClick={() => { setShowIcsForm(false); setIcsError('') }} style={{ background: 'none', border: 'none', color: '#6E6E76', cursor: 'pointer', fontSize: 14, lineHeight: 1 }}>×</button>
       </div>
 
       <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
         {(['personal', 'work'] as const).map(t => (
-          <button key={t} onClick={() => setIcsType(t)} style={{ flex: 1, padding: '6px 0', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, background: icsType === t ? (t === 'work' ? 'rgba(128,189,255,0.2)' : 'rgba(127,213,170,0.15)') : 'rgba(255,255,255,0.05)', color: icsType === t ? (t === 'work' ? '#80BDFF' : '#7FD5AA') : '#6E6E73' }}>
+          <button key={t} onClick={() => setIcsType(t)} style={{ flex: 1, padding: '6px 0', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, background: icsType === t ? (t === 'work' ? 'rgba(128,189,255,0.2)' : 'rgba(127,213,170,0.15)') : 'rgba(255,255,255,0.05)', color: icsType === t ? (t === 'work' ? '#80BDFF' : '#7FD5AA') : '#6E6E76' }}>
             {t === 'personal' ? <><Leaf size={11} /> Personal</> : <><Briefcase size={11} /> Work</>}
           </button>
         ))}
@@ -199,17 +199,17 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
         value={icsName}
         onChange={e => setIcsName(e.target.value)}
         placeholder={icsType === 'work' ? 'e.g. Outlook – Work' : 'e.g. Google Calendar'}
-        style={{ width: '100%', padding: '7px 10px', borderRadius: 7, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#F5F5F7', fontSize: 12, outline: 'none', marginBottom: 8, boxSizing: 'border-box' }}
+        style={{ width: '100%', padding: '7px 10px', borderRadius: 7, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#EEEEF2', fontSize: 12, outline: 'none', marginBottom: 8, boxSizing: 'border-box' }}
       />
 
       <input
         value={icsUrl}
         onChange={e => setIcsUrl(e.target.value)}
         placeholder="https://calendar.google.com/calendar/ical/… or Outlook ICS URL"
-        style={{ width: '100%', padding: '7px 10px', borderRadius: 7, background: 'rgba(255,255,255,0.05)', border: `1px solid ${icsError ? 'rgba(255,155,135,0.4)' : 'rgba(255,255,255,0.1)'}`, color: '#F5F5F7', fontSize: 11, outline: 'none', marginBottom: icsError ? 6 : 10, boxSizing: 'border-box', fontFamily: 'monospace' }}
+        style={{ width: '100%', padding: '7px 10px', borderRadius: 7, background: 'rgba(255,255,255,0.05)', border: `1px solid ${icsError ? 'rgba(232,144,122,0.4)' : 'rgba(255,255,255,0.1)'}`, color: '#EEEEF2', fontSize: 11, outline: 'none', marginBottom: icsError ? 6 : 10, boxSizing: 'border-box', fontFamily: 'monospace' }}
       />
 
-      {icsError && <p style={{ fontSize: 11, color: '#FF9B87', marginBottom: 10 }}>{icsError}</p>}
+      {icsError && <p style={{ fontSize: 11, color: '#E8907A', marginBottom: 10 }}>{icsError}</p>}
 
       <button onClick={addIcsSource} disabled={icsSaving || !icsUrl.trim() || !icsName.trim()} className="btn-motion" style={{ width: '100%', padding: '8px 0', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer', background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.3)', color: '#B8A4FF', opacity: icsSaving ? 0.6 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
         {icsSaving && <Spinner size={12} color="#B8A4FF" strokeWidth={2} />}
@@ -217,12 +217,12 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
       </button>
 
       {icsType === 'work' && (
-        <p style={{ fontSize: 10, color: '#6E6E73', marginTop: 10, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 10, color: '#6E6E76', marginTop: 10, lineHeight: 1.6 }}>
           Outlook ICS: Outlook Web → Settings → Calendar → Shared calendars → &quot;Publish a calendar&quot; → copy ICS link
         </p>
       )}
       {icsType === 'personal' && (
-        <p style={{ fontSize: 10, color: '#6E6E73', marginTop: 10, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 10, color: '#6E6E76', marginTop: 10, lineHeight: 1.6 }}>
           Google Calendar: Settings (⚙) → your calendar → Integrate calendar → &quot;Secret address in iCal format&quot;
         </p>
       )}
@@ -233,19 +233,19 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
   if (!isConnected) {
     return (
       <div className="card">
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 12 }}>Calendar</div>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 12 }}>Calendar</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', padding: '8px 0' }}>
-          <div style={{ marginBottom: 4, color: '#6E6E73' }}><CalendarDays size={22} /></div>
-          <div style={{ fontSize: 12, color: '#6E6E73', textAlign: 'center', lineHeight: 1.5 }}>Connect your calendars so Project Hanh can read your schedule</div>
+          <div style={{ marginBottom: 4, color: '#6E6E76' }}><CalendarDays size={22} /></div>
+          <div style={{ fontSize: 12, color: '#6E6E76', textAlign: 'center', lineHeight: 1.5 }}>Connect your calendars so Project Hanh can read your schedule</div>
           <button onClick={() => setShowIcsForm(true)} className="btn-motion" style={{ padding: '8px 20px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.3)', color: '#B8A4FF', width: '100%' }}>
             <CalendarDays size={13} style={{ marginRight: 5 }} /> Connect via ICS URL (recommended)
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', margin: '2px 0' }}>
             <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
-            <span style={{ fontSize: 10, color: '#6E6E73' }}>or</span>
+            <span style={{ fontSize: 10, color: '#6E6E76' }}>or</span>
             <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
           </div>
-          <a href={`/api/calendar/auth?userId=${userId}`} style={{ display: 'block', padding: '7px 20px', borderRadius: 8, fontSize: 12, fontWeight: 600, textAlign: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#6E6E73', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
+          <a href={`/api/calendar/auth?userId=${userId}`} style={{ display: 'block', padding: '7px 20px', borderRadius: 8, fontSize: 12, fontWeight: 600, textAlign: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#6E6E76', textDecoration: 'none', width: '100%', boxSizing: 'border-box' }}>
             Connect via Google OAuth
           </a>
         </div>
@@ -260,10 +260,10 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
     return (
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73' }}>Choose Calendars</div>
-          <button onClick={() => setShowPicker(false)} style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 18 }}>×</button>
+          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76' }}>Choose Calendars</div>
+          <button onClick={() => setShowPicker(false)} style={{ background: 'none', border: 'none', color: '#6E6E76', cursor: 'pointer', fontSize: 18 }}>×</button>
         </div>
-        {pickerLoading ? <div style={{ fontSize: 12, color: '#6E6E73' }}>Loading…</div> : (
+        {pickerLoading ? <div style={{ fontSize: 12, color: '#6E6E76' }}>Loading…</div> : (
           <>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
               {availableCalendars.map(cal => {
@@ -273,11 +273,11 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
                     <div onClick={() => setSelections(prev => ({ ...prev, [cal.id]: { ...prev[cal.id], checked: !sel.checked } }))} style={{ width: 16, height: 16, borderRadius: 4, flexShrink: 0, cursor: 'pointer', background: sel.checked ? cal.color : 'transparent', border: `2px solid ${cal.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {sel.checked && <span style={{ color: '#fff', fontSize: 9, fontWeight: 800 }}>✓</span>}
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>{cal.name} {cal.primary && <span style={{ color: '#6E6E73', fontSize: 10 }}>(primary)</span>}</div></div>
+                    <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontSize: 12, color: '#EEEEF2', fontWeight: 500 }}>{cal.name} {cal.primary && <span style={{ color: '#6E6E76', fontSize: 10 }}>(primary)</span>}</div></div>
                     {sel.checked && (
                       <div style={{ display: 'flex', gap: 4 }}>
                         {(['personal', 'work'] as const).map(t => (
-                          <button key={t} onClick={() => setSelections(prev => ({ ...prev, [cal.id]: { ...prev[cal.id], type: t } }))} style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: 'none', background: sel.type === t ? (t === 'work' ? 'rgba(128,189,255,0.25)' : 'rgba(127,213,170,0.2)') : 'rgba(255,255,255,0.05)', color: sel.type === t ? (t === 'work' ? '#80BDFF' : '#7FD5AA') : '#6E6E73' }}>{t}</button>
+                          <button key={t} onClick={() => setSelections(prev => ({ ...prev, [cal.id]: { ...prev[cal.id], type: t } }))} style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: 'none', background: sel.type === t ? (t === 'work' ? 'rgba(128,189,255,0.25)' : 'rgba(127,213,170,0.2)') : 'rgba(255,255,255,0.05)', color: sel.type === t ? (t === 'work' ? '#80BDFF' : '#7FD5AA') : '#6E6E76' }}>{t}</button>
                         ))}
                       </div>
                     )}
@@ -285,7 +285,7 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
                 )
               })}
             </div>
-            <button onClick={saveCalendars} disabled={oauthSaving || checkedCount === 0} style={{ width: '100%', padding: '9px 0', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: checkedCount === 0 ? 'not-allowed' : 'pointer', background: checkedCount === 0 ? 'rgba(255,255,255,0.04)' : 'rgba(184,164,255,0.15)', border: `1px solid ${checkedCount === 0 ? 'rgba(255,255,255,0.08)' : 'rgba(184,164,255,0.3)'}`, color: checkedCount === 0 ? '#6E6E73' : '#B8A4FF', opacity: oauthSaving ? 0.6 : 1 }}>
+            <button onClick={saveCalendars} disabled={oauthSaving || checkedCount === 0} style={{ width: '100%', padding: '9px 0', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: checkedCount === 0 ? 'not-allowed' : 'pointer', background: checkedCount === 0 ? 'rgba(255,255,255,0.04)' : 'rgba(184,164,255,0.15)', border: `1px solid ${checkedCount === 0 ? 'rgba(255,255,255,0.08)' : 'rgba(184,164,255,0.3)'}`, color: checkedCount === 0 ? '#6E6E76' : '#B8A4FF', opacity: oauthSaving ? 0.6 : 1 }}>
               {oauthSaving ? 'Saving…' : `Connect ${checkedCount} calendar${checkedCount !== 1 ? 's' : ''}`}
             </button>
           </>
@@ -298,9 +298,9 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
   if (needsSetup) {
     return (
       <div className="card">
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 12 }}>Calendar</div>
+        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 12 }}>Calendar</div>
         <div style={{ textAlign: 'center', padding: '12px 0' }}>
-          <div style={{ fontSize: 13, color: '#A1A1A6', marginBottom: 12 }}>Google Calendar connected — choose which calendars to use</div>
+          <div style={{ fontSize: 13, color: '#9E9EA6', marginBottom: 12 }}>Google Calendar connected — choose which calendars to use</div>
           <button onClick={openPicker} style={{ padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.3)', color: '#B8A4FF' }}>Choose Calendars</button>
         </div>
       </div>
@@ -356,37 +356,37 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
     <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73' }}>Calendar</div>
-          <div style={{ fontSize: '11px', color: '#A1A1A6', fontWeight: 500 }}>
+          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76' }}>Calendar</div>
+          <div style={{ fontSize: '11px', color: '#9E9EA6', fontWeight: 500 }}>
             {(date ? new Date(date) : new Date()).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {icsConnected && (
-            <button onClick={() => setShowManageSources(s => !s)} style={{ fontSize: 10, color: '#6E6E73', background: 'none', border: 'none', cursor: 'pointer' }}>
+            <button onClick={() => setShowManageSources(s => !s)} style={{ fontSize: 10, color: '#6E6E76', background: 'none', border: 'none', cursor: 'pointer' }}>
               Sources ▾
             </button>
           )}
-          {connected && <button onClick={openPicker} style={{ fontSize: 10, color: '#6E6E73', background: 'none', border: 'none', cursor: 'pointer' }}>Calendars ▾</button>}
-          {connected && <button onClick={handleDisconnect} style={{ fontSize: 10, color: '#6E6E73', background: 'none', border: 'none', cursor: 'pointer' }}>Disconnect</button>}
+          {connected && <button onClick={openPicker} style={{ fontSize: 10, color: '#6E6E76', background: 'none', border: 'none', cursor: 'pointer' }}>Calendars ▾</button>}
+          {connected && <button onClick={handleDisconnect} style={{ fontSize: 10, color: '#6E6E76', background: 'none', border: 'none', cursor: 'pointer' }}>Disconnect</button>}
         </div>
       </div>
 
       {/* ICS source management panel */}
       {showManageSources && icsConnected && (
         <div className="expand-enter" style={{ marginBottom: 12, padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.07)' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#6E6E73', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Connected sources</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#6E6E76', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Connected sources</div>
           {icsSources.map(src => (
             <div key={src.url} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                 {src.type === 'work' ? <Briefcase size={12} color="#80BDFF" /> : <Leaf size={12} color="#7FD5AA" />}
                 <div>
-                  <div style={{ fontSize: 12, color: '#F5F5F7', fontWeight: 500 }}>{src.name}</div>
-                  <div style={{ fontSize: 10, color: '#6E6E73' }}>{src.type}</div>
+                  <div style={{ fontSize: 12, color: '#EEEEF2', fontWeight: 500 }}>{src.name}</div>
+                  <div style={{ fontSize: 10, color: '#6E6E76' }}>{src.type}</div>
                 </div>
               </div>
-              <button onClick={() => removeIcsSource(src.url)} disabled={removingUrl === src.url} style={{ background: 'none', border: 'none', color: '#6E6E73', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center' }}>
-                {removingUrl === src.url ? <Spinner size={11} color="#6E6E73" strokeWidth={2} /> : '✕'}
+              <button onClick={() => removeIcsSource(src.url)} disabled={removingUrl === src.url} style={{ background: 'none', border: 'none', color: '#6E6E76', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center' }}>
+                {removingUrl === src.url ? <Spinner size={11} color="#6E6E76" strokeWidth={2} /> : '✕'}
               </button>
             </div>
           ))}
@@ -419,9 +419,9 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
         </div>
       )}
 
-      {loading && <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Spinner size={12} color="#6E6E73" strokeWidth={2} /><span style={{ fontSize: 12, color: '#6E6E73' }}>Loading…</span></div>}
+      {loading && <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Spinner size={12} color="#6E6E76" strokeWidth={2} /><span style={{ fontSize: 12, color: '#6E6E76' }}>Loading…</span></div>}
       {!loading && upcoming.length === 0 && (
-        <div style={{ fontSize: 12, color: '#6E6E73', fontStyle: 'italic' }}>No upcoming events</div>
+        <div style={{ fontSize: 12, color: '#6E6E76', fontStyle: 'italic' }}>No upcoming events</div>
       )}
 
       {/* Day-grouped events */}
@@ -430,7 +430,7 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
           {/* Day heading */}
           <div style={{
             fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase',
-            color: group.label === 'Today' ? '#7FD5AA' : '#6E6E73',
+            color: group.label === 'Today' ? '#7FD5AA' : '#6E6E76',
             marginBottom: 5, marginTop: gi > 0 ? 6 : 0,
             paddingBottom: 4, borderBottom: '1px solid rgba(255,255,255,0.05)',
           }}>
@@ -446,8 +446,8 @@ export default function CalendarWidget({ userId, date, calendarConnected: initia
               <div key={e.id} style={{ display: 'flex', gap: 8, padding: '4px 0', borderBottom: idx < group.events.length - 1 ? '1px solid rgba(255,255,255,0.03)' : 'none', alignItems: 'flex-start' }}>
                 <div style={{ width: 2, minHeight: 24, borderRadius: 2, flexShrink: 0, marginTop: 3, background: isPast ? 'rgba(255,255,255,0.15)' : color }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, color: isPast ? '#6E6E73' : '#F5F5F7', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.title}</div>
-                  <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 1, display: 'flex', gap: 5, alignItems: 'center' }}>
+                  <div style={{ fontSize: 12, color: isPast ? '#6E6E76' : '#EEEEF2', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.title}</div>
+                  <div style={{ fontSize: 10, color: '#6E6E76', marginTop: 1, display: 'flex', gap: 5, alignItems: 'center' }}>
                     <span style={{ color: isPast ? '#4A4845' : color === '#80BDFF' ? '#4A7FA5' : '#4A8A6E', fontWeight: 600 }}>{startTime}</span>
                     {isPast && <span style={{ fontSize: 9, color: '#4A4845' }}>in progress</span>}
                     {e.calendarName && <span style={{ color: '#3A3835' }}>· {e.calendarName}</span>}
