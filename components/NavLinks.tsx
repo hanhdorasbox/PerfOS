@@ -13,9 +13,9 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
-interface NavLink { href: string; label: string; icon?: LucideIcon; separator?: boolean }
+export interface NavLink { href: string; label: string; icon?: LucideIcon; separator?: boolean }
 
-const primaryLinks: NavLink[] = [
+export const primaryLinks: NavLink[] = [
   { href: '/',          label: 'Dashboard',  icon: LayoutDashboard },
   { href: '/weekly',    label: 'This Week',  icon: ListChecks },
   { href: '/quarterly', label: 'Quarterly',  icon: CalendarDays },
@@ -23,7 +23,7 @@ const primaryLinks: NavLink[] = [
   { href: '/ai',        label: 'AI Advisor', icon: Sparkles },
 ]
 
-const menuGroups: Array<{ label: string; icon: LucideIcon; links: NavLink[] }> = [
+export const menuGroups: Array<{ label: string; icon: LucideIcon; links: NavLink[] }> = [
   {
     label: 'Body', icon: Activity,
     links: [

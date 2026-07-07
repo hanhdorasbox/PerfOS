@@ -3,6 +3,8 @@ import "./globals.css";
 import NavLinks from "@/components/NavLinks";
 import Link from "next/link";
 import QuickCapture from "@/components/QuickCapture";
+import CommandPalette from "@/components/CommandPalette";
+import MobileTabBar from "@/components/MobileTabBar";
 import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = {
@@ -43,11 +45,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             Project Hanh
           </Link>
           <NavLinks />
+          <span className="hide-mobile" style={{
+            marginLeft: 'auto', fontSize: 10, color: '#52525A',
+            border: '1px solid rgba(255,255,255,0.08)', borderRadius: 5,
+            padding: '2px 7px', flexShrink: 0, userSelect: 'none',
+          }}>
+            ⌘K
+          </span>
         </nav>
+        <CommandPalette />
         <main style={{ maxWidth: 1200, margin: '0 auto', padding: '36px 28px 100px', boxSizing: 'border-box', width: '100%', overflowX: 'hidden' }}>
           {children}
         </main>
         {user && <QuickCapture userId={user.id} />}
+        <MobileTabBar />
       </body>
     </html>
   );

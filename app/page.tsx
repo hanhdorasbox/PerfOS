@@ -6,6 +6,7 @@ import AlertBanner from '@/components/dashboard/AlertBanner'
 import DailyCommandCenter from '@/components/dashboard/DailyCommandCenter'
 import CollapsibleSection from '@/components/dashboard/CollapsibleSection'
 import EmptyWeekBanner from '@/components/dashboard/EmptyWeekBanner'
+import WeeklyReviewCard from '@/components/dashboard/WeeklyReviewCard'
 import { ensureQuarterStatuses, getWeekBounds } from '@/lib/quarters'
 import { rolloverIncompleteTasks } from '@/lib/execution-planner'
 
@@ -181,6 +182,43 @@ export default async function Dashboard() {
     } catch { return null }
   })()
 
+  // Weekly review (shown Sundays): this week's numbers at a glance
+  const isSunday = new Date().getDay() === 0
+  let weeklyReview: {
+    tasksDone: number; tasksTotal: number; progressLogs: number;
+    workouts: number; proteinAvg: number | null;
+  } | null = null
+  if (isSunday) {
+    const [weekProgressLogs, weekWorkouts, weekProtein] = await Promise.all([
+      prisma.progressUpdate.count({
+        where: { goal: { quarterId: quarter.id }, loggedAt: { gte: _mon, lte: _sun } },
+      }),
+      prisma.workoutLog.count({
+        where: { userId: user.id, date: { gte: _mon, lte: _sun } },
+      }),
+      prisma.proteinLog.findMany({
+        where: { userId: user.id, date: { gte: _mon, lte: _sun } },
+        select: { date: true, amount: true },
+      }),
+    ])
+    // Average protein across days that have at least one entry
+    const byDay = new Map<string, number>()
+    for (const p of weekProtein) {
+      const key = p.date.toISOString().split('T')[0]
+      byDay.set(key, (byDay.get(key) ?? 0) + p.amount)
+    }
+    const proteinAvg = byDay.size > 0
+      ? Math.round([...byDay.values()].reduce((s, v) => s + v, 0) / byDay.size)
+      : null
+    weeklyReview = {
+      tasksDone: weekTasks.filter(t => t.completed).length,
+      tasksTotal: weekTasks.length,
+      progressLogs: weekProgressLogs,
+      workouts: weekWorkouts,
+      proteinAvg,
+    }
+  }
+
   // Serialize briefing for client component
   const serializedBriefing = briefing
     ? {
@@ -216,6 +254,20 @@ export default async function Dashboard() {
       {/* ── Empty week banner — auto-generate tasks from goals ── */}
       {weekTasks.length === 0 && (
         <EmptyWeekBanner userId={user.id} />
+      )}
+
+      {/* ── Weekly review — Sundays only ── */}
+      {weeklyReview && (
+        <div className="animate-entrance-delay-1">
+          <WeeklyReviewCard
+            tasksDone={weeklyReview.tasksDone}
+            tasksTotal={weeklyReview.tasksTotal}
+            progressLogs={weeklyReview.progressLogs}
+            workouts={weeklyReview.workouts}
+            proteinAvg={weeklyReview.proteinAvg}
+            proteinTarget={proteinTarget}
+          />
+        </div>
       )}
 
       {/* ── SECTION 2: Strategic Overview ── */}

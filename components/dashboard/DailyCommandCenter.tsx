@@ -4,98 +4,24 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import CalendarWidget from '@/components/calendar/CalendarWidget'
 import Spinner from '@/components/ui/Spinner'
-import { Globe, Cpu, TrendingUp, Briefcase, Users, Activity, Timer, RotateCw, ChevronDown, Target } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface DailyBriefing {
-  id: string
-  summary: string
-  instruction: string
-  directive: string
-  priorities: string | null
-  worldBriefing: string | null
-  relevantUpdates: string | null
-  externalContext: string | null
-  dailyFacts: string | null
-  generatedAt: string | Date
-}
-
-interface DailyFact {
-  category: 'psychology' | 'health' | 'fitness'
-  fact: string
-  whyItMatters: string
-}
-
-interface GoalWithMetrics {
-  id: string
-  title: string
-  category: string
-  metrics: { status: string; gap: number; statusLabel: string }
-}
-
-interface WeeklyTask {
-  id: string
-  title: string
-  completed: boolean
-  effort: number
-  priority: number
-  estimatedMinutes?: number | null
-  goal?: { id: string; title: string; category: string } | null
-  sourceModule?: string | null
-  sourceType?:   string | null
-  sourceId?:     string | null
-}
-
-const SOURCE_LINK: Record<string, { href: string; label: string }> = {
-  learning:  { href: '/learning',           label: 'Learning →' },
-  fitness:   { href: '/fitness/strategy',   label: 'Fitness →' },
-  career:    { href: '/career/trajectory',  label: 'Career →' },
-  report:    { href: '/reports',            label: 'Reports →' },
-  goal:      { href: '/quarterly',          label: 'Goals →' },
-  manual:    { href: '/weekly',             label: 'Weekly →' },
-  system:    { href: '/weekly',             label: 'Weekly →' },
-}
-
-interface FitnessStrategy {
-  mainObjective: string
-  weeklySchedule: string | null
-  nutritionDir: string | null
-}
-
-interface PlannedMeal {
-  id: string
-  dayOfWeek: number
-  mealType: string
-  title: string
-  description: string | null
-  calories: number | null
-  protein: number | null
-}
-
-interface BriefingPriority {
-  text: string
-  priority: 'must' | 'should' | 'optional'
-  goalTitle: string | null
-  whyToday: string
-}
-
-interface WorldItem {
-  headline: string
-  why: string
-  category: string
-}
-
-interface RelevantItem {
-  topic: string
-  update: string
-}
-
-interface MicroStep {
-  title: string
-  estimatedMinutes: number
-}
+import { Timer, RotateCw } from 'lucide-react'
+import BioClock from './dcc/BioClock'
+import IntelCard from './dcc/IntelCard'
+import PriorityItem from './dcc/PriorityItem'
+import PrioritySkeleton from './dcc/PrioritySkeleton'
+import FitnessSnapshot from './dcc/FitnessSnapshot'
+import MealPreview from './dcc/MealPreview'
+import TodaysMeetings from './dcc/TodaysMeetings'
+import FocusModeOverlay from './dcc/FocusModeOverlay'
+import BulletDirective from './dcc/BulletDirective'
+import Skel from './dcc/Skel'
+import { getGreeting, parseSafeJson, briefingAgeMs, formatAge, REFRESH_INTERVAL_MS } from './dcc/helpers'
+import WorkScheduleEditor from './dcc/WorkScheduleEditor'
+import { DEFAULT_WORK_SCHEDULE, getWorkSchedule, minToTimeStr, type WorkSchedule } from '@/lib/work-schedule'
+import type {
+  DailyBriefing, DailyFact, GoalWithMetrics, WeeklyTask, FitnessStrategy,
+  PlannedMeal, BriefingPriority, WorldItem, MicroStep, IntelItem,
+} from './dcc/types'
 
 interface Props {
   briefing: DailyBriefing | null
@@ -115,412 +41,6 @@ interface Props {
   proteinTarget?: number | null
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const PRIORITY_COLOR: Record<string, string> = {
-  must:     '#E8907A',
-  should:   '#DDB96A',
-  optional: '#6E6E76',
-}
-const PRIORITY_LABEL: Record<string, string> = {
-  must: 'MUST',
-  should: 'SHOULD',
-  optional: 'OPT',
-}
-const EFFORT_LABEL: Record<number, string> = { 1: 'Easy', 2: 'Medium', 3: 'Deep work' }
-const EFFORT_MINUTES: Record<number, string> = { 1: '~15m', 2: '~25m', 3: '~45m' }
-const MEAL_ORDER: Record<string, number> = { breakfast: 0, lunch: 1, dinner: 2, snack: 3 }
-
-const INTEL_COLORS: Record<string, string> = {
-  geopolitics:  '#C8A06A',
-  business:     '#B89A3E',
-  tech:         '#8E80C4',
-  society:      '#5E94BB',
-  science:      '#5EAA88',
-  markets:      '#B06E7E',
-  psychology:   '#B06E7E',
-  health:       '#5EAA88',
-  fitness:      '#5EAA88',
-  nutrition:    '#B89A3E',
-  recovery:     '#8E80C4',
-  productivity: '#C8A06A',
-  habits:       '#B06E7E',
-}
-
-function sortMeals(meals: PlannedMeal[]) {
-  return [...meals].sort((a, b) => {
-    const ao = MEAL_ORDER[a.mealType.toLowerCase()] ?? 9
-    const bo = MEAL_ORDER[b.mealType.toLowerCase()] ?? 9
-    return ao - bo
-  })
-}
-
-function parseSafeJson<T>(str: string | null | undefined): T | null {
-  if (!str) return null
-  try { return JSON.parse(str) as T } catch { return null }
-}
-
-function getGreeting(): string {
-  const h = new Date().getHours()
-  if (h >= 5 && h < 12)  return 'Good morning'
-  if (h >= 12 && h < 18) return 'Good afternoon'
-  if (h >= 18 && h < 23) return 'Good evening'
-  return 'Late night'
-}
-
-function effortTimeLabel(effort: number): string {
-  return EFFORT_MINUTES[effort] ?? ''
-}
-
-// ─── Briefing age helpers ─────────────────────────────────────────────────────
-
-const REFRESH_INTERVAL_MS = 5 * 60 * 60 * 1000
-
-function briefingAgeMs(generatedAt: string | Date | undefined): number {
-  if (!generatedAt) return Infinity
-  return Date.now() - new Date(generatedAt).getTime()
-}
-
-function formatAge(ms: number): string {
-  if (ms < 60_000) return 'just now'
-  if (ms < 3_600_000) return `${Math.floor(ms / 60_000)}m ago`
-  if (ms < 7_200_000) return `1h ago`
-  return `${Math.floor(ms / 3_600_000)}h ago`
-}
-
-// ─── Active Day Ring ──────────────────────────────────────────────────────────
-
-function ActiveDayRing() {
-  const [now, setNow] = useState(() => new Date())
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 60_000)
-    return () => clearInterval(id)
-  }, [])
-
-  const DAY_START = 7 * 60
-  const DAY_END   = 22 * 60
-  const TOTAL     = DAY_END - DAY_START
-
-  const current = now.getHours() * 60 + now.getMinutes()
-
-  let phase: 'before' | 'active' | 'after' = 'active'
-  let remainMin = TOTAL
-  let remainPct = 1
-
-  if (current < DAY_START) {
-    phase = 'before'
-  } else if (current >= DAY_END) {
-    phase = 'after'
-    remainMin = 0
-    remainPct = 0
-  } else {
-    phase = 'active'
-    remainMin = DAY_END - current
-    remainPct = remainMin / TOTAL
-  }
-
-  const remH = Math.floor(remainMin / 60)
-  const remM = remainMin % 60
-
-  const R = 40
-  const SW = 5
-  const SZ = (R + SW) * 2 + 4
-  const CIRC = 2 * Math.PI * R
-  const offset = CIRC * (1 - remainPct)
-  const ringColor = remainPct > 0.4 ? '#7FD5AA' : remainPct > 0.2 ? '#DDB96A' : '#E8907A'
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-      <div style={{ position: 'relative', width: SZ, height: SZ }}>
-        <svg width={SZ} height={SZ} style={{ display: 'block', transform: 'rotate(-90deg)' }}>
-          <circle cx={SZ / 2} cy={SZ / 2} r={R} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={SW} />
-          <circle
-            cx={SZ / 2} cy={SZ / 2} r={R}
-            fill="none" stroke={ringColor} strokeWidth={SW}
-            strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={offset}
-            style={{ transition: 'stroke-dashoffset 2s ease, stroke 1s ease' }}
-          />
-        </svg>
-        <div style={{
-          position: 'absolute', top: '50%', left: '50%',
-          transform: 'translate(-50%,-50%)', textAlign: 'center',
-          lineHeight: 1.2, pointerEvents: 'none',
-        }}>
-          {phase === 'active' && (
-            <>
-              <div style={{ fontSize: 20, fontWeight: 800, color: ringColor, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em' }}>
-                {Math.round(remainPct * 100)}%
-              </div>
-              <div style={{ fontSize: 9, color: '#6E6E76', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 1 }}>left</div>
-            </>
-          )}
-          {phase === 'before' && (
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#B8A4FF', lineHeight: 1.5 }}>Starts<br />07:00</div>
-          )}
-          {phase === 'after' && (
-            <div style={{ fontSize: 10, color: '#6E6E76', lineHeight: 1.5 }}>Day<br />done</div>
-          )}
-        </div>
-      </div>
-      <div style={{ textAlign: 'center' }}>
-        {phase === 'active' ? (
-          <>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#EEEEF2', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}>
-              {remH}h&nbsp;{String(remM).padStart(2, '0')}m
-            </div>
-            <div style={{ fontSize: 9, color: '#6E6E76', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>remaining</div>
-          </>
-        ) : phase === 'before' ? (
-          <div style={{ fontSize: 10, color: '#6E6E76' }}>07:00 – 22:00</div>
-        ) : (
-          <div style={{ fontSize: 10, color: '#6E6E76' }}>Reset 07:00</div>
-        )}
-      </div>
-    </div>
-  )
-}
-
-// ─── Bio Clock ────────────────────────────────────────────────────────────────
-
-const CLOCK_H = 186
-const BIO_START = 7
-const BIO_END = 22
-const BIO_TOTAL = BIO_END - BIO_START
-
-function toPct(h: number, m = 0) {
-  return Math.min(1, Math.max(0, (h + m / 60 - BIO_START) / BIO_TOTAL))
-}
-
-const BIO_ZONES = [
-  { start: 7,  end: 9,  accent: '#C8A06A', label: 'Ramp Up',    bestFor: 'Light tasks, admin, morning routine' },
-  { start: 9,  end: 12, accent: '#5EAA88', label: 'Peak Focus', bestFor: 'Deep work, complex decisions, writing' },
-  { start: 12, end: 14, accent: '#6E6E76', label: 'Low Tide',   bestFor: 'Lunch, light reading, short breaks' },
-  { start: 14, end: 17, accent: '#5E94BB', label: '2nd Wind',   bestFor: 'Collaboration, calls, creative work' },
-  { start: 17, end: 20, accent: '#C8906A', label: 'Wind Down',  bestFor: 'Review, planning, low-intensity work' },
-  { start: 20, end: 22, accent: '#8E80C4', label: 'Recovery',   bestFor: 'Rest, reading, reflection' },
-]
-
-function BioClock() {
-  const [now, setNow] = useState(() => new Date())
-  const [drawn, setDrawn] = useState(false)
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 60_000)
-    // Trigger the arc draw-in on mount
-    const raf = requestAnimationFrame(() => setDrawn(true))
-    return () => { clearInterval(id); cancelAnimationFrame(raf) }
-  }, [])
-
-  const h = now.getHours()
-  const m = now.getMinutes()
-  const nowPct = toPct(h, m)
-  const isActive = h >= BIO_START && h < BIO_END
-  const currentZone = BIO_ZONES.find(z => h >= z.start && h < z.end)
-  const nextZone = BIO_ZONES.find(z => z.start > h) ?? null
-  const minsToNext = nextZone ? (nextZone.start * 60) - (h * 60 + m) : null
-  const accent = currentZone?.accent ?? '#6E6E76'
-  const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
-
-  // Circular gauge constants
-  const SZ = 160, CX = 80, CY = 92, R = 56, SW = 8
-  const ARC_START = 225  // degrees from top, clockwise
-  const ARC_SWEEP = 270  // total sweep
-
-  function gaugeXY(deg: number, r: number) {
-    const rad = (deg * Math.PI) / 180
-    return { x: CX + r * Math.sin(rad), y: CY - r * Math.cos(rad) }
-  }
-
-  function gaugePath(fromDeg: number, toDeg: number, r: number): string {
-    const sweep = ((toDeg - fromDeg) % 360 + 360) % 360
-    if (sweep < 0.5) return ''
-    const s = gaugeXY(fromDeg, r)
-    const e = gaugeXY(toDeg, r)
-    return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${r} ${r} 0 ${sweep > 180 ? 1 : 0} 1 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`
-  }
-
-  const bgPath = gaugePath(ARC_START, ARC_START + ARC_SWEEP, R)
-  const progressEndDeg = ARC_START + nowPct * ARC_SWEEP
-  const progressPath = isActive && nowPct > 0.01
-    ? gaugePath(ARC_START, progressEndDeg, R)
-    : ''
-  const dotPos = isActive ? gaugeXY(progressEndDeg, R) : null
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      {/* Arc + time */}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <div style={{ position: 'relative', width: SZ, height: SZ, marginTop: 8 }}>
-          <svg width={SZ} height={SZ} style={{ display: 'block', overflow: 'visible' }}>
-            {/* Background arc */}
-            <path d={bgPath} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={SW} strokeLinecap="round" />
-            {/* Zone-tinted arc segments */}
-            {BIO_ZONES.map(z => {
-              const zFrom = ARC_START + toPct(z.start) * ARC_SWEEP
-              const zTo = ARC_START + toPct(z.end) * ARC_SWEEP
-              return (
-                <path key={z.label} d={gaugePath(zFrom, zTo, R)} fill="none"
-                  stroke={z.accent + '28'} strokeWidth={SW} />
-              )
-            })}
-            {/* Progress arc — draws in on mount via pathLength normalization */}
-            {progressPath && (
-              <path d={progressPath} fill="none" stroke={accent} strokeWidth={SW} strokeLinecap="round"
-                pathLength={1} strokeDasharray={1} strokeDashoffset={drawn ? 0 : 1}
-                style={{
-                  filter: `drop-shadow(0 0 5px ${accent}70)`,
-                  transition: 'stroke 1s ease, stroke-dashoffset 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s',
-                }} />
-            )}
-            {/* Zone separator ticks */}
-            {BIO_ZONES.slice(1).map(z => {
-              const tickDeg = ARC_START + toPct(z.start) * ARC_SWEEP
-              const inner = gaugeXY(tickDeg, R - SW / 2 - 1)
-              const outer = gaugeXY(tickDeg, R + SW / 2 + 1)
-              return (
-                <line key={z.label} x1={inner.x.toFixed(2)} y1={inner.y.toFixed(2)}
-                  x2={outer.x.toFixed(2)} y2={outer.y.toFixed(2)}
-                  stroke="rgba(10,10,12,0.9)" strokeWidth={1.5} />
-              )
-            })}
-            {/* Current position dot — fades in after the arc finishes drawing */}
-            {dotPos && (
-              <circle cx={dotPos.x.toFixed(2)} cy={dotPos.y.toFixed(2)} r={5} fill={accent}
-                style={{
-                  filter: `drop-shadow(0 0 7px ${accent})`,
-                  opacity: drawn ? 1 : 0,
-                  transition: 'opacity 0.5s ease 1.3s',
-                }} />
-            )}
-          </svg>
-          {/* Center text */}
-          <div style={{
-            position: 'absolute', top: '57%', left: '50%',
-            transform: 'translate(-50%, -50%)',
-            textAlign: 'center', pointerEvents: 'none',
-          }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: '#EEEEF2', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
-              {timeStr}
-            </div>
-            <div style={{ fontSize: 9, color: accent, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 5 }}>
-              {currentZone?.label ?? (h < BIO_START ? 'Before day' : 'After day')}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Best for */}
-      {currentZone && (
-        <div style={{ padding: '9px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#3E3E44', marginBottom: 4 }}>
-            Best for
-          </div>
-          <div style={{ fontSize: 11, color: '#8E8E93', lineHeight: 1.5 }}>{currentZone.bestFor}</div>
-        </div>
-      )}
-
-      {/* Next state */}
-      {nextZone && minsToNext != null && minsToNext > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2px' }}>
-          <span style={{ fontSize: 9, color: '#3E3E44', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next</span>
-          <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: nextZone.accent }}>{nextZone.label}</span>
-            <span style={{ fontSize: 10, color: '#52525A', marginLeft: 6 }}>
-              in {minsToNext >= 60 ? `${Math.floor(minsToNext / 60)}h ${minsToNext % 60}m` : `${minsToNext}m`}
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Phase timeline */}
-      <div style={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
-        {BIO_ZONES.map(z => {
-          const isCurrent = z === currentZone
-          return (
-            <div key={z.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, opacity: isCurrent ? 1 : 0.3 }}>
-              <div style={{ width: isCurrent ? 18 : 12, height: 2.5, borderRadius: 2, background: isCurrent ? z.accent : 'rgba(255,255,255,0.3)', transition: 'all 0.3s' }} />
-              <span style={{ fontSize: 5.5, color: isCurrent ? z.accent : '#52525A', letterSpacing: '0.04em', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>
-                {z.label}
-              </span>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-// ─── Intel Card ───────────────────────────────────────────────────────────────
-
-interface IntelItem {
-  category: string
-  headline: string
-  why: string
-}
-
-const INTEL_ICON_MAP: Record<string, LucideIcon> = {
-  geopolitics:  Globe,
-  tech:         Cpu,
-  markets:      TrendingUp,
-  business:     Briefcase,
-  society:      Users,
-  science:      Activity,
-  fitness:      Activity,
-  health:       Activity,
-  psychology:   Activity,
-  nutrition:    Activity,
-  productivity: Target,
-  habits:       Activity,
-  recovery:     Activity,
-}
-
-function IntelCard({ item }: { item: IntelItem }) {
-  const [open, setOpen] = useState(false)
-  const catColor = INTEL_COLORS[item.category?.toLowerCase()] ?? '#6E6E76'
-  const IconComp = INTEL_ICON_MAP[item.category?.toLowerCase()] ?? Globe
-
-  return (
-    <div
-      onClick={() => setOpen(v => !v)}
-      style={{
-        padding: '12px 13px', borderRadius: 16, flex: 1, minWidth: 0,
-        background: open ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.025)',
-        border: '1px solid rgba(255,255,255,0.07)',
-        borderLeft: `3px solid ${catColor}AA`,
-        cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 7,
-        transition: 'background 0.15s, transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1)',
-        boxShadow: open ? '0 4px 24px rgba(0,0,0,0.25)' : 'none',
-      }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)' }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'none' }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <IconComp size={10} color={catColor} strokeWidth={2} />
-          <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: catColor }}>
-            {item.category}
-          </span>
-        </div>
-        <ChevronDown size={10} color="#444" strokeWidth={2}
-          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }} />
-      </div>
-      <div style={{ fontSize: 12, color: '#D4D4D8', lineHeight: 1.5, fontWeight: 450 }}>
-        {item.headline}
-      </div>
-      {open && item.why && (
-        <div style={{
-          fontSize: 11, color: '#7A7A84', lineHeight: 1.6,
-          borderTop: `1px solid ${catColor}22`,
-          paddingTop: 8, marginTop: 1,
-        }}>
-          {item.why}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ─── Daily facts ──────────────────────────────────────────────────────────────
 
 const DEFAULT_FACTS: DailyFact[] = [
   {
@@ -540,702 +60,6 @@ const DEFAULT_FACTS: DailyFact[] = [
   },
 ]
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function RelevantUpdateItem({ item }: { item: RelevantItem }) {
-  return (
-    <div style={{ padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-      <div style={{ fontSize: 9, fontWeight: 800, color: '#B8A4FF', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
-        {item.topic}
-      </div>
-      <div style={{ fontSize: 12, color: '#9E9EA6', lineHeight: 1.45 }}>{item.update}</div>
-    </div>
-  )
-}
-
-function Skel({ w, h = 12 }: { w: string | number; h?: number }) {
-  return (
-    <div style={{
-      width: w, height: h, borderRadius: 5,
-      background: 'rgba(255,255,255,0.06)',
-      animation: 'pulse 1.6s ease-in-out infinite',
-      marginBottom: 6,
-    }} />
-  )
-}
-
-// ─── Priority Item ────────────────────────────────────────────────────────────
-
-function PriorityItem({
-  task,
-  briefItem,
-  onToggle,
-  toggling,
-  celebTaskId,
-  onBreakSteps,
-  loadingSteps,
-  expandedSteps,
-  completedSteps,
-  onToggleStep,
-}: {
-  task: WeeklyTask
-  briefItem?: BriefingPriority
-  onToggle: (id: string) => void
-  toggling: string | null
-  celebTaskId: string | null
-  onBreakSteps: (id: string) => void
-  loadingSteps: string | null
-  expandedSteps: Record<string, MicroStep[]>
-  completedSteps: Record<string, Set<number>>
-  onToggleStep: (taskId: string, index: number) => void
-}) {
-  const [hovered, setHovered] = useState(false)
-  const priority = briefItem?.priority ?? (task.priority === 1 ? 'must' : task.priority === 3 ? 'optional' : 'should')
-  const color = PRIORITY_COLOR[priority]
-  const isToggling = toggling === task.id
-  const isCelebrating = celebTaskId === task.id
-  const timeLabel = task.estimatedMinutes ? `~${task.estimatedMinutes}m` : effortTimeLabel(task.effort)
-  const steps = expandedSteps[task.id]
-  const isLoadingThisStep = loadingSteps === task.id
-  const doneStepCount = completedSteps[task.id]?.size ?? 0
-  const totalStepCount = steps?.length ?? 0
-  const hasStepProgress = totalStepCount > 0 && doneStepCount > 0
-
-  return (
-    <div>
-      <style>{`
-        @keyframes celebFlash {
-          0% { opacity: 1; transform: scale(1.2); }
-          100% { opacity: 0; transform: scale(1); }
-        }
-        @keyframes fadeOut {
-          0% { opacity: 1; }
-          100% { opacity: 0; }
-        }
-      `}</style>
-      <div style={{ display: 'flex', gap: 6, padding: '8px 0', borderBottom: steps ? 'none' : '1px solid rgba(255,255,255,0.05)', alignItems: 'flex-start' }}>
-        <button
-          onClick={() => onToggle(task.id)}
-          disabled={isToggling}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          title="Mark complete"
-          style={{
-            width: 36, height: 36, minWidth: 36, borderRadius: 10, flexShrink: 0,
-            background: isCelebrating ? `${color}20` : hovered ? `${color}10` : 'transparent',
-            border: 'none', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: 0, transition: 'background 0.12s', marginTop: -6, marginLeft: -6,
-          }}
-        >
-          <div style={{
-            width: 18, height: 18, borderRadius: '50%',
-            border: `2px solid ${isCelebrating || hasStepProgress ? color : hovered ? color : `${color}66`}`,
-            background: hasStepProgress ? `${color}15` : isToggling ? `${color}20` : 'transparent',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'border-color 0.12s, background 0.12s', pointerEvents: 'none',
-          }}>
-            {isToggling && (
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, animation: 'pulse 0.8s ease-in-out infinite' }} />
-            )}
-            {isCelebrating && !isToggling && (
-              <span style={{ fontSize: 10, color, fontWeight: 900, animation: 'celebFlash 1.2s ease-out forwards' }}>✓</span>
-            )}
-            {hasStepProgress && !isToggling && !isCelebrating && (
-              <span style={{ fontSize: 7, color, fontWeight: 800, lineHeight: 1, letterSpacing: '-0.02em' }}>
-                {doneStepCount}/{totalStepCount}
-              </span>
-            )}
-          </div>
-        </button>
-
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{
-            fontSize: 13, color: '#EEEEF2', fontWeight: 600, lineHeight: 1.4,
-            position: 'relative',
-          }}>
-            {task.title}
-            {isCelebrating && (
-              <span style={{
-                marginLeft: 8, fontSize: 11, color: '#7FD5AA', fontWeight: 700,
-                animation: 'fadeOut 1.2s ease-out forwards',
-                position: 'absolute',
-              }}>
-                +1 ✓
-              </span>
-            )}
-          </div>
-          {task.goal && (
-            <div style={{ fontSize: 11, color: '#6E6E76', marginTop: 2 }}>→ {task.goal.title}</div>
-          )}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2, flexWrap: 'wrap' }}>
-            {task.effort > 0 && (
-              <span style={{ fontSize: 10, color: '#6E6E76' }}>{EFFORT_LABEL[task.effort]}</span>
-            )}
-            {timeLabel && (
-              <span style={{
-                fontSize: 9, color: '#52525A', background: 'rgba(255,255,255,0.05)',
-                padding: '1px 5px', borderRadius: 4, fontWeight: 600,
-              }}>
-                {timeLabel}
-              </span>
-            )}
-            {briefItem?.whyToday && (
-              <span style={{ fontSize: 11, color: '#6E6E76', fontStyle: 'italic', lineHeight: 1.4 }}>{briefItem.whyToday}</span>
-            )}
-            {task.sourceModule && SOURCE_LINK[task.sourceModule] && (
-              <Link
-                href={SOURCE_LINK[task.sourceModule].href}
-                style={{ fontSize: 10, color: '#6E6E7680', textDecoration: 'none', letterSpacing: '0.02em' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#B8A4FF')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#6E6E7680')}
-              >
-                {SOURCE_LINK[task.sourceModule].label}
-              </Link>
-            )}
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginTop: 2 }}>
-          <button
-            onClick={() => onBreakSteps(task.id)}
-            disabled={isLoadingThisStep}
-            title="Break into micro-steps"
-            style={{
-              fontSize: 9, color: '#52525A', background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4,
-              padding: '2px 6px', cursor: 'pointer',
-              opacity: isLoadingThisStep ? 0.5 : 1,
-              transition: 'color 0.12s',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#B8A4FF')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#52525A')}
-          >
-            {isLoadingThisStep ? '…' : '⋯ Steps'}
-          </button>
-          <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.12em', color }}>
-            {PRIORITY_LABEL[priority]}
-          </span>
-        </div>
-      </div>
-
-      {/* Micro-steps expansion */}
-      {steps && (
-        <div className="expand-enter" style={{
-          marginLeft: 30, marginBottom: 8, padding: '8px 10px',
-          background: 'rgba(184,164,255,0.05)', border: '1px solid rgba(184,164,255,0.15)',
-          borderRadius: 8, borderTop: 'none', borderTopLeftRadius: 0, borderTopRightRadius: 0,
-        }}>
-          {steps.map((step, i) => {
-            const done = completedSteps[task.id]?.has(i) ?? false
-            return (
-              <div
-                key={i}
-                onClick={() => onToggleStep(task.id, i)}
-                style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '5px 2px', cursor: 'pointer' }}
-              >
-                <div style={{
-                  width: 14, height: 14, borderRadius: '50%', flexShrink: 0,
-                  border: `1.5px solid ${done ? '#7FD5AA' : 'rgba(255,255,255,0.18)'}`,
-                  background: done ? 'rgba(127,213,170,0.18)' : 'transparent',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.15s ease',
-                }}>
-                  {done && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#7FD5AA' }} />}
-                </div>
-                <span style={{
-                  fontSize: 11, flex: 1, lineHeight: 1.45,
-                  color: done ? '#3E3E44' : '#9E9EA6',
-                  textDecoration: done ? 'line-through' : 'none',
-                  transition: 'all 0.15s ease',
-                }}>{step.title}</span>
-                <span style={{ fontSize: 9, color: '#52525A', flexShrink: 0, opacity: done ? 0.35 : 1 }}>~{step.estimatedMinutes}m</span>
-              </div>
-            )
-          })}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ─── Fitness Snapshot ─────────────────────────────────────────────────────────
-
-function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: { strategy: FitnessStrategy | null; userId?: string; onWorkoutLogged?: () => void }) {
-  const [loggingSession, setLoggingSession] = useState<string | null>(null)
-  const [loggedSessions, setLoggedSessions] = useState<Set<string>>(new Set())
-
-  useEffect(() => {
-    if (!userId) return
-    fetch(`/api/fitness/workout?userId=${userId}`)
-      .then(r => r.json())
-      .then((types: string[]) => setLoggedSessions(new Set(types)))
-      .catch(() => {})
-  }, [userId])
-
-  const today = new Date()
-  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-  const todayName = dayNames[today.getDay()]
-
-  const schedule = parseSafeJson<Array<{ day: string; sessions: string[] }>>(strategy?.weeklySchedule)
-  const todayEntry = schedule?.find(d => d.day.toLowerCase() === todayName.toLowerCase())
-  const todaySessions = todayEntry?.sessions ?? []
-
-  const nutritionDir = parseSafeJson<{ proteinTarget?: number; targetProtein?: number }>(strategy?.nutritionDir)
-  const targetProtein = nutritionDir?.proteinTarget ?? nutritionDir?.targetProtein
-
-  async function logSession(sessionName: string) {
-    if (!userId) return
-    setLoggingSession(sessionName)
-    try {
-      // Extract duration from session name if present, e.g. "Stairmaster Cardio (20–25 min)" → 22
-      const durationMatch = sessionName.match(/(\d+)(?:[–-](\d+))?\s*min/i)
-      const duration = durationMatch
-        ? durationMatch[2]
-          ? Math.round((parseInt(durationMatch[1]) + parseInt(durationMatch[2])) / 2)
-          : parseInt(durationMatch[1])
-        : 30
-      await fetch('/api/fitness/workout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, type: sessionName, duration, notes: null }),
-      })
-      setLoggedSessions(prev => new Set([...prev, sessionName]))
-      onWorkoutLogged?.()
-    } finally {
-      setLoggingSession(null)
-    }
-  }
-
-  return (
-    <div className="card">
-      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 10 }}>
-        Today&apos;s Fitness
-      </div>
-      {todaySessions.length > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-          {todaySessions.map((s, i) => {
-            const done = loggedSessions.has(s)
-            const isLogging = loggingSession === s
-            return (
-              <button
-                key={i}
-                onClick={() => !done && logSession(s)}
-                disabled={isLogging || done}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  background: 'none', border: 'none', cursor: done ? 'default' : 'pointer',
-                  padding: '3px 0', textAlign: 'left', width: '100%',
-                  opacity: isLogging ? 0.6 : 1, transition: 'opacity 0.15s',
-                }}
-              >
-                <div style={{
-                  width: 18, height: 18, borderRadius: 5, flexShrink: 0,
-                  border: `2px solid ${done ? '#7FD5AA' : 'rgba(255,255,255,0.2)'}`,
-                  background: done ? 'rgba(127,213,170,0.2)' : 'transparent',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.15s',
-                }}>
-                  {done && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.5 7.5L8 3" stroke="#7FD5AA" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                  {isLogging && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#A3D977', animation: 'pulse 0.8s ease-in-out infinite' }} />}
-                </div>
-                <span style={{
-                  fontSize: 12, color: done ? '#6E6E76' : '#EEEEF2', fontWeight: 500,
-                  textDecoration: done ? 'line-through' : 'none', transition: 'all 0.2s',
-                }}>{s}</span>
-              </button>
-            )
-          })}
-        </div>
-      ) : (
-        <div style={{ fontSize: 12, color: '#6E6E76' }}>Rest day</div>
-      )}
-
-      <Link href="/fitness" style={{ display: 'block', marginTop: 9, fontSize: 11, color: '#6E6E76', textDecoration: 'none' }}>
-        Fitness details →
-      </Link>
-    </div>
-  )
-}
-
-// ─── Meal Preview ─────────────────────────────────────────────────────────────
-
-function TodaysMeetings({ events, workStartMin, workEndMin }: { events: Array<{ start: Date; end: Date }>; workStartMin: number; workEndMin: number }) {
-  const now = new Date()
-  const todayEvents = events.filter(e => {
-    const eStart = e.start.getHours() * 60 + e.start.getMinutes()
-    return eStart >= now.getHours() * 60 + now.getMinutes() // Future events only
-  }).sort((a, b) => a.start.getTime() - b.start.getTime())
-
-  if (todayEvents.length === 0) {
-    return (
-      <div className="card">
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 10 }}>
-          Today's Meetings
-        </div>
-        <div style={{ fontSize: 12, color: '#6E6E76' }}>No upcoming meetings</div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="card">
-      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 10 }}>
-        Today's Meetings
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-        {todayEvents.map((event, i) => {
-          const startH = event.start.getHours(), startM = event.start.getMinutes()
-          const endH = event.end.getHours(), endM = event.end.getMinutes()
-          const startMin = startH * 60 + startM
-          const endMin = endH * 60 + endM
-          const isDuringWork = startMin >= workStartMin && endMin <= workEndMin
-          const isPostWork = startMin >= workEndMin
-          const eventColor = isPostWork ? '#DDB96A' : isDuringWork ? '#80BDFF' : '#6E6E76'
-          const durationMin = endMin - startMin
-          const durationLabel = durationMin > 60
-            ? `${Math.floor(durationMin / 60)}h ${durationMin % 60}m`
-            : `${durationMin}m`
-
-          return (
-            <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              <div style={{ minWidth: 45, paddingTop: 2 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: eventColor, fontVariantNumeric: 'tabular-nums' }}>
-                  {String(startH).padStart(2, '0')}:{String(startM).padStart(2, '0')}
-                </div>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, color: '#EEEEF2', fontWeight: 500 }}>
-                  {event.start.toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })} – {event.end.toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })}
-                </div>
-                <div style={{ fontSize: 10, color: '#6E6E76', marginTop: 1 }}>{durationLabel} · {isPostWork ? 'Post-work' : isDuringWork ? 'Work hours' : 'Personal'}</div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-function getNextMealTime(meal: PlannedMeal): { minutesUntil: number; timeStr: string } | null {
-  const now = new Date()
-  const mealHour = meal.mealType.toLowerCase() === 'breakfast' ? 7
-    : meal.mealType.toLowerCase() === 'lunch' ? 12
-    : meal.mealType.toLowerCase() === 'dinner' ? 18
-    : meal.mealType.toLowerCase() === 'snack' ? 15
-    : null
-
-  if (!mealHour) return null
-
-  const today = new Date()
-  today.setHours(mealHour, 0, 0, 0)
-  const nextMeal = today > now ? today : new Date(today.getTime() + 24 * 60 * 60 * 1000)
-  const diff = nextMeal.getTime() - now.getTime()
-  const minutesUntil = Math.round(diff / (60 * 1000))
-
-  if (minutesUntil < 0) return null
-  const h = Math.floor(minutesUntil / 60)
-  const m = minutesUntil % 60
-  const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`
-
-  return { minutesUntil, timeStr }
-}
-
-function MealPreview({ meals, label, href, isTomorrow = false, todayProtein = 0, proteinTarget = null }: { meals: PlannedMeal[]; label: string; href?: string; isTomorrow?: boolean; todayProtein?: number; proteinTarget?: number | null }) {
-  const sorted = sortMeals(meals)
-  const showProtein = !isTomorrow && proteinTarget && proteinTarget > 0
-  const proteinPct = showProtein ? Math.min(100, Math.round((todayProtein / proteinTarget!) * 100)) : 0
-  const proteinColor = proteinPct >= 100 ? '#7FD5AA' : proteinPct >= 70 ? '#DDB96A' : '#E8907A'
-
-  return (
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: showProtein ? 8 : 10 }}>
-        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E76' }}>
-          {label}
-        </div>
-        {href && (
-          <Link href={href} style={{ fontSize: 11, color: '#B8A4FF', textDecoration: 'none' }}>Full plan →</Link>
-        )}
-      </div>
-
-      {showProtein && (
-        <div style={{ marginBottom: 12 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-            <span style={{ fontSize: 10, color: '#6E6E76' }}>Protein today</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: proteinColor, fontVariantNumeric: 'tabular-nums' }}>
-              {todayProtein}g
-              <span style={{ fontSize: 10, fontWeight: 400, color: '#52525A' }}> / {proteinTarget}g</span>
-            </span>
-          </div>
-          <div style={{ height: 4, borderRadius: 999, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
-            <div className="progress-fill" style={{
-              height: '100%', width: `${proteinPct}%`, borderRadius: 999,
-              background: proteinColor,
-            }} />
-          </div>
-        </div>
-      )}
-
-      {sorted.length > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-          {sorted.map(meal => {
-            const timing = !isTomorrow ? getNextMealTime(meal) : null
-            const isOverdue = timing && timing.minutesUntil < 0
-            const isDueSoon = timing && timing.minutesUntil >= 0 && timing.minutesUntil < 30
-            const mealColor = isOverdue ? '#E8907A' : isDueSoon ? '#DDB96A' : '#6E6E76'
-
-            return (
-              <div key={meal.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: mealColor, minWidth: 60, paddingTop: 1 }}>
-                  {meal.mealType}
-                </span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 12, color: '#EEEEF2', fontWeight: 500 }}>{meal.title}</div>
-                  <div style={{ fontSize: 10, color: '#6E6E76', marginTop: 2, display: 'flex', gap: 6, alignItems: 'center' }}>
-                    {meal.calories ? `${meal.calories} kcal` : ''}
-                    {meal.calories && meal.protein ? ' · ' : ''}
-                    {meal.protein ? `${meal.protein}g protein` : ''}
-                    {timing && timing.minutesUntil >= 0 && (
-                      <>
-                        <span style={{ color: '#3E3E44' }}>·</span>
-                        <span style={{ color: isDueSoon ? '#DDB96A' : '#6E6E76', fontWeight: isDueSoon ? 600 : 400 }}>
-                          {isDueSoon ? `in ${timing.timeStr}` : `in ${timing.timeStr}`}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      ) : (
-        <div style={{ fontSize: 12, color: '#6E6E76' }}>
-          {isTomorrow ? 'No meals scheduled.' : 'No meal plan.'} {!isTomorrow && (
-            <Link href="/meals" style={{ color: '#B8A4FF', textDecoration: 'none' }}>Generate →</Link>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ─── Bullet Directive renderer ────────────────────────────────────────────────
-
-function BulletDirective({ text, expanded, onToggle }: { text: string; expanded: boolean; onToggle: () => void }) {
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
-
-  const framing: string[] = []
-  const bullets: string[] = []
-  let seenBullet = false
-
-  for (const line of lines) {
-    if (line.startsWith('• ') || line.startsWith('- ') || line.startsWith('* ')) {
-      seenBullet = true
-      bullets.push(line.replace(/^[•\-\*]\s+/, ''))
-    } else if (!seenBullet) {
-      framing.push(line)
-    } else {
-      bullets.push(line)
-    }
-  }
-
-  // No bullets case
-  if (bullets.length === 0 && framing.length > 0) {
-    const sentences = text.split(/(?<=\.)\s+/)
-    if (sentences.length > 1) {
-      const shown = expanded ? sentences : [sentences[0]]
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {shown.filter(Boolean).map((s, i) => (
-            <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-              <span style={{ color: '#B8A4FF', flexShrink: 0, fontSize: 11, marginTop: 2, fontWeight: 800 }}>→</span>
-              <span style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.6 }}>{s.trim()}</span>
-            </div>
-          ))}
-          {sentences.length > 1 && (
-            <button onClick={onToggle} style={{ alignSelf: 'flex-start', fontSize: 10, color: '#52525A', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>
-              {expanded ? 'Collapse ↑' : 'Show all ↓'}
-            </button>
-          )}
-        </div>
-      )
-    }
-    return <div style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.65 }}>{text}</div>
-  }
-
-  // Has framing + bullets
-  const framingShown = framing.length > 0 ? framing : []
-  const firstBullet = bullets.slice(0, 1)
-  const restBullets = bullets.slice(1)
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-      {framingShown.map((line, i) => (
-        <div key={`f${i}`} style={{ fontSize: 13, color: '#EEEEF2', fontWeight: 600, lineHeight: 1.5 }}>
-          {line}
-        </div>
-      ))}
-      {/* Always show first bullet */}
-      {(framingShown.length === 0 ? firstBullet : (expanded ? bullets : firstBullet)).map((b, i) => (
-        <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-          <span style={{ color: '#B8A4FF', flexShrink: 0, fontSize: 13, marginTop: 1, lineHeight: 1, fontWeight: 700 }}>•</span>
-          <span style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.6 }}>{b}</span>
-        </div>
-      ))}
-      {/* If framing exists, show rest of bullets only when expanded */}
-      {framingShown.length > 0 && expanded && restBullets.map((b, i) => (
-        <div key={`rb${i}`} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-          <span style={{ color: '#B8A4FF', flexShrink: 0, fontSize: 13, marginTop: 1, lineHeight: 1, fontWeight: 700 }}>•</span>
-          <span style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.6 }}>{b}</span>
-        </div>
-      ))}
-      {(bullets.length > 1 || (framingShown.length > 0 && bullets.length > 0)) && (
-        <button onClick={onToggle} style={{ alignSelf: 'flex-start', fontSize: 10, color: '#52525A', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>
-          {expanded ? 'Collapse ↑' : 'Show all ↓'}
-        </button>
-      )}
-    </div>
-  )
-}
-
-// ─── Priority skeleton ────────────────────────────────────────────────────────
-
-function PrioritySkeleton() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      {[1, 2, 3].map(i => (
-        <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', alignItems: 'center' }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.04)', flexShrink: 0 }} />
-          <div style={{ flex: 1 }}>
-            <Skel w={`${55 + i * 12}%`} h={13} />
-            <Skel w="40%" h={10} />
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// ─── Focus Mode Overlay ───────────────────────────────────────────────────────
-
-function FocusModeOverlay({
-  task,
-  onDone,
-  onExit,
-}: {
-  task: WeeklyTask
-  onDone: () => void
-  onExit: () => void
-}) {
-  const DURATION = 25 * 60 // 25 minutes in seconds
-  const [secondsLeft, setSecondsLeft] = useState(DURATION)
-  const [running, setRunning] = useState(true)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  useEffect(() => {
-    if (running) {
-      intervalRef.current = setInterval(() => {
-        setSecondsLeft(s => {
-          if (s <= 1) {
-            clearInterval(intervalRef.current!)
-            setRunning(false)
-            return 0
-          }
-          return s - 1
-        })
-      }, 1000)
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [running])
-
-  const mins = String(Math.floor(secondsLeft / 60)).padStart(2, '0')
-  const secs = String(secondsLeft % 60).padStart(2, '0')
-
-  const timeLabel = task.estimatedMinutes
-    ? `~${task.estimatedMinutes} min`
-    : task.effort === 1 ? '~15 min' : task.effort === 2 ? '~25 min' : task.effort === 3 ? '~45 min' : null
-
-  return (
-    <div className="overlay-enter" style={{
-      position: 'fixed', inset: 0, zIndex: 9999,
-      background: 'rgba(10,10,12,0.96)',
-      backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)',
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-    }}>
-      {/* Exit button */}
-      <button
-        onClick={onExit}
-        style={{
-          position: 'absolute', top: 24, right: 24,
-          fontSize: 11, color: '#52525A', background: 'rgba(255,255,255,0.05)',
-          border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6,
-          padding: '5px 10px', cursor: 'pointer',
-        }}
-      >
-        Exit Focus
-      </button>
-
-      {/* Center content */}
-      <div className="overlay-content-enter" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 28, maxWidth: 480, padding: '0 24px', textAlign: 'center' }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#52525A' }}>
-          Focus Mode
-        </div>
-
-        <div style={{ fontSize: 24, fontWeight: 700, color: '#EEEEF2', lineHeight: 1.35 }}>
-          {task.title}
-        </div>
-
-        {timeLabel && (
-          <span style={{
-            fontSize: 12, color: '#9E9EA6', background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6,
-            padding: '4px 12px',
-          }}>
-            {timeLabel}
-          </span>
-        )}
-
-        {/* Timer */}
-        <div style={{
-          fontSize: 64, fontWeight: 800, color: secondsLeft === 0 ? '#7FD5AA' : '#EEEEF2',
-          fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em',
-          lineHeight: 1,
-        }}>
-          {mins}:{secs}
-        </div>
-
-        {/* Pause/Resume */}
-        <button
-          onClick={() => setRunning(r => !r)}
-          style={{
-            fontSize: 13, color: '#9E9EA6', background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
-            padding: '8px 20px', cursor: 'pointer',
-          }}
-        >
-          {running ? 'Pause' : 'Resume'}
-        </button>
-
-        {/* Done button */}
-        <button
-          onClick={onDone}
-          style={{
-            fontSize: 15, fontWeight: 700, color: '#0A0A0C',
-            background: '#7FD5AA', border: 'none', borderRadius: 10,
-            padding: '12px 32px', cursor: 'pointer',
-          }}
-        >
-          ✓ Done
-        </button>
-      </div>
-    </div>
-  )
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function DailyCommandCenter({
@@ -1247,7 +71,6 @@ export default function DailyCommandCenter({
   tomorrowMeals,
   userId,
   quarterName,
-  weeklyPlanId,
   calendarConnected = false,
   calendarIcsConnected = false,
   atRiskCount = 0,
@@ -1342,6 +165,16 @@ export default function DailyCommandCenter({
     }
   }
   const [celebTaskId, setCelebTaskId] = useState<string | null>(null)
+  const [undoTask, setUndoTask] = useState<{ id: string; title: string } | null>(null)
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [workSchedule, setWorkSchedule] = useState<WorkSchedule>(DEFAULT_WORK_SCHEDULE)
+  const [scheduleEditorOpen, setScheduleEditorOpen] = useState(false)
+
+  // Load per-device schedule override after mount (avoids SSR hydration mismatch)
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setWorkSchedule(getWorkSchedule()))
+    return () => cancelAnimationFrame(raf)
+  }, [])
   const [calendarEvents, setCalendarEvents] = useState<Array<{ start: Date; end: Date }>>([])
 
   // Load energy from sessionStorage on mount
@@ -1403,12 +236,6 @@ export default function DailyCommandCenter({
     }
   }, [userId, router, startTransition])
 
-  const clearBriefing = useCallback(async () => {
-    await fetch(`/api/dashboard/brief?userId=${userId}`, { method: 'DELETE' })
-    setBriefing(null)
-    setLastRefreshedAt(null)
-    startTransition(() => router.refresh())
-  }, [userId, router, startTransition])
 
   useEffect(() => {
     const age = briefingAgeMs(initialBriefing?.generatedAt)
@@ -1422,7 +249,7 @@ export default function DailyCommandCenter({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  async function toggleTask(id: string) {
+  async function toggleTask(id: string, opts?: { skipUndo?: boolean }) {
     setToggling(id)
     try {
       const res = await fetch(`/api/tasks/${id}`, { method: 'PATCH' })
@@ -1430,12 +257,31 @@ export default function DailyCommandCenter({
       // Celebration animation
       setCelebTaskId(id)
       setTimeout(() => setCelebTaskId(null), 1200)
+      // Undo affordance — 6s window to take it back
+      if (!opts?.skipUndo) {
+        const task = tasks.find(t => t.id === id)
+        if (task && !task.completed) {
+          if (undoTimer.current) clearTimeout(undoTimer.current)
+          setUndoTask({ id, title: task.title })
+          undoTimer.current = setTimeout(() => setUndoTask(null), 6000)
+        }
+      } else {
+        setUndoTask(null)
+      }
       startTransition(() => router.refresh())
     } catch {
       // Silent
     } finally {
       setToggling(null)
     }
+  }
+
+  async function undoLastComplete() {
+    if (!undoTask) return
+    if (undoTimer.current) clearTimeout(undoTimer.current)
+    const id = undoTask.id
+    setUndoTask(null)
+    await toggleTask(id, { skipUndo: true })
   }
 
   async function loadMicroSteps(taskId: string) {
@@ -1538,18 +384,25 @@ export default function DailyCommandCenter({
   const dateStr = rawDateStr.charAt(0).toUpperCase() + rawDateStr.slice(1)
   const greeting = getGreeting()
 
-  // Focus mode task = first must-do
-  const focusTask = mustDo[0] ?? shouldDo[0] ?? null
+  // Focus mode queue = must-dos first, then should-dos
+  const focusQueue = [...mustDo, ...shouldDo]
+  const focusTask = focusQueue[0] ?? null
+  const focusNext = focusQueue[1] ?? null
 
   return (
     <div className="animate-entrance">
       {/* ── Focus Mode Overlay ── */}
       {focusMode && focusTask && (
         <FocusModeOverlay
+          key={focusTask.id}
           task={focusTask}
+          nextTaskTitle={focusNext?.title ?? null}
           onDone={async () => {
+            // Stay in focus mode while the queue has more tasks;
+            // router.refresh advances focusTask and the key remounts the timer.
+            const hasNext = focusQueue.length > 1
             await toggleTask(focusTask.id)
-            setFocusMode(false)
+            if (!hasNext) setFocusMode(false)
           }}
           onExit={() => setFocusMode(false)}
         />
@@ -1631,6 +484,19 @@ export default function DailyCommandCenter({
               {intelItems.map((item, i) => (
                 <div key={i} className="animate-entrance" style={{ animationDelay: `${0.08 + i * 0.055}s`, display: 'flex' }}>
                   <IntelCard item={item} />
+                </div>
+              ))}
+              {/* Quiet placeholders so a lone card doesn't float in an empty grid (pad to full rows) */}
+              {intelItems.length < 6 && Array.from({ length: Math.ceil(intelItems.length / 3) * 3 - intelItems.length }).map((_, i) => (
+                <div key={`ph${i}`} className="animate-entrance" style={{
+                  animationDelay: `${0.08 + (intelItems.length + i) * 0.055}s`,
+                  borderRadius: 16, minHeight: 76,
+                  border: '1px dashed rgba(255,255,255,0.05)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <span style={{ fontSize: 10, color: '#3E3E44' }}>
+                    {i === 0 ? 'More with next briefing' : ''}
+                  </span>
                 </div>
               ))}
             </div>
@@ -1821,16 +687,6 @@ export default function DailyCommandCenter({
               const now = new Date()
               const nowMin = now.getHours() * 60 + now.getMinutes()
               const dow = now.getDay() // 0=Sun, 1=Mon, ..., 6=Sat
-              // Default work schedule: Mon/Wed 7:30-15:30, Tue/Thu/Fri 9:00-17:00
-              const workSchedule: Record<number, { start: number; end: number } | null> = {
-                0: null, // Sunday — no work
-                1: { start: 7 * 60 + 30, end: 15 * 60 + 30 }, // Monday
-                2: { start: 9 * 60,       end: 17 * 60 },       // Tuesday
-                3: { start: 7 * 60 + 30, end: 15 * 60 + 30 }, // Wednesday
-                4: { start: 9 * 60,       end: 17 * 60 },       // Thursday
-                5: { start: 9 * 60,       end: 17 * 60 },       // Friday (lighter but same hours)
-                6: null, // Saturday — no work
-              }
               const work = workSchedule[dow]
               // Remaining work minutes (if still within work hours)
               const workRemMin = work
@@ -1877,7 +733,7 @@ export default function DailyCommandCenter({
                     <>
                       <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
                       <span style={{ fontSize: 10, color: '#6E6E76' }}>
-                        Work until {work!.end === 15 * 60 + 30 ? '15:30' : '17:00'}
+                        Work until {minToTimeStr(work!.end)}
                       </span>
                     </>
                   )}
@@ -1900,9 +756,32 @@ export default function DailyCommandCenter({
                       Overloaded
                     </span>
                   )}
+                  <button
+                    onClick={() => setScheduleEditorOpen(v => !v)}
+                    title="Edit work hours"
+                    style={{
+                      marginLeft: tight ? 0 : 'auto', flexShrink: 0,
+                      fontSize: 10, color: '#52525A', background: 'none',
+                      border: 'none', cursor: 'pointer', padding: '0 2px',
+                      transition: 'color 0.12s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#9E9EA6')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#52525A')}
+                  >
+                    Edit hours
+                  </button>
                 </div>
               )
             })()}
+
+            {/* Work schedule editor */}
+            {scheduleEditorOpen && (
+              <WorkScheduleEditor
+                schedule={workSchedule}
+                onChange={setWorkSchedule}
+                onClose={() => setScheduleEditorOpen(false)}
+              />
+            )}
 
             {/* Energy selector */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
@@ -2009,13 +888,7 @@ export default function DailyCommandCenter({
             calendarIcsConnected={calendarIcsConnected}
           />
           {calendarEvents.length > 0 && (() => {
-            const now = new Date()
-            const dow = now.getDay()
-            const workSchedule: Record<number, { start: number; end: number } | null> = {
-              0: null, 1: { start: 7 * 60 + 30, end: 15 * 60 + 30 }, 2: { start: 9 * 60, end: 17 * 60 },
-              3: { start: 7 * 60 + 30, end: 15 * 60 + 30 }, 4: { start: 9 * 60, end: 17 * 60 },
-              5: { start: 9 * 60, end: 17 * 60 }, 6: null,
-            }
+            const dow = new Date().getDay()
             const work = workSchedule[dow]
             const workStartMin = work?.start ?? 7 * 60
             const workEndMin = work?.end ?? 17 * 60
@@ -2028,6 +901,38 @@ export default function DailyCommandCenter({
           )}
         </div>
       </div>
+
+      {/* ── Undo toast ── */}
+      {undoTask && (
+        <div className="expand-enter" style={{
+          position: 'fixed', bottom: 28, left: '50%', transform: 'translateX(-50%)',
+          zIndex: 500, display: 'flex', alignItems: 'center', gap: 12,
+          padding: '10px 16px', borderRadius: 14,
+          background: 'rgba(30,30,32,0.92)',
+          backdropFilter: 'blur(24px) saturate(1.6)', WebkitBackdropFilter: 'blur(24px) saturate(1.6)',
+          border: '1px solid rgba(255,255,255,0.10)',
+          boxShadow: '0 16px 48px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3)',
+          maxWidth: 'min(92vw, 440px)',
+        }}>
+          <span style={{ fontSize: 12, color: '#7FD5AA', fontWeight: 600, flexShrink: 0 }}>✓ Done</span>
+          <span style={{
+            fontSize: 12, color: '#9E9EA6', overflow: 'hidden',
+            textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
+            {undoTask.title}
+          </span>
+          <button
+            onClick={undoLastComplete}
+            style={{
+              fontSize: 12, fontWeight: 600, color: '#B8A4FF', flexShrink: 0,
+              background: 'rgba(184,164,255,0.10)', border: '1px solid rgba(184,164,255,0.22)',
+              borderRadius: 8, padding: '4px 12px', cursor: 'pointer',
+            }}
+          >
+            Undo
+          </button>
+        </div>
+      )}
     </div>
   )
 }
