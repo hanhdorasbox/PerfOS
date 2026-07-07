@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import NavLinks from "@/components/NavLinks";
 import Link from "next/link";
@@ -10,6 +10,15 @@ import { prisma } from "@/lib/db";
 export const metadata: Metadata = {
   title: "Project Hanh — Performance Operating System",
   description: "Strategic performance command center",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Project Hanh",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0A0C16",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

@@ -17,6 +17,7 @@ import BulletDirective from './dcc/BulletDirective'
 import Skel from './dcc/Skel'
 import { getGreeting, parseSafeJson, briefingAgeMs, formatAge, REFRESH_INTERVAL_MS } from './dcc/helpers'
 import WorkScheduleEditor from './dcc/WorkScheduleEditor'
+import GapSuggestions, { computeGapSuggestions } from './dcc/GapSuggestions'
 import { DEFAULT_WORK_SCHEDULE, getWorkSchedule, minToTimeStr, type WorkSchedule } from '@/lib/work-schedule'
 import type {
   DailyBriefing, DailyFact, GoalWithMetrics, WeeklyTask, FitnessStrategy,
@@ -89,6 +90,7 @@ export default function DailyCommandCenter({
 
   // ADHD features state
   const [focusMode, setFocusMode] = useState(false)
+  const [focusOverride, setFocusOverride] = useState<WeeklyTask | null>(null)
   const [directiveExpanded, setDirectiveExpanded] = useState(false)
   const [energy, setEnergy] = useState<'low' | 'medium' | 'high' | null>(null)
   const [morningDismissed, setMorningDismissed] = useState(false)
@@ -384,10 +386,15 @@ export default function DailyCommandCenter({
   const dateStr = rawDateStr.charAt(0).toUpperCase() + rawDateStr.slice(1)
   const greeting = getGreeting()
 
-  // Focus mode queue = must-dos first, then should-dos
+  // Focus mode queue = must-dos first, then should-dos; a gap suggestion can override
   const focusQueue = [...mustDo, ...shouldDo]
-  const focusTask = focusQueue[0] ?? null
-  const focusNext = focusQueue[1] ?? null
+  const focusTask = (focusOverride && incompleteTasks.some(t => t.id === focusOverride.id))
+    ? focusOverride
+    : focusQueue[0] ?? null
+  const focusNext = focusQueue.find(t => t.id !== focusTask?.id) ?? null
+
+  // Gap → task suggestions for the rest of the day
+  const gapSuggestions = computeGapSuggestions(incompleteTasks, calendarEvents, workSchedule)
 
   return (
     <div className="animate-entrance">
@@ -400,11 +407,13 @@ export default function DailyCommandCenter({
           onDone={async () => {
             // Stay in focus mode while the queue has more tasks;
             // router.refresh advances focusTask and the key remounts the timer.
-            const hasNext = focusQueue.length > 1
+            const wasOverride = focusOverride?.id === focusTask.id
+            const hasNext = !wasOverride && focusQueue.length > 1
             await toggleTask(focusTask.id)
+            setFocusOverride(null)
             if (!hasNext) setFocusMode(false)
           }}
-          onExit={() => setFocusMode(false)}
+          onExit={() => { setFocusOverride(null); setFocusMode(false) }}
         />
       )}
 
@@ -782,6 +791,12 @@ export default function DailyCommandCenter({
                 onClose={() => setScheduleEditorOpen(false)}
               />
             )}
+
+            {/* Gap → task suggestions */}
+            <GapSuggestions
+              suggestions={gapSuggestions}
+              onFocusTask={(task) => { setFocusOverride(task); setFocusMode(true) }}
+            />
 
             {/* Energy selector */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>

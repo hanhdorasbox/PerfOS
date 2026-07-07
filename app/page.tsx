@@ -295,6 +295,8 @@ export default async function Dashboard() {
               goalCount={quarter.goals.length}
               atRiskCount={atRiskCount}
               watchCount={watchCount}
+              tasksDone={weekTasks.filter(t => t.completed).length}
+              tasksTotal={weekTasks.length}
             />
           </div>
 
