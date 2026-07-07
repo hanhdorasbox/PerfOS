@@ -11,7 +11,15 @@ interface WorkoutExercise {
   sets: number
   reps: string
   notes?: string | null
-  substitution?: string | null
+  substitution?: string | null   // legacy single alternative
+  alternatives?: string[] | null // preferred: multiple options
+}
+
+// All swap options for an exercise: alternatives[] + legacy substitution, deduped,
+// never including the currently selected name.
+function exerciseAlternatives(ex: WorkoutExercise): string[] {
+  const all = [...(ex.alternatives ?? []), ...(ex.substitution ? [ex.substitution] : [])]
+  return [...new Set(all)].filter(a => a.trim() && a.toLowerCase() !== ex.name.toLowerCase())
 }
 
 interface WorkoutDay {
@@ -264,7 +272,13 @@ function RoadmapPhase({ phase, index }: { phase: RoadmapPhaseData; index: number
   )
 }
 
-function WorkoutDayPanel({ day, onClose, onSwap }: { day: WorkoutDay; onClose: () => void; onSwap: (exerciseIndex: number) => void }) {
+function WorkoutDayPanel({ day, onClose, onSwap, onSuggest, suggestingIndex }: {
+  day: WorkoutDay
+  onClose: () => void
+  onSwap: (exerciseIndex: number, alternative: string) => void
+  onSuggest: (exerciseIndex: number) => void
+  suggestingIndex: number | null
+}) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(4,4,6,0.86)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{ background: '#161618', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 24, padding: 28, maxWidth: 560, width: '100%', maxHeight: '80vh', overflowY: 'auto', boxShadow: '0 32px 80px rgba(0,0,0,0.65)' }}>
@@ -278,24 +292,41 @@ function WorkoutDayPanel({ day, onClose, onSwap }: { day: WorkoutDay; onClose: (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {day.exercises.map((ex, i) => (
             <div key={i} style={{ padding: '13px 16px', borderRadius: 14, background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: ex.notes || ex.substitution ? 6 : 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#EEEEF2', letterSpacing: '-0.005em' }}>{ex.name}</span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: '#7FD5AA', background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.18)', padding: '2px 10px', borderRadius: 999, whiteSpace: 'nowrap', marginLeft: 8 }}>
                   {ex.sets} × {ex.reps}
                 </span>
               </div>
               {ex.notes && <div style={{ fontSize: 12, color: '#52525A', lineHeight: 1.55 }}>{ex.notes}</div>}
-              {ex.substitution && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
-                  <span style={{ fontSize: 11, color: '#6E6E76' }}>Alt:</span>
-                  <button
-                    onClick={() => onSwap(i)}
-                    style={{ fontSize: 11, color: '#B8A4FF', background: 'rgba(184,164,255,0.08)', border: '1px solid rgba(184,164,255,0.2)', borderRadius: 6, padding: '3px 9px', cursor: 'pointer', fontWeight: 600 }}
-                  >
-                    ↔ Use {ex.substitution}
-                  </button>
-                </div>
-              )}
+              {(() => {
+                const alts = exerciseAlternatives(ex)
+                const isSuggesting = suggestingIndex === i
+                return (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 11, color: '#6E6E76', flexShrink: 0 }}>Swap for:</span>
+                    {alts.map(alt => (
+                      <button
+                        key={alt}
+                        onClick={() => onSwap(i, alt)}
+                        style={{ fontSize: 11, color: '#B8A4FF', background: 'rgba(184,164,255,0.08)', border: '1px solid rgba(184,164,255,0.2)', borderRadius: 999, padding: '3px 10px', cursor: 'pointer', fontWeight: 500, transition: 'background 0.12s, border-color 0.12s' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(184,164,255,0.15)'; e.currentTarget.style.borderColor = 'rgba(184,164,255,0.35)' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(184,164,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(184,164,255,0.2)' }}
+                      >
+                        ↔ {alt}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => !isSuggesting && onSuggest(i)}
+                      disabled={isSuggesting}
+                      title="Ask AI for more alternatives targeting the same muscles"
+                      style={{ fontSize: 11, color: isSuggesting ? '#52525A' : '#6E6E76', background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.14)', borderRadius: 999, padding: '3px 10px', cursor: isSuggesting ? 'default' : 'pointer', fontWeight: 500 }}
+                    >
+                      {isSuggesting ? 'Finding…' : alts.length > 0 ? '+ More options' : '+ Suggest alternatives'}
+                    </button>
+                  </div>
+                )
+              })()}
             </div>
           ))}
         </div>
@@ -532,14 +563,16 @@ export default function FitnessStrategyView({ strategy }: Props) {
     for (const d of workoutPlan.days) workoutByLabel.set(d.label.toLowerCase(), d)
   }
 
-  async function handleSwapExercise(dayLabel: string, exerciseIndex: number) {
+  async function handleSwapExercise(dayLabel: string, exerciseIndex: number, alternative: string) {
     if (!workoutPlan) return
     const updatedDays = workoutPlan.days.map(d => {
       if (d.label.toLowerCase() !== dayLabel.toLowerCase()) return d
       const updatedExercises = d.exercises.map((ex, i) => {
-        if (i !== exerciseIndex || !ex.substitution) return ex
-        // Swap name ↔ substitution
-        return { ...ex, name: ex.substitution, substitution: ex.name }
+        if (i !== exerciseIndex) return ex
+        // Chosen alternative becomes the exercise; old name joins the pool
+        const pool = [...new Set([...exerciseAlternatives(ex), ex.name])]
+          .filter(a => a.toLowerCase() !== alternative.toLowerCase())
+        return { ...ex, name: alternative, alternatives: pool, substitution: null }
       })
       return { ...d, exercises: updatedExercises }
     })
@@ -550,6 +583,25 @@ export default function FitnessStrategyView({ strategy }: Props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ strategyId: strategy.id, workoutPlan: updated }),
     }).catch(() => {})
+  }
+
+  const [suggestingIndex, setSuggestingIndex] = useState<number | null>(null)
+
+  async function handleSuggestAlternatives(dayLabel: string, exerciseIndex: number) {
+    setSuggestingIndex(exerciseIndex)
+    try {
+      const res = await fetch('/api/fitness/strategy/alternatives', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ strategyId: strategy.id, dayLabel, exerciseIndex }),
+      })
+      if (res.ok) {
+        const data = await res.json() as { workoutPlan?: WorkoutPlan }
+        if (data.workoutPlan) setWorkoutPlan(data.workoutPlan)
+      }
+    } catch {} finally {
+      setSuggestingIndex(null)
+    }
   }
 
   const isDraft = strategy.status === 'draft'
@@ -798,7 +850,9 @@ export default function FitnessStrategyView({ strategy }: Props) {
         <WorkoutDayPanel
           day={workoutByLabel.get(openWorkoutDay.label.toLowerCase()) ?? openWorkoutDay}
           onClose={() => setOpenWorkoutDay(null)}
-          onSwap={(idx) => handleSwapExercise(openWorkoutDay.label, idx)}
+          onSwap={(idx, alt) => handleSwapExercise(openWorkoutDay.label, idx, alt)}
+          onSuggest={(idx) => handleSuggestAlternatives(openWorkoutDay.label, idx)}
+          suggestingIndex={suggestingIndex}
         />
       )}
 

@@ -176,42 +176,42 @@ Return JSON with this exact structure:
             "sets": 4,
             "reps": "6–8",
             "notes": "Primary compound. Control descent, drive through heels.",
-            "substitution": "Hack squat or leg press if barbell unavailable"
+            "alternatives": ["Hack squat", "Leg press", "Goblet squat"]
           },
           {
             "name": "Romanian deadlift",
             "sets": 3,
             "reps": "8–10",
             "notes": "Hip hinge focus. Keep bar close to legs.",
-            "substitution": "Dumbbell RDL"
+            "alternatives": ["Dumbbell RDL", "Good morning", "45° back extension"]
           },
           {
             "name": "Leg press",
             "sets": 3,
             "reps": "10–12",
             "notes": "Quad emphasis. Full range of motion.",
-            "substitution": null
+            "alternatives": ["Hack squat", "Smith machine squat"]
           },
           {
             "name": "Bulgarian split squat",
             "sets": 3,
             "reps": "8–10 per leg",
             "notes": "Unilateral balance and glute activation.",
-            "substitution": "Reverse lunge"
+            "alternatives": ["Reverse lunge", "Step-up", "Walking lunge"]
           },
           {
             "name": "Seated leg curl",
             "sets": 3,
             "reps": "10–12",
             "notes": "Hamstring isolation.",
-            "substitution": "Lying leg curl"
+            "alternatives": ["Lying leg curl", "Nordic curl", "Stability ball leg curl"]
           },
           {
             "name": "Standing calf raise",
             "sets": 3,
             "reps": "12–15",
             "notes": "Full stretch at bottom.",
-            "substitution": null
+            "alternatives": ["Seated calf raise", "Leg press calf raise"]
           }
         ]
       }
@@ -227,7 +227,8 @@ IMPORTANT for workoutPlan:
 - UPPER BODY DAYS must ALWAYS include: (1) at least 2 bicep curl variations (e.g. Barbell curl, Incline dumbbell curl, Cable curl, Hammer curl), (2) at least 2 core/abs exercises (e.g. Cable crunch, Hanging leg raise, Ab wheel rollout, Plank variations, Decline crunch). Do NOT skip biceps or abs on any Upper day — they are mandatory.
 - Each day must have at least 5 exercises.
 - Rep ranges must reflect the training goal: strength = 4–6 / 5–8, hypertrophy = 8–12, conditioning = 12–15.
-- Do NOT use generic labels — use real exercise names: "Barbell back squat", "Cable lateral raise", "Lat pulldown", etc.`
+- Do NOT use generic labels — use real exercise names: "Barbell back squat", "Cable lateral raise", "Lat pulldown", etc.
+- EVERY exercise must include an "alternatives" array with 2–3 real exercises hitting the same muscle group (different equipment or angle), so the user can swap any movement they dislike. Never leave it empty.`
 
   /** Safely coerce any value to a string or null. Objects/arrays are JSON-stringified. */
   function toStr(v: unknown): string | null {
