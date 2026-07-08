@@ -1,0 +1,268 @@
+/* ─── Finance OS design system ────────────────────────────────────────────────
+   Luxusní tmavý vzhled: hluboká čerň, zlatý akcent, serif pro velká čísla.
+   Tokeny jsou scopované na .finance-os, aby neovlivnily zbytek Performance OS. */
+
+.finance-os {
+  /* Surfaces */
+  --fin-bg: #0a0a0b;
+  --fin-card: #121214;
+  --fin-card-hover: #17171a;
+  --fin-border: #1f1f23;
+  --fin-border-strong: #2a2a30;
+
+  /* Accent — gold, used sparingly */
+  --fin-gold: #c9a961;
+  --fin-gold-hover: #d4b876;
+  --fin-gold-bg: rgba(201, 169, 97, 0.08);
+  --fin-gold-border: rgba(201, 169, 97, 0.35);
+
+  /* Semantic — muted, not loud */
+  --fin-gain: #4ade80;
+  --fin-gain-bg: rgba(74, 222, 128, 0.08);
+  --fin-loss: #f87171;
+  --fin-loss-bg: rgba(248, 113, 113, 0.08);
+  --fin-warn: #fbbf24;
+  --fin-warn-bg: rgba(251, 191, 36, 0.08);
+
+  /* Text */
+  --fin-text: #ececef;
+  --fin-text-2: #9a9aa3;
+  --fin-text-3: #62626c;
+
+  --fin-radius: 12px;
+
+  color: var(--fin-text);
+  font-family: var(--font-fin-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Full-bleed deep-black background while a Finance OS page is mounted */
+body:has(.finance-os) {
+  background: #0a0a0b;
+}
+
+.fin-serif {
+  font-family: var(--font-fin-serif), Georgia, 'Times New Roman', serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.fin-mono {
+  font-family: var(--font-fin-mono), ui-monospace, 'SF Mono', Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Primitives ─────────────────────────────────────────────────────────── */
+
+.fin-card {
+  background: var(--fin-card);
+  border: 1px solid var(--fin-border);
+  border-radius: var(--fin-radius);
+  padding: 24px;
+}
+
+.fin-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--fin-text-3);
+}
+
+.fin-h1 {
+  font-family: var(--font-fin-serif), Georgia, serif;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--fin-text);
+}
+
+.fin-value-lg {
+  font-family: var(--font-fin-serif), Georgia, serif;
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  color: var(--fin-text);
+}
+
+.fin-gain { color: var(--fin-gain); }
+.fin-loss { color: var(--fin-loss); }
+.fin-warn { color: var(--fin-warn); }
+.fin-gold { color: var(--fin-gold); }
+.fin-muted { color: var(--fin-text-2); }
+.fin-subtle { color: var(--fin-text-3); }
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+
+.fin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--fin-border-strong);
+  background: transparent;
+  color: var(--fin-text-2);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.fin-btn:hover {
+  color: var(--fin-text);
+  border-color: var(--fin-text-3);
+}
+
+.fin-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.fin-btn-primary {
+  border-color: var(--fin-gold-border);
+  background: var(--fin-gold-bg);
+  color: var(--fin-gold);
+}
+
+.fin-btn-primary:hover {
+  color: var(--fin-gold-hover);
+  border-color: var(--fin-gold);
+  background: rgba(201, 169, 97, 0.12);
+}
+
+.fin-btn-danger:hover {
+  color: var(--fin-loss);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+/* ─── Forms ──────────────────────────────────────────────────────────────── */
+
+.fin-input,
+.fin-select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--fin-border-strong);
+  background: var(--fin-bg);
+  color: var(--fin-text);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.fin-input:focus,
+.fin-select:focus {
+  border-color: var(--fin-gold-border);
+}
+
+.fin-input::placeholder {
+  color: var(--fin-text-3);
+}
+
+.fin-field-label {
+  display: block;
+  font-size: 12px;
+  color: var(--fin-text-2);
+  margin-bottom: 5px;
+}
+
+/* ─── Tables ─────────────────────────────────────────────────────────────── */
+
+.fin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.fin-table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fin-text-3);
+  border-bottom: 1px solid var(--fin-border);
+  white-space: nowrap;
+}
+
+.fin-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--fin-border);
+  vertical-align: middle;
+}
+
+.fin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.fin-table th.fin-num,
+.fin-table td.fin-num {
+  text-align: right;
+  font-family: var(--font-fin-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Badges & tabs ──────────────────────────────────────────────────────── */
+
+.fin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--fin-border-strong);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--fin-text-2);
+  white-space: nowrap;
+}
+
+.fin-badge-gold { color: var(--fin-gold); border-color: var(--fin-gold-border); background: var(--fin-gold-bg); }
+.fin-badge-gain { color: var(--fin-gain); border-color: rgba(74, 222, 128, 0.3); background: var(--fin-gain-bg); }
+.fin-badge-loss { color: var(--fin-loss); border-color: rgba(248, 113, 113, 0.3); background: var(--fin-loss-bg); }
+.fin-badge-warn { color: var(--fin-warn); border-color: rgba(251, 191, 36, 0.3); background: var(--fin-warn-bg); }
+
+.fin-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--fin-border);
+  margin-bottom: 32px;
+  overflow-x: auto;
+}
+
+.fin-tab {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--fin-text-2);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.fin-tab:hover {
+  color: var(--fin-text);
+}
+
+.fin-tab[data-active='true'] {
+  color: var(--fin-gold);
+  border-bottom-color: var(--fin-gold);
+}
+
+/* ─── Empty states ───────────────────────────────────────────────────────── */
+
+.fin-empty {
+  padding: 36px 24px;
+  text-align: center;
+  color: var(--fin-text-3);
+  font-size: 13px;
+}
