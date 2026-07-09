@@ -1,16 +1,70 @@
 import Link from 'next/link'
-import { count } from 'drizzle-orm'
-import { getInvestDb, assets, priceSnapshots } from '@/lib/invest/db'
+import { count, desc } from 'drizzle-orm'
+import { getInvestDb, assets, cronRuns, priceSnapshots, type CronRun } from '@/lib/invest/db'
+import { formatDateTime } from '@/lib/invest/format'
 
 export const dynamic = 'force-dynamic'
 
 async function loadCounts() {
   const db = getInvestDb()
-  const [[assetCount], [priceCount]] = await Promise.all([
+  const [[assetCount], [priceCount], runs] = await Promise.all([
     db.select({ n: count() }).from(assets),
     db.select({ n: count() }).from(priceSnapshots),
+    db.select().from(cronRuns).orderBy(desc(cronRuns.startedAt)).limit(5),
   ])
-  return { assets: assetCount?.n ?? 0, prices: priceCount?.n ?? 0 }
+  return { assets: assetCount?.n ?? 0, prices: priceCount?.n ?? 0, runs }
+}
+
+function CronStatusCard({ runs }: { runs: CronRun[] }) {
+  return (
+    <div className="fin-card">
+      <div className="fin-label" style={{ marginBottom: 12 }}>
+        Stav automatizace
+      </div>
+      {runs.length === 0 ? (
+        <p className="fin-subtle" style={{ margin: 0, fontSize: 13 }}>
+          Zatím žádný běh. Daily cron běží každý všední den večer (ceny + FX kurzy).
+        </p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {runs.map((run) => (
+            <div
+              key={run.id}
+              style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12 }}
+            >
+              <span
+                className={
+                  run.status === 'success'
+                    ? 'fin-badge fin-badge-gain'
+                    : run.status === 'error'
+                      ? 'fin-badge fin-badge-loss'
+                      : 'fin-badge fin-badge-warn'
+                }
+              >
+                {run.status === 'success' ? 'OK' : run.status === 'error' ? 'chyba' : 'běží'}
+              </span>
+              <span className="fin-mono">{run.job}</span>
+              <span className="fin-subtle">{formatDateTime(run.startedAt)}</span>
+              {run.error && (
+                <span
+                  className="fin-loss"
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    maxWidth: 260,
+                  }}
+                  title={run.error}
+                >
+                  {run.error}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 function PlaceholderCard({
@@ -40,7 +94,7 @@ function PlaceholderCard({
 }
 
 export default async function InvestDashboardPage() {
-  let counts: { assets: number; prices: number } | null = null
+  let counts: Awaited<ReturnType<typeof loadCounts>> | null = null
   try {
     counts = await loadCounts()
   } catch {
@@ -85,10 +139,14 @@ export default async function InvestDashboardPage() {
           label="Watchlist — top kandidáti"
           note="Žebříček podle vzdálenosti k target MoS — Fáze 4 a 6."
         />
-        <PlaceholderCard
-          label="Stav automatizace"
-          note="Log cron běhů (daily / weekly / digest) — Fáze 2."
-        />
+        {counts ? (
+          <CronStatusCard runs={counts.runs} />
+        ) : (
+          <PlaceholderCard
+            label="Stav automatizace"
+            note="Log cron běhů se zobrazí po připojení databáze."
+          />
+        )}
       </div>
 
       <div className="fin-card">
