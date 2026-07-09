@@ -404,6 +404,7 @@ model PlannedMeal {
   isRepeated  Boolean  @default(false)
   isFavorite  Boolean  @default(false)
   notes       String?
+  recipe      String?  // JSON: {cuisine, flavorProfile, prepMinutes, cookMinutes, ingredients:[{name,amount,unit}], steps:[string]}
 }
 
 model MealFeedback {

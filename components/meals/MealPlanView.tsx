@@ -15,6 +15,28 @@ interface PlannedMeal {
   isRepeated: boolean
   isFavorite: boolean
   notes?: string | null
+  recipe?: string | null
+}
+
+interface RecipeIngredient { name: string; amount: number; unit: string }
+
+interface MealRecipe {
+  cuisine?: string
+  flavorProfile?: string
+  prepMinutes?: number
+  cookMinutes?: number
+  portions?: number
+  ingredients: RecipeIngredient[]
+  steps: string[]
+}
+
+function parseRecipe(raw: string | null | undefined): MealRecipe | null {
+  if (!raw) return null
+  try {
+    const r = JSON.parse(raw) as MealRecipe
+    if (!Array.isArray(r.ingredients) || !Array.isArray(r.steps)) return null
+    return r
+  } catch { return null }
 }
 
 interface MealFeedback {
@@ -54,6 +76,7 @@ export default function MealPlanView({ plan, userId }: Props) {
   const [regenerating, setRegenerating] = useState(false)
   const [showShopping, setShowShopping] = useState(false)
   const [error, setError] = useState('')
+  const [recipeMeal, setRecipeMeal] = useState<PlannedMeal | null>(null)
 
   const shoppingList = (() => { try { return JSON.parse(plan.shoppingList || '[]') } catch { return [] } })()
   const batchCooking = (() => { try { return JSON.parse(plan.batchCooking || '[]') } catch { return [] } })()
@@ -103,8 +126,29 @@ export default function MealPlanView({ plan, userId }: Props) {
     return plan.feedback.find(f => f.mealTitle === title)
   }
 
+  // Recipe for a meal — batch repeats carry recipe: null, so fall back to the
+  // first occurrence of the same title that has one.
+  function resolveRecipe(meal: PlannedMeal): MealRecipe | null {
+    const own = parseRecipe(meal.recipe)
+    if (own) return own
+    const source = plan.meals.find(m => m.title === meal.title && m.recipe)
+    return source ? parseRecipe(source.recipe) : null
+  }
+
+  const openRecipeData = recipeMeal ? resolveRecipe(recipeMeal) : null
+
   return (
     <div>
+      {/* Recipe modal */}
+      {recipeMeal && openRecipeData && (
+        <RecipeModal
+          meal={recipeMeal}
+          recipe={openRecipeData}
+          userId={userId}
+          onClose={() => setRecipeMeal(null)}
+        />
+      )}
+
       {/* Header actions */}
       <div className="card" style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
@@ -160,10 +204,10 @@ export default function MealPlanView({ plan, userId }: Props) {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {BREAKFAST_DAYS.has(i) && (
-                  <MealCard meal={getMeal(i, 'breakfast')} type="breakfast" feedback={getMeal(i, 'breakfast') ? getMealFeedback(getMeal(i, 'breakfast')!.title) : undefined} onFeedback={sendFeedback} />
+                  <MealCard meal={getMeal(i, 'breakfast')} type="breakfast" feedback={getMeal(i, 'breakfast') ? getMealFeedback(getMeal(i, 'breakfast')!.title) : undefined} onFeedback={sendFeedback} onOpenRecipe={(m) => resolveRecipe(m) && setRecipeMeal(m)} hasRecipe={(m) => resolveRecipe(m) != null} />
                 )}
-                <MealCard meal={getMeal(i, 'lunch')} type="lunch" feedback={getMeal(i, 'lunch') ? getMealFeedback(getMeal(i, 'lunch')!.title) : undefined} onFeedback={sendFeedback} />
-                <MealCard meal={getMeal(i, 'dinner')} type="dinner" feedback={getMeal(i, 'dinner') ? getMealFeedback(getMeal(i, 'dinner')!.title) : undefined} onFeedback={sendFeedback} />
+                <MealCard meal={getMeal(i, 'lunch')} type="lunch" feedback={getMeal(i, 'lunch') ? getMealFeedback(getMeal(i, 'lunch')!.title) : undefined} onFeedback={sendFeedback} onOpenRecipe={(m) => resolveRecipe(m) && setRecipeMeal(m)} hasRecipe={(m) => resolveRecipe(m) != null} />
+                <MealCard meal={getMeal(i, 'dinner')} type="dinner" feedback={getMeal(i, 'dinner') ? getMealFeedback(getMeal(i, 'dinner')!.title) : undefined} onFeedback={sendFeedback} onOpenRecipe={(m) => resolveRecipe(m) && setRecipeMeal(m)} hasRecipe={(m) => resolveRecipe(m) != null} />
               </div>
               {plan.status === 'draft' && (
                 <button
@@ -269,11 +313,13 @@ export default function MealPlanView({ plan, userId }: Props) {
   )
 }
 
-function MealCard({ meal, type, feedback, onFeedback }: {
+function MealCard({ meal, type, feedback, onFeedback, onOpenRecipe, hasRecipe }: {
   meal?: PlannedMeal
   type: string
   feedback?: MealFeedback
   onFeedback: (title: string, liked: boolean) => void
+  onOpenRecipe?: (meal: PlannedMeal) => void
+  hasRecipe?: (meal: PlannedMeal) => boolean
 }) {
   const typeColors: Record<string, string> = { breakfast: '#B8A4FF', lunch: '#80BDFF', dinner: '#7FD5AA' }
   const color = typeColors[type] || '#A1A1A6'
@@ -309,6 +355,18 @@ function MealCard({ meal, type, feedback, onFeedback }: {
         {meal.protein && <span>{meal.protein}g pro</span>}
         {meal.isRepeated && <span style={{ color: '#80BDFF' }}>batch</span>}
       </div>
+      {onOpenRecipe && hasRecipe?.(meal) && (
+        <button
+          onClick={() => onOpenRecipe(meal)}
+          style={{
+            marginTop: 5, width: '100%', textAlign: 'left',
+            background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+            fontSize: 10, color: '#B8A4FF', fontWeight: 600,
+          }}
+        >
+          Recipe →
+        </button>
+      )}
       <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
         <button
           onClick={() => onFeedback(meal.title, true)}
@@ -329,6 +387,122 @@ function MealCard({ meal, type, feedback, onFeedback }: {
           }}
         >
           ↓
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ─── Recipe modal ─────────────────────────────────────────────────────────────
+
+function RecipeModal({ meal, recipe, userId, onClose }: {
+  meal: PlannedMeal
+  recipe: MealRecipe
+  userId: string
+  onClose: () => void
+}) {
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  async function saveToLibrary() {
+    setSaving(true)
+    try {
+      const res = await fetch('/api/meals/recipes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          name: meal.title,
+          mealType: meal.mealType,
+          description: [recipe.cuisine, recipe.flavorProfile].filter(Boolean).join(' · ') || meal.description || null,
+          prepMinutes: recipe.prepMinutes ?? null,
+          cookMinutes: recipe.cookMinutes ?? null,
+          portions: recipe.portions ?? 1,
+          tags: recipe.cuisine ? [recipe.cuisine] : [],
+          ingredients: recipe.ingredients.map(ing => ({ name: ing.name, amount: ing.amount, unit: ing.unit })),
+          steps: recipe.steps.map(instruction => ({ instruction })),
+        }),
+      })
+      if (res.ok) setSaved(true)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const meta = [
+    recipe.cuisine,
+    recipe.flavorProfile,
+    recipe.prepMinutes != null ? `prep ${recipe.prepMinutes} min` : null,
+    recipe.cookMinutes != null ? `cook ${recipe.cookMinutes} min` : null,
+    recipe.portions != null ? `${recipe.portions} portions` : null,
+  ].filter(Boolean)
+
+  return (
+    <div
+      onClick={onClose}
+      style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(4,4,6,0.86)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{ background: '#161618', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 24, padding: 28, maxWidth: 560, width: '100%', maxHeight: '82vh', overflowY: 'auto', boxShadow: '0 32px 80px rgba(0,0,0,0.65)' }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 500, color: '#52525A', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 5 }}>
+              {meal.mealType}{meal.calories ? ` · ${meal.calories} kcal` : ''}{meal.protein ? ` · ${meal.protein}g protein` : ''}
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#EEEEF2', letterSpacing: '-0.02em' }}>{meal.title}</div>
+          </div>
+          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: '#6E6E76', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: '7px 10px', borderRadius: 10, flexShrink: 0 }}>✕</button>
+        </div>
+
+        {meta.length > 0 && (
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 18 }}>
+            {meta.map((m, i) => (
+              <span key={i} style={{ fontSize: 10, color: '#9E9EA6', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 999, padding: '3px 10px' }}>
+                {m}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Ingredients */}
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 8 }}>
+          Ingredients
+        </div>
+        <div style={{ marginBottom: 18, borderRadius: 14, background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', padding: '10px 14px' }}>
+          {recipe.ingredients.map((ing, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '4px 0', borderBottom: i < recipe.ingredients.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+              <span style={{ fontSize: 13, color: '#D4D4D8' }}>{ing.name}</span>
+              <span style={{ fontSize: 12, color: '#9E9EA6', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                {ing.amount} {ing.unit}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Steps */}
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 8 }}>
+          Method
+        </div>
+        <ol style={{ margin: 0, paddingLeft: 22, listStyle: 'decimal', display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
+          {recipe.steps.map((step, i) => (
+            <li key={i} style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.6 }}>{step}</li>
+          ))}
+        </ol>
+
+        <button
+          onClick={saveToLibrary}
+          disabled={saving || saved}
+          style={{
+            width: '100%', padding: '9px 16px', borderRadius: 10, cursor: saved ? 'default' : 'pointer',
+            fontSize: 12, fontWeight: 600,
+            background: saved ? 'rgba(127,213,170,0.10)' : 'rgba(184,164,255,0.10)',
+            border: `1px solid ${saved ? 'rgba(127,213,170,0.25)' : 'rgba(184,164,255,0.25)'}`,
+            color: saved ? '#7FD5AA' : '#B8A4FF',
+          }}
+        >
+          {saved ? '✓ Saved to recipe library' : saving ? 'Saving…' : 'Save to recipe library'}
         </button>
       </div>
     </div>
