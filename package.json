@@ -4,21 +4,28 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma db push --accept-data-loss || true && next build",
+    "build": "prisma db push --accept-data-loss || true && drizzle-kit migrate || true && next build",
     "start": "next start",
     "lint": "eslint",
     "db:push": "prisma db push",
+    "db:invest:generate": "drizzle-kit generate",
+    "db:invest:migrate": "drizzle-kit migrate",
+    "db:invest:studio": "drizzle-kit studio",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test": "vitest run lib/invest"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",
+    "@neondatabase/serverless": "^1.1.0",
     "@prisma/client": "^6.19.3",
     "@vercel/blob": "^2.4.0",
+    "decimal.js": "^10.6.0",
+    "drizzle-orm": "^0.45.2",
     "googleapis": "^171.4.0",
     "jsonrepair": "^3.14.0",
     "lucide-react": "^1.17.0",
@@ -28,17 +35,20 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^3.8.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
