@@ -1,6 +1,9 @@
 import { asc, desc, eq } from 'drizzle-orm'
 import AssetsManager, { type AssetRow } from '@/components/invest/AssetsManager'
-import { getInvestDb, assets, priceSnapshots } from '@/lib/invest/db'
+import CashManager, { type CashRow } from '@/components/invest/CashManager'
+import SyncNowButton from '@/components/invest/SyncNowButton'
+import { getInvestDb, assets, cashBalances, priceSnapshots, syncRuns } from '@/lib/invest/db'
+import { formatDateTime } from '@/lib/invest/format'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,12 +43,37 @@ function EnvBadge({ label, set }: { label: string; set: boolean }) {
 
 export default async function NastaveniPage() {
   let initialAssets: AssetRow[] = []
+  let cashRows: CashRow[] = []
+  let recentSyncs: Array<{ id: string; startedAt: Date; status: string; ordersImported: number; dividendsImported: number; error: string | null }> = []
   let dbError: string | null = null
   try {
     initialAssets = await loadAssets()
+    const db = getInvestDb()
+    const cash = await db.select().from(cashBalances)
+    cashRows = cash.map((c) => ({
+      id: c.id,
+      currency: c.currency,
+      amount: c.amount,
+      source: c.source,
+      updatedAt: c.updatedAt.toISOString(),
+    }))
+    recentSyncs = await db
+      .select({
+        id: syncRuns.id,
+        startedAt: syncRuns.startedAt,
+        status: syncRuns.status,
+        ordersImported: syncRuns.ordersImported,
+        dividendsImported: syncRuns.dividendsImported,
+        error: syncRuns.error,
+      })
+      .from(syncRuns)
+      .orderBy(desc(syncRuns.startedAt))
+      .limit(3)
   } catch (e) {
     dbError = e instanceof Error ? e.message : 'Neznámá chyba databáze'
   }
+
+  const unmapped = initialAssets.filter((a) => a.needsMapping)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
@@ -83,10 +111,54 @@ export default async function NastaveniPage() {
 
       <section>
         <h2 className="fin-serif" style={{ fontSize: 20, margin: '0 0 16px' }}>
+          Trading212 synchronizace
+        </h2>
+        <div className="fin-card" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <SyncNowButton />
+          {unmapped.length > 0 && (
+            <div>
+              <div className="fin-label" style={{ marginBottom: 6 }}>Assety čekající na ruční spárování</div>
+              <p className="fin-warn" style={{ margin: 0, fontSize: 13 }}>
+                {unmapped.map((a) => a.ticker).join(', ')} — u těchto assetů se nepodařilo
+                automaticky určit standardní ticker. Uprav jim ticker (a případně zapni manuální
+                ceny) v sekci Assety výše.
+              </p>
+            </div>
+          )}
+          {recentSyncs.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12 }}>
+              {recentSyncs.map((run) => (
+                <div key={run.id} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <span className={run.status === 'success' ? 'fin-badge fin-badge-gain' : run.status === 'error' ? 'fin-badge fin-badge-loss' : 'fin-badge fin-badge-warn'}>
+                    {run.status === 'success' ? 'OK' : run.status === 'error' ? 'chyba' : 'běží'}
+                  </span>
+                  <span className="fin-subtle">{formatDateTime(run.startedAt)}</span>
+                  <span className="fin-muted">
+                    {run.ordersImported} obj. · {run.dividendsImported} div.
+                  </span>
+                  {run.error && (
+                    <span className="fin-loss" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 320 }} title={run.error}>
+                      {run.error}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="fin-subtle" style={{ margin: 0, fontSize: 12 }}>
+            Sync je read-only (žádné zadávání obchodů) a idempotentní — objednávky a dividendy se
+            importují podle T212 ID, opakovaný běh nevytvoří duplicity. Běží i automaticky v rámci
+            denního cronu.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="fin-serif" style={{ fontSize: 20, margin: '0 0 16px' }}>
           Cash a měny
         </h2>
-        <div className="fin-card fin-empty">
-          Správa cash rezervy a synchronizace s Trading212 přijde ve Fázi 3.
+        <div className="fin-card">
+          <CashManager initialCash={cashRows} />
         </div>
       </section>
     </div>

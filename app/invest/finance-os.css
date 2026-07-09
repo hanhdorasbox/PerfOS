@@ -1,56 +1,55 @@
 /* ─── Finance OS design system ────────────────────────────────────────────────
-   Luxusní tmavý vzhled: hluboká čerň, zlatý akcent, serif pro velká čísla.
-   Tokeny jsou scopované na .finance-os, aby neovlivnily zbytek Performance OS. */
+   Ladí se zbytkem Performance OS: stejný systémový font a sdílené design
+   tokeny (surfaces, bordery, pastelové sémantické barvy z globals.css).
+   Vlastní zůstává jen jemný zlatý akcent pro klíčová čísla a CTA. */
 
 .finance-os {
-  /* Surfaces */
-  --fin-bg: #0a0a0b;
-  --fin-card: #121214;
-  --fin-card-hover: #17171a;
-  --fin-border: #1f1f23;
-  --fin-border-strong: #2a2a30;
+  /* Surfaces — shared with the rest of the app */
+  --fin-bg: var(--bg-app);
+  --fin-card: var(--bg-card);
+  --fin-card-hover: var(--bg-card-hover);
+  --fin-border: var(--border);
+  --fin-border-strong: var(--border-strong);
 
   /* Accent — gold, used sparingly */
   --fin-gold: #c9a961;
   --fin-gold-hover: #d4b876;
-  --fin-gold-bg: rgba(201, 169, 97, 0.08);
-  --fin-gold-border: rgba(201, 169, 97, 0.35);
+  --fin-gold-bg: rgba(201, 169, 97, 0.09);
+  --fin-gold-border: rgba(201, 169, 97, 0.3);
 
-  /* Semantic — muted, not loud */
-  --fin-gain: #4ade80;
-  --fin-gain-bg: rgba(74, 222, 128, 0.08);
-  --fin-loss: #f87171;
-  --fin-loss-bg: rgba(248, 113, 113, 0.08);
-  --fin-warn: #fbbf24;
-  --fin-warn-bg: rgba(251, 191, 36, 0.08);
+  /* Semantic — the app's pastel palette */
+  --fin-gain: var(--mint-text);
+  --fin-gain-bg: var(--mint-bg);
+  --fin-gain-border: var(--mint-border);
+  --fin-loss: var(--red-text);
+  --fin-loss-bg: var(--red-bg);
+  --fin-loss-border: var(--red-border);
+  --fin-warn: var(--amber-text);
+  --fin-warn-bg: var(--amber-bg);
+  --fin-warn-border: var(--amber-border);
 
   /* Text */
-  --fin-text: #ececef;
-  --fin-text-2: #9a9aa3;
-  --fin-text-3: #62626c;
+  --fin-text: var(--text-primary);
+  --fin-text-2: var(--text-secondary);
+  --fin-text-3: var(--text-muted);
 
-  --fin-radius: 12px;
+  --fin-radius: var(--r-md);
 
   color: var(--fin-text);
-  font-family: var(--font-fin-sans), ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.5;
 }
 
-/* Full-bleed deep-black background while a Finance OS page is mounted */
-body:has(.finance-os) {
-  background: #0a0a0b;
-}
-
-.fin-serif {
-  font-family: var(--font-fin-serif), Georgia, 'Times New Roman', serif;
-  font-weight: 500;
+/* Numbers use the system mono stack so tables align without a webfont */
+.fin-mono {
+  font-family: ui-monospace, 'SF Mono', 'Menlo', 'Cascadia Mono', monospace;
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
 
-.fin-mono {
-  font-family: var(--font-fin-mono), ui-monospace, 'SF Mono', Menlo, monospace;
-  font-variant-numeric: tabular-nums;
+/* Headline / big-number style — same family as the app, just heavier */
+.fin-serif {
+  font-weight: 650;
   letter-spacing: -0.02em;
 }
 
@@ -61,6 +60,7 @@ body:has(.finance-os) {
   border: 1px solid var(--fin-border);
   border-radius: var(--fin-radius);
   padding: 24px;
+  box-shadow: var(--shadow-card);
 }
 
 .fin-label {
@@ -72,20 +72,19 @@ body:has(.finance-os) {
 }
 
 .fin-h1 {
-  font-family: var(--font-fin-serif), Georgia, serif;
-  font-size: 28px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
   color: var(--fin-text);
 }
 
 .fin-value-lg {
-  font-family: var(--font-fin-serif), Georgia, serif;
-  font-size: 40px;
-  font-weight: 500;
-  letter-spacing: -0.015em;
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   line-height: 1.15;
   color: var(--fin-text);
+  font-variant-numeric: tabular-nums;
 }
 
 .fin-gain { color: var(--fin-gain); }
@@ -102,7 +101,7 @@ body:has(.finance-os) {
   align-items: center;
   gap: 7px;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid var(--fin-border-strong);
   background: transparent;
   color: var(--fin-text-2);
@@ -132,12 +131,12 @@ body:has(.finance-os) {
 .fin-btn-primary:hover {
   color: var(--fin-gold-hover);
   border-color: var(--fin-gold);
-  background: rgba(201, 169, 97, 0.12);
+  background: rgba(201, 169, 97, 0.13);
 }
 
 .fin-btn-danger:hover {
   color: var(--fin-loss);
-  border-color: rgba(248, 113, 113, 0.4);
+  border-color: var(--fin-loss-border);
 }
 
 /* ─── Forms ──────────────────────────────────────────────────────────────── */
@@ -146,7 +145,7 @@ body:has(.finance-os) {
 .fin-select {
   width: 100%;
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid var(--fin-border-strong);
   background: var(--fin-bg);
   color: var(--fin-text);
@@ -206,7 +205,7 @@ body:has(.finance-os) {
 .fin-table th.fin-num,
 .fin-table td.fin-num {
   text-align: right;
-  font-family: var(--font-fin-mono), ui-monospace, monospace;
+  font-family: ui-monospace, 'SF Mono', 'Menlo', 'Cascadia Mono', monospace;
   font-variant-numeric: tabular-nums;
 }
 
@@ -226,9 +225,9 @@ body:has(.finance-os) {
 }
 
 .fin-badge-gold { color: var(--fin-gold); border-color: var(--fin-gold-border); background: var(--fin-gold-bg); }
-.fin-badge-gain { color: var(--fin-gain); border-color: rgba(74, 222, 128, 0.3); background: var(--fin-gain-bg); }
-.fin-badge-loss { color: var(--fin-loss); border-color: rgba(248, 113, 113, 0.3); background: var(--fin-loss-bg); }
-.fin-badge-warn { color: var(--fin-warn); border-color: rgba(251, 191, 36, 0.3); background: var(--fin-warn-bg); }
+.fin-badge-gain { color: var(--fin-gain); border-color: var(--fin-gain-border); background: var(--fin-gain-bg); }
+.fin-badge-loss { color: var(--fin-loss); border-color: var(--fin-loss-border); background: var(--fin-loss-bg); }
+.fin-badge-warn { color: var(--fin-warn); border-color: var(--fin-warn-border); background: var(--fin-warn-bg); }
 
 .fin-tabs {
   display: flex;

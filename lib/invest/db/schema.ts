@@ -211,6 +211,21 @@ export const syncRuns = financeOs.table('sync_runs', {
   ordersImported: integer('orders_imported').notNull().default(0),
   dividendsImported: integer('dividends_imported').notNull().default(0),
   error: text('error'),
+  // Reconciliation differences (computed position vs. T212 /portfolio) —
+  // a mismatch means a bug or a missing transaction, surfaced on the dashboard
+  warnings: jsonb('warnings'),
+})
+
+// Cached T212 instrument metadata (the list is huge and changes rarely)
+export const t212Instruments = financeOs.table('t212_instruments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  t212Ticker: text('t212_ticker').notNull().unique(), // e.g. AAPL_US_EQ
+  name: text('name'),
+  shortName: text('short_name'), // usually the standard ticker, e.g. AAPL
+  isin: text('isin'),
+  currency: text('currency'),
+  type: text('type'), // STOCK | ETF | ...
+  fetchedAt: timestamp('fetched_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
 export const cronRuns = financeOs.table('cron_runs', {
@@ -239,3 +254,4 @@ export type AlertEvent = typeof alertEvents.$inferSelect
 export type FxRate = typeof fxRates.$inferSelect
 export type SyncRun = typeof syncRuns.$inferSelect
 export type CronRun = typeof cronRuns.$inferSelect
+export type T212Instrument = typeof t212Instruments.$inferSelect

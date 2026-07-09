@@ -24,6 +24,28 @@ export const manualPriceSchema = z.object({
   date: z.iso.date('Neplatné datum (YYYY-MM-DD)'),
 })
 
+export const transactionCreateSchema = z
+  .object({
+    assetId: z.uuid(),
+    type: z.enum(['buy', 'sell', 'dividend']),
+    quantity: z.coerce.number().positive('Počet kusů musí být kladný').optional(),
+    price: z.coerce.number().positive('Cena musí být kladná').optional(),
+    amount: z.coerce.number().positive('Částka musí být kladná'),
+    executedAt: z.iso.date('Neplatné datum (YYYY-MM-DD)'),
+    note: z.string().trim().max(300).optional(),
+  })
+  .refine((tx) => tx.type === 'dividend' || tx.quantity !== undefined, {
+    message: 'Počet kusů je u nákupu/prodeje povinný',
+    path: ['quantity'],
+  })
+
+export const cashUpsertSchema = z.object({
+  currency: z.enum(CURRENCIES, { error: 'Neplatná měna' }),
+  amount: z.coerce.number().min(0, 'Částka nesmí být záporná'),
+})
+
 export type AssetCreateInput = z.infer<typeof assetCreateSchema>
 export type AssetUpdateInput = z.infer<typeof assetUpdateSchema>
 export type ManualPriceInput = z.infer<typeof manualPriceSchema>
+export type TransactionCreateInput = z.infer<typeof transactionCreateSchema>
+export type CashUpsertInput = z.infer<typeof cashUpsertSchema>

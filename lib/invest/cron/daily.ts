@@ -2,8 +2,10 @@ import { eq } from 'drizzle-orm'
 import { getInvestDb, assets, cronRuns, fxRates, priceSnapshots } from '@/lib/invest/db'
 import { getMarketDataProvider, TickerNotFoundError } from '@/lib/invest/market-data'
 import { fetchCnbDailyRates } from '@/lib/invest/fx/cnb'
+import { syncTrading212 } from '@/lib/invest/sync/trading212'
 
 export interface DailyRunResult {
+  t212Synced: boolean
   pricesFetched: number
   pricesFailed: Array<{ ticker: string; error: string }>
   fxStored: string[]
@@ -37,9 +39,26 @@ export async function runDailyCron(): Promise<DailyRunResult> {
     .values({ job: 'daily', status: 'running' })
     .returning({ id: cronRuns.id })
 
-  const result: DailyRunResult = { pricesFetched: 0, pricesFailed: [], fxStored: [], errors: [] }
+  const result: DailyRunResult = {
+    t212Synced: false,
+    pricesFetched: 0,
+    pricesFailed: [],
+    fxStored: [],
+    errors: [],
+  }
 
   try {
+    // ── 0. Trading212 sync — an outage must not stop the price fetch;
+    //       the dashboard then shows how stale the T212 data is ──────────
+    if (process.env.T212_API_KEY) {
+      try {
+        await syncTrading212()
+        result.t212Synced = true
+      } catch (e) {
+        result.errors.push(`T212 sync: ${errorMessage(e)}`)
+      }
+    }
+
     // ── 1. Prices — sequential fetch, the provider throttles itself ──────
     const provider = getMarketDataProvider()
     const today = pragueToday()
