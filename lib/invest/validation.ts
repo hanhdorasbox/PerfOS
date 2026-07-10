@@ -44,6 +44,39 @@ export const cashUpsertSchema = z.object({
   amount: z.coerce.number().min(0, 'Částka nesmí být záporná'),
 })
 
+export const analysisCreateSchema = z.object({
+  assetId: z.uuid(),
+  title: z.string().trim().min(1, 'Název je povinný').max(140),
+})
+
+export const analysisUpdateSchema = z.object({
+  title: z.string().trim().min(1).max(140).optional(),
+  status: z.enum(['draft', 'active', 'archived']).optional(),
+  qualitativeNotes: z.string().max(20000).optional(),
+})
+
+export const analysisInputPutSchema = z.object({
+  field: z.string().min(1).max(50),
+  // null resets the override back to the fetched value
+  manualValue: z.union([z.coerce.number(), z.null()]),
+  note: z.string().trim().max(300).nullable().optional(),
+})
+
+export const watchlistCreateSchema = z.object({
+  assetId: z.uuid(),
+  targetMos: z.coerce
+    .number()
+    .min(0, 'Target MoS nesmí být záporný')
+    .max(0.95, 'Target MoS je zlomek, např. 0,25'),
+  note: z.string().trim().max(300).optional(),
+})
+
+export const watchlistUpdateSchema = z.object({
+  id: z.uuid(),
+  targetMos: z.coerce.number().min(0).max(0.95).optional(),
+  note: z.string().trim().max(300).nullable().optional(),
+})
+
 export type AssetCreateInput = z.infer<typeof assetCreateSchema>
 export type AssetUpdateInput = z.infer<typeof assetUpdateSchema>
 export type ManualPriceInput = z.infer<typeof manualPriceSchema>

@@ -1,14 +1,16 @@
 import { eq } from 'drizzle-orm'
-import { getInvestDb, assets, cronRuns, fxRates, priceSnapshots } from '@/lib/invest/db'
+import { getInvestDb, analyses, assets, cronRuns, fxRates, priceSnapshots } from '@/lib/invest/db'
 import { getMarketDataProvider, TickerNotFoundError } from '@/lib/invest/market-data'
 import { fetchCnbDailyRates } from '@/lib/invest/fx/cnb'
 import { syncTrading212 } from '@/lib/invest/sync/trading212'
+import { recomputeAnalysis } from '@/lib/invest/valuation/service'
 
 export interface DailyRunResult {
   t212Synced: boolean
   pricesFetched: number
   pricesFailed: Array<{ ticker: string; error: string }>
   fxStored: string[]
+  analysesRecomputed: number
   errors: string[]
 }
 
@@ -44,6 +46,7 @@ export async function runDailyCron(): Promise<DailyRunResult> {
     pricesFetched: 0,
     pricesFailed: [],
     fxStored: [],
+    analysesRecomputed: 0,
     errors: [],
   }
 
@@ -111,7 +114,25 @@ export async function runDailyCron(): Promise<DailyRunResult> {
       result.errors.push(`FX: ${errorMessage(e)}`)
     }
 
-    // Steps 3–5 (portfolio recompute, MoS, alerts) arrive in later phases.
+    // ── 4. Recompute fair value + margin of safety of active analyses ────
+    try {
+      const activeAnalyses = await db
+        .select({ id: analyses.id, assetId: analyses.assetId })
+        .from(analyses)
+        .where(eq(analyses.status, 'active'))
+      for (const analysis of activeAnalyses) {
+        try {
+          await recomputeAnalysis(db, analysis.id, analysis.assetId)
+          result.analysesRecomputed += 1
+        } catch (e) {
+          result.errors.push(`analysis ${analysis.id}: ${errorMessage(e)}`)
+        }
+      }
+    } catch (e) {
+      result.errors.push(`analyses: ${errorMessage(e)}`)
+    }
+
+    // Step 5 (alert rules evaluation) arrives in Phase 5.
 
     const failures = [
       ...result.errors,
