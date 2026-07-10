@@ -1,0 +1,1 @@
+ALTER TABLE "finance_os"."analysis_inputs" ADD COLUMN "note" text;

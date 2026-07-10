@@ -154,6 +154,7 @@ export const analysisInputs = financeOs.table(
     manualValue: numeric('manual_value'), // manual override (null = not overridden)
     source: text('source').notNull(), // "finnhub" | "manual" | "computed"
     snapshotAt: timestamp('snapshot_at', { withTimezone: true }).notNull().defaultNow(),
+    note: text('note'), // e.g. where a sector benchmark number comes from
   },
   (t) => [unique('analysis_inputs_analysis_field_unique').on(t.analysisId, t.field)],
 )
