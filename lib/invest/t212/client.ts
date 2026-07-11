@@ -86,10 +86,11 @@ const BASE_URLS = {
 
 export class T212Client {
   private baseUrl: string
-  /** Set once auth succeeded against baseUrl — stops further env fallback. */
-  private envResolved = false
-  private readonly fallbackUrl: string
-  private readonly authHeader: string
+  private authHeader: string
+  /** Locked once a (host, auth-header) combo authenticated successfully. */
+  private resolved = false
+  /** Remaining (host, header) combos to probe on the first auth failure. */
+  private readonly candidates: Array<{ baseUrl: string; authHeader: string }>
 
   constructor(opts?: { apiKey?: string; apiSecret?: string; env?: string }) {
     const apiKey = opts?.apiKey ?? process.env.T212_API_KEY
@@ -99,17 +100,38 @@ export class T212Client {
     if (!apiKey) {
       throw new T212Error('T212_API_KEY is not configured')
     }
-    // T212 keys are bound to one environment. A key from the other account
-    // type than T212_ENV says is a common misconfiguration, so on the first
-    // auth failure we probe the other base URL once and stick with whichever
-    // the key actually belongs to. Both hosts are read-only for this client.
-    this.baseUrl = BASE_URLS[env]
-    this.fallbackUrl = env === 'live' ? BASE_URLS.demo : BASE_URLS.live
-    // HTTP Basic: API_KEY:API_SECRET in Base64. Some T212 keys come without
-    // a separate secret — then the key alone fills both roles' slot.
-    this.authHeader = apiSecret
-      ? `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString('base64')}`
-      : apiKey
+
+    // Two common misconfigurations self-heal here: a key bound to the other
+    // environment than T212_ENV says, and a filled-in T212_API_SECRET that
+    // turns the header into Basic auth even though T212 expects the raw key.
+    // On the first auth failure the client probes the remaining
+    // (host, header) combos once and locks in whichever works.
+    // Both hosts are read-only for this client.
+    const headers = [apiKey.trim()]
+    if (apiSecret) {
+      headers.unshift(`Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString('base64')}`)
+    }
+    const hosts = env === 'live' ? [BASE_URLS.live, BASE_URLS.demo] : [BASE_URLS.demo, BASE_URLS.live]
+    this.candidates = hosts.flatMap((baseUrl) => headers.map((authHeader) => ({ baseUrl, authHeader })))
+
+    const first = this.candidates.shift()!
+    this.baseUrl = first.baseUrl
+    this.authHeader = first.authHeader
+  }
+
+  private async resolveAuth(path: string): Promise<Response | null> {
+    for (const candidate of this.candidates) {
+      const res = await fetch(`${candidate.baseUrl}${path}`, {
+        headers: { Authorization: candidate.authHeader },
+        cache: 'no-store',
+      })
+      if (res.status !== 401 && res.status !== 403) {
+        this.baseUrl = candidate.baseUrl
+        this.authHeader = candidate.authHeader
+        return res
+      }
+    }
+    return null
   }
 
   /**
@@ -118,10 +140,27 @@ export class T212Client {
    */
   private async request(path: string): Promise<unknown> {
     for (let attempt = 0; attempt < 3; attempt++) {
-      const res = await fetch(`${this.baseUrl}${path}`, {
+      let res = await fetch(`${this.baseUrl}${path}`, {
         headers: { Authorization: this.authHeader },
         cache: 'no-store',
       })
+
+      if ((res.status === 401 || res.status === 403) && !this.resolved) {
+        this.resolved = true
+        const probed = await this.resolveAuth(path)
+        if (!probed) {
+          throw new T212Error(
+            `T212 auth failed (HTTP ${res.status}) na live i demo — klíč je neplatný nebo neúplný`,
+            res.status,
+          )
+        }
+        res = probed
+      } else if (res.status === 401 || res.status === 403) {
+        throw new T212Error(
+          `T212 auth failed (HTTP ${res.status}) — check API key/secret/env`,
+          res.status,
+        )
+      }
 
       if (res.status === 429) {
         const resetHeader = res.headers.get('x-ratelimit-reset')
@@ -130,30 +169,11 @@ export class T212Client {
         await new Promise((resolve) => setTimeout(resolve, waitMs))
         continue
       }
-      if (res.status === 401 || res.status === 403) {
-        if (!this.envResolved) {
-          // Probe the other environment once — the key may be live while
-          // T212_ENV says demo (or vice versa)
-          this.envResolved = true
-          const probe = await fetch(`${this.fallbackUrl}${path}`, {
-            headers: { Authorization: this.authHeader },
-            cache: 'no-store',
-          })
-          if (probe.ok) {
-            this.baseUrl = this.fallbackUrl
-            return probe.json()
-          }
-        }
-        throw new T212Error(
-          `T212 auth failed (HTTP ${res.status}) — check API key/secret/env`,
-          res.status,
-        )
-      }
       if (!res.ok) {
         throw new T212Error(`T212 HTTP ${res.status} on ${path}`, res.status)
       }
 
-      this.envResolved = true
+      this.resolved = true
       const remaining = Number(res.headers.get('x-ratelimit-remaining'))
       if (Number.isFinite(remaining) && remaining <= 1) {
         // Be polite before the next call on this endpoint family
