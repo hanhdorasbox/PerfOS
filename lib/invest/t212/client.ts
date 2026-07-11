@@ -79,20 +79,32 @@ function str(obj: JsonRecord, key: string): string | null {
   return typeof v === 'string' && v !== '' ? v : null
 }
 
+const BASE_URLS = {
+  live: 'https://live.trading212.com/api/v0',
+  demo: 'https://demo.trading212.com/api/v0',
+} as const
+
 export class T212Client {
-  private readonly baseUrl: string
+  private baseUrl: string
+  /** Set once auth succeeded against baseUrl — stops further env fallback. */
+  private envResolved = false
+  private readonly fallbackUrl: string
   private readonly authHeader: string
 
   constructor(opts?: { apiKey?: string; apiSecret?: string; env?: string }) {
     const apiKey = opts?.apiKey ?? process.env.T212_API_KEY
     const apiSecret = opts?.apiSecret ?? process.env.T212_API_SECRET
-    const env = opts?.env ?? process.env.T212_ENV ?? 'demo'
+    const env = (opts?.env ?? process.env.T212_ENV) === 'live' ? 'live' : 'demo'
 
     if (!apiKey) {
       throw new T212Error('T212_API_KEY is not configured')
     }
-    this.baseUrl =
-      env === 'live' ? 'https://live.trading212.com/api/v0' : 'https://demo.trading212.com/api/v0'
+    // T212 keys are bound to one environment. A key from the other account
+    // type than T212_ENV says is a common misconfiguration, so on the first
+    // auth failure we probe the other base URL once and stick with whichever
+    // the key actually belongs to. Both hosts are read-only for this client.
+    this.baseUrl = BASE_URLS[env]
+    this.fallbackUrl = env === 'live' ? BASE_URLS.demo : BASE_URLS.live
     // HTTP Basic: API_KEY:API_SECRET in Base64. Some T212 keys come without
     // a separate secret — then the key alone fills both roles' slot.
     this.authHeader = apiSecret
@@ -119,12 +131,29 @@ export class T212Client {
         continue
       }
       if (res.status === 401 || res.status === 403) {
-        throw new T212Error(`T212 auth failed (HTTP ${res.status}) — check API key/secret/env`, res.status)
+        if (!this.envResolved) {
+          // Probe the other environment once — the key may be live while
+          // T212_ENV says demo (or vice versa)
+          this.envResolved = true
+          const probe = await fetch(`${this.fallbackUrl}${path}`, {
+            headers: { Authorization: this.authHeader },
+            cache: 'no-store',
+          })
+          if (probe.ok) {
+            this.baseUrl = this.fallbackUrl
+            return probe.json()
+          }
+        }
+        throw new T212Error(
+          `T212 auth failed (HTTP ${res.status}) — check API key/secret/env`,
+          res.status,
+        )
       }
       if (!res.ok) {
         throw new T212Error(`T212 HTTP ${res.status} on ${path}`, res.status)
       }
 
+      this.envResolved = true
       const remaining = Number(res.headers.get('x-ratelimit-remaining'))
       if (Number.isFinite(remaining) && remaining <= 1) {
         // Be polite before the next call on this endpoint family
