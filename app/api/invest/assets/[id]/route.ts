@@ -13,14 +13,14 @@ type Ctx = { params: Promise<{ id: string }> }
 export async function PATCH(req: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params
   if (!idSchema.safeParse(id).success) {
-    return NextResponse.json({ error: 'Neplatné ID' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
   }
 
   const body = await req.json().catch(() => null)
   const parsed = assetUpdateSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Neplatný vstup' },
+      { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
       { status: 400 },
     )
   }
@@ -35,7 +35,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
       .limit(1)
     if (conflict) {
       return NextResponse.json(
-        { error: `Asset ${parsed.data.ticker} už existuje` },
+        { error: `Asset ${parsed.data.ticker} already exists` },
         { status: 409 },
       )
     }
@@ -43,7 +43,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
 
   const [updated] = await db.update(assets).set(parsed.data).where(eq(assets.id, id)).returning()
   if (!updated) {
-    return NextResponse.json({ error: 'Asset nenalezen' }, { status: 404 })
+    return NextResponse.json({ error: 'Asset not found' }, { status: 404 })
   }
   return NextResponse.json({ asset: updated })
 }
@@ -51,13 +51,13 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
 export async function DELETE(_req: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params
   if (!idSchema.safeParse(id).success) {
-    return NextResponse.json({ error: 'Neplatné ID' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
   }
 
   const db = getInvestDb()
   const [deleted] = await db.delete(assets).where(eq(assets.id, id)).returning()
   if (!deleted) {
-    return NextResponse.json({ error: 'Asset nenalezen' }, { status: 404 })
+    return NextResponse.json({ error: 'Asset not found' }, { status: 404 })
   }
   return NextResponse.json({ ok: true })
 }

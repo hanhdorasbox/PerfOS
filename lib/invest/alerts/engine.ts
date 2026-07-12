@@ -18,12 +18,12 @@ import { sendEmail } from '@/lib/invest/email/send'
 import { AlertEmail, type AlertEmailEvent } from '@/lib/invest/email/templates'
 
 export const ALERT_TYPE_LABELS: Record<AlertRule['type'], string> = {
-  price_vs_fair_value: 'Cena vs. fair value',
-  position_weight: 'Váha pozice',
-  drawdown_from_peak: 'Pokles od maxima',
-  pe_percentile: 'P/E percentil',
-  cash_below: 'Nízká cash rezerva',
-  analysis_stale: 'Zastaralá analýza',
+  price_vs_fair_value: 'Price vs. fair value',
+  position_weight: 'Position weight',
+  drawdown_from_peak: 'Drawdown from peak',
+  pe_percentile: 'P/E percentile',
+  cash_below: 'Low cash reserve',
+  analysis_stale: 'Stale analysis',
 }
 
 interface Trigger {
@@ -120,13 +120,13 @@ function evalPriceVsFairValue(params: Params, ctx: EngineContext): Trigger | nul
 
     if (fv > 0 && price >= fv * (1 + threshold)) {
       lines.push(
-        `${a.ticker}: cena ${formatMoney(price, a.currency)} je ${formatPercent((price - fv) / fv)} nad fair value ${formatMoney(fv, a.currency)} („${a.title}“).`,
+        `${a.ticker}: price ${formatMoney(price, a.currency)} is ${formatPercent((price - fv) / fv)} above fair value ${formatMoney(fv, a.currency)} (“${a.title}”).`,
       )
       hits.push({ ticker: a.ticker, kind: 'above_fair_value', price, fairValue: fv })
     }
     if (mos !== null && a.targetMos !== null && mos >= Number(a.targetMos)) {
       lines.push(
-        `${a.ticker}: margin of safety ${formatPercentSigned(mos)} dosáhl targetu ${formatPercent(Number(a.targetMos))} — cena ${formatMoney(price, a.currency)}, fair value ${formatMoney(fv, a.currency)}.`,
+        `${a.ticker}: margin of safety ${formatPercentSigned(mos)} reached the target ${formatPercent(Number(a.targetMos))} — price ${formatMoney(price, a.currency)}, fair value ${formatMoney(fv, a.currency)}.`,
       )
       hits.push({ ticker: a.ticker, kind: 'mos_target_reached', mos, targetMos: Number(a.targetMos) })
     }
@@ -144,7 +144,7 @@ function evalPositionWeight(params: Params, ctx: EngineContext): Trigger | null 
     if (onlyAsset && p.assetId !== onlyAsset) continue
     const weight = p.weight !== null ? Number(p.weight) : null
     if (weight !== null && weight > threshold) {
-      lines.push(`${p.ticker}: váha v portfoliu ${formatPercent(weight)} překročila práh ${formatPercent(threshold)}.`)
+      lines.push(`${p.ticker}: portfolio weight ${formatPercent(weight)} exceeded the threshold ${formatPercent(threshold)}.`)
       hits.push({ ticker: p.ticker, weight, threshold })
     }
   }
@@ -179,7 +179,7 @@ async function evalDrawdown(params: Params, ctx: EngineContext): Promise<Trigger
     const dd = drawdownFromPeak(series)
     if (dd && dd.drawdown >= threshold) {
       lines.push(
-        `${t.ticker}: pokles ${formatPercent(dd.drawdown)} od maxima ${formatMoney(dd.peak, t.currency)} za posledních ${periodDays} dní.`,
+        `${t.ticker}: drawdown ${formatPercent(dd.drawdown)} from the peak ${formatMoney(dd.peak, t.currency)} over the last ${periodDays} days.`,
       )
       hits.push({ ticker: t.ticker, drawdown: dd.drawdown, peak: dd.peak, periodDays })
     }
@@ -212,7 +212,7 @@ async function evalPePercentile(params: Params, ctx: EngineContext): Promise<Tri
   return {
     payload: { ticker, currentPe: current, percentile: p, cutoff: cut, samples: series.length },
     lines: [
-      `${ticker}: aktuální P/E ${current.toFixed(1)} je nad ${Math.round(p * 100)}. percentilem vlastní historie (${cut.toFixed(1)}, ${series.length} snapshotů).`,
+      `${ticker}: current P/E ${current.toFixed(1)} is above the ${Math.round(p * 100)}th percentile of its own history (${cut.toFixed(1)}, ${series.length} snapshots).`,
     ],
   }
 }
@@ -239,7 +239,7 @@ function evalAnalysisStale(params: Params, ctx: EngineContext): Trigger | null {
     payload: { analyses: stale.map((a) => ({ ticker: a.ticker, updatedAt: a.updatedAt })) },
     lines: stale.map(
       (a) =>
-        `${a.ticker}: aktivní analýza „${a.title}“ nebyla aktualizována ${Math.floor(monthsBetween(a.updatedAt, now))} měsíců.`,
+        `${a.ticker}: active analysis “${a.title}” hasn't been updated in ${Math.floor(monthsBetween(a.updatedAt, now))} months.`,
     ),
   }
 }
@@ -321,7 +321,7 @@ export async function evaluateAlertRules(): Promise<AlertRunResult> {
       const sent = await sendEmail(
         emailEvents.length === 1
           ? `Finance OS alert: ${emailEvents[0].ruleName}`
-          : `Finance OS: ${emailEvents.length} alertů`,
+          : `Finance OS: ${emailEvents.length} alerts`,
         AlertEmail({ events: emailEvents }),
       )
       if (sent) {

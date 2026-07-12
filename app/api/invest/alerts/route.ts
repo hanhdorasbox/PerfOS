@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const parsed = alertRuleCreateSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Neplatný vstup' },
+      { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
       { status: 400 },
     )
   }
@@ -40,7 +40,7 @@ export async function PATCH(req: NextRequest) {
   const parsed = alertRuleUpdateSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Neplatný vstup' },
+      { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
       { status: 400 },
     )
   }
@@ -48,7 +48,7 @@ export async function PATCH(req: NextRequest) {
   const { id, ...patch } = parsed.data
   const [updated] = await db.update(alertRules).set(patch).where(eq(alertRules.id, id)).returning()
   if (!updated) {
-    return NextResponse.json({ error: 'Pravidlo nenalezeno' }, { status: 404 })
+    return NextResponse.json({ error: 'Rule not found' }, { status: 404 })
   }
   return NextResponse.json({ rule: updated })
 }
@@ -56,13 +56,13 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id')
   if (!id || !z.uuid().safeParse(id).success) {
-    return NextResponse.json({ error: 'Neplatné ID (?id=)' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid ID (?id=)' }, { status: 400 })
   }
   const db = getInvestDb()
   await db.delete(alertEvents).where(eq(alertEvents.ruleId, id))
   const [deleted] = await db.delete(alertRules).where(eq(alertRules.id, id)).returning()
   if (!deleted) {
-    return NextResponse.json({ error: 'Pravidlo nenalezeno' }, { status: 404 })
+    return NextResponse.json({ error: 'Rule not found' }, { status: 404 })
   }
   return NextResponse.json({ ok: true })
 }

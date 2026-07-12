@@ -64,8 +64,8 @@ export default async function AnalysisPage(props: { params: Promise<{ id: string
         <h2 className="fin-serif" style={{ fontSize: 22, margin: 0 }}>
           <span className="fin-mono">{asset.ticker}</span> — {asset.name}
         </h2>
-        <Link href="/invest/analyza" className="fin-subtle" style={{ marginLeft: 'auto', fontSize: 13, textDecoration: 'none' }}>
-          ← zpět na analýzy
+        <Link href="/invest/analysis" className="fin-subtle" style={{ marginLeft: 'auto', fontSize: 13, textDecoration: 'none' }}>
+          ← back to analyses
         </Link>
       </div>
       <AnalysisCalculator

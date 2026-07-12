@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   const parsed = assetCreateSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Neplatný vstup' },
+      { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
       { status: 400 },
     )
   }
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     .where(eq(assets.ticker, parsed.data.ticker))
     .limit(1)
   if (existing) {
-    return NextResponse.json({ error: `Asset ${parsed.data.ticker} už existuje` }, { status: 409 })
+    return NextResponse.json({ error: `Asset ${parsed.data.ticker} already exists` }, { status: 409 })
   }
 
   const [created] = await db

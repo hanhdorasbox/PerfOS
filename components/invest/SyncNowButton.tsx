@@ -17,19 +17,19 @@ export default function SyncNowButton() {
       const data = await res.json().catch(() => null)
       if (!res.ok) {
         setIsError(true)
-        setMessage(data?.error ?? `Sync selhal (${res.status})`)
+        setMessage(data?.error ?? `Sync failed (${res.status})`)
       } else {
         setIsError(false)
         const warnings = Array.isArray(data.warnings) ? data.warnings.length : 0
         setMessage(
-          `Hotovo: ${data.ordersImported} objednávek, ${data.dividendsImported} dividend` +
-            (warnings > 0 ? `, ${warnings} nesrovnalostí` : ''),
+          `Done: ${data.ordersImported} orders, ${data.dividendsImported} dividends` +
+            (warnings > 0 ? `, ${warnings} discrepancies` : ''),
         )
         router.refresh()
       }
     } catch (e) {
       setIsError(true)
-      setMessage(e instanceof Error ? e.message : 'Sync selhal')
+      setMessage(e instanceof Error ? e.message : 'Sync failed')
     } finally {
       setRunning(false)
     }
@@ -38,7 +38,7 @@ export default function SyncNowButton() {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
       <button type="button" className="fin-btn fin-btn-primary" onClick={sync} disabled={running}>
-        {running ? 'Synchronizuji…' : 'Sync teď'}
+        {running ? 'Syncing…' : 'Sync now'}
       </button>
       {message && (
         <span className={isError ? 'fin-loss' : 'fin-muted'} style={{ fontSize: 12 }}>

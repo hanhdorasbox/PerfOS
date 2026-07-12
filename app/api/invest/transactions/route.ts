@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   const parsed = transactionCreateSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Neplatný vstup' },
+      { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
       { status: 400 },
     )
   }
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   const db = getInvestDb()
   const [asset] = await db.select().from(assets).where(eq(assets.id, input.assetId)).limit(1)
   if (!asset) {
-    return NextResponse.json({ error: 'Asset nenalezen' }, { status: 404 })
+    return NextResponse.json({ error: 'Asset not found' }, { status: 404 })
   }
 
   const assetPositions = await db
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     const holding = computeHolding(txs.filter((t) => t.type === 'buy' || t.type === 'sell'))
     if (new Decimal(input.quantity ?? 0).gt(holding.quantity)) {
       return NextResponse.json(
-        { error: `Nelze prodat víc, než držíš (${holding.quantity.toString()} ks)` },
+        { error: `Cannot sell more than you hold (${holding.quantity.toString()} shares)` },
         { status: 400 },
       )
     }

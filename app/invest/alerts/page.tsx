@@ -50,13 +50,13 @@ export default async function AlertyPage() {
       .from(assets)
       .orderBy(asc(assets.ticker))
   } catch (e) {
-    dbError = e instanceof Error ? e.message : 'Neznámá chyba'
+    dbError = e instanceof Error ? e.message : 'Unknown error'
   }
 
   if (dbError) {
     return (
       <div className="fin-card">
-        <p className="fin-warn" style={{ margin: 0, fontSize: 13 }}>Databáze není dostupná: {dbError}</p>
+        <p className="fin-warn" style={{ margin: 0, fontSize: 13 }}>Database unavailable: {dbError}</p>
       </div>
     )
   }
@@ -68,18 +68,18 @@ export default async function AlertyPage() {
       </div>
 
       <section>
-        <h3 className="fin-serif" style={{ fontSize: 18, margin: '0 0 12px' }}>Historie eventů</h3>
+        <h3 className="fin-serif" style={{ fontSize: 18, margin: '0 0 12px' }}>Event history</h3>
         <div className="fin-card" style={{ padding: 0, overflowX: 'auto' }}>
           {events.length === 0 ? (
-            <div className="fin-empty">Zatím žádný spuštěný alert.</div>
+            <div className="fin-empty">No alerts triggered yet.</div>
           ) : (
             <table className="fin-table">
               <thead>
                 <tr>
-                  <th>Kdy</th>
-                  <th>Pravidlo</th>
-                  <th>Hodnoty v momentě triggeru</th>
-                  <th>E-mail</th>
+                  <th>When</th>
+                  <th>Rule</th>
+                  <th>Values at trigger time</th>
+                  <th>Email</th>
                 </tr>
               </thead>
               <tbody>
@@ -94,7 +94,7 @@ export default async function AlertyPage() {
                     </td>
                     <td>
                       <span className={event.notified ? 'fin-badge fin-badge-gain' : 'fin-badge'}>
-                        {event.notified ? 'odesláno' : 'neodesláno'}
+                        {event.notified ? 'sent' : 'not sent'}
                       </span>
                     </td>
                   </tr>

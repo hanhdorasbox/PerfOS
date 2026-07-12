@@ -17,24 +17,24 @@ type Ctx = { params: Promise<{ id: string }> }
 export async function PUT(req: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params
   if (!idSchema.safeParse(id).success) {
-    return NextResponse.json({ error: 'Neplatné ID' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
   }
   const body = await req.json().catch(() => null)
   const parsed = analysisInputPutSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Neplatný vstup' },
+      { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
       { status: 400 },
     )
   }
   if (!isKnownField(parsed.data.field)) {
-    return NextResponse.json({ error: `Neznámé pole ${parsed.data.field}` }, { status: 400 })
+    return NextResponse.json({ error: `Unknown field ${parsed.data.field}` }, { status: 400 })
   }
 
   const db = getInvestDb()
   const [analysis] = await db.select().from(analyses).where(eq(analyses.id, id)).limit(1)
   if (!analysis) {
-    return NextResponse.json({ error: 'Analýza nenalezena' }, { status: 404 })
+    return NextResponse.json({ error: 'Analysis not found' }, { status: 404 })
   }
 
   const patch: { manualValue: string | null; note?: string | null } = {

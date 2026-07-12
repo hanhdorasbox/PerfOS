@@ -34,7 +34,7 @@ interface Props {
 
 type InputMap = Record<string, CalcInput>
 
-const STATUS_LABELS = { draft: 'rozpracovaná', active: 'aktivní', archived: 'archiv' } as const
+const STATUS_LABELS = { draft: 'draft', active: 'active', archived: 'archived' } as const
 
 function toMap(inputs: CalcInput[]): InputMap {
   return Object.fromEntries(inputs.map((i) => [i.field, i]))
@@ -101,7 +101,7 @@ export default function AnalysisCalculator({
     setSaving(null)
     if (!res.ok) {
       const data = await res.json().catch(() => null)
-      setError(data?.error ?? `Uložení pole selhalo (${res.status})`)
+      setError(data?.error ?? `Failed to save field (${res.status})`)
       return false
     }
     return true
@@ -157,7 +157,7 @@ export default function AnalysisCalculator({
     })
     if (!res.ok) {
       const data = await res.json().catch(() => null)
-      setError(data?.error ?? `Uložení selhalo (${res.status})`)
+      setError(data?.error ?? `Save failed (${res.status})`)
       return
     }
     router.refresh()
@@ -170,7 +170,7 @@ export default function AnalysisCalculator({
     const data = await res.json().catch(() => null)
     setRefetching(false)
     if (!res.ok) {
-      setError(data?.error ?? `Refetch selhal (${res.status})`)
+      setError(data?.error ?? `Refetch failed (${res.status})`)
       return
     }
     setRefetchDiffs(data.diffs ?? [])
@@ -199,11 +199,11 @@ export default function AnalysisCalculator({
       <div key={def.key} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <label className="fin-field-label" htmlFor={`field-${def.key}`} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 0 }}>
           {def.label}
-          {isFetched && <Database size={11} aria-label="hodnota z API" className="fin-subtle" />}
+          {isFetched && <Database size={11} aria-label="value from API" className="fin-subtle" />}
           {isOverridden && <span className="fin-badge fin-badge-gold" style={{ fontSize: 9, padding: '0 6px' }}>override</span>}
           {diff && diff.changePct !== null && (
             <span className="fin-badge fin-badge-warn" style={{ fontSize: 9, padding: '0 6px' }}>
-              fetched se změnilo o {formatPercentSigned(diff.changePct)}
+              fetched changed by {formatPercentSigned(diff.changePct)}
             </span>
           )}
         </label>
@@ -235,7 +235,7 @@ export default function AnalysisCalculator({
               type="button"
               className="fin-btn"
               style={{ padding: '4px 8px', fontSize: 11 }}
-              title="Reset na fetched hodnotu"
+              title="Reset to fetched value"
               onClick={() => void resetField(def)}
             >
               <RotateCcw size={11} />
@@ -258,7 +258,7 @@ export default function AnalysisCalculator({
             type="text"
             className="fin-input"
             style={{ fontSize: 12 }}
-            placeholder="Poznámka — odkud číslo mám"
+            placeholder="Note — where the number comes from"
             defaultValue={input.note ?? ''}
             onBlur={(e) => void saveNote(def, e.target.value.trim())}
           />
@@ -292,7 +292,7 @@ export default function AnalysisCalculator({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onBlur={() => title !== analysis.title && void patchAnalysis({ title })}
-          aria-label="Název analýzy"
+          aria-label="Analysis name"
         />
         <select
           className="fin-select"
@@ -303,7 +303,7 @@ export default function AnalysisCalculator({
             setStatus(next)
             void patchAnalysis({ status: next })
           }}
-          aria-label="Status analýzy"
+          aria-label="Analysis status"
         >
           {Object.entries(STATUS_LABELS).map(([value, label]) => (
             <option key={value} value={value}>{label}</option>
@@ -312,11 +312,11 @@ export default function AnalysisCalculator({
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
           {fundamentalsFetchedAt && (
             <span className="fin-subtle" style={{ fontSize: 11 }}>
-              fundamenty: {new Date(fundamentalsFetchedAt).toLocaleDateString('cs-CZ')}
+              fundamentals: {new Date(fundamentalsFetchedAt).toLocaleDateString('en-US')}
             </span>
           )}
           <button type="button" className="fin-btn" onClick={() => void refetch()} disabled={refetching}>
-            {refetching ? 'Stahuji…' : 'Aktualizovat fetched hodnoty'}
+            {refetching ? 'Fetching…' : 'Refresh fetched values'}
           </button>
         </span>
       </div>
@@ -344,14 +344,14 @@ export default function AnalysisCalculator({
           </div>
         </div>
         <div className="fin-card">
-          <div className="fin-label" style={{ marginBottom: 8 }}>Aktuální cena</div>
+          <div className="fin-label" style={{ marginBottom: 8 }}>Current price</div>
           <div className="fin-value-lg" style={{ fontSize: 28 }}>
             {price !== null ? formatMoney(price, asset.currency) : '—'}
           </div>
         </div>
         <div className="fin-card">
           <div className="fin-label" style={{ marginBottom: 8 }}>
-            Margin of safety{target !== null && <> · cíl {formatPercent(target)}</>}
+            Margin of safety{target !== null && <> · target {formatPercent(target)}</>}
           </div>
           <div className={`fin-value-lg ${mosClass}`} style={{ fontSize: 28 }}>
             {mos !== null ? formatPercentSigned(mos) : '—'}
@@ -361,7 +361,7 @@ export default function AnalysisCalculator({
 
       {computed.problems.length > 0 && (
         <div className="fin-card" style={{ borderColor: 'var(--fin-warn-border)' }}>
-          <div className="fin-label" style={{ marginBottom: 8 }}>K dopočtu fair value chybí</div>
+          <div className="fin-label" style={{ marginBottom: 8 }}>Missing for fair value calculation</div>
           <ul className="fin-warn" style={{ margin: 0, paddingLeft: 18, fontSize: 13 }}>
             {computed.problems.map((p, i) => (
               <li key={i}>
@@ -375,7 +375,7 @@ export default function AnalysisCalculator({
 
       {/* ── DCF inputs ── */}
       <div className="fin-card">
-        <div className="fin-label" style={{ marginBottom: 16 }}>DCF — vstupy (FCFF, 5 let + terminal)</div>
+        <div className="fin-label" style={{ marginBottom: 16 }}>DCF — inputs (FCFF, 5 years + terminal)</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
           {group('dcf').map(fieldRow)}
         </div>
@@ -383,7 +383,7 @@ export default function AnalysisCalculator({
 
       {/* ── WACC helper ── */}
       <div className="fin-card">
-        <div className="fin-label" style={{ marginBottom: 16 }}>Pomocník diskontní sazby (CAPM)</div>
+        <div className="fin-label" style={{ marginBottom: 16 }}>Discount-rate helper (CAPM)</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
           {group('wacc').map(fieldRow)}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, justifyContent: 'flex-end' }}>
@@ -404,7 +404,7 @@ export default function AnalysisCalculator({
                 void persistField('discountRate', value)
               }}
             >
-              Použít jako diskontní sazbu
+              Use as discount rate
             </button>
           </div>
         </div>
@@ -412,7 +412,7 @@ export default function AnalysisCalculator({
 
       {/* ── Relative valuation ── */}
       <div className="fin-card">
-        <div className="fin-label" style={{ marginBottom: 16 }}>Relativní valuace</div>
+        <div className="fin-label" style={{ marginBottom: 16 }}>Relative valuation</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
           {group('relative').map(fieldRow)}
         </div>
@@ -421,7 +421,7 @@ export default function AnalysisCalculator({
       {/* ── Sensitivity ── */}
       <div className="fin-card" style={{ overflowX: 'auto' }}>
         <div className="fin-label" style={{ marginBottom: 12 }}>
-          Sensitivity — fair value | řádky: diskontní sazba · sloupce: terminal growth
+          Sensitivity — fair value | rows: discount rate · columns: terminal growth
         </div>
         {computed.sensitivity ? (
           <table className="fin-table" style={{ fontSize: 12 }}>
@@ -475,14 +475,14 @@ export default function AnalysisCalculator({
             </tbody>
           </table>
         ) : (
-          <div className="fin-empty">Tabulka se zobrazí, až bude DCF kompletní.</div>
+          <div className="fin-empty">The table appears once the DCF is complete.</div>
         )}
       </div>
 
       {/* ── Qualitative notes ── */}
       <div className="fin-card">
         <div className="fin-label" style={{ marginBottom: 12 }}>
-          Kvalitativní poznámky (moat, management, rizika — markdown)
+          Qualitative notes (moat, management, risks — markdown)
         </div>
         <textarea
           className="fin-input"

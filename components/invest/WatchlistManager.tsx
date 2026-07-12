@@ -45,7 +45,7 @@ export default function WatchlistManager({
     setSaving(false)
     if (!res.ok) {
       const data = await res.json().catch(() => null)
-      setError(data?.error ?? `Chyba (${res.status})`)
+      setError(data?.error ?? `Error (${res.status})`)
       return
     }
     setForm((f) => ({ ...f, note: '' }))
@@ -64,7 +64,7 @@ export default function WatchlistManager({
   }
 
   async function remove(item: WatchlistRow) {
-    if (!window.confirm(`Odebrat ${item.ticker} z watchlistu?`)) return
+    if (!window.confirm(`Remove ${item.ticker} from the watchlist?`)) return
     await fetch(`/api/invest/watchlist?id=${item.id}`, { method: 'DELETE' })
     router.refresh()
   }
@@ -77,9 +77,9 @@ export default function WatchlistManager({
             <tr>
               <th>Ticker</th>
               <th className="fin-num">Target MoS</th>
-              <th className="fin-num">Aktuální MoS</th>
-              <th className="fin-num">Vzdálenost k cíli</th>
-              <th>Poznámka</th>
+              <th className="fin-num">Current MoS</th>
+              <th className="fin-num">Distance to target</th>
+              <th>Note</th>
               <th />
             </tr>
           </thead>
@@ -100,7 +100,7 @@ export default function WatchlistManager({
                       style={{ width: 72, textAlign: 'right', padding: '4px 8px' }}
                       defaultValue={String(Math.round(target * 1000) / 10)}
                       onBlur={(e) => void updateTarget(item, e.target.value)}
-                      aria-label={`Target MoS pro ${item.ticker} v procentech`}
+                      aria-label={`Target MoS for ${item.ticker} in percent`}
                     />{' '}
                     <span className="fin-subtle">%</span>
                   </td>
@@ -120,7 +120,7 @@ export default function WatchlistManager({
                       style={{ padding: '3px 9px', fontSize: 12 }}
                       onClick={() => void remove(item)}
                     >
-                      Odebrat
+                      Remove
                     </button>
                   </td>
                 </tr>
@@ -131,7 +131,7 @@ export default function WatchlistManager({
       )}
       {items.length === 0 && (
         <p className="fin-subtle" style={{ margin: 0, fontSize: 13 }}>
-          Watchlist je prázdný. Target MoS ({formatPercent(0.25)} = kupní práh) nastavíš u každého assetu.
+          Watchlist is empty. Set a target MoS ({formatPercent(0.25)} = buy threshold) for each asset.
         </p>
       )}
 
@@ -163,7 +163,7 @@ export default function WatchlistManager({
             />
           </div>
           <div style={{ flex: 1, minWidth: 160 }}>
-            <label className="fin-field-label" htmlFor="wl-note">Poznámka</label>
+            <label className="fin-field-label" htmlFor="wl-note">Note</label>
             <input
               id="wl-note"
               className="fin-input"
@@ -172,7 +172,7 @@ export default function WatchlistManager({
             />
           </div>
           <button type="submit" className="fin-btn fin-btn-primary" disabled={saving}>
-            {saving ? 'Přidávám…' : 'Na watchlist'}
+            {saving ? "Adding…" : "Add to watchlist"}
           </button>
         </form>
       )}

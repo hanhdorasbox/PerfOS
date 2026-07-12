@@ -13,7 +13,7 @@ type Ctx = { params: Promise<{ id: string }> }
 export async function GET(_req: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params
   if (!idSchema.safeParse(id).success) {
-    return NextResponse.json({ error: 'Neplatné ID' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
   }
 
   const db = getInvestDb()
@@ -31,14 +31,14 @@ export async function GET(_req: NextRequest, ctx: Ctx) {
 export async function POST(req: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params
   if (!idSchema.safeParse(id).success) {
-    return NextResponse.json({ error: 'Neplatné ID' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
   }
 
   const body = await req.json().catch(() => null)
   const parsed = manualPriceSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Neplatný vstup' },
+      { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
       { status: 400 },
     )
   }
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
   const db = getInvestDb()
   const [asset] = await db.select({ id: assets.id }).from(assets).where(eq(assets.id, id)).limit(1)
   if (!asset) {
-    return NextResponse.json({ error: 'Asset nenalezen' }, { status: 404 })
+    return NextResponse.json({ error: 'Asset not found' }, { status: 404 })
   }
 
   const [snapshot] = await db
@@ -64,12 +64,12 @@ export async function POST(req: NextRequest, ctx: Ctx) {
 export async function DELETE(req: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params
   if (!idSchema.safeParse(id).success) {
-    return NextResponse.json({ error: 'Neplatné ID' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
   }
 
   const date = req.nextUrl.searchParams.get('date')
   if (!date || !z.iso.date().safeParse(date).success) {
-    return NextResponse.json({ error: 'Neplatné datum (?date=YYYY-MM-DD)' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid date (?date=YYYY-MM-DD)' }, { status: 400 })
   }
 
   const db = getInvestDb()
@@ -79,7 +79,7 @@ export async function DELETE(req: NextRequest, ctx: Ctx) {
     .returning()
 
   if (deleted.length === 0) {
-    return NextResponse.json({ error: 'Cena nenalezena' }, { status: 404 })
+    return NextResponse.json({ error: 'Price not found' }, { status: 404 })
   }
   return NextResponse.json({ ok: true })
 }

@@ -150,7 +150,7 @@ export class T212Client {
         const probed = await this.resolveAuth(path)
         if (!probed) {
           throw new T212Error(
-            `T212 auth failed (HTTP ${res.status}) na live i demo — klíč je neplatný nebo neúplný`,
+            `T212 auth failed (HTTP ${res.status}) on both live and demo — the key is invalid or incomplete`,
             res.status,
           )
         }

@@ -24,7 +24,7 @@ export interface FieldDef {
 
 const growthYear = (year: number): FieldDef => ({
   key: `fcfGrowthY${year}`,
-  label: `Růst FCF — rok ${year}`,
+  label: `FCF growth — year ${year}`,
   format: 'percent',
   group: 'dcf',
   // Spec: default for the explicit years is the 3y revenue CAGR from the API
@@ -35,7 +35,7 @@ const growthYear = (year: number): FieldDef => ({
 export const FIELD_DEFS: FieldDef[] = [
   {
     key: 'fcfBase',
-    label: 'Výchozí FCF (rok 0)',
+    label: 'Base FCF (year 0)',
     format: 'money',
     group: 'dcf',
     fetch: (f) => f.fcf,
@@ -52,18 +52,18 @@ export const FIELD_DEFS: FieldDef[] = [
     format: 'percent',
     group: 'dcf',
     defaultValue: 0.025,
-    help: 'Musí být nižší než diskontní sazba',
+    help: 'Must be lower than the discount rate',
   },
   {
     key: 'discountRate',
-    label: 'Diskontní sazba (WACC)',
+    label: 'Discount rate (WACC)',
     format: 'percent',
     group: 'dcf',
-    help: 'Vyplň ručně, nebo použij pomocníka rf + beta × ERP',
+    help: 'Enter manually, or use the rf + beta × ERP helper',
   },
   {
     key: 'netDebt',
-    label: 'Čistý dluh (dluh − cash)',
+    label: 'Net debt (debt − cash)',
     format: 'money',
     group: 'dcf',
     fetch: (f) => (f.totalDebt !== null && f.cash !== null ? f.totalDebt - f.cash : null),
@@ -71,7 +71,7 @@ export const FIELD_DEFS: FieldDef[] = [
   },
   {
     key: 'sharesOutstanding',
-    label: 'Počet akcií',
+    label: 'Shares outstanding',
     format: 'number',
     group: 'dcf',
     fetch: (f) => f.sharesOutstanding,
@@ -79,7 +79,7 @@ export const FIELD_DEFS: FieldDef[] = [
   },
   {
     key: 'riskFreeRate',
-    label: 'Bezriziková sazba',
+    label: 'Risk-free rate',
     format: 'percent',
     group: 'wacc',
     defaultValue: 0.04,
@@ -109,10 +109,10 @@ export const FIELD_DEFS: FieldDef[] = [
   },
   {
     key: 'peBenchmark',
-    label: 'Sektorový P/E benchmark',
+    label: 'Sector P/E benchmark',
     format: 'number',
     group: 'relative',
-    help: 'Do poznámky napiš, odkud číslo máš',
+    help: 'Note where the number comes from',
   },
   {
     key: 'ebitda',
@@ -124,10 +124,10 @@ export const FIELD_DEFS: FieldDef[] = [
   },
   {
     key: 'evEbitdaBenchmark',
-    label: 'Sektorový EV/EBITDA benchmark',
+    label: 'Sector EV/EBITDA benchmark',
     format: 'number',
     group: 'relative',
-    help: 'Do poznámky napiš, odkud číslo máš',
+    help: 'Note where the number comes from',
   },
 ]
 

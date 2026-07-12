@@ -14,31 +14,31 @@ export interface AlertRuleRow {
 }
 
 const TYPE_LABELS: Record<string, string> = {
-  price_vs_fair_value: 'Cena vs. fair value / MoS target',
-  position_weight: 'Váha pozice nad prahem',
-  drawdown_from_peak: 'Pokles od maxima',
-  pe_percentile: 'P/E nad percentilem historie',
-  cash_below: 'Cash rezerva pod prahem',
-  analysis_stale: 'Aktivní analýza je stará',
+  price_vs_fair_value: 'Price vs. fair value / MoS target',
+  position_weight: 'Position weight above threshold',
+  drawdown_from_peak: 'Drawdown from peak',
+  pe_percentile: 'P/E above own-history percentile',
+  cash_below: 'Cash reserve below threshold',
+  analysis_stale: 'Active analysis is stale',
 }
 
 function describeParams(rule: AlertRuleRow, assets: AssetOption[]): string {
   const p = rule.params
   const asset = assets.find((a) => a.id === p.assetId)?.ticker
-  const pct = (v: unknown) => `${Math.round(Number(v) * 1000) / 10} %`
+  const pct = (v: unknown) => `${Math.round(Number(v) * 1000) / 10}%`
   switch (rule.type) {
     case 'price_vs_fair_value':
-      return `práh ${pct(p.thresholdPct ?? 0.1)}${asset ? ` · jen ${asset}` : ' · všechny aktivní analýzy'}`
+      return `threshold ${pct(p.thresholdPct ?? 0.1)}${asset ? ` · ${asset} only` : ' · all active analyses'}`
     case 'position_weight':
-      return `váha > ${pct(p.thresholdPct)}${asset ? ` · jen ${asset}` : ''}`
+      return `weight > ${pct(p.thresholdPct)}${asset ? ` · ${asset} only` : ''}`
     case 'drawdown_from_peak':
-      return `pokles ≥ ${pct(p.thresholdPct)} za ${p.periodDays ?? 180} dní${asset ? ` · jen ${asset}` : ' · celé portfolio'}`
+      return `drawdown ≥ ${pct(p.thresholdPct)} over ${p.periodDays ?? 180} days${asset ? ` · ${asset} only` : ' · whole portfolio'}`
     case 'pe_percentile':
-      return `${asset ?? '?'} · nad ${Math.round(Number(p.percentile ?? 0.9) * 100)}. percentilem`
+      return `${asset ?? '?'} · above ${Math.round(Number(p.percentile ?? 0.9) * 100)}th percentile`
     case 'cash_below':
-      return `cash < ${Number(p.thresholdCzk).toLocaleString('cs-CZ')} Kč`
+      return `cash < ${Number(p.thresholdCzk).toLocaleString('en-US')} CZK`
     case 'analysis_stale':
-      return `starší než ${p.months ?? 6} měsíců`
+      return `older than ${p.months ?? 6} months`
     default:
       return ''
   }
@@ -110,7 +110,7 @@ export default function AlertRulesManager({
     setSaving(false)
     if (!res.ok) {
       const data = await res.json().catch(() => null)
-      setError(data?.error ?? `Chyba (${res.status})`)
+      setError(data?.error ?? `Error (${res.status})`)
       return
     }
     setForm(emptyForm)
@@ -128,7 +128,7 @@ export default function AlertRulesManager({
   }
 
   async function remove(rule: AlertRuleRow) {
-    if (!window.confirm(`Smazat pravidlo „${rule.name}" včetně historie?`)) return
+    if (!window.confirm(`Delete rule “${rule.name}” including its history?`)) return
     await fetch(`/api/invest/alerts?id=${rule.id}`, { method: 'DELETE' })
     router.refresh()
   }
@@ -139,9 +139,9 @@ export default function AlertRulesManager({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span className="fin-label">Pravidla ({rules.length})</span>
+        <span className="fin-label">Rules ({rules.length})</span>
         <button type="button" className="fin-btn fin-btn-primary" onClick={() => setOpen(!open)}>
-          + Nové pravidlo
+          + New rule
         </button>
       </div>
 
@@ -149,18 +149,18 @@ export default function AlertRulesManager({
         <form onSubmit={submit} className="fin-card" style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
             <div>
-              <label className="fin-field-label" htmlFor="ar-name">Název *</label>
+              <label className="fin-field-label" htmlFor="ar-name">Name *</label>
               <input
                 id="ar-name"
                 className="fin-input"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="např. AAPL blízko targetu"
+                placeholder="e.g. AAPL near target"
                 required
               />
             </div>
             <div>
-              <label className="fin-field-label" htmlFor="ar-type">Typ</label>
+              <label className="fin-field-label" htmlFor="ar-type">Type</label>
               <select
                 id="ar-type"
                 className="fin-select"
@@ -173,7 +173,7 @@ export default function AlertRulesManager({
               </select>
             </div>
             <div>
-              <label className="fin-field-label" htmlFor="ar-cooldown">Cooldown (hodin)</label>
+              <label className="fin-field-label" htmlFor="ar-cooldown">Cooldown (hours)</label>
               <input
                 id="ar-cooldown"
                 type="number"
@@ -186,7 +186,7 @@ export default function AlertRulesManager({
 
             {(form.type === 'price_vs_fair_value' || form.type === 'position_weight' || form.type === 'drawdown_from_peak') && (
               <div>
-                <label className="fin-field-label" htmlFor="ar-threshold">Práh (%)</label>
+                <label className="fin-field-label" htmlFor="ar-threshold">Threshold (%)</label>
                 <input
                   id="ar-threshold"
                   className="fin-input fin-mono"
@@ -198,7 +198,7 @@ export default function AlertRulesManager({
             )}
             {form.type === 'drawdown_from_peak' && (
               <div>
-                <label className="fin-field-label" htmlFor="ar-period">Období (dní)</label>
+                <label className="fin-field-label" htmlFor="ar-period">Period (days)</label>
                 <input
                   id="ar-period"
                   type="number"
@@ -211,7 +211,7 @@ export default function AlertRulesManager({
             )}
             {form.type === 'pe_percentile' && (
               <div>
-                <label className="fin-field-label" htmlFor="ar-percentile">Percentil (%)</label>
+                <label className="fin-field-label" htmlFor="ar-percentile">Percentile (%)</label>
                 <input
                   id="ar-percentile"
                   className="fin-input fin-mono"
@@ -222,7 +222,7 @@ export default function AlertRulesManager({
             )}
             {form.type === 'cash_below' && (
               <div>
-                <label className="fin-field-label" htmlFor="ar-cash">Práh (Kč)</label>
+                <label className="fin-field-label" htmlFor="ar-cash">Threshold (CZK)</label>
                 <input
                   id="ar-cash"
                   className="fin-input fin-mono"
@@ -234,7 +234,7 @@ export default function AlertRulesManager({
             )}
             {form.type === 'analysis_stale' && (
               <div>
-                <label className="fin-field-label" htmlFor="ar-months">Stáří (měsíců)</label>
+                <label className="fin-field-label" htmlFor="ar-months">Age (months)</label>
                 <input
                   id="ar-months"
                   type="number"
@@ -248,7 +248,7 @@ export default function AlertRulesManager({
             {(needsAsset || optionalAsset) && (
               <div>
                 <label className="fin-field-label" htmlFor="ar-asset">
-                  Asset{optionalAsset ? ' (volitelné — jinak všechny)' : ' *'}
+                  Asset{optionalAsset ? ' (optional — otherwise all)' : ' *'}
                 </label>
                 <select
                   id="ar-asset"
@@ -257,7 +257,7 @@ export default function AlertRulesManager({
                   onChange={(e) => setForm({ ...form, assetId: e.target.value })}
                   required={needsAsset}
                 >
-                  <option value="">— všechny —</option>
+                  <option value="">— all —</option>
                   {assets.map((a) => (
                     <option key={a.id} value={a.id}>{a.ticker}</option>
                   ))}
@@ -269,23 +269,23 @@ export default function AlertRulesManager({
           {error && <p className="fin-loss" style={{ margin: 0, fontSize: 13 }}>{error}</p>}
           <div style={{ display: 'flex', gap: 8 }}>
             <button type="submit" className="fin-btn fin-btn-primary" disabled={saving}>
-              {saving ? 'Ukládám…' : 'Vytvořit pravidlo'}
+              {saving ? "Saving…" : "Create rule"}
             </button>
-            <button type="button" className="fin-btn" onClick={() => setOpen(false)}>Zrušit</button>
+            <button type="button" className="fin-btn" onClick={() => setOpen(false)}>Cancel</button>
           </div>
         </form>
       )}
 
       {rules.length === 0 ? (
-        <div className="fin-empty">Žádná pravidla. Alerty se vyhodnocují každý večer v rámci daily cronu.</div>
+        <div className="fin-empty">No rules. Alerts are evaluated every evening as part of the daily cron.</div>
       ) : (
         <table className="fin-table">
           <thead>
             <tr>
-              <th>Pravidlo</th>
-              <th>Podmínka</th>
+              <th>Rule</th>
+              <th>Condition</th>
               <th className="fin-num">Cooldown</th>
-              <th>Stav</th>
+              <th>Status</th>
               <th />
             </tr>
           </thead>
@@ -304,9 +304,9 @@ export default function AlertRulesManager({
                     className={rule.isActive ? 'fin-badge fin-badge-gain' : 'fin-badge'}
                     style={{ cursor: 'pointer', background: 'transparent' }}
                     onClick={() => void toggle(rule)}
-                    title="Přepnout aktivní/vypnuté"
+                    title="Toggle active/disabled"
                   >
-                    {rule.isActive ? 'aktivní' : 'vypnuté'}
+                    {rule.isActive ? "active" : "disabled"}
                   </button>
                 </td>
                 <td style={{ textAlign: 'right' }}>
@@ -316,7 +316,7 @@ export default function AlertRulesManager({
                     style={{ padding: '3px 9px', fontSize: 12 }}
                     onClick={() => void remove(rule)}
                   >
-                    Smazat
+                    Delete
                   </button>
                 </td>
               </tr>

@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   const parsed = analysisCreateSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Neplatný vstup' },
+      { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
       { status: 400 },
     )
   }
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   const db = getInvestDb()
   const [asset] = await db.select().from(assets).where(eq(assets.id, parsed.data.assetId)).limit(1)
   if (!asset) {
-    return NextResponse.json({ error: 'Asset nenalezen' }, { status: 404 })
+    return NextResponse.json({ error: 'Asset not found' }, { status: 404 })
   }
 
   const { data, fetchedAt } = await latestFundamentals(db, asset.id, asset.ticker)

@@ -1,8 +1,8 @@
 import { Body, Container, Head, Html, Preview, Section, Text } from '@react-email/components'
 import { email, styles } from './theme'
 
-// Alerty jsou informační, ne příkazy — texty popisují, že podmínka nastala
-// a jaké byly hodnoty. Nikdy neformulují doporučení k obchodu (spec §7).
+// Alerts are informational, not commands — the copy states that a condition
+// occurred and what the values were. It never phrases a trade recommendation (spec §7).
 
 export interface AlertEmailEvent {
   ruleName: string
@@ -18,14 +18,14 @@ export function AlertEmail({ events }: { events: AlertEmailEvent[] }) {
       <Preview>
         {events.length === 1
           ? `Alert: ${events[0].ruleName}`
-          : `${events.length} alertů z Finance OS`}
+          : `${events.length} alerts from Finance OS`}
       </Preview>
       <Body style={styles.body}>
         <Container style={styles.container}>
           <Section style={styles.card}>
             <Text style={styles.h1}>Finance OS — alert</Text>
             <Text style={styles.small}>
-              Informační upozornění: níže uvedené podmínky nastaly. Není to doporučení k obchodu.
+              Informational notice: the conditions below occurred. This is not a trade recommendation.
             </Text>
           </Section>
           {events.map((event, i) => (
@@ -78,39 +78,39 @@ export function DigestEmail({ data }: { data: DigestData }) {
   return (
     <Html lang="cs">
       <Head />
-      <Preview>{`Nedělní digest — hodnota portfolia ${data.totalValueCzk ?? '—'}`}</Preview>
+      <Preview>{`Sunday digest — portfolio value ${data.totalValueCzk ?? '—'}`}</Preview>
       <Body style={styles.body}>
         <Container style={styles.container}>
           <Section style={styles.card}>
-            <Text style={styles.label}>Finance OS — nedělní digest · {data.weekLabel}</Text>
+            <Text style={styles.label}>Finance OS — Sunday digest · {data.weekLabel}</Text>
             <Text style={styles.bigNumber}>{data.totalValueCzk ?? '—'}</Text>
             {data.weeklyChangeLine && (
               <Text style={{ ...styles.text, marginTop: '6px' }}>{data.weeklyChangeLine}</Text>
             )}
           </Section>
           <DigestSection
-            title="Top pohyby týdne"
+            title="Top movers this week"
             lines={data.topMovers}
-            empty="Žádná cenová data za tento týden."
+            empty="No price data for this week."
           />
           <DigestSection
-            title="Spuštěné alerty za týden"
+            title="Alerts triggered this week"
             lines={data.alerts}
-            empty="Žádný alert tento týden."
+            empty="No alerts this week."
           />
           <DigestSection
-            title="Watchlist — nejblíž k target MoS"
+            title="Watchlist — closest to target MoS"
             lines={data.watchlistTop}
-            empty="Watchlist je prázdný nebo bez aktivních analýz."
+            empty="Watchlist is empty or has no active analyses."
           />
           <DigestSection
-            title="Zastarávající analýzy (4+ měsíce)"
+            title="Aging analyses (4+ months)"
             lines={data.staleAnalyses}
-            empty="Všechny aktivní analýzy jsou čerstvé."
+            empty="All active analyses are fresh."
           />
-          <DigestSection title="Cash rezerva" lines={data.cashLines} empty="Žádná cash rezerva." />
+          <DigestSection title="Cash reserve" lines={data.cashLines} empty="No cash reserve." />
           <Text style={styles.small}>
-            Souhrn je informační — žádná z položek není doporučením k obchodu.
+            This summary is informational — none of the items is a trade recommendation.
           </Text>
         </Container>
       </Body>
