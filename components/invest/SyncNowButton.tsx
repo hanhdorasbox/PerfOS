@@ -19,11 +19,13 @@ export default function SyncNowButton() {
         setIsError(true)
         setMessage(data?.error ?? `Sync failed (${res.status})`)
       } else {
-        setIsError(false)
         const warnings = Array.isArray(data.warnings) ? data.warnings.length : 0
+        const errors: string[] = Array.isArray(data.errors) ? data.errors : []
+        setIsError(errors.length > 0)
         setMessage(
           `Done: ${data.ordersImported} orders, ${data.dividendsImported} dividends` +
-            (warnings > 0 ? `, ${warnings} discrepancies` : ''),
+            (warnings > 0 ? `, ${warnings} discrepancies` : '') +
+            (errors.length > 0 ? ` — skipped: ${errors.join('; ')}` : ''),
         )
         router.refresh()
       }

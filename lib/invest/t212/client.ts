@@ -156,8 +156,10 @@ export class T212Client {
         }
         res = probed
       } else if (res.status === 401 || res.status === 403) {
+        // Auth already succeeded on another endpoint, so the key is valid —
+        // this endpoint's scope is most likely not enabled on the API key.
         throw new T212Error(
-          `T212 auth failed (HTTP ${res.status}) — check API key/secret/env`,
+          `T212 ${path} returned HTTP ${res.status} — this endpoint's scope is likely not enabled on the API key`,
           res.status,
         )
       }

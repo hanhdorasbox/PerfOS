@@ -27,6 +27,8 @@ export interface SyncResult {
   dividendsImported: number
   warnings: ReconciliationWarning[]
   needsMapping: string[]
+  /** Per-section failures (e.g. an API-key scope missing for one endpoint) */
+  errors: string[]
 }
 
 function errorMessage(e: unknown): string {
@@ -192,21 +194,26 @@ export async function syncTrading212(): Promise<SyncResult> {
       dividendsImported: 0,
       warnings: [],
       needsMapping: [],
+      errors: [],
     }
 
-    // Instruments metadata needs its own API-key scope; a 403 here must not
-    // block the rest of the sync — mapping then relies on the existing cache
-    let instrumentsError: string | null = null
+    // Each T212 endpoint has its own API-key scope. A missing scope 401/403s
+    // just that endpoint, so every section is guarded independently — we
+    // import whatever the key can access and record which parts failed,
+    // rather than aborting the whole sync (spec §4b).
+
+    // Instruments metadata — mapping falls back to the existing cache on failure
     try {
       await refreshInstrumentsCache(db, client)
     } catch (e) {
-      instrumentsError = errorMessage(e)
+      result.errors.push(`instruments: ${errorMessage(e)}`)
     }
 
     const summary = await client.getAccountSummary().catch(() => ({ currencyCode: null, id: null }))
     const accountCurrency = summary.currencyCode ?? 'EUR'
 
     // ── Orders → transactions ────────────────────────────────────────────
+    try {
     const orders = await client.getOrderHistory()
     const filled = orders.filter(
       (o) => (o.status ?? '').toUpperCase() === 'FILLED' && (o.filledQuantity ?? 0) !== 0,
@@ -251,8 +258,12 @@ export async function syncTrading212(): Promise<SyncResult> {
         .onConflictDoNothing({ target: transactions.externalId })
       result.ordersImported += 1
     }
+    } catch (e) {
+      result.errors.push(`orders: ${errorMessage(e)}`)
+    }
 
     // ── Dividends → transactions ─────────────────────────────────────────
+    try {
     const dividends = await client.getDividends()
     const divInstrumentMap = await loadInstrumentMap(db, [
       ...new Set(dividends.map((d) => d.ticker)),
@@ -289,8 +300,12 @@ export async function syncTrading212(): Promise<SyncResult> {
         .onConflictDoNothing({ target: transactions.externalId })
       result.dividendsImported += 1
     }
+    } catch (e) {
+      result.errors.push(`dividends: ${errorMessage(e)}`)
+    }
 
     // ── Reconciliation: reconstructed positions vs. T212 /portfolio ──────
+    try {
     const remote = await client.getPortfolio()
     const remoteByT212 = new Map(remote.map((p) => [p.ticker, p]))
 
@@ -380,8 +395,12 @@ export async function syncTrading212(): Promise<SyncResult> {
         })
       }
     }
+    } catch (e) {
+      result.errors.push(`portfolio: ${errorMessage(e)}`)
+    }
 
     // ── Cash → cash_balances (source: t212) ──────────────────────────────
+    try {
     const cash = await client.getAccountCash()
     if (cash.free !== null) {
       const [existing] = await db
@@ -400,16 +419,22 @@ export async function syncTrading212(): Promise<SyncResult> {
           .values({ currency: accountCurrency, amount: String(cash.free), source: 't212' })
       }
     }
+    } catch (e) {
+      result.errors.push(`cash: ${errorMessage(e)}`)
+    }
 
+    // Success unless every section failed; partial data still persists and the
+    // recorded errors tell which API-key scope is missing.
+    const allFailed = result.errors.length >= 4
     await db
       .update(syncRuns)
       .set({
         finishedAt: new Date(),
-        status: 'success',
+        status: allFailed ? 'error' : 'success',
         ordersImported: result.ordersImported,
         dividendsImported: result.dividendsImported,
         warnings: result.warnings.length > 0 ? result.warnings : null,
-        error: instrumentsError ? `instruments: ${instrumentsError}` : null,
+        error: result.errors.length > 0 ? result.errors.join(' | ').slice(0, 2000) : null,
       })
       .where(eq(syncRuns.id, run.id))
 
