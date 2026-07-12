@@ -6,12 +6,12 @@ export const assetCreateSchema = z.object({
   ticker: z
     .string()
     .trim()
-    .min(1, 'Ticker je povinný')
-    .max(20, 'Ticker je příliš dlouhý')
-    .regex(/^[A-Za-z0-9.\-^]+$/, 'Ticker smí obsahovat jen písmena, čísla, tečku a pomlčku')
+    .min(1, 'Ticker is required')
+    .max(20, 'Ticker is too long')
+    .regex(/^[A-Za-z0-9.\-^]+$/, 'Ticker may contain only letters, digits, a dot and a hyphen')
     .transform((s) => s.toUpperCase()),
-  name: z.string().trim().min(1, 'Název je povinný').max(120),
-  currency: z.enum(CURRENCIES, { error: 'Neplatná měna' }),
+  name: z.string().trim().min(1, 'Name is required').max(120),
+  currency: z.enum(CURRENCIES, { error: 'Invalid currency' }),
   exchange: z.string().trim().max(60).optional().nullable(),
   sector: z.string().trim().max(60).optional().nullable(),
   manualPricing: z.boolean().optional().default(false),
@@ -20,33 +20,33 @@ export const assetCreateSchema = z.object({
 export const assetUpdateSchema = assetCreateSchema.partial()
 
 export const manualPriceSchema = z.object({
-  price: z.coerce.number().positive('Cena musí být kladná'),
-  date: z.iso.date('Neplatné datum (YYYY-MM-DD)'),
+  price: z.coerce.number().positive('Price must be positive'),
+  date: z.iso.date('Invalid date (YYYY-MM-DD)'),
 })
 
 export const transactionCreateSchema = z
   .object({
     assetId: z.uuid(),
     type: z.enum(['buy', 'sell', 'dividend']),
-    quantity: z.coerce.number().positive('Počet kusů musí být kladný').optional(),
-    price: z.coerce.number().positive('Cena musí být kladná').optional(),
-    amount: z.coerce.number().positive('Částka musí být kladná'),
-    executedAt: z.iso.date('Neplatné datum (YYYY-MM-DD)'),
+    quantity: z.coerce.number().positive('Share count must be positive').optional(),
+    price: z.coerce.number().positive('Price must be positive').optional(),
+    amount: z.coerce.number().positive('Amount must be positive'),
+    executedAt: z.iso.date('Invalid date (YYYY-MM-DD)'),
     note: z.string().trim().max(300).optional(),
   })
   .refine((tx) => tx.type === 'dividend' || tx.quantity !== undefined, {
-    message: 'Počet kusů je u nákupu/prodeje povinný',
+    message: 'Share count is required for a buy/sell',
     path: ['quantity'],
   })
 
 export const cashUpsertSchema = z.object({
-  currency: z.enum(CURRENCIES, { error: 'Neplatná měna' }),
-  amount: z.coerce.number().min(0, 'Částka nesmí být záporná'),
+  currency: z.enum(CURRENCIES, { error: 'Invalid currency' }),
+  amount: z.coerce.number().min(0, 'Amount must not be negative'),
 })
 
 export const analysisCreateSchema = z.object({
   assetId: z.uuid(),
-  title: z.string().trim().min(1, 'Název je povinný').max(140),
+  title: z.string().trim().min(1, 'Name is required').max(140),
 })
 
 export const analysisUpdateSchema = z.object({
@@ -66,8 +66,8 @@ export const watchlistCreateSchema = z.object({
   assetId: z.uuid(),
   targetMos: z.coerce
     .number()
-    .min(0, 'Target MoS nesmí být záporný')
-    .max(0.95, 'Target MoS je zlomek, např. 0,25'),
+    .min(0, 'Target MoS must not be negative')
+    .max(0.95, 'Target MoS is a fraction, e.g. 0.25'),
   note: z.string().trim().max(300).optional(),
 })
 
@@ -101,7 +101,7 @@ const alertParamsByType: Record<(typeof ALERT_TYPES)[number], z.ZodTypeAny> = {
     assetId: z.uuid().optional(),
   }),
   pe_percentile: z.object({
-    assetId: z.uuid({ error: 'Vyber asset' }),
+    assetId: z.uuid({ error: 'Select an asset' }),
     percentile: z.coerce.number().min(0.5).max(0.99).default(0.9),
   }),
   cash_below: z.object({
@@ -114,7 +114,7 @@ const alertParamsByType: Record<(typeof ALERT_TYPES)[number], z.ZodTypeAny> = {
 
 export const alertRuleCreateSchema = z
   .object({
-    name: z.string().trim().min(1, 'Název je povinný').max(120),
+    name: z.string().trim().min(1, 'Name is required').max(120),
     type: z.enum(ALERT_TYPES),
     params: z.record(z.string(), z.unknown()).default({}),
     cooldownHours: z.coerce.number().int().min(1).max(24 * 30).default(72),
@@ -126,7 +126,7 @@ export const alertRuleCreateSchema = z
       ctx.addIssue({
         code: 'custom',
         path: ['params'],
-        message: parsed.error.issues[0]?.message ?? 'Neplatné parametry pravidla',
+        message: parsed.error.issues[0]?.message ?? 'Invalid rule parameters',
       })
     } else {
       rule.params = parsed.data as Record<string, unknown>

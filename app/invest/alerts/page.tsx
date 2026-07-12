@@ -50,7 +50,7 @@ export default async function AlertyPage() {
       .from(assets)
       .orderBy(asc(assets.ticker))
   } catch (e) {
-    dbError = e instanceof Error ? e.message : 'Neznámá chyba'
+    dbError = e instanceof Error ? e.message : 'Unknown error'
   }
 
   if (dbError) {

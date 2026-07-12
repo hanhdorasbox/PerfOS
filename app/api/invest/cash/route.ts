@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   const parsed = cashUpsertSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Neplatný vstup' },
+      { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
       { status: 400 },
     )
   }

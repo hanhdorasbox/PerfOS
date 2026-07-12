@@ -4,7 +4,7 @@ import { syncTrading212 } from '@/lib/invest/sync/trading212'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
 
-// "Sync teď" button in settings
+// "Sync now" button in settings
 export async function POST() {
   try {
     const result = await syncTrading212()

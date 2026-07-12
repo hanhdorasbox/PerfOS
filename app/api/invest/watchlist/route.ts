@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   const parsed = watchlistCreateSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Neplatný vstup' },
+      { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
       { status: 400 },
     )
   }
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     .where(eq(watchlistItems.assetId, parsed.data.assetId))
     .limit(1)
   if (existing) {
-    return NextResponse.json({ error: 'Asset už je na watchlistu' }, { status: 409 })
+    return NextResponse.json({ error: 'Asset is already on the watchlist' }, { status: 409 })
   }
 
   const [created] = await db
@@ -59,7 +59,7 @@ export async function PATCH(req: NextRequest) {
   const parsed = watchlistUpdateSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Neplatný vstup' },
+      { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
       { status: 400 },
     )
   }
@@ -74,7 +74,7 @@ export async function PATCH(req: NextRequest) {
     .where(eq(watchlistItems.id, parsed.data.id))
     .returning()
   if (!updated) {
-    return NextResponse.json({ error: 'Položka nenalezena' }, { status: 404 })
+    return NextResponse.json({ error: 'Item not found' }, { status: 404 })
   }
   return NextResponse.json({ item: updated })
 }
@@ -82,12 +82,12 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id')
   if (!id || !z.uuid().safeParse(id).success) {
-    return NextResponse.json({ error: 'Neplatné ID (?id=)' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid ID (?id=)' }, { status: 400 })
   }
   const db = getInvestDb()
   const [deleted] = await db.delete(watchlistItems).where(eq(watchlistItems.id, id)).returning()
   if (!deleted) {
-    return NextResponse.json({ error: 'Položka nenalezena' }, { status: 404 })
+    return NextResponse.json({ error: 'Item not found' }, { status: 404 })
   }
   return NextResponse.json({ ok: true })
 }

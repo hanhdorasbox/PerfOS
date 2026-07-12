@@ -38,7 +38,7 @@ export default function SyncNowButton() {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
       <button type="button" className="fin-btn fin-btn-primary" onClick={sync} disabled={running}>
-        {running ? 'Synchronizuji…' : 'Sync teď'}
+        {running ? 'Syncing…' : 'Sync now'}
       </button>
       {message && (
         <span className={isError ? 'fin-loss' : 'fin-muted'} style={{ fontSize: 12 }}>

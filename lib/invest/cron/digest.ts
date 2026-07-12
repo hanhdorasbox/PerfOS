@@ -38,7 +38,7 @@ export async function runDigestCron(): Promise<DigestRunResult> {
         .update(cronRuns)
         .set({ finishedAt: new Date(), status: 'error', error: 'RESEND_API_KEY / ALERT_EMAIL_TO not configured' })
         .where(eq(cronRuns.id, run.id))
-      return { sent: false, reason: 'e-mail není nakonfigurovaný' }
+      return { sent: false, reason: 'email is not configured' }
     }
 
     const overview = await loadPortfolioOverview()
@@ -125,7 +125,7 @@ export async function runDigestCron(): Promise<DigestRunResult> {
         const target = Number(w.targetMos)
         return {
           distance: current - target,
-          line: `${w.ticker}: MoS ${formatPercentSigned(current)} vs. target ${formatPercent(target)} (${formatPercentSigned(current - target)} k cíli)`,
+          line: `${w.ticker}: MoS ${formatPercentSigned(current)} vs. target ${formatPercent(target)} (${formatPercentSigned(current - target)} to target)`,
         }
       })
       .filter((x): x is NonNullable<typeof x> => x !== null)
@@ -168,7 +168,7 @@ export async function runDigestCron(): Promise<DigestRunResult> {
       let drift = ''
       if (priceThen && priceNow && Number(priceThen.price) !== 0) {
         const pct = (Number(priceNow.price) - Number(priceThen.price)) / Number(priceThen.price)
-        drift = `, cena od té doby ${formatPercentSigned(pct)}`
+        drift = `, price since then ${formatPercentSigned(pct)}`
       }
 
       const fundamentals = await db
@@ -186,17 +186,17 @@ export async function runDigestCron(): Promise<DigestRunResult> {
       }
 
       staleLines.push(
-        `${row.ticker}: „${row.title}“ je ${Math.floor(ageMonths)} měsíců stará${drift}.`,
+        `${row.ticker}: “${row.title}” is ${Math.floor(ageMonths)} months old${drift}.`,
       )
     }
 
     // ── 5. Cash ───────────────────────────────────────────────────────────
     const cashLines = overview.cash.map(
       (c) =>
-        `${c.currency} (${c.source === 't212' ? 'Trading212' : 'ruční rezerva'}): ${formatMoney(c.amount, c.currency, 0)}`,
+        `${c.currency} (${c.source === 't212' ? 'Trading212' : 'manual reserve'}): ${formatMoney(c.amount, c.currency, 0)}`,
     )
     if (overview.cashTotalCzk !== null) {
-      cashLines.push(`Celkem ≈ ${formatMoney(overview.cashTotalCzk, 'CZK', 0)}`)
+      cashLines.push(`Total ≈ ${formatMoney(overview.cashTotalCzk, 'CZK', 0)}`)
     }
 
     const totalValue = overview.totalValueCzk
@@ -206,10 +206,10 @@ export async function runDigestCron(): Promise<DigestRunResult> {
         : null
 
     const data: DigestData = {
-      weekLabel: new Date().toLocaleDateString('cs-CZ', { timeZone: 'Europe/Prague' }),
+      weekLabel: new Date().toLocaleDateString('en-US', { timeZone: 'Europe/Prague' }),
       totalValueCzk: totalValue ? formatMoney(totalValue, 'CZK', 0) : null,
       weeklyChangeLine: anyChange
-        ? `Týdenní změna: ${formatMoney(weeklyChangeCzk.toFixed(0), 'CZK', 0)}${weeklyPct !== null ? ` (${formatPercentSigned(weeklyPct)})` : ''}`
+        ? `Weekly change: ${formatMoney(weeklyChangeCzk.toFixed(0), 'CZK', 0)}${weeklyPct !== null ? ` (${formatPercentSigned(weeklyPct)})` : ''}`
         : null,
       topMovers: movers.slice(0, 3).map((m) => m.line),
       alerts: alertLines,
@@ -219,7 +219,7 @@ export async function runDigestCron(): Promise<DigestRunResult> {
     }
 
     await sendEmail(
-      `Finance OS — nedělní digest (${data.weekLabel})`,
+      `Finance OS — Sunday digest (${data.weekLabel})`,
       DigestEmail({ data }),
     )
 
