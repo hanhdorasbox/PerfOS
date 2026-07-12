@@ -194,7 +194,14 @@ export async function syncTrading212(): Promise<SyncResult> {
       needsMapping: [],
     }
 
-    await refreshInstrumentsCache(db, client)
+    // Instruments metadata needs its own API-key scope; a 403 here must not
+    // block the rest of the sync — mapping then relies on the existing cache
+    let instrumentsError: string | null = null
+    try {
+      await refreshInstrumentsCache(db, client)
+    } catch (e) {
+      instrumentsError = errorMessage(e)
+    }
 
     const summary = await client.getAccountSummary().catch(() => ({ currencyCode: null, id: null }))
     const accountCurrency = summary.currencyCode ?? 'EUR'
@@ -402,6 +409,7 @@ export async function syncTrading212(): Promise<SyncResult> {
         ordersImported: result.ordersImported,
         dividendsImported: result.dividendsImported,
         warnings: result.warnings.length > 0 ? result.warnings : null,
+        error: instrumentsError ? `instruments: ${instrumentsError}` : null,
       })
       .where(eq(syncRuns.id, run.id))
 
