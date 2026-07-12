@@ -82,6 +82,7 @@ export default function AnalysisCalculator({
     Array<{ field: string; changePct: number | null }>
   >([])
   const [refetching, setRefetching] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const computed = useMemo(
     () => computeValuation(Object.values(inputs), currentPrice),
@@ -178,6 +179,21 @@ export default function AnalysisCalculator({
     for (const diff of data.diffs ?? []) {
       setLocal(diff.field, { fetchedValue: diff.current })
     }
+  }
+
+  async function deleteAnalysis() {
+    if (!confirm(`Delete analysis "${title}" for ${asset.ticker}? This cannot be undone.`)) return
+    setDeleting(true)
+    setError(null)
+    const res = await fetch(`/api/invest/analyses/${analysis.id}`, { method: 'DELETE' })
+    if (!res.ok) {
+      const data = await res.json().catch(() => null)
+      setError(data?.error ?? `Delete failed (${res.status})`)
+      setDeleting(false)
+      return
+    }
+    router.push('/invest/analysis')
+    router.refresh()
   }
 
   function fieldRow(def: FieldDef) {
@@ -317,6 +333,15 @@ export default function AnalysisCalculator({
           )}
           <button type="button" className="fin-btn" onClick={() => void refetch()} disabled={refetching}>
             {refetching ? 'Fetching…' : 'Refresh fetched values'}
+          </button>
+          <button
+            type="button"
+            className="fin-btn"
+            style={{ borderColor: 'var(--fin-loss-border)', color: 'var(--fin-loss)' }}
+            onClick={() => void deleteAnalysis()}
+            disabled={deleting}
+          >
+            {deleting ? 'Deleting…' : 'Delete analysis'}
           </button>
         </span>
       </div>
