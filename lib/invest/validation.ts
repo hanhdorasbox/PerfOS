@@ -77,6 +77,69 @@ export const watchlistUpdateSchema = z.object({
   note: z.string().trim().max(300).nullable().optional(),
 })
 
+export const ALERT_TYPES = [
+  'price_vs_fair_value',
+  'position_weight',
+  'drawdown_from_peak',
+  'pe_percentile',
+  'cash_below',
+  'analysis_stale',
+] as const
+
+const alertParamsByType: Record<(typeof ALERT_TYPES)[number], z.ZodTypeAny> = {
+  price_vs_fair_value: z.object({
+    thresholdPct: z.coerce.number().min(0).max(2).default(0.1),
+    assetId: z.uuid().optional(),
+  }),
+  position_weight: z.object({
+    thresholdPct: z.coerce.number().gt(0).max(1),
+    assetId: z.uuid().optional(),
+  }),
+  drawdown_from_peak: z.object({
+    thresholdPct: z.coerce.number().gt(0).max(1),
+    periodDays: z.coerce.number().int().min(7).max(1825).default(180),
+    assetId: z.uuid().optional(),
+  }),
+  pe_percentile: z.object({
+    assetId: z.uuid({ error: 'Vyber asset' }),
+    percentile: z.coerce.number().min(0.5).max(0.99).default(0.9),
+  }),
+  cash_below: z.object({
+    thresholdCzk: z.coerce.number().positive(),
+  }),
+  analysis_stale: z.object({
+    months: z.coerce.number().min(1).max(36).default(6),
+  }),
+}
+
+export const alertRuleCreateSchema = z
+  .object({
+    name: z.string().trim().min(1, 'Název je povinný').max(120),
+    type: z.enum(ALERT_TYPES),
+    params: z.record(z.string(), z.unknown()).default({}),
+    cooldownHours: z.coerce.number().int().min(1).max(24 * 30).default(72),
+    isActive: z.boolean().default(true),
+  })
+  .superRefine((rule, ctx) => {
+    const parsed = alertParamsByType[rule.type].safeParse(rule.params)
+    if (!parsed.success) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['params'],
+        message: parsed.error.issues[0]?.message ?? 'Neplatné parametry pravidla',
+      })
+    } else {
+      rule.params = parsed.data as Record<string, unknown>
+    }
+  })
+
+export const alertRuleUpdateSchema = z.object({
+  id: z.uuid(),
+  name: z.string().trim().min(1).max(120).optional(),
+  isActive: z.boolean().optional(),
+  cooldownHours: z.coerce.number().int().min(1).max(720).optional(),
+})
+
 export type AssetCreateInput = z.infer<typeof assetCreateSchema>
 export type AssetUpdateInput = z.infer<typeof assetUpdateSchema>
 export type ManualPriceInput = z.infer<typeof manualPriceSchema>
