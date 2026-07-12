@@ -5,7 +5,12 @@ import Link from "next/link";
 import QuickCapture from "@/components/QuickCapture";
 import CommandPalette from "@/components/CommandPalette";
 import MobileTabBar from "@/components/MobileTabBar";
+import IdleLock from "@/components/IdleLock";
 import { prisma } from "@/lib/db";
+
+const lockEnabled = Boolean(
+  process.env.APP_PIN && (process.env.APP_SESSION_SECRET || process.env.CRON_SECRET),
+);
 
 export const metadata: Metadata = {
   title: "Project Hanh — Performance Operating System",
@@ -68,6 +73,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </main>
         {user && <QuickCapture userId={user.id} />}
         <MobileTabBar />
+        <IdleLock enabled={lockEnabled} />
       </body>
     </html>
   );
