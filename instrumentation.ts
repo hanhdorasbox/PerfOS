@@ -202,6 +202,9 @@ const MIGRATIONS = [
      CONSTRAINT "AlcoholSettings_pkey" PRIMARY KEY ("id"),
      CONSTRAINT "AlcoholSettings_userId_key" UNIQUE ("userId")
    )`,
+
+  // ── PlannedMeal.recipe ─── full recipe JSON added with the meal-recipe feature
+  `ALTER TABLE "PlannedMeal" ADD COLUMN IF NOT EXISTS "recipe" TEXT`,
 ]
 
 async function runMigrations(db: PrismaClient) {
