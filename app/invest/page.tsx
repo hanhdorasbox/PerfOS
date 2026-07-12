@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { desc } from 'drizzle-orm'
-import { getInvestDb, cronRuns, type CronRun } from '@/lib/invest/db'
+import { desc, eq } from 'drizzle-orm'
+import { getInvestDb, alertEvents, alertRules, cronRuns, type CronRun } from '@/lib/invest/db'
 import { loadPortfolioOverview, type PortfolioOverview } from '@/lib/invest/portfolio/overview'
-import { formatDateTime, formatMoney } from '@/lib/invest/format'
+import { formatDate, formatDateTime, formatMoney } from '@/lib/invest/format'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,10 +58,17 @@ function CronStatusCard({ runs }: { runs: CronRun[] }) {
 export default async function InvestDashboardPage() {
   let overview: PortfolioOverview | null = null
   let runs: CronRun[] = []
+  let recentAlerts: Array<{ id: string; ruleName: string; triggeredAt: Date }> = []
   try {
     overview = await loadPortfolioOverview()
     const db = getInvestDb()
     runs = await db.select().from(cronRuns).orderBy(desc(cronRuns.startedAt)).limit(5)
+    recentAlerts = await db
+      .select({ id: alertEvents.id, ruleName: alertRules.name, triggeredAt: alertEvents.triggeredAt })
+      .from(alertEvents)
+      .innerJoin(alertRules, eq(alertEvents.ruleId, alertRules.id))
+      .orderBy(desc(alertEvents.triggeredAt))
+      .limit(4)
   } catch {
     overview = null
   }
@@ -130,7 +137,23 @@ export default async function InvestDashboardPage() {
         </div>
         <div className="fin-card">
           <div className="fin-label" style={{ marginBottom: 10 }}>Poslední alerty</div>
-          <p className="fin-subtle" style={{ margin: 0, fontSize: 13 }}>Alert engine přijde ve Fázi 5.</p>
+          {recentAlerts.length === 0 ? (
+            <p className="fin-subtle" style={{ margin: 0, fontSize: 13 }}>
+              Zatím žádný alert — pravidla nastavíš v{' '}
+              <Link href="/invest/alerty" className="fin-gold" style={{ textDecoration: 'none' }}>Alertech</Link>.
+            </p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
+              {recentAlerts.map((a) => (
+                <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                  <Link href="/invest/alerty" className="fin-muted" style={{ textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {a.ruleName}
+                  </Link>
+                  <span className="fin-subtle" style={{ whiteSpace: 'nowrap' }}>{formatDate(a.triggeredAt)}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className="fin-card">
           <div className="fin-label" style={{ marginBottom: 10 }}>Watchlist — top kandidáti</div>

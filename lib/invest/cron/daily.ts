@@ -4,6 +4,7 @@ import { getMarketDataProvider, TickerNotFoundError } from '@/lib/invest/market-
 import { fetchCnbDailyRates } from '@/lib/invest/fx/cnb'
 import { syncTrading212 } from '@/lib/invest/sync/trading212'
 import { recomputeAnalysis } from '@/lib/invest/valuation/service'
+import { evaluateAlertRules } from '@/lib/invest/alerts/engine'
 
 export interface DailyRunResult {
   t212Synced: boolean
@@ -11,6 +12,7 @@ export interface DailyRunResult {
   pricesFailed: Array<{ ticker: string; error: string }>
   fxStored: string[]
   analysesRecomputed: number
+  alertsTriggered: number
   errors: string[]
 }
 
@@ -47,6 +49,7 @@ export async function runDailyCron(): Promise<DailyRunResult> {
     pricesFailed: [],
     fxStored: [],
     analysesRecomputed: 0,
+    alertsTriggered: 0,
     errors: [],
   }
 
@@ -132,7 +135,14 @@ export async function runDailyCron(): Promise<DailyRunResult> {
       result.errors.push(`analyses: ${errorMessage(e)}`)
     }
 
-    // Step 5 (alert rules evaluation) arrives in Phase 5.
+    // ── 5. Alert rules evaluation → e-maily ──────────────────────────────
+    try {
+      const alerts = await evaluateAlertRules()
+      result.alertsTriggered = alerts.triggered
+      result.errors.push(...alerts.errors.map((e) => `alert: ${e}`))
+    } catch (e) {
+      result.errors.push(`alerts: ${errorMessage(e)}`)
+    }
 
     const failures = [
       ...result.errors,
