@@ -19,12 +19,12 @@ function pnlClass(value: string | null): string {
 function StaleBadge({ overview }: { overview: PortfolioOverview }) {
   if (!overview.lastSync) return null
   if (overview.lastSync.status === 'error') {
-    return <span className="fin-badge fin-badge-warn">T212 sync selhal — data mohou být stará</span>
+    return <span className="fin-badge fin-badge-warn">T212 sync failed — data may be stale</span>
   }
   if (overview.syncAgeHours !== null && overview.syncAgeHours >= 24) {
     return (
       <span className="fin-badge fin-badge-warn">
-        data z T212: staré {overview.syncAgeHours} h
+        T212 data: {overview.syncAgeHours} h old
       </span>
     )
   }
@@ -43,13 +43,13 @@ export default async function PortfolioPage() {
       .from(assets)
       .orderBy(asc(assets.ticker))
   } catch (e) {
-    dbError = e instanceof Error ? e.message : 'Neznámá chyba'
+    dbError = e instanceof Error ? e.message : 'Unknown error'
   }
 
   if (!overview) {
     return (
       <div className="fin-card">
-        <p className="fin-warn" style={{ margin: 0, fontSize: 13 }}>Databáze není dostupná: {dbError}</p>
+        <p className="fin-warn" style={{ margin: 0, fontSize: 13 }}>Database unavailable: {dbError}</p>
       </div>
     )
   }
@@ -65,7 +65,7 @@ export default async function PortfolioPage() {
   const sectorMap = new Map<string, number>()
   for (const p of overview.positions) {
     if (p.marketValueCzk === null) continue
-    const key = p.sector ?? 'Nezařazeno'
+    const key = p.sector ?? 'Unclassified'
     sectorMap.set(key, (sectorMap.get(key) ?? 0) + Number(p.marketValueCzk))
   }
   const bySector: DonutSlice[] = [...sectorMap.entries()].map(([name, valueCzk]) => ({ name, valueCzk }))
@@ -92,12 +92,12 @@ export default async function PortfolioPage() {
 
       {warnings.length > 0 && (
         <div className="fin-card" style={{ borderColor: 'var(--fin-warn-border)' }}>
-          <div className="fin-label" style={{ marginBottom: 8 }}>Reconciliation — rozdíly vůči T212</div>
+          <div className="fin-label" style={{ marginBottom: 8 }}>Reconciliation — differences vs. T212</div>
           <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13 }} className="fin-warn">
             {warnings.map((w, i) => (
               <li key={i}>
-                <span className="fin-mono">{w.ticker}</span>: {w.field === 'quantity' ? 'počet kusů' : w.field === 'averagePrice' ? 'průměrná cena' : w.field === 'missing_local' ? 'pozice u T212, ale ne lokálně' : 'pozice lokálně, ale ne u T212'}
-                {w.local !== null && <> · lokálně <span className="fin-mono">{w.local}</span></>}
+                <span className="fin-mono">{w.ticker}</span>: {w.field === 'quantity' ? 'share count' : w.field === 'averagePrice' ? 'average price' : w.field === 'missing_local' ? 'position at T212 but not locally' : 'position locally but not at T212'}
+                {w.local !== null && <> · local <span className="fin-mono">{w.local}</span></>}
                 {w.remote !== null && <> · T212 <span className="fin-mono">{w.remote}</span></>}
               </li>
             ))}
@@ -107,19 +107,19 @@ export default async function PortfolioPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
         <div className="fin-card">
-          <div className="fin-label" style={{ marginBottom: 8 }}>Hodnota portfolia</div>
+          <div className="fin-label" style={{ marginBottom: 8 }}>Portfolio value</div>
           <div className="fin-value-lg" style={{ fontSize: 30 }}>
             {overview.totalValueCzk ? formatMoney(overview.totalValueCzk, 'CZK', 0) : '—'}
           </div>
         </div>
         <div className="fin-card">
-          <div className="fin-label" style={{ marginBottom: 8 }}>Denní P/L</div>
+          <div className="fin-label" style={{ marginBottom: 8 }}>Daily P/L</div>
           <div className={`fin-value-lg ${pnlClass(overview.totalDailyPnlCzk)}`} style={{ fontSize: 30 }}>
             {overview.totalDailyPnlCzk ? formatMoney(overview.totalDailyPnlCzk, 'CZK', 0) : '—'}
           </div>
         </div>
         <div className="fin-card">
-          <div className="fin-label" style={{ marginBottom: 8 }}>Celkový P/L (otevřené)</div>
+          <div className="fin-label" style={{ marginBottom: 8 }}>Total P/L (open)</div>
           <div className={`fin-value-lg ${pnlClass(overview.totalUnrealizedPnlCzk)}`} style={{ fontSize: 30 }}>
             {overview.totalUnrealizedPnlCzk ? formatMoney(overview.totalUnrealizedPnlCzk, 'CZK', 0) : '—'}
           </div>
@@ -135,39 +135,39 @@ export default async function PortfolioPage() {
             {overview.cashTotalCzk ? formatMoney(overview.cashTotalCzk, 'CZK', 0) : '—'}
           </div>
           <div className="fin-subtle" style={{ fontSize: 12, marginTop: 4 }}>
-            {overview.cash.map((c) => `${formatMoney(c.amount, c.currency, 0)}`).join(' · ') || 'žádná rezerva'}
+            {overview.cash.map((c) => `${formatMoney(c.amount, c.currency, 0)}`).join(' · ') || 'no reserve'}
           </div>
         </div>
       </div>
 
       {overview.fxMissing.length > 0 && (
         <p className="fin-warn" style={{ margin: 0, fontSize: 12 }}>
-          Chybí FX kurz pro {overview.fxMissing.join(', ')} — přepočet do CZK je neúplný. Kurzy stáhne daily cron.
+          Missing FX rate for {overview.fxMissing.join(', ')} — CZK conversion is incomplete. The daily cron fetches rates.
         </p>
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-        <AllocationDonut title="Alokace podle assetu" slices={byAsset} />
-        <AllocationDonut title="Alokace podle sektoru" slices={bySector} />
+        <AllocationDonut title="Allocation by asset" slices={byAsset} />
+        <AllocationDonut title="Allocation by sector" slices={bySector} />
       </div>
 
       <div className="fin-card" style={{ padding: 0, overflowX: 'auto' }}>
         {overview.positions.length === 0 ? (
           <div className="fin-empty">
-            Žádné otevřené pozice. Spusť „Sync teď“ (Trading212) nebo přidej ruční transakci.
+            No open positions. Run “Sync now” (Trading212) or add a manual transaction.
           </div>
         ) : (
           <table className="fin-table">
             <thead>
               <tr>
                 <th>Ticker</th>
-                <th className="fin-num">Kusy</th>
-                <th className="fin-num">Prům. cena</th>
-                <th className="fin-num">Aktuální</th>
-                <th>30 dní</th>
+                <th className="fin-num">Shares</th>
+                <th className="fin-num">Avg cost</th>
+                <th className="fin-num">Current</th>
+                <th>30d</th>
                 <th className="fin-num">P/L</th>
                 <th className="fin-num">P/L %</th>
-                <th className="fin-num">Váha</th>
+                <th className="fin-num">Weight</th>
                 <th className="fin-num">Fair value</th>
                 <th className="fin-num">MoS</th>
               </tr>
@@ -199,7 +199,7 @@ export default async function PortfolioPage() {
                   <td className="fin-num">{p.weight ? formatPercent(p.weight) : '—'}</td>
                   <td className="fin-num">
                     {p.fairValue ? (
-                      <Link href={`/invest/analyza/${p.analysisId}`} className="fin-gold" style={{ textDecoration: 'none' }}>
+                      <Link href={`/invest/analysis/${p.analysisId}`} className="fin-gold" style={{ textDecoration: 'none' }}>
                         {formatMoney(p.fairValue, p.currency)}
                       </Link>
                     ) : (

@@ -76,10 +76,10 @@ export function computeValuation(
   const growth = [1, 2, 3, 4, 5].map((y) => val(`fcfGrowthY${y}`))
 
   for (const [field, value] of Object.entries(required)) {
-    if (value === null) problems.push({ field, message: 'Chybí hodnota' })
+    if (value === null) problems.push({ field, message: 'Missing value' })
   }
   growth.forEach((g, i) => {
-    if (g === null) problems.push({ field: `fcfGrowthY${i + 1}`, message: 'Chybí hodnota' })
+    if (g === null) problems.push({ field: `fcfGrowthY${i + 1}`, message: 'Missing value' })
   })
 
   let dcf: ReturnType<typeof dcfFairValue> | null = null

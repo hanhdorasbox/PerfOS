@@ -30,7 +30,7 @@ export default function CashManager({ initialCash }: { initialCash: CashRow[] })
     setSaving(false)
     if (!res.ok) {
       const data = await res.json().catch(() => null)
-      setError(data?.error ?? `Chyba (${res.status})`)
+      setError(data?.error ?? `Error (${res.status})`)
       return
     }
     setForm((f) => ({ ...f, amount: '' }))
@@ -43,10 +43,10 @@ export default function CashManager({ initialCash }: { initialCash: CashRow[] })
         <table className="fin-table">
           <thead>
             <tr>
-              <th>Zdroj</th>
-              <th>Měna</th>
-              <th className="fin-num">Částka</th>
-              <th>Aktualizováno</th>
+              <th>Source</th>
+              <th>Currency</th>
+              <th className="fin-num">Amount</th>
+              <th>Updated</th>
             </tr>
           </thead>
           <tbody>
@@ -54,7 +54,7 @@ export default function CashManager({ initialCash }: { initialCash: CashRow[] })
               <tr key={row.id}>
                 <td>
                   <span className={row.source === 't212' ? 'fin-badge fin-badge-gold' : 'fin-badge'}>
-                    {row.source === 't212' ? 'Trading212' : 'ruční rezerva'}
+                    {row.source === "t212" ? "Trading212" : "manual reserve"}
                   </span>
                 </td>
                 <td className="fin-mono">{row.currency}</td>
@@ -68,7 +68,7 @@ export default function CashManager({ initialCash }: { initialCash: CashRow[] })
 
       <form onSubmit={submit} style={{ display: 'flex', gap: 10, alignItems: 'flex-end', flexWrap: 'wrap' }}>
         <div>
-          <label className="fin-field-label" htmlFor="cash-currency">Měna</label>
+          <label className="fin-field-label" htmlFor="cash-currency">Currency</label>
           <select
             id="cash-currency"
             className="fin-select"
@@ -81,7 +81,7 @@ export default function CashManager({ initialCash }: { initialCash: CashRow[] })
           </select>
         </div>
         <div>
-          <label className="fin-field-label" htmlFor="cash-amount">Ruční rezerva (peníze stranou)</label>
+          <label className="fin-field-label" htmlFor="cash-amount">Manual reserve (money set aside)</label>
           <input
             id="cash-amount"
             type="number"
@@ -95,12 +95,12 @@ export default function CashManager({ initialCash }: { initialCash: CashRow[] })
           />
         </div>
         <button type="submit" className="fin-btn fin-btn-primary" disabled={saving}>
-          {saving ? 'Ukládám…' : 'Uložit rezervu'}
+          {saving ? "Saving…" : "Save reserve"}
         </button>
       </form>
       {error && <p className="fin-loss" style={{ margin: 0, fontSize: 13 }}>{error}</p>}
       <p className="fin-subtle" style={{ margin: 0, fontSize: 12 }}>
-        Řádky Trading212 spravuje sync a přepíší se při každém běhu; ruční rezerva zůstává tvoje.
+        Trading212 rows are managed by the sync and overwritten on each run; your manual reserve stays yours.
       </p>
     </div>
   )

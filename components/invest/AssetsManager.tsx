@@ -120,7 +120,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
     setSaving(false)
     if (!res.ok) {
       const data = await res.json().catch(() => null)
-      setError(data?.error ?? `Chyba (${res.status})`)
+      setError(data?.error ?? `Error (${res.status})`)
       return
     }
     setFormOpen(false)
@@ -130,7 +130,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
   }
 
   async function deleteAsset(asset: AssetRow) {
-    if (!window.confirm(`Smazat asset ${asset.ticker} včetně cen a analýz?`)) return
+    if (!window.confirm(`Delete asset ${asset.ticker} including prices and analyses?`)) return
     const res = await fetch(`/api/invest/assets/${asset.id}`, { method: 'DELETE' })
     if (res.ok) {
       if (priceAssetId === asset.id) setPriceAssetId(null)
@@ -151,7 +151,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
     setPriceSaving(false)
     if (!res.ok) {
       const data = await res.json().catch(() => null)
-      setPriceError(data?.error ?? `Chyba (${res.status})`)
+      setPriceError(data?.error ?? `Error (${res.status})`)
       return
     }
     setPriceForm((f) => ({ ...f, price: '' }))
@@ -169,9 +169,9 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span className="fin-label">Assety ({assetList.length})</span>
+        <span className="fin-label">Assets ({assetList.length})</span>
         <button type="button" className="fin-btn fin-btn-primary" onClick={startCreate}>
-          + Přidat asset
+          + Add asset
         </button>
       </div>
 
@@ -199,7 +199,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
             </div>
             <div style={{ gridColumn: 'span 2' }}>
               <label className="fin-field-label" htmlFor="asset-name">
-                Název *
+                Name *
               </label>
               <input
                 id="asset-name"
@@ -212,7 +212,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
             </div>
             <div>
               <label className="fin-field-label" htmlFor="asset-currency">
-                Měna *
+                Currency *
               </label>
               <select
                 id="asset-currency"
@@ -227,7 +227,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
             </div>
             <div>
               <label className="fin-field-label" htmlFor="asset-exchange">
-                Burza
+                Exchange
               </label>
               <input
                 id="asset-exchange"
@@ -239,7 +239,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
             </div>
             <div>
               <label className="fin-field-label" htmlFor="asset-sector">
-                Sektor
+                Sector
               </label>
               <input
                 id="asset-sector"
@@ -267,7 +267,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
               checked={form.manualPricing}
               onChange={(e) => setForm({ ...form, manualPricing: e.target.checked })}
             />
-            Manuální ceny (asset, který provider tržních dat nezná — např. pražská burza)
+            Manual prices (asset the market-data provider does not know — e.g. Prague exchange)
           </label>
 
           {error && (
@@ -278,10 +278,10 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
 
           <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
             <button type="submit" className="fin-btn fin-btn-primary" disabled={saving}>
-              {saving ? 'Ukládám…' : editingId ? 'Uložit změny' : 'Vytvořit asset'}
+              {saving ? "Saving…" : editingId ? "Save changes" : "Create asset"}
             </button>
             <button type="button" className="fin-btn" onClick={() => setFormOpen(false)}>
-              Zrušit
+              Cancel
             </button>
           </div>
         </form>
@@ -290,18 +290,18 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
       <div className="fin-card" style={{ padding: 0, overflowX: 'auto' }}>
         {assetList.length === 0 ? (
           <div className="fin-empty">
-            Zatím žádné assety. Přidej první tlačítkem „+ Přidat asset“.
+            No assets yet. Add the first one with the “+ Add asset” button.
           </div>
         ) : (
           <table className="fin-table">
             <thead>
               <tr>
                 <th>Ticker</th>
-                <th>Název</th>
-                <th>Měna</th>
-                <th>Sektor</th>
-                <th className="fin-num">Poslední cena</th>
-                <th>K datu</th>
+                <th>Name</th>
+                <th>Currency</th>
+                <th>Sector</th>
+                <th className="fin-num">Last price</th>
+                <th>As of</th>
                 <th />
               </tr>
             </thead>
@@ -312,12 +312,12 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
                     {asset.ticker}
                     {asset.manualPricing && (
                       <span className="fin-badge" style={{ marginLeft: 8 }}>
-                        manuální
+                        manual
                       </span>
                     )}
                     {asset.needsMapping && (
                       <span className="fin-badge fin-badge-warn" style={{ marginLeft: 8 }}>
-                        chybí mapping
+                        needs mapping
                       </span>
                     )}
                   </td>
@@ -339,7 +339,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
                       style={{ padding: '4px 10px', fontSize: 12, marginRight: 6 }}
                       onClick={() => togglePricePanel(asset)}
                     >
-                      Ceny
+                      Prices
                     </button>
                     <button
                       type="button"
@@ -347,7 +347,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
                       style={{ padding: '4px 10px', fontSize: 12, marginRight: 6 }}
                       onClick={() => startEdit(asset)}
                     >
-                      Upravit
+                      Edit
                     </button>
                     <button
                       type="button"
@@ -355,7 +355,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
                       style={{ padding: '4px 10px', fontSize: 12 }}
                       onClick={() => deleteAsset(asset)}
                     >
-                      Smazat
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -376,11 +376,11 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
             }}
           >
             <span className="fin-label">
-              Ceny — <span className="fin-gold">{priceAsset.ticker}</span>
+              Prices — <span className="fin-gold">{priceAsset.ticker}</span>
             </span>
             {!priceAsset.manualPricing && (
               <span className="fin-subtle" style={{ fontSize: 12 }}>
-                Asset má automatické ceny; ruční zadání slouží jen jako doplněk či oprava.
+                Asset has automatic prices; manual entry only serves as a supplement or correction.
               </span>
             )}
           </div>
@@ -391,7 +391,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
           >
             <div>
               <label className="fin-field-label" htmlFor="price-date">
-                Datum
+                Date
               </label>
               <input
                 id="price-date"
@@ -404,7 +404,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
             </div>
             <div>
               <label className="fin-field-label" htmlFor="price-value">
-                Cena ({priceAsset.currency})
+                Price ({priceAsset.currency})
               </label>
               <input
                 id="price-value"
@@ -414,12 +414,12 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
                 className="fin-input fin-mono"
                 value={priceForm.price}
                 onChange={(e) => setPriceForm({ ...priceForm, price: e.target.value })}
-                placeholder="123,45"
+                placeholder="123.45"
                 required
               />
             </div>
             <button type="submit" className="fin-btn fin-btn-primary" disabled={priceSaving}>
-              {priceSaving ? 'Ukládám…' : 'Uložit cenu'}
+              {priceSaving ? "Saving…" : "Save price"}
             </button>
           </form>
           {priceError && (
@@ -432,8 +432,8 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
             <table className="fin-table" style={{ marginTop: 18 }}>
               <thead>
                 <tr>
-                  <th>Datum</th>
-                  <th className="fin-num">Cena</th>
+                  <th>Date</th>
+                  <th className="fin-num">Price</th>
                   <th />
                 </tr>
               </thead>
@@ -449,7 +449,7 @@ export default function AssetsManager({ initialAssets }: { initialAssets: AssetR
                         style={{ padding: '3px 9px', fontSize: 12 }}
                         onClick={() => deletePrice(row)}
                       >
-                        Smazat
+                        Delete
                       </button>
                     </td>
                   </tr>

@@ -6,9 +6,9 @@ import { usePathname } from 'next/navigation'
 const tabs = [
   { href: '/invest', label: 'Dashboard' },
   { href: '/invest/portfolio', label: 'Portfolio' },
-  { href: '/invest/analyza', label: 'Analýzy' },
-  { href: '/invest/alerty', label: 'Alerty' },
-  { href: '/invest/nastaveni', label: 'Nastavení' },
+  { href: '/invest/analysis', label: 'Analysis' },
+  { href: '/invest/alerts', label: 'Alerts' },
+  { href: '/invest/settings', label: 'Settings' },
 ]
 
 export default function InvestNav() {

@@ -17,19 +17,19 @@ export default function SyncNowButton() {
       const data = await res.json().catch(() => null)
       if (!res.ok) {
         setIsError(true)
-        setMessage(data?.error ?? `Sync selhal (${res.status})`)
+        setMessage(data?.error ?? `Sync failed (${res.status})`)
       } else {
         setIsError(false)
         const warnings = Array.isArray(data.warnings) ? data.warnings.length : 0
         setMessage(
-          `Hotovo: ${data.ordersImported} objednávek, ${data.dividendsImported} dividend` +
-            (warnings > 0 ? `, ${warnings} nesrovnalostí` : ''),
+          `Done: ${data.ordersImported} orders, ${data.dividendsImported} dividends` +
+            (warnings > 0 ? `, ${warnings} discrepancies` : ''),
         )
         router.refresh()
       }
     } catch (e) {
       setIsError(true)
-      setMessage(e instanceof Error ? e.message : 'Sync selhal')
+      setMessage(e instanceof Error ? e.message : 'Sync failed')
     } finally {
       setRunning(false)
     }

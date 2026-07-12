@@ -7,9 +7,9 @@ import WatchlistManager, { type WatchlistRow } from '@/components/invest/Watchli
 export const dynamic = 'force-dynamic'
 
 const STATUS_LABELS: Record<string, { label: string; cls: string }> = {
-  draft: { label: 'rozpracovaná', cls: 'fin-badge' },
-  active: { label: 'aktivní', cls: 'fin-badge fin-badge-gold' },
-  archived: { label: 'archiv', cls: 'fin-badge' },
+  draft: { label: 'draft', cls: 'fin-badge' },
+  active: { label: 'active', cls: 'fin-badge fin-badge-gold' },
+  archived: { label: 'archived', cls: 'fin-badge' },
 }
 
 export default async function AnalyzaPage() {
@@ -81,13 +81,13 @@ export default async function AnalyzaPage() {
       .from(assets)
       .orderBy(asc(assets.ticker))
   } catch (e) {
-    dbError = e instanceof Error ? e.message : 'Neznámá chyba'
+    dbError = e instanceof Error ? e.message : 'Unknown error'
   }
 
   if (dbError) {
     return (
       <div className="fin-card">
-        <p className="fin-warn" style={{ margin: 0, fontSize: 13 }}>Databáze není dostupná: {dbError}</p>
+        <p className="fin-warn" style={{ margin: 0, fontSize: 13 }}>Database unavailable: {dbError}</p>
       </div>
     )
   }
@@ -95,24 +95,24 @@ export default async function AnalyzaPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <h2 className="fin-serif" style={{ fontSize: 22, margin: 0 }}>Analýzy</h2>
-        <Link href="/invest/analyza/new" className="fin-btn fin-btn-primary" style={{ marginLeft: 'auto', textDecoration: 'none' }}>
-          + Nová analýza
+        <h2 className="fin-serif" style={{ fontSize: 22, margin: 0 }}>Analyses</h2>
+        <Link href="/invest/analysis/new" className="fin-btn fin-btn-primary" style={{ marginLeft: 'auto', textDecoration: 'none' }}>
+          + New analysis
         </Link>
       </div>
 
       <div className="fin-card" style={{ padding: 0, overflowX: 'auto' }}>
         {rows.length === 0 ? (
-          <div className="fin-empty">Zatím žádné analýzy. Založ první přes „+ Nová analýza“.</div>
+          <div className="fin-empty">No analyses yet. Create the first one with “+ New analysis”.</div>
         ) : (
           <table className="fin-table">
             <thead>
               <tr>
-                <th>Analýza</th>
+                <th>Analysis</th>
                 <th>Status</th>
                 <th className="fin-num">Fair value</th>
                 <th className="fin-num">MoS</th>
-                <th>Aktualizováno</th>
+                <th>Updated</th>
               </tr>
             </thead>
             <tbody>
@@ -122,7 +122,7 @@ export default async function AnalyzaPage() {
                 return (
                   <tr key={r.id}>
                     <td>
-                      <Link href={`/invest/analyza/${r.id}`} style={{ color: 'var(--fin-text)', fontWeight: 600, textDecoration: 'none' }}>
+                      <Link href={`/invest/analysis/${r.id}`} style={{ color: 'var(--fin-text)', fontWeight: 600, textDecoration: 'none' }}>
                         {r.title}
                       </Link>
                       <div className="fin-subtle fin-mono" style={{ fontSize: 11 }}>{r.ticker}</div>

@@ -52,7 +52,7 @@ export default function PriceSparkline({
 }) {
   if (points.length < 2) {
     if (compact) return <span className="fin-subtle">—</span>
-    return <div className="fin-empty">Zatím málo cenových dat na graf.</div>
+    return <div className="fin-empty">Not enough price data for a chart yet.</div>
   }
   const sorted = [...points].sort((a, b) => a.date.localeCompare(b.date))
 

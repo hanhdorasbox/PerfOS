@@ -4,7 +4,7 @@ import './finance-os.css'
 
 export const metadata: Metadata = {
   title: 'Finance OS',
-  description: 'Osobní finanční dashboard — portfolio, valuace, alerty',
+  description: 'Personal finance dashboard — portfolio, valuation, alerts',
 }
 
 export default function InvestLayout({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,7 @@ export default function InvestLayout({ children }: { children: React.ReactNode }
           Finance OS
         </h1>
         <span className="fin-subtle" style={{ fontSize: 12 }}>
-          portfolio · valuace · alerty
+          portfolio · valuation · alerts
         </span>
       </header>
       <InvestNav />

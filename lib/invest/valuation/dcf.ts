@@ -51,18 +51,18 @@ export function dcfFairValue(inputs: DcfInputs): DcfResult {
   const g = dec(inputs.terminalGrowth)
 
   if (r.lte(0)) {
-    throw new ValuationError('Diskontní sazba musí být kladná', 'discountRate')
+    throw new ValuationError('Discount rate must be positive', 'discountRate')
   }
   // Gordon growth breaks down at g >= r — refuse instead of returning NaN
   if (g.gte(r)) {
     throw new ValuationError(
-      'Terminal growth musí být nižší než diskontní sazba',
+      'Terminal growth must be lower than the discount rate',
       'terminalGrowth',
     )
   }
   const shares = dec(inputs.sharesOutstanding)
   if (shares.lte(0)) {
-    throw new ValuationError('Počet akcií musí být kladný', 'sharesOutstanding')
+    throw new ValuationError('Shares outstanding must be positive', 'sharesOutstanding')
   }
 
   const projectedFcf: Decimal[] = []
@@ -115,7 +115,7 @@ export function impliedValueFromEvEbitda(
 ): Decimal {
   const shares = dec(sharesOutstanding)
   if (shares.lte(0)) {
-    throw new ValuationError('Počet akcií musí být kladný', 'sharesOutstanding')
+    throw new ValuationError('Shares outstanding must be positive', 'sharesOutstanding')
   }
   return dec(benchmarkMultiple).times(dec(ebitda)).minus(dec(netDebt)).div(shares)
 }

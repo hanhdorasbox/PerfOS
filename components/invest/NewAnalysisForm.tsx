@@ -31,7 +31,7 @@ export default function NewAnalysisForm({ assets }: { assets: AssetOption[] }) {
       const data = await res.json().catch(() => null)
       if (!res.ok) {
         setSaving(false)
-        setError(data?.error ?? `Vytvoření assetu selhalo (${res.status})`)
+        setError(data?.error ?? `Failed to create asset (${res.status})`)
         return
       }
       targetAssetId = data.asset.id
@@ -43,16 +43,16 @@ export default function NewAnalysisForm({ assets }: { assets: AssetOption[] }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         assetId: targetAssetId,
-        title: title.trim() || `${ticker} — ${new Date().toLocaleDateString('cs-CZ')}`,
+        title: title.trim() || `${ticker} — ${new Date().toLocaleDateString('en-US')}`,
       }),
     })
     const data = await res.json().catch(() => null)
     setSaving(false)
     if (!res.ok) {
-      setError(data?.error ?? `Vytvoření analýzy selhalo (${res.status})`)
+      setError(data?.error ?? `Failed to create analysis (${res.status})`)
       return
     }
-    router.push(`/invest/analyza/${data.analysis.id}`)
+    router.push(`/invest/analysis/${data.analysis.id}`)
   }
 
   return (
@@ -64,14 +64,14 @@ export default function NewAnalysisForm({ assets }: { assets: AssetOption[] }) {
           onClick={() => setMode('existing')}
           disabled={assets.length === 0}
         >
-          Existující asset
+          Existing asset
         </button>
         <button
           type="button"
           className={mode === 'new' ? 'fin-btn fin-btn-primary' : 'fin-btn'}
           onClick={() => setMode('new')}
         >
-          Nový asset
+          New asset
         </button>
       </div>
 
@@ -104,7 +104,7 @@ export default function NewAnalysisForm({ assets }: { assets: AssetOption[] }) {
             />
           </div>
           <div>
-            <label className="fin-field-label" htmlFor="na-name">Název *</label>
+            <label className="fin-field-label" htmlFor="na-name">Name *</label>
             <input
               id="na-name"
               className="fin-input"
@@ -115,7 +115,7 @@ export default function NewAnalysisForm({ assets }: { assets: AssetOption[] }) {
             />
           </div>
           <div>
-            <label className="fin-field-label" htmlFor="na-currency">Měna</label>
+            <label className="fin-field-label" htmlFor="na-currency">Currency</label>
             <select
               id="na-currency"
               className="fin-select"
@@ -131,7 +131,7 @@ export default function NewAnalysisForm({ assets }: { assets: AssetOption[] }) {
       )}
 
       <div>
-        <label className="fin-field-label" htmlFor="na-title">Název analýzy</label>
+        <label className="fin-field-label" htmlFor="na-title">Analysis name</label>
         <input
           id="na-title"
           className="fin-input"
@@ -145,11 +145,11 @@ export default function NewAnalysisForm({ assets }: { assets: AssetOption[] }) {
 
       <div>
         <button type="submit" className="fin-btn fin-btn-primary" disabled={saving}>
-          {saving ? 'Zakládám a stahuji fundamenty…' : 'Založit analýzu'}
+          {saving ? "Creating and fetching fundamentals…" : "Create analysis"}
         </button>
       </div>
       <p className="fin-subtle" style={{ margin: 0, fontSize: 12 }}>
-        Po založení se stáhnou fundamenty z API (co jde), zbytek doplníš ručně v kalkulačce.
+        After creation, fundamentals are fetched from the API (where available); fill in the rest manually in the calculator.
       </p>
     </form>
   )

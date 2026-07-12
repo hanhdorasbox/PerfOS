@@ -19,7 +19,7 @@ function foldSlices(slices: DonutSlice[]): DonutSlice[] {
   if (sorted.length <= 8) return sorted
   const head = sorted.slice(0, 7)
   const rest = sorted.slice(7).reduce((sum, s) => sum + s.valueCzk, 0)
-  return [...head, { name: 'Ostatní', valueCzk: rest }]
+  return [...head, { name: 'Other', valueCzk: rest }]
 }
 
 function DonutTooltip({
@@ -60,7 +60,7 @@ export default function AllocationDonut({ title, slices }: { title: string; slic
     return (
       <div className="fin-card">
         <div className="fin-label" style={{ marginBottom: 10 }}>{title}</div>
-        <div className="fin-empty">Zatím žádná data.</div>
+        <div className="fin-empty">No data yet.</div>
       </div>
     )
   }

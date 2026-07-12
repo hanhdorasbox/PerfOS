@@ -60,7 +60,7 @@ export default function TransactionForm({ assets }: { assets: AssetOption[] }) {
     setSaving(false)
     if (!res.ok) {
       const data = await res.json().catch(() => null)
-      setError(data?.error ?? `Chyba (${res.status})`)
+      setError(data?.error ?? `Error (${res.status})`)
       return
     }
     setForm({ ...emptyForm, assetId: form.assetId })
@@ -73,7 +73,7 @@ export default function TransactionForm({ assets }: { assets: AssetOption[] }) {
   if (!open) {
     return (
       <button type="button" className="fin-btn" onClick={() => setOpen(true)}>
-        + Ruční transakce
+        + Manual transaction
       </button>
     )
   }
@@ -81,7 +81,7 @@ export default function TransactionForm({ assets }: { assets: AssetOption[] }) {
   return (
     <form onSubmit={submit} className="fin-card" style={{ padding: 20 }}>
       <div className="fin-label" style={{ marginBottom: 14 }}>
-        Ruční transakce (fallback mimo Trading212)
+        Manual transaction (fallback outside Trading212)
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
         <div>
@@ -99,22 +99,22 @@ export default function TransactionForm({ assets }: { assets: AssetOption[] }) {
           </select>
         </div>
         <div>
-          <label className="fin-field-label" htmlFor="tx-type">Typ</label>
+          <label className="fin-field-label" htmlFor="tx-type">Type</label>
           <select
             id="tx-type"
             className="fin-select"
             value={form.type}
             onChange={(e) => update({ type: e.target.value })}
           >
-            <option value="buy">Nákup</option>
-            <option value="sell">Prodej</option>
-            <option value="dividend">Dividenda</option>
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
+            <option value="dividend">Dividend</option>
           </select>
         </div>
         {!isDividend && (
           <>
             <div>
-              <label className="fin-field-label" htmlFor="tx-quantity">Kusy</label>
+              <label className="fin-field-label" htmlFor="tx-quantity">Shares</label>
               <input
                 id="tx-quantity"
                 type="number"
@@ -128,7 +128,7 @@ export default function TransactionForm({ assets }: { assets: AssetOption[] }) {
             </div>
             <div>
               <label className="fin-field-label" htmlFor="tx-price">
-                Cena/ks ({selected?.currency ?? ''})
+                Price/share ({selected?.currency ?? ""})
               </label>
               <input
                 id="tx-price"
@@ -144,7 +144,7 @@ export default function TransactionForm({ assets }: { assets: AssetOption[] }) {
         )}
         <div>
           <label className="fin-field-label" htmlFor="tx-amount">
-            Celkem ({selected?.currency ?? ''})
+            Total ({selected?.currency ?? ""})
           </label>
           <input
             id="tx-amount"
@@ -158,7 +158,7 @@ export default function TransactionForm({ assets }: { assets: AssetOption[] }) {
           />
         </div>
         <div>
-          <label className="fin-field-label" htmlFor="tx-date">Datum</label>
+          <label className="fin-field-label" htmlFor="tx-date">Date</label>
           <input
             id="tx-date"
             type="date"
@@ -170,7 +170,7 @@ export default function TransactionForm({ assets }: { assets: AssetOption[] }) {
         </div>
       </div>
       <div style={{ marginTop: 12 }}>
-        <label className="fin-field-label" htmlFor="tx-note">Poznámka</label>
+        <label className="fin-field-label" htmlFor="tx-note">Note</label>
         <input
           id="tx-note"
           className="fin-input"
@@ -181,9 +181,9 @@ export default function TransactionForm({ assets }: { assets: AssetOption[] }) {
       {error && <p className="fin-loss" style={{ margin: '12px 0 0', fontSize: 13 }}>{error}</p>}
       <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
         <button type="submit" className="fin-btn fin-btn-primary" disabled={saving}>
-          {saving ? 'Ukládám…' : 'Uložit transakci'}
+          {saving ? "Saving…" : "Save transaction"}
         </button>
-        <button type="button" className="fin-btn" onClick={() => setOpen(false)}>Zrušit</button>
+        <button type="button" className="fin-btn" onClick={() => setOpen(false)}>Cancel</button>
       </div>
     </form>
   )
