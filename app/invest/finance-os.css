@@ -265,3 +265,39 @@
   color: var(--fin-text-3);
   font-size: 13px;
 }
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .fin-card {
+    padding: 16px;
+  }
+
+  .fin-h1 {
+    font-size: 20px;
+  }
+
+  .fin-value-lg {
+    font-size: 28px;
+  }
+
+  .fin-table th,
+  .fin-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .fin-tabs {
+    margin-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .fin-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fin-btn {
+    padding: 7px 12px;
+  }
+}

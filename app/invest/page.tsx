@@ -2,7 +2,8 @@ import Link from 'next/link'
 import { desc, eq } from 'drizzle-orm'
 import { getInvestDb, alertEvents, alertRules, cronRuns, type CronRun } from '@/lib/invest/db'
 import { loadPortfolioOverview, type PortfolioOverview } from '@/lib/invest/portfolio/overview'
-import { formatDate, formatDateTime, formatMoney } from '@/lib/invest/format'
+import { loadWatchlistRanking, type WatchlistCandidate } from '@/lib/invest/portfolio/watchlist'
+import { formatDate, formatDateTime, formatMoney, formatPercent, formatPercentSigned } from '@/lib/invest/format'
 
 export const dynamic = 'force-dynamic'
 
@@ -59,8 +60,10 @@ export default async function InvestDashboardPage() {
   let overview: PortfolioOverview | null = null
   let runs: CronRun[] = []
   let recentAlerts: Array<{ id: string; ruleName: string; triggeredAt: Date }> = []
+  let watchlist: WatchlistCandidate[] = []
   try {
     overview = await loadPortfolioOverview()
+    watchlist = await loadWatchlistRanking()
     const db = getInvestDb()
     runs = await db.select().from(cronRuns).orderBy(desc(cronRuns.startedAt)).limit(5)
     recentAlerts = await db
@@ -157,7 +160,27 @@ export default async function InvestDashboardPage() {
         </div>
         <div className="fin-card">
           <div className="fin-label" style={{ marginBottom: 10 }}>Watchlist — top kandidáti</div>
-          <p className="fin-subtle" style={{ margin: 0, fontSize: 13 }}>Žebříček podle vzdálenosti k target MoS — Fáze 4 a 6.</p>
+          {watchlist.length === 0 ? (
+            <p className="fin-subtle" style={{ margin: 0, fontSize: 13 }}>
+              Watchlist je prázdný — assety s target MoS přidáš v{' '}
+              <Link href="/invest/analyza" className="fin-gold" style={{ textDecoration: 'none' }}>Analýzách</Link>.
+            </p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
+              {watchlist.slice(0, 3).map((w) => (
+                <div key={w.ticker} style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                  <span className="fin-mono" style={{ fontWeight: 600 }}>{w.ticker}</span>
+                  {w.distance === null ? (
+                    <span className="fin-subtle">bez aktivní analýzy</span>
+                  ) : (
+                    <span className={w.distance >= 0 ? 'fin-gain fin-mono' : 'fin-muted fin-mono'}>
+                      {formatPercentSigned(w.distance)} k cíli {formatPercent(w.targetMos)}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <CronStatusCard runs={runs} />
       </div>
