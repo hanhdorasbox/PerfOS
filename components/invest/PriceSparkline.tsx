@@ -42,12 +42,16 @@ export default function PriceSparkline({
   points,
   currency,
   height = 160,
+  compact = false,
 }: {
   points: Point[]
   currency: string
   height?: number
+  /** Table-cell mode: renders a quiet dash instead of the empty-state text */
+  compact?: boolean
 }) {
   if (points.length < 2) {
+    if (compact) return <span className="fin-subtle">—</span>
     return <div className="fin-empty">Zatím málo cenových dat na graf.</div>
   }
   const sorted = [...points].sort((a, b) => a.date.localeCompare(b.date))

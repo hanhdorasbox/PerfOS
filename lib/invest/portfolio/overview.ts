@@ -37,6 +37,8 @@ export interface PositionOverview {
   fairValue: string | null
   marginOfSafety: string | null
   analysisId: string | null
+  /** Last ~30 daily prices for the row sparkline (chronological) */
+  sparkline: Array<{ date: string; price: number }>
 }
 
 export interface PortfolioOverview {
@@ -105,10 +107,19 @@ export async function loadPortfolioOverview(): Promise<PortfolioOverview> {
     : []
   const latestPrice = new Map<string, { price: string; date: string }>()
   const previousPrice = new Map<string, string>()
+  const sparklines = new Map<string, Array<{ date: string; price: number }>>()
   for (const row of priceRows) {
     const rn = Number(row.rn)
     if (rn === 1) latestPrice.set(row.assetId, { price: row.price, date: row.date })
     if (rn === 2) previousPrice.set(row.assetId, row.price)
+    if (rn <= 30) {
+      const series = sparklines.get(row.assetId) ?? []
+      series.push({ date: row.date, price: Number(row.price) })
+      sparklines.set(row.assetId, series)
+    }
+  }
+  for (const series of sparklines.values()) {
+    series.sort((a, b) => a.date.localeCompare(b.date))
   }
 
   const activeAnalyses = assetIds.length
@@ -198,6 +209,7 @@ export async function loadPortfolioOverview(): Promise<PortfolioOverview> {
       fairValue: analysis?.fairValue ?? null,
       marginOfSafety: analysis?.marginOfSafety ?? null,
       analysisId: analysis?.id ?? null,
+      sparkline: sparklines.get(p.assetId) ?? [],
     }
   })
 

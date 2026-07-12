@@ -5,6 +5,7 @@ import { getInvestDb, assets } from '@/lib/invest/db'
 import { loadPortfolioOverview, type PortfolioOverview } from '@/lib/invest/portfolio/overview'
 import { formatMoney, formatPercent, formatPercentSigned, formatQuantity, formatDate } from '@/lib/invest/format'
 import AllocationDonut, { type DonutSlice } from '@/components/invest/AllocationDonut'
+import PriceSparkline from '@/components/invest/PriceSparkline'
 import TransactionForm from '@/components/invest/TransactionForm'
 import SyncNowButton from '@/components/invest/SyncNowButton'
 
@@ -163,6 +164,7 @@ export default async function PortfolioPage() {
                 <th className="fin-num">Kusy</th>
                 <th className="fin-num">Prům. cena</th>
                 <th className="fin-num">Aktuální</th>
+                <th>30 dní</th>
                 <th className="fin-num">P/L</th>
                 <th className="fin-num">P/L %</th>
                 <th className="fin-num">Váha</th>
@@ -184,6 +186,9 @@ export default async function PortfolioPage() {
                   <td className="fin-num">
                     {p.currentPrice ? formatMoney(p.currentPrice, p.currency) : '—'}
                     {p.priceDate && <div className="fin-subtle" style={{ fontSize: 10 }}>{formatDate(p.priceDate)}</div>}
+                  </td>
+                  <td style={{ width: 110, minWidth: 90 }}>
+                    <PriceSparkline points={p.sparkline} currency={p.currency} height={30} compact />
                   </td>
                   <td className={`fin-num ${pnlClass(p.unrealizedPnl)}`}>
                     {p.unrealizedPnl ? formatMoney(p.unrealizedPnl, p.currency, 0) : '—'}
