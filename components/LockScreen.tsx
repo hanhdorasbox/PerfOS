@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Lock, Delete } from 'lucide-react'
 
 const MAX_LEN = 12
@@ -9,6 +10,11 @@ export default function LockScreen({ next }: { next: string }) {
   const [pin, setPin] = useState('')
   const [error, setError] = useState(false)
   const [busy, setBusy] = useState(false)
+  // Render through a portal to <body> so the fixed overlay escapes the
+  // animated `.page-enter` container (a transform/will-change ancestor traps
+  // position:fixed), letting it truly cover the whole screen incl. the nav.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
 
   const submit = useCallback(
     async (value: string) => {
@@ -65,12 +71,14 @@ export default function LockScreen({ next }: { next: string }) {
 
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 
-  return (
+  if (!mounted) return null
+
+  return createPortal(
     <div
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 99999,
+        zIndex: 2147483647,
         background: '#0A0A0B',
         display: 'flex',
         flexDirection: 'column',
@@ -179,7 +187,8 @@ export default function LockScreen({ next }: { next: string }) {
           80% { transform: translateX(6px); }
         }
       `}</style>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
