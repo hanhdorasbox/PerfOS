@@ -438,12 +438,26 @@ export default function AnalysisCalculator({
         </div>
       )}
 
+      {computed.warnings.length > 0 && (
+        <div className="fin-card" style={{ borderColor: 'var(--fin-warn-border)' }}>
+          <div className="fin-label" style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            Sanity check
+            <InfoHint text="These don't block the calculation, but the numbers look inconsistent — most often FCF, net debt and total debt entered in different scales (absolute vs. millions). They must all be in the same units." />
+          </div>
+          <ul className="fin-warn" style={{ margin: 0, paddingLeft: 18, fontSize: 13 }}>
+            {computed.warnings.map((w, i) => (
+              <li key={i}>{w}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* ── DCF inputs ── */}
       <div className="fin-card">
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
           <div className="fin-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             DCF — inputs (FCFF, 5 years + terminal)
-            <InfoHint text="Projects free cash flow for 5 years, then a perpetual terminal value, discounts both to today at the discount rate, subtracts net debt, and divides by shares. Most of the value usually sits in the terminal value — so the discount rate and terminal growth matter most." />
+            <InfoHint text="Projects free cash flow for 5 years, then a perpetual terminal value, discounts both to today at the discount rate (mid-year convention — cash arrives through the year, not on Dec 31), subtracts net debt, and divides by shares. Most of the value usually sits in the terminal value — so the discount rate and terminal growth matter most." />
           </div>
           <button
             type="button"
@@ -514,14 +528,34 @@ export default function AnalysisCalculator({
 
       {/* ── Sensitivity ── */}
       <div className="fin-card" style={{ overflowX: 'auto' }}>
-        <div className="fin-label" style={{ marginBottom: 12 }}>
-          Sensitivity — fair value | rows: discount rate · columns: terminal growth
+        <div className="fin-label" style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+          Sensitivity — fair value per share
+          <InfoHint text="Fair value at nearby discount rates and terminal growth rates. The gold-outlined cell is your base case. Green = meets your target margin of safety at the current price; red = fair value below the current price. Shows how fragile the result is to the two assumptions that matter most." />
         </div>
         {computed.sensitivity ? (
-          <table className="fin-table" style={{ fontSize: 12 }}>
+          <table className="fin-table" style={{ fontSize: 12, borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th />
+                <th aria-hidden style={{ border: 'none', background: 'transparent' }} />
+                <th aria-hidden style={{ border: 'none', background: 'transparent' }} />
+                <th
+                  colSpan={computed.sensitivity[0].length}
+                  style={{
+                    textAlign: 'center',
+                    color: 'var(--fin-gold)',
+                    fontWeight: 600,
+                    fontSize: 11,
+                    letterSpacing: 0.3,
+                    paddingBottom: 2,
+                    border: 'none',
+                  }}
+                >
+                  Terminal growth →
+                </th>
+              </tr>
+              <tr>
+                <th aria-hidden style={{ border: 'none', background: 'transparent' }} />
+                <th aria-hidden style={{ border: 'none', background: 'transparent' }} />
                 {computed.sensitivity[0].map((cell) => (
                   <th key={cell.terminalGrowth} className="fin-num">
                     {formatPercent(cell.terminalGrowth)}
@@ -530,8 +564,27 @@ export default function AnalysisCalculator({
               </tr>
             </thead>
             <tbody>
-              {computed.sensitivity.map((row) => (
+              {computed.sensitivity.map((row, rowIndex) => (
                 <tr key={row[0].discountRate}>
+                  {rowIndex === 0 && (
+                    <th
+                      rowSpan={computed.sensitivity!.length}
+                      style={{
+                        writingMode: 'vertical-rl',
+                        textAlign: 'center',
+                        color: 'var(--fin-gold)',
+                        fontWeight: 600,
+                        fontSize: 11,
+                        letterSpacing: 0.3,
+                        whiteSpace: 'nowrap',
+                        padding: '0 4px',
+                        border: 'none',
+                        background: 'transparent',
+                      }}
+                    >
+                      Discount rate (WACC) ↓
+                    </th>
+                  )}
                   <td className="fin-num fin-muted">{formatPercent(row[0].discountRate)}</td>
                   {row.map((cell) => {
                     const fv = cell.fairValue !== null ? Number(cell.fairValue) : null

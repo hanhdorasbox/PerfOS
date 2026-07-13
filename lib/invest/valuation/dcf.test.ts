@@ -78,6 +78,24 @@ describe('capmDiscountRate', () => {
   })
 })
 
+describe('mid-year convention', () => {
+  it('raises fair value by roughly (1+r)^0.5 vs year-end', () => {
+    const yearEnd = dcfFairValue(baseInputs).fairValuePerShare
+    const midYear = dcfFairValue({ ...baseInputs, midYear: true }).fairValuePerShare
+    expect(midYear.gt(yearEnd)).toBe(true)
+    // EV scales by (1+r)^0.5; per-share uplift is a touch smaller due to net debt
+    const ratio = midYear.div(yearEnd).toNumber()
+    expect(ratio).toBeGreaterThan(1.02)
+    expect(ratio).toBeLessThan(1.06)
+  })
+
+  it('is a no-op when midYear is omitted', () => {
+    const a = dcfFairValue(baseInputs).fairValuePerShare
+    const b = dcfFairValue({ ...baseInputs, midYear: false }).fairValuePerShare
+    expect(a.toString()).toBe(b.toString())
+  })
+})
+
 describe('waccDiscountRate', () => {
   it('blends cost of equity and after-tax cost of debt by weight', () => {
     // Re=10%, Rd=5%, tax=20%, E=800, D=200 → 0.8*0.10 + 0.2*0.05*0.8 = 0.088

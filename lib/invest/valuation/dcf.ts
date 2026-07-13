@@ -30,6 +30,12 @@ export interface DcfInputs {
   /** totalDebt − cash; negative = net cash */
   netDebt: Num
   sharesOutstanding: Num
+  /**
+   * Discount cash flows at mid-year (t − 0.5) instead of year-end (t).
+   * More realistic — cash arrives through the year, not on Dec 31 — and
+   * raises the value by roughly (1+r)^0.5. Defaults to year-end when omitted.
+   */
+  midYear?: boolean
 }
 
 export interface DcfResult {
@@ -72,15 +78,19 @@ export function dcfFairValue(inputs: DcfInputs): DcfResult {
     projectedFcf.push(fcf)
   }
 
+  // Mid-year convention shifts every discounting period back by half a year.
+  const shift = inputs.midYear ? 0.5 : 0
   let pvExplicit = new Decimal(0)
   const onePlusR = r.plus(1)
   projectedFcf.forEach((cashflow, i) => {
-    pvExplicit = pvExplicit.plus(cashflow.div(onePlusR.pow(i + 1)))
+    pvExplicit = pvExplicit.plus(cashflow.div(onePlusR.pow(i + 1 - shift)))
   })
 
   const fcfYear5 = projectedFcf[projectedFcf.length - 1]
   const terminalValue = fcfYear5.times(g.plus(1)).div(r.minus(g))
-  const pvTerminal = terminalValue.div(onePlusR.pow(projectedFcf.length))
+  // The terminal value is discounted with the same mid-year timing as the
+  // final explicit cash flow it grows out of.
+  const pvTerminal = terminalValue.div(onePlusR.pow(projectedFcf.length - shift))
 
   const enterpriseValue = pvExplicit.plus(pvTerminal)
   const equityValue = enterpriseValue.minus(dec(inputs.netDebt))

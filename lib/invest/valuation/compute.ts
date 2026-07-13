@@ -34,7 +34,10 @@ export interface ComputedValuation {
   sensitivity: Array<
     Array<{ discountRate: string; terminalGrowth: string; fairValue: string | null; isBase: boolean }>
   > | null
+  /** Blocking issues — the DCF can't be computed until these are fixed */
   problems: Array<{ field: string | null; message: string }>
+  /** Non-blocking sanity warnings (e.g. a likely units/scale mismatch) */
+  warnings: string[]
 }
 
 function toDecimal(value: string | null): Decimal | null {
@@ -108,6 +111,7 @@ export function computeValuation(
       discountRate: required.discountRate!,
       netDebt: required.netDebt!,
       sharesOutstanding: required.sharesOutstanding!,
+      midYear: true,
     }
     try {
       dcf = dcfFairValue(dcfInputs)
@@ -138,6 +142,36 @@ export function computeValuation(
   const price = toDecimal(currentPrice)
   const mos = dcf && price ? marginOfSafety(dcf.fairValuePerShare, price) : null
 
+  // ── Units/scale sanity check ─────────────────────────────────────────────
+  // FCF, net debt and total debt must be in the SAME scale (all absolute, or
+  // all in millions). Anchored on market cap (price × shares), flag anything
+  // that's off by a suspicious number of orders of magnitude — the classic
+  // "typed net debt in billions while FCF is absolute" trap.
+  const warnings: string[] = []
+  const sharesForScale = required.sharesOutstanding
+  const totalDebtVal = val('totalDebt')
+  if (price && sharesForScale && sharesForScale.gt(0)) {
+    const marketCap = price.times(sharesForScale)
+    if (marketCap.gt(0)) {
+      // Order of magnitude only — plain floats are plenty here.
+      const orders = (x: Decimal) => Math.log10(Math.abs(x.toNumber()))
+      const capOrders = orders(marketCap)
+      const check = (value: Decimal | null, label: string, lo: number, hi: number) => {
+        if (!value || value.isZero()) return
+        const diff = capOrders - orders(value)
+        if (diff > hi || diff < lo) {
+          warnings.push(
+            `${label} looks off-scale vs. market cap — check it's in the same units (absolute vs. millions) as FCF.`,
+          )
+        }
+      }
+      // FCF is legitimately ~1–2 orders below market cap; net/total debt ~0–1.
+      check(required.fcfBase, 'Base FCF', -1, 5)
+      check(required.netDebt, 'Net debt', -4, 4)
+      check(totalDebtVal, 'Total debt', -4, 4)
+    }
+  }
+
   return {
     fairValue: dcf?.fairValuePerShare.toFixed(4) ?? null,
     marginOfSafety: mos?.toFixed(4) ?? null,
@@ -157,5 +191,6 @@ export function computeValuation(
         })),
       ) ?? null,
     problems,
+    warnings,
   }
 }
