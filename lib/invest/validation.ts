@@ -49,10 +49,17 @@ export const analysisCreateSchema = z.object({
   title: z.string().trim().min(1, 'Name is required').max(140),
 })
 
+export const checklistEntrySchema = z.object({
+  status: z.enum(['pending', 'pass', 'concern', 'fail']),
+  notes: z.string().max(4000),
+})
+
 export const analysisUpdateSchema = z.object({
   title: z.string().trim().min(1).max(140).optional(),
   status: z.enum(['draft', 'active', 'archived']).optional(),
   qualitativeNotes: z.string().max(20000).optional(),
+  // Due-diligence checklist: keyed by item, validated per entry
+  checklist: z.record(z.string(), checklistEntrySchema).optional(),
 })
 
 export const analysisInputPutSchema = z.object({

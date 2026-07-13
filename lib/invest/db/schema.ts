@@ -135,6 +135,9 @@ export const analyses = financeOs.table('analyses', {
   fairValue: numeric('fair_value'), // computed output
   marginOfSafety: numeric('margin_of_safety'), // % vs. current price, recomputed daily
   qualitativeNotes: text('qualitative_notes').notNull().default(''), // moat, management, risks (markdown)
+  // Due-diligence checklist: { [itemKey]: { status, notes } } — factors to
+  // weigh beyond fair value before buying. See lib/invest/valuation/checklist.ts
+  checklist: jsonb('checklist'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })

@@ -1,0 +1,1 @@
+ALTER TABLE "finance_os"."analyses" ADD COLUMN "checklist" jsonb;

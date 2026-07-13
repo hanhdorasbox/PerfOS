@@ -205,6 +205,11 @@ const MIGRATIONS = [
 
   // ── PlannedMeal.recipe ─── full recipe JSON added with the meal-recipe feature
   `ALTER TABLE "PlannedMeal" ADD COLUMN IF NOT EXISTS "recipe" TEXT`,
+
+  // ── Finance OS (finance_os schema, normally migrated by drizzle-kit) ───
+  // Belt-and-suspenders: the build's `drizzle-kit migrate` is `|| true`, so
+  // guard the checklist column here too — without it, selecting analyses fails.
+  `ALTER TABLE "finance_os"."analyses" ADD COLUMN IF NOT EXISTS "checklist" jsonb`,
 ]
 
 async function runMigrations(db: PrismaClient) {

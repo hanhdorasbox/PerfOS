@@ -11,7 +11,9 @@ import {
   watchlistItems,
 } from '@/lib/invest/db'
 import AnalysisCalculator, { type CalcInput } from '@/components/invest/AnalysisCalculator'
+import DueDiligenceChecklist from '@/components/invest/DueDiligenceChecklist'
 import { FIELD_DEFS } from '@/lib/invest/valuation/fields'
+import { normalizeChecklist } from '@/lib/invest/valuation/checklist'
 
 export const dynamic = 'force-dynamic'
 
@@ -96,6 +98,10 @@ export default async function AnalysisPage(props: { params: Promise<{ id: string
         currentPrice={latestPrice?.price ?? null}
         targetMos={watchlist?.targetMos ?? null}
         fundamentalsFetchedAt={fundamentals?.fetchedAt.toISOString() ?? null}
+      />
+      <DueDiligenceChecklist
+        analysisId={analysis.id}
+        initial={normalizeChecklist(analysis.checklist)}
       />
     </div>
   )
