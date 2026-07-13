@@ -489,38 +489,50 @@ export default function AnalysisCalculator({
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
           {group('wacc').map(fieldRow)}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, justifyContent: 'flex-end' }}>
-            <div className="fin-subtle" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
-              Cost of equity
-              <InfoHint text="rf + beta × ERP. The return equity investors require. It’s the equity leg of the WACC — with no debt, WACC equals this." />
-              ={' '}
-              <span className="fin-mono">
-                {computed.capmRate ? formatPercent(computed.capmRate) : '—'}
-              </span>
-            </div>
-            <div className="fin-subtle" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
-              WACC
-              <InfoHint text="E/V × cost of equity + D/V × cost of debt × (1 − tax). Needs cost of debt, tax rate, total debt, shares and the current price. Falls back to cost of equity if those aren’t all set." />
-              ={' '}
-              <span className="fin-mono fin-gold">
-                {computed.wacc ? formatPercent(computed.wacc) : '—'}
-              </span>
-            </div>
-            <button
-              type="button"
-              className="fin-btn"
-              disabled={computed.wacc === null && computed.capmRate === null}
-              onClick={() => {
-                const source = computed.wacc ?? computed.capmRate
-                if (source === null) return
-                const value = Number(source)
-                setLocal('discountRate', { manualValue: String(value) })
-                void persistField('discountRate', value)
-              }}
-            >
-              {computed.wacc ? 'Use WACC as discount rate' : 'Use cost of equity as discount rate'}
-            </button>
-          </div>
+        </div>
+        {/* Result + action in their own footer row, right-aligned */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            gap: 20,
+            marginTop: 18,
+            paddingTop: 16,
+            borderTop: '1px solid var(--fin-border-strong, rgba(255,255,255,0.08))',
+            flexWrap: 'wrap',
+          }}
+        >
+          <span className="fin-subtle" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
+            Cost of equity
+            <InfoHint text="rf + beta × ERP. The return equity investors require. It’s the equity leg of the WACC — with no debt, WACC equals this." />
+            ={' '}
+            <span className="fin-mono">
+              {computed.capmRate ? formatPercent(computed.capmRate) : '—'}
+            </span>
+          </span>
+          <span className="fin-subtle" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
+            WACC
+            <InfoHint text="E/V × cost of equity + D/V × cost of debt × (1 − tax). Needs cost of debt, tax rate, total debt, shares and the current price. Falls back to cost of equity if those aren’t all set." />
+            ={' '}
+            <span className="fin-mono fin-gold">
+              {computed.wacc ? formatPercent(computed.wacc) : '—'}
+            </span>
+          </span>
+          <button
+            type="button"
+            className="fin-btn"
+            disabled={computed.wacc === null && computed.capmRate === null}
+            onClick={() => {
+              const source = computed.wacc ?? computed.capmRate
+              if (source === null) return
+              const value = Number(source)
+              setLocal('discountRate', { manualValue: String(value) })
+              void persistField('discountRate', value)
+            }}
+          >
+            {computed.wacc ? 'Use WACC as discount rate' : 'Use cost of equity as discount rate'}
+          </button>
         </div>
       </div>
 
