@@ -181,6 +181,12 @@ export default function AnalysisCalculator({
     for (const diff of data.diffs ?? []) {
       setLocal(diff.field, { fetchedValue: diff.current })
     }
+    if (data.priceError) {
+      setError(`Fundamentals updated, but the current price couldn't be fetched: ${data.priceError}`)
+    }
+    // Pull the freshly stored price snapshot into the page so Current Price
+    // and Margin of Safety update without a manual reload.
+    router.refresh()
   }
 
   // Linear growth fade: year 1 = current Y1 growth, year 5 = terminal growth,
@@ -359,7 +365,7 @@ export default function AnalysisCalculator({
             </span>
           )}
           <button type="button" className="fin-btn" onClick={() => void refetch()} disabled={refetching}>
-            {refetching ? 'Fetching…' : 'Refresh fetched values'}
+            {refetching ? 'Fetching…' : 'Refresh data & price'}
           </button>
           <button
             type="button"

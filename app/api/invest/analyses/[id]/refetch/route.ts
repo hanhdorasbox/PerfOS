@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { getInvestDb, analyses, assets } from '@/lib/invest/db'
+import { getInvestDb, analyses, assets, priceSnapshots } from '@/lib/invest/db'
+import { getMarketDataProvider } from '@/lib/invest/market-data'
 import { latestFundamentals, recomputeAnalysis, refetchAnalysisInputs } from '@/lib/invest/valuation/service'
 
 export const dynamic = 'force-dynamic'
@@ -41,6 +42,28 @@ export async function POST(_req: NextRequest, ctx: Ctx) {
   }
 
   const diffs = await refetchAnalysisInputs(db, id, data, fetchedAt)
+
+  // Also pull a fresh price snapshot so Current Price and Margin of Safety
+  // populate on demand instead of waiting for the daily cron. Manual-priced
+  // assets are left alone (their price is owner-controlled).
+  let priceError: string | null = null
+  if (!asset.manualPricing) {
+    try {
+      const quote = await getMarketDataProvider().getQuote(asset.ticker)
+      const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Prague' }).format(new Date())
+      await db
+        .insert(priceSnapshots)
+        .values({ assetId: asset.id, price: String(quote.price), date: today })
+        .onConflictDoUpdate({
+          target: [priceSnapshots.assetId, priceSnapshots.date],
+          set: { price: String(quote.price) },
+        })
+    } catch (e) {
+      priceError = e instanceof Error ? e.message : String(e)
+    }
+  }
+
+  // Recompute AFTER the price is stored so MoS reflects it immediately.
   const computed = await recomputeAnalysis(db, id, asset.id)
-  return NextResponse.json({ diffs, computed, fetchedAt })
+  return NextResponse.json({ diffs, computed, fetchedAt, priceError })
 }
