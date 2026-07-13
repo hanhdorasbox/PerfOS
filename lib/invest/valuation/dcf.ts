@@ -94,6 +94,40 @@ export function capmDiscountRate(riskFreeRate: Num, beta: Num, equityRiskPremium
   return dec(riskFreeRate).plus(dec(beta).times(dec(equityRiskPremium)))
 }
 
+/**
+ * Weighted-average cost of capital — the correct discount rate for an FCFF
+ * DCF:  WACC = E/V·Re + D/V·Rd·(1−tax).
+ * Re = cost of equity (from CAPM), Rd = pre-tax cost of debt.
+ * With no debt (V = E) this collapses to Re.
+ */
+export function waccDiscountRate(
+  costOfEquity: Num,
+  costOfDebt: Num,
+  taxRate: Num,
+  equityValue: Num,
+  debtValue: Num,
+): Decimal {
+  const e = dec(equityValue)
+  const d = dec(debtValue)
+  const v = e.plus(d)
+  if (v.lte(0)) return dec(costOfEquity)
+  const afterTaxRd = dec(costOfDebt).times(dec(1).minus(dec(taxRate)))
+  return e.div(v).times(dec(costOfEquity)).plus(d.div(v).times(afterTaxRd))
+}
+
+/**
+ * Linear growth fade from a starting rate to a terminal rate across `years`
+ * explicit years: year 1 = start, year N = end, evenly stepped in between.
+ * Models the realistic decay of high growth toward a sustainable level.
+ */
+export function fadeGrowth(start: Num, end: Num, years: number): Decimal[] {
+  const s = dec(start)
+  const e = dec(end)
+  if (years <= 1) return [e]
+  const step = e.minus(s).div(years - 1)
+  return Array.from({ length: years }, (_, i) => s.plus(step.times(i)))
+}
+
 /** MoS = (fairValue − price) / fairValue. Positive = price below fair value. */
 export function marginOfSafety(fairValue: Num, price: Num): Decimal | null {
   const fv = dec(fairValue)

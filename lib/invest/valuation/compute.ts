@@ -6,6 +6,7 @@ import {
   impliedValueFromPe,
   marginOfSafety,
   sensitivityTable,
+  waccDiscountRate,
   ValuationError,
   type DcfInputs,
   type SensitivityCell,
@@ -26,7 +27,10 @@ export interface ComputedValuation {
   equityValue: string | null
   impliedFromPe: string | null
   impliedFromEvEbitda: string | null
+  /** Cost of equity from CAPM (rf + beta × ERP) */
   capmRate: string | null
+  /** Full WACC, blending cost of equity and after-tax cost of debt by E/D weights */
+  wacc: string | null
   sensitivity: Array<
     Array<{ discountRate: string; terminalGrowth: string; fairValue: string | null; isBase: boolean }>
   > | null
@@ -64,6 +68,18 @@ export function computeValuation(
   const beta = val('beta')
   const erp = val('equityRiskPremium')
   const capmRate = rf && beta && erp ? capmDiscountRate(rf, beta, erp) : null
+
+  // WACC = E/V·Re + D/V·Rd·(1−tax). Equity value = price × shares (market cap);
+  // debt value = gross total debt. Needs the current price to weight properly.
+  const costOfDebt = val('costOfDebt')
+  const taxRate = val('taxRate')
+  const totalDebt = val('totalDebt')
+  const sharesForWacc = val('sharesOutstanding')
+  const priceForWacc = toDecimal(currentPrice)
+  const wacc =
+    capmRate && costOfDebt && taxRate !== null && totalDebt !== null && sharesForWacc && priceForWacc
+      ? waccDiscountRate(capmRate, costOfDebt, taxRate, priceForWacc.times(sharesForWacc), totalDebt)
+      : null
 
   // ── DCF ────────────────────────────────────────────────────────────────
   const required: Record<string, Decimal | null> = {
@@ -130,6 +146,7 @@ export function computeValuation(
     impliedFromPe: impliedFromPe?.toFixed(4) ?? null,
     impliedFromEvEbitda: impliedFromEvEbitda?.toFixed(4) ?? null,
     capmRate: capmRate?.toFixed(6) ?? null,
+    wacc: wacc?.toFixed(6) ?? null,
     sensitivity:
       sensitivity?.map((row) =>
         row.map((cell) => ({

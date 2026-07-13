@@ -3,10 +3,12 @@ import Decimal from 'decimal.js'
 import {
   capmDiscountRate,
   dcfFairValue,
+  fadeGrowth,
   impliedValueFromEvEbitda,
   impliedValueFromPe,
   marginOfSafety,
   sensitivityTable,
+  waccDiscountRate,
   ValuationError,
   type DcfInputs,
 } from './dcf'
@@ -73,6 +75,37 @@ describe('dcfFairValue', () => {
 describe('capmDiscountRate', () => {
   it('is rf + beta × ERP', () => {
     expect(capmDiscountRate(0.04, 1.2, 0.05).toNumber()).toBeCloseTo(0.1, 10)
+  })
+})
+
+describe('waccDiscountRate', () => {
+  it('blends cost of equity and after-tax cost of debt by weight', () => {
+    // Re=10%, Rd=5%, tax=20%, E=800, D=200 → 0.8*0.10 + 0.2*0.05*0.8 = 0.088
+    const wacc = waccDiscountRate(0.1, 0.05, 0.2, 800, 200)
+    expect(wacc.toNumber()).toBeCloseTo(0.088, 10)
+  })
+
+  it('collapses to cost of equity with no debt', () => {
+    expect(waccDiscountRate(0.09, 0.05, 0.2, 1000, 0).toNumber()).toBeCloseTo(0.09, 10)
+  })
+
+  it('falls back to cost of equity when total value is zero', () => {
+    expect(waccDiscountRate(0.09, 0.05, 0.2, 0, 0).toNumber()).toBeCloseTo(0.09, 10)
+  })
+})
+
+describe('fadeGrowth', () => {
+  it('interpolates linearly from start to end', () => {
+    const rates = fadeGrowth(0.2, 0.02, 5).map((d) => d.toNumber())
+    expect(rates[0]).toBeCloseTo(0.2, 10)
+    expect(rates[4]).toBeCloseTo(0.02, 10)
+    expect(rates[2]).toBeCloseTo(0.11, 10) // midpoint
+    // even, decreasing steps
+    expect(rates[1] - rates[0]).toBeCloseTo(rates[2] - rates[1], 10)
+  })
+
+  it('returns the terminal rate for a single year', () => {
+    expect(fadeGrowth(0.2, 0.02, 1).map((d) => d.toNumber())).toEqual([0.02])
   })
 })
 

@@ -6,6 +6,7 @@ import { Database, RotateCcw } from 'lucide-react'
 import { FIELD_DEFS, effectiveValue, type FieldDef } from '@/lib/invest/valuation/fields'
 import { computeValuation } from '@/lib/invest/valuation/compute'
 import { formatMoney, formatNumber, formatPercent, formatPercentSigned } from '@/lib/invest/format'
+import InfoHint from '@/components/invest/InfoHint'
 
 export interface CalcInput {
   field: string
@@ -83,6 +84,7 @@ export default function AnalysisCalculator({
   >([])
   const [refetching, setRefetching] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [fading, setFading] = useState(false)
 
   const computed = useMemo(
     () => computeValuation(Object.values(inputs), currentPrice),
@@ -181,6 +183,30 @@ export default function AnalysisCalculator({
     }
   }
 
+  // Linear growth fade: year 1 = current Y1 growth, year 5 = terminal growth,
+  // years 2–4 evenly interpolated. Persists all five as overrides.
+  async function applyFade() {
+    const startRaw = effectiveValue(inputs['fcfGrowthY1'] ?? { fetchedValue: null, manualValue: null })
+    const endRaw = effectiveValue(inputs['terminalGrowth'] ?? { fetchedValue: null, manualValue: null })
+    const start = startRaw !== null ? Number(startRaw) : NaN
+    const end = endRaw !== null ? Number(endRaw) : NaN
+    if (!Number.isFinite(start) || !Number.isFinite(end)) {
+      setError('Set Year-1 growth and Terminal growth first — fade fills years 2–5 between them.')
+      return
+    }
+    setFading(true)
+    setError(null)
+    const step = (end - start) / 4
+    for (let y = 1; y <= 5; y++) {
+      const value = start + step * (y - 1)
+      const field = `fcfGrowthY${y}`
+      setLocal(field, { manualValue: String(value) })
+      const ok = await persistField(field, value)
+      if (!ok) break
+    }
+    setFading(false)
+  }
+
   async function deleteAnalysis() {
     if (!confirm(`Delete analysis "${title}" for ${asset.ticker}? This cannot be undone.`)) return
     setDeleting(true)
@@ -215,6 +241,7 @@ export default function AnalysisCalculator({
       <div key={def.key} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <label className="fin-field-label" htmlFor={`field-${def.key}`} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 0 }}>
           {def.label}
+          {def.hint && <InfoHint text={def.hint} />}
           {isFetched && <Database size={11} aria-label="value from API" className="fin-subtle" />}
           {isOverridden && <span className="fin-badge fin-badge-gold" style={{ fontSize: 9, padding: '0 6px' }}>override</span>}
           {diff && diff.changePct !== null && (
@@ -351,32 +378,45 @@ export default function AnalysisCalculator({
       {/* ── Summary ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 16 }}>
         <div className="fin-card">
-          <div className="fin-label" style={{ marginBottom: 8 }}>Fair value (DCF)</div>
+          <div className="fin-label" style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            Fair value (DCF)
+            <InfoHint text="What one share is worth per the discounted-cash-flow model: present value of 5 years of FCF plus terminal value, minus net debt, divided by shares. Your intrinsic-value estimate to compare against the market price." />
+          </div>
           <div className="fin-value-lg fin-gold" style={{ fontSize: 28 }}>
             {computed.fairValue ? formatMoney(computed.fairValue, asset.currency) : '—'}
           </div>
         </div>
         <div className="fin-card">
-          <div className="fin-label" style={{ marginBottom: 8 }}>Implied (P/E)</div>
+          <div className="fin-label" style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            Implied (P/E)
+            <InfoHint text="A second, independent value estimate: sector P/E benchmark × EPS. If it disagrees a lot with the DCF, revisit your assumptions." />
+          </div>
           <div className="fin-value-lg" style={{ fontSize: 28 }}>
             {computed.impliedFromPe ? formatMoney(computed.impliedFromPe, asset.currency) : '—'}
           </div>
         </div>
         <div className="fin-card">
-          <div className="fin-label" style={{ marginBottom: 8 }}>Implied (EV/EBITDA)</div>
+          <div className="fin-label" style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            Implied (EV/EBITDA)
+            <InfoHint text="A third value estimate: (sector EV/EBITDA × EBITDA − net debt) ÷ shares. Cross-check the DCF and P/E — three methods agreeing is a stronger signal." />
+          </div>
           <div className="fin-value-lg" style={{ fontSize: 28 }}>
             {computed.impliedFromEvEbitda ? formatMoney(computed.impliedFromEvEbitda, asset.currency) : '—'}
           </div>
         </div>
         <div className="fin-card">
-          <div className="fin-label" style={{ marginBottom: 8 }}>Current price</div>
+          <div className="fin-label" style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            Current price
+            <InfoHint text="The latest market price from the daily price snapshot. Shows “—” until a price has been fetched (or set manually) for this asset." />
+          </div>
           <div className="fin-value-lg" style={{ fontSize: 28 }}>
             {price !== null ? formatMoney(price, asset.currency) : '—'}
           </div>
         </div>
         <div className="fin-card">
-          <div className="fin-label" style={{ marginBottom: 8 }}>
+          <div className="fin-label" style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
             Margin of safety{target !== null && <> · target {formatPercent(target)}</>}
+            <InfoHint text="(Fair value − price) ÷ fair value. How far below intrinsic value the stock trades. Positive = trading below fair value (cushion); negative = above. The bigger the buffer, the more room for error in your assumptions." />
           </div>
           <div className={`fin-value-lg ${mosClass}`} style={{ fontSize: 28 }}>
             {mos !== null ? formatPercentSigned(mos) : '—'}
@@ -400,7 +440,22 @@ export default function AnalysisCalculator({
 
       {/* ── DCF inputs ── */}
       <div className="fin-card">
-        <div className="fin-label" style={{ marginBottom: 16 }}>DCF — inputs (FCFF, 5 years + terminal)</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+          <div className="fin-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            DCF — inputs (FCFF, 5 years + terminal)
+            <InfoHint text="Projects free cash flow for 5 years, then a perpetual terminal value, discounts both to today at the discount rate, subtracts net debt, and divides by shares. Most of the value usually sits in the terminal value — so the discount rate and terminal growth matter most." />
+          </div>
+          <button
+            type="button"
+            className="fin-btn"
+            style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            onClick={() => void applyFade()}
+            disabled={fading}
+          >
+            {fading ? 'Fading…' : 'Fade to terminal'}
+            <InfoHint text="Fills years 1–5 by linearly stepping from your Year-1 growth down to the terminal growth. More realistic than holding one high growth rate flat for 5 years. You can still fine-tune any single year afterwards." />
+          </button>
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
           {group('dcf').map(fieldRow)}
         </div>
@@ -408,28 +463,42 @@ export default function AnalysisCalculator({
 
       {/* ── WACC helper ── */}
       <div className="fin-card">
-        <div className="fin-label" style={{ marginBottom: 16 }}>Discount-rate helper (CAPM)</div>
+        <div className="fin-label" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
+          Discount-rate helper (WACC)
+          <InfoHint text="Builds the discount rate for the DCF. Cost of equity = risk-free + beta × equity risk premium (CAPM). WACC then blends that with the after-tax cost of debt, weighted by market cap vs. total debt. For an FCFF model, WACC is the correct rate — use it, not the cost of equity alone." />
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
           {group('wacc').map(fieldRow)}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, justifyContent: 'flex-end' }}>
-            <div className="fin-subtle" style={{ fontSize: 12 }}>
-              rf + beta × ERP ={' '}
-              <span className="fin-mono fin-gold">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, justifyContent: 'flex-end' }}>
+            <div className="fin-subtle" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
+              Cost of equity
+              <InfoHint text="rf + beta × ERP. The return equity investors require. It’s the equity leg of the WACC — with no debt, WACC equals this." />
+              ={' '}
+              <span className="fin-mono">
                 {computed.capmRate ? formatPercent(computed.capmRate) : '—'}
+              </span>
+            </div>
+            <div className="fin-subtle" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
+              WACC
+              <InfoHint text="E/V × cost of equity + D/V × cost of debt × (1 − tax). Needs cost of debt, tax rate, total debt, shares and the current price. Falls back to cost of equity if those aren’t all set." />
+              ={' '}
+              <span className="fin-mono fin-gold">
+                {computed.wacc ? formatPercent(computed.wacc) : '—'}
               </span>
             </div>
             <button
               type="button"
               className="fin-btn"
-              disabled={computed.capmRate === null}
+              disabled={computed.wacc === null && computed.capmRate === null}
               onClick={() => {
-                if (computed.capmRate === null) return
-                const value = Number(computed.capmRate)
+                const source = computed.wacc ?? computed.capmRate
+                if (source === null) return
+                const value = Number(source)
                 setLocal('discountRate', { manualValue: String(value) })
                 void persistField('discountRate', value)
               }}
             >
-              Use as discount rate
+              {computed.wacc ? 'Use WACC as discount rate' : 'Use cost of equity as discount rate'}
             </button>
           </div>
         </div>

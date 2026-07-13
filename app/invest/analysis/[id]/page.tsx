@@ -11,6 +11,7 @@ import {
   watchlistItems,
 } from '@/lib/invest/db'
 import AnalysisCalculator, { type CalcInput } from '@/components/invest/AnalysisCalculator'
+import { FIELD_DEFS } from '@/lib/invest/valuation/fields'
 
 export const dynamic = 'force-dynamic'
 
@@ -49,14 +50,29 @@ export default async function AnalysisPage(props: { params: Promise<{ id: string
     .orderBy(desc(fundamentalsSnapshots.fetchedAt))
     .limit(1)
 
-  const calcInputs: CalcInput[] = inputs.map((i) => ({
-    field: i.field,
-    fetchedValue: i.fetchedValue,
-    manualValue: i.manualValue,
-    note: i.note,
-    source: i.source,
-    snapshotAt: i.snapshotAt.toISOString(),
-  }))
+  const inputByField = new Map(inputs.map((i) => [i.field, i]))
+  // Backfill any field added to FIELD_DEFS after this analysis was created
+  // (e.g. the WACC inputs) so they still render; the inputs PUT upserts them.
+  const calcInputs: CalcInput[] = FIELD_DEFS.map((def) => {
+    const i = inputByField.get(def.key)
+    return i
+      ? {
+          field: i.field,
+          fetchedValue: i.fetchedValue,
+          manualValue: i.manualValue,
+          note: i.note,
+          source: i.source,
+          snapshotAt: i.snapshotAt.toISOString(),
+        }
+      : {
+          field: def.key,
+          fetchedValue: null,
+          manualValue: def.defaultValue !== undefined ? String(def.defaultValue) : null,
+          note: null,
+          source: 'manual',
+          snapshotAt: new Date().toISOString(),
+        }
+  })
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
