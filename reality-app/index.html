@@ -26,9 +26,10 @@
     --shadow:    0 1px 2px rgba(60,48,18,.05), 0 10px 30px rgba(60,48,18,.07);
     --shadow-lg: 0 2px 6px rgba(60,48,18,.06), 0 22px 50px rgba(60,48,18,.11);
     --radius:    15px;
-    --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    /* Jeden font všude — systémový sans. Čísla se zarovnávají přes tabular-nums. */
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --mono: ui-monospace, 'SF Mono', 'Menlo', 'Cascadia Mono', 'Roboto Mono', monospace;
+    --serif: var(--sans);
+    --mono: var(--sans);
     --ease: cubic-bezier(.22,.7,.2,1);
   }
   @media (prefers-color-scheme: dark) {
@@ -192,6 +193,9 @@
   .toggle button { border: none; background: transparent; color: var(--muted); font-size: 13px; font-weight: 550; padding: 7px 18px; border-radius: 8px; transition: background .2s var(--ease), color .2s var(--ease); }
   .toggle button.active { background: var(--brass-bg); color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass-bd, var(--brass)); }
   .note { font-size: 11.5px; color: var(--faint); line-height: 1.5; margin: 9px 0 0; }
+  .taxrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .minilabel { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+  #taxToggle button { padding: 7px 14px; font-size: 12.5px; }
 
   /* ─── Verdict ──────────────────────────────────────────────────────────── */
   .verdict { border-radius: var(--radius); padding: 18px 20px; border: 1px solid; transition: background .45s var(--ease), border-color .45s var(--ease); }
@@ -344,6 +348,19 @@
         </div>
 
         <div class="section">
+          <div class="sec-title" data-i18n="sec_tax">Daně a prodej</div>
+          <div class="taxrow">
+            <span class="minilabel" data-i18n="lbl_taxmethod">Způsob zdanění</span>
+            <div class="toggle" id="taxToggle">
+              <button type="button" data-tax="real" data-i18n="tax_real">Skutečné náklady</button>
+              <button type="button" data-tax="flat30" data-i18n="tax_flat">Paušál 30 %</button>
+            </div>
+          </div>
+          <div class="fields" id="grp-tax" style="margin-top:13px"></div>
+          <p class="note" data-i18n="note_tax"></p>
+        </div>
+
+        <div class="section">
           <div class="sec-title" data-i18n="sec_assump">Předpoklady vývoje</div>
           <div class="fields" id="grp-assump"></div>
         </div>
@@ -381,6 +398,7 @@
             <span><i style="background:#D97A57"></i><span data-i18n="lg_loan">Zůstatek úvěru</span></span>
             <span><i style="background:#6F86E0"></i><span data-i18n="lg_cf">Kum. cash flow</span></span>
           </div>
+          <p class="note" id="exit-note"></p>
           <details class="proj">
             <summary data-i18n="show_table">Zobrazit tabulku po letech</summary>
             <div class="table-scroll"><table class="proj" id="projTable"></table></div>
@@ -443,6 +461,7 @@ function irr(flows){
   for(let i=0;i<100;i++){ const mid=(lo+hi)/2, val=npv(mid); if(Math.abs(val)<1e-6) return mid; if(nLo*val<0){hi=mid;}else{lo=mid;nLo=val;} }
   return (lo+hi)/2;
 }
+const GAINS_EXEMPT_YEARS = 10; // osvobození příjmu z prodeje po 10 letech držby (nabytí od 2021)
 function calculate(input){
   const isM = input.financing==='mortgage';
   const totalAcq = input.purchasePrice + input.acquisitionCosts + input.renovationCosts;
@@ -471,8 +490,14 @@ function calculate(input){
   const breakEvenRent = Math.max(0, beGross/12 - input.otherMonthlyIncome);
 
   const horizon = Math.max(1, Math.round(input.horizonYears));
-  const g=input.rentGrowthPct/100, ap=input.appreciationPct/100, tax=clampPct(input.incomeTaxPct)/100;
+  const g=input.rentGrowthPct/100, ap=input.appreciationPct/100, taxRate=clampPct(input.incomeTaxPct)/100;
+  const flat30 = input.taxMethod==='flat30';
+  // Roční odpis (jen u skutečných nákladů): rovnoměrně z pořizovací ceny + rekonstrukce.
+  const depreciation = (!flat30 && input.depreciationYears>0)
+    ? (input.purchasePrice + input.renovationCosts) / input.depreciationYears : 0;
+
   const projection=[]; let balance=loanAmount, cumulative=0; const flows=[-totalCash];
+  let curRate=input.interestRate, curPayment=payment, refixed=false;
   for(let y=1;y<=horizon;y++){
     const grow=Math.pow(1+g,y-1);
     const grossRent=grossAnnual*grow, effRent=grossRent*(1-vac);
@@ -480,28 +505,44 @@ function calculate(input){
     const opexY=(input.hoaMonthly*12+input.propertyTaxYearly+input.insuranceYearly)*grow+mgmtY+maintY;
     const noiY=effRent-opexY;
     let interest=0, principal=0;
-    if(isM && balance>0){ const am=amortizeYear(balance,input.interestRate,payment); interest=am.interest; principal=am.principal; balance=am.endingBalance; }
+    if(isM && balance>0){
+      // Po fixaci se přesadí sazba a splátka se přepočítá na zbývající dobu.
+      if(!refixed && y>input.fixationYears && input.rateAfterFix!==input.interestRate){
+        curRate=input.rateAfterFix;
+        curPayment=monthlyPayment(balance, curRate, Math.max(1, input.loanTermYears-(y-1)));
+        refixed=true;
+      }
+      const am=amortizeYear(balance,curRate,curPayment); interest=am.interest; principal=am.principal; balance=am.endingBalance;
+    }
     const debt=interest+principal;
-    const taxable=Math.max(0, effRent-opexY-interest);
-    const incomeTax=taxable*tax;
+    // Daňový základ: paušál 30 % z nájmu, nebo skutečné náklady + úroky + odpisy.
+    const taxable = flat30 ? effRent*0.70 : Math.max(0, effRent-opexY-interest-depreciation);
+    const incomeTax = Math.max(0,taxable)*taxRate;
     const pre=noiY-debt, after=pre-incomeTax;
     cumulative+=after;
     const value=input.purchasePrice*Math.pow(1+ap,y);
     const equity=value-balance;
-    let flow=after; if(y===horizon) flow+=value-balance;
-    flows.push(flow);
+    flows.push(after);
     projection.push({year:y,value,grossRent,effRent,opex:opexY,noi:noiY,interest,principal,debt,incomeTax,pre,after,balance,equity,cumulative});
   }
+  // ── Exit: prodej na konci horizontu ──
   const last=projection[projection.length-1];
-  const proceeds=last.value-last.balance;
-  const profit=proceeds+cumulative-totalCash;
+  const exitValue=last.value;
+  const exitSellCosts=exitValue*clampPct(input.sellingCostPct)/100;
+  const exitGain=exitValue-exitSellCosts-totalAcq;
+  const exitCapGainsTax=(horizon<GAINS_EXEMPT_YEARS && exitGain>0) ? exitGain*taxRate : 0;
+  const exitProceeds=exitValue-exitSellCosts-last.balance-exitCapGainsTax;
+  flows[flows.length-1]+=exitProceeds;
+
+  const profit=exitProceeds+cumulative-totalCash;
   const totalReturn=totalCash>0?profit/totalCash*100:0;
   const annualized=irr(flows)*100;
   const verdict=buildVerdict({isM, monthlyPre:preTax/12, coc, netYield, grossYield, rate:input.interestRate, dscr, annualized});
   return { totalAcq, downPayment, loanAmount, totalCash, ltv, monthlyMortgage:payment, monthlyPre:preTax/12,
-    grossAnnual, effAnnual, opex, noi, annualDebt, preTax, annualAfter:projection[0].after,
+    grossAnnual, effAnnual, opex, noi, annualDebt, preTax, annualAfter:projection[0].after, depreciation, refixed,
     grossYield, netYield, coc, dscr, paybackYears: projection[0].after>0 ? totalCash/projection[0].after : null,
-    breakEvenRent, projection, totalReturn, annualized, verdict, isM };
+    breakEvenRent, projection, totalReturn, annualized, verdict, isM,
+    exitYear:horizon, exitValue, exitSellCosts, exitCapGainsTax, exitProceeds, exitExempt:horizon>=GAINS_EXEMPT_YEARS };
 }
 
 // Reasons se skládají přes t() v aktuálním jazyce.
@@ -546,16 +587,19 @@ const I18N = {
     lede:'Zadej parametry konkrétní nemovitosti a hned uvidíš, jestli se investice vyplatí — <b>měsíční cash flow</b>, <b>čistý výnos</b>, <b>návratnost vloženého kapitálu</b> a vývoj hodnoty i kapitálu za několik let. Vše počítá lokálně u tebe v prohlížeči; uložené analýzy zůstávají jen na tomto zařízení.',
     lbl_title:'Název analýzy', lbl_address:'Adresa / poznámka <span class="opt">(nepovinné)</span>',
     ph_title:'Byt 2+kk, Brno-Žabovřesky', ph_address:'Minská 12',
-    sec_buy:'Pořízení', sec_fin:'Financování', sec_income:'Příjmy', sec_costs:'Provozní náklady', sec_assump:'Předpoklady vývoje',
+    sec_buy:'Pořízení', sec_fin:'Financování', sec_income:'Příjmy', sec_costs:'Provozní náklady', sec_tax:'Daně a prodej', sec_assump:'Předpoklady vývoje',
     note_buy:'Vedlejší náklady = provize RK, právník, kolky, případná daň z nabytí.',
     note_costs:'Energie a služby obvykle platí nájemník. Údržba je roční rezerva na opravy (% z nájmu).',
+    note_tax:'Skutečné náklady: od nájmu se odečtou provozní náklady, úroky z úvěru a odpisy (rovnoměrně z ceny + rekonstrukce, obvykle 30 let). Paušál 30 %: uzná se 30 % nájmu jako výdaj (bez úroků a odpisů), strop 600 000 Kč. Zisk z prodeje je po 10 letech držby osvobozen.',
+    lbl_taxmethod:'Způsob zdanění', tax_real:'Skutečné náklady', tax_flat:'Paušál 30 %',
     fin_mortgage:'Hypotéka', fin_cash:'Za hotové',
     f_price:'Kupní cena', f_acq:'Vedlejší náklady', f_renov:'Rekonstrukce',
-    f_down:'Akontace', f_rate:'Úroková sazba', f_term:'Splatnost',
+    f_down:'Akontace', f_rate:'Úroková sazba', f_term:'Splatnost', f_fixation:'Fixace úroku', f_ratefix:'Sazba po fixaci',
     f_rent:'Měsíční nájem', f_other:'Ostatní příjmy', f_vac:'Neobsazenost',
     f_hoa:'SVJ / fond oprav', f_tax:'Daň z nemovitosti', f_ins:'Pojištění', f_mgmt:'Správa', f_maint:'Údržba / rezerva',
-    f_appr:'Zhodnocení nemovitosti', f_growth:'Růst nájmu a nákladů', f_inctax:'Daň z příjmu z nájmu', f_horizon:'Horizont',
-    u_kc:'Kč', u_kcm:'Kč/měs', u_kcr:'Kč/rok', u_pct:'%', u_pctpa:'% p.a.', u_let:'let', u_pctrent:'% z nájmu', u_pctyr:'% / rok',
+    f_inctax:'Daň z příjmu z nájmu', f_depr:'Odpisy (0 = ne)', f_sellcost:'Náklady na prodej',
+    f_appr:'Zhodnocení nemovitosti', f_growth:'Růst nájmu a nákladů', f_horizon:'Horizont',
+    u_kc:'Kč', u_kcm:'Kč/měs', u_kcr:'Kč/rok', u_pct:'%', u_pctpa:'% p.a.', u_let:'let', u_pctrent:'% z nájmu', u_pctyr:'% / rok', u_pctprice:'% z ceny',
     u_mil:'mil.', u_th:'tis.', u_permonth:'/měs',
     m_cf:'Měsíční cash flow', m_cf_sub:'před zdaněním, po splátce',
     m_ny:'Čistý výnos (cap rate)', m_ny_sub:'NOI / pořizovací cena',
@@ -570,6 +614,8 @@ const I18N = {
     rw_debt:'− Splátky úvěru', rw_pretax:'Cash flow před zdaněním', rw_aftertax:'Po zdanění příjmu z nájmu',
     breakeven:v=>`Break-even nájem (nulový cash flow): <b style="color:var(--muted)">${v}/měs</b>.`,
     chart_title:y=>`Vývoj za ${y} let`,
+    note_exit:(y,proceeds,sell,tax,exempt)=>`Prodej v ${y}. roce: čistý výtěžek <b style="color:var(--muted)">${proceeds}</b> (po nákladech na prodej ${sell}${exempt?', zisk osvobozen (držba ≥ 10 let)':`, daň ze zisku ${tax}`}). Zahrnuto v celkovém výnosu a IRR.`,
+    note_refix:'Po fixaci se úvěr přepočítá na sazbu po fixaci — dlouhodobý cash flow to zohledňuje.',
     lg_value:'Hodnota nemovitosti', lg_equity:'Vlastní kapitál', lg_loan:'Zůstatek úvěru', lg_cf:'Kum. cash flow',
     show_table:'Zobrazit tabulku po letech',
     tbl_year:'Rok', tbl_value:'Hodnota', tbl_loan:'Úvěr', tbl_equity:'Kapitál', tbl_cf:'Cash flow', tbl_cumcf:'Kum. CF',
@@ -605,16 +651,19 @@ const I18N = {
     lede:'Nhập thông số của một bất động sản cụ thể và xem ngay khoản đầu tư có đáng không — <b>dòng tiền hàng tháng</b>, <b>lợi suất ròng</b>, <b>hoàn vốn tự có</b> và diễn biến giá trị lẫn vốn qua nhiều năm. Mọi thứ tính ngay trên trình duyệt của bạn; phân tích đã lưu chỉ nằm trên thiết bị này.',
     lbl_title:'Tên phân tích', lbl_address:'Địa chỉ / ghi chú <span class="opt">(không bắt buộc)</span>',
     ph_title:'Căn hộ 2+kk, Brno-Žabovřesky', ph_address:'Minská 12',
-    sec_buy:'Chi phí mua', sec_fin:'Tài chính', sec_income:'Thu nhập', sec_costs:'Chi phí vận hành', sec_assump:'Giả định tăng trưởng',
+    sec_buy:'Chi phí mua', sec_fin:'Tài chính', sec_income:'Thu nhập', sec_costs:'Chi phí vận hành', sec_tax:'Thuế và bán', sec_assump:'Giả định tăng trưởng',
     note_buy:'Chi phí phụ = phí môi giới, luật sư, lệ phí, thuế mua (nếu có).',
     note_costs:'Điện nước & dịch vụ thường do người thuê trả. Bảo trì là khoản dự phòng sửa chữa hàng năm (% tiền thuê).',
+    note_tax:'Chi phí thực: trừ vào tiền thuê các chi phí vận hành, lãi vay và khấu hao (đều theo giá + cải tạo, thường 30 năm). Khoán 30 %: coi 30 % tiền thuê là chi phí (không trừ lãi & khấu hao), trần 600 000 Kč. Lãi khi bán được miễn thuế sau 10 năm sở hữu.',
+    lbl_taxmethod:'Cách tính thuế', tax_real:'Chi phí thực', tax_flat:'Khoán 30 %',
     fin_mortgage:'Vay thế chấp', fin_cash:'Trả tiền mặt',
     f_price:'Giá mua', f_acq:'Chi phí phụ', f_renov:'Cải tạo',
-    f_down:'Trả trước', f_rate:'Lãi suất', f_term:'Thời hạn vay',
+    f_down:'Trả trước', f_rate:'Lãi suất', f_term:'Thời hạn vay', f_fixation:'Kỳ cố định lãi', f_ratefix:'Lãi sau kỳ cố định',
     f_rent:'Tiền thuê / tháng', f_other:'Thu nhập khác', f_vac:'Tỷ lệ trống',
     f_hoa:'Phí quản lý / quỹ sửa chữa', f_tax:'Thuế bất động sản', f_ins:'Bảo hiểm', f_mgmt:'Quản lý', f_maint:'Bảo trì / dự phòng',
-    f_appr:'Tăng giá bất động sản', f_growth:'Tăng tiền thuê & chi phí', f_inctax:'Thuế thu nhập cho thuê', f_horizon:'Thời gian',
-    u_kc:'Kč', u_kcm:'Kč/tháng', u_kcr:'Kč/năm', u_pct:'%', u_pctpa:'%/năm', u_let:'năm', u_pctrent:'% tiền thuê', u_pctyr:'%/năm',
+    f_inctax:'Thuế thu nhập cho thuê', f_depr:'Khấu hao (0 = không)', f_sellcost:'Chi phí bán',
+    f_appr:'Tăng giá bất động sản', f_growth:'Tăng tiền thuê & chi phí', f_horizon:'Thời gian',
+    u_kc:'Kč', u_kcm:'Kč/tháng', u_kcr:'Kč/năm', u_pct:'%', u_pctpa:'%/năm', u_let:'năm', u_pctrent:'% tiền thuê', u_pctyr:'%/năm', u_pctprice:'% giá',
     u_mil:'tr.', u_th:'ng.', u_permonth:'/tháng',
     m_cf:'Dòng tiền hàng tháng', m_cf_sub:'trước thuế, sau trả nợ',
     m_ny:'Lợi suất ròng (cap rate)', m_ny_sub:'NOI / giá mua',
@@ -629,6 +678,8 @@ const I18N = {
     rw_debt:'− Trả nợ vay', rw_pretax:'Dòng tiền trước thuế', rw_aftertax:'Sau thuế thu nhập cho thuê',
     breakeven:v=>`Tiền thuê hòa vốn (dòng tiền = 0): <b style="color:var(--muted)">${v}/tháng</b>.`,
     chart_title:y=>`Diễn biến trong ${y} năm`,
+    note_exit:(y,proceeds,sell,tax,exempt)=>`Bán ở năm ${y}: thu ròng <b style="color:var(--muted)">${proceeds}</b> (sau chi phí bán ${sell}${exempt?', lãi được miễn thuế (sở hữu ≥ 10 năm)':`, thuế lãi ${tax}`}). Đã tính vào tổng lợi suất và IRR.`,
+    note_refix:'Sau kỳ cố định, khoản vay được tính lại theo lãi mới — dòng tiền dài hạn đã phản ánh điều này.',
     lg_value:'Giá trị BĐS', lg_equity:'Vốn tự có', lg_loan:'Dư nợ vay', lg_cf:'Dòng tiền lũy kế',
     show_table:'Hiện bảng theo năm',
     tbl_year:'Năm', tbl_value:'Giá trị', tbl_loan:'Dư nợ', tbl_equity:'Vốn', tbl_cf:'Dòng tiền', tbl_cumcf:'Lũy kế',
@@ -668,16 +719,19 @@ function t(key, ...args){
 const DEFAULTS = {
   purchasePrice:5000000, acquisitionCosts:200000, renovationCosts:0,
   financing:'mortgage', downPaymentPct:20, interestRate:5.2, loanTermYears:30,
+  fixationYears:5, rateAfterFix:5.5,
   monthlyRent:18000, otherMonthlyIncome:0, vacancyPct:5,
   hoaMonthly:3500, propertyTaxYearly:1200, insuranceYearly:3000, managementPct:0, maintenancePct:5,
-  appreciationPct:3, rentGrowthPct:2, incomeTaxPct:15, horizonYears:10,
+  taxMethod:'real', incomeTaxPct:15, depreciationYears:30, sellingCostPct:4,
+  appreciationPct:3, rentGrowthPct:2, horizonYears:10,
 };
 const FIELDS = {
   buy:[['purchasePrice','f_price','u_kc',50000,0],['acquisitionCosts','f_acq','u_kc',10000,0],['renovationCosts','f_renov','u_kc',10000,0]],
-  fin:[['downPaymentPct','f_down','u_pct',5,0],['interestRate','f_rate','u_pctpa',0.1,0],['loanTermYears','f_term','u_let',1,1]],
+  fin:[['downPaymentPct','f_down','u_pct',5,0],['interestRate','f_rate','u_pctpa',0.1,0],['loanTermYears','f_term','u_let',1,1],['fixationYears','f_fixation','u_let',1,1],['rateAfterFix','f_ratefix','u_pctpa',0.1,0]],
   income:[['monthlyRent','f_rent','u_kc',500,0],['otherMonthlyIncome','f_other','u_kcm',500,0],['vacancyPct','f_vac','u_pct',1,0]],
   costs:[['hoaMonthly','f_hoa','u_kcm',100,0],['propertyTaxYearly','f_tax','u_kcr',100,0],['insuranceYearly','f_ins','u_kcr',100,0],['managementPct','f_mgmt','u_pctrent',1,0],['maintenancePct','f_maint','u_pctrent',1,0]],
-  assump:[['appreciationPct','f_appr','u_pctyr',0.5,null],['rentGrowthPct','f_growth','u_pctyr',0.5,null],['incomeTaxPct','f_inctax','u_pct',1,0],['horizonYears','f_horizon','u_let',1,1]],
+  tax:[['incomeTaxPct','f_inctax','u_pct',1,0],['depreciationYears','f_depr','u_let',1,0],['sellingCostPct','f_sellcost','u_pctprice',0.5,0]],
+  assump:[['appreciationPct','f_appr','u_pctyr',0.5,null],['rentGrowthPct','f_growth','u_pctyr',0.5,null],['horizonYears','f_horizon','u_let',1,1]],
 };
 
 let state = {...DEFAULTS};
@@ -706,8 +760,9 @@ function syncInputs(){
   document.getElementById('f-title').value = state._title||'';
   document.getElementById('f-address').value = state._address||'';
   document.querySelectorAll('#finToggle button').forEach(b=> b.classList.toggle('active', b.dataset.fin===state.financing));
+  document.querySelectorAll('#taxToggle button').forEach(b=> b.classList.toggle('active', b.dataset.tax===(state.taxMethod||'real')));
   const col=document.getElementById('finCollapse');
-  col.style.maxHeight = state.financing==='mortgage' ? '160px' : '0px';
+  col.style.maxHeight = state.financing==='mortgage' ? '320px' : '0px';
   col.style.opacity = state.financing==='mortgage' ? '1' : '0';
 }
 
@@ -760,6 +815,9 @@ function render(animate){
   document.getElementById('breakeven').innerHTML=t('breakeven', czk(r.breakEvenRent));
 
   document.getElementById('chart-title').textContent=t('chart_title', state.horizonYears);
+  document.getElementById('exit-note').innerHTML =
+    t('note_exit', r.exitYear, czk(r.exitProceeds), czk(r.exitSellCosts), czk(r.exitCapGainsTax), r.exitExempt)
+    + (isM && r.refixed ? ' '+t('note_refix') : '');
   drawChart(r, animate);
   document.getElementById('projTable').innerHTML =
     `<thead><tr><th>${t('tbl_year')}</th><th>${t('tbl_value')}</th><th>${t('tbl_loan')}</th><th>${t('tbl_equity')}</th><th>${t('tbl_cf')}</th><th>${t('tbl_cumcf')}</th></tr></thead><tbody>`+
@@ -918,6 +976,7 @@ function init(){
 
   document.getElementById('langSeg').addEventListener('click', e=>{ const b=e.target.closest('button[data-lang]'); if(b) setLang(b.dataset.lang); });
   document.getElementById('finToggle').addEventListener('click', e=>{ const b=e.target.closest('button[data-fin]'); if(!b) return; state.financing=b.dataset.fin; syncInputs(); render(true); });
+  document.getElementById('taxToggle').addEventListener('click', e=>{ const b=e.target.closest('button[data-tax]'); if(!b) return; state.taxMethod=b.dataset.tax; syncInputs(); render(false); });
   document.getElementById('f-title').addEventListener('input', e=>{ state._title=e.target.value; });
   document.getElementById('f-address').addEventListener('input', e=>{ state._address=e.target.value; });
   document.getElementById('saveBtn').addEventListener('click', doSave);
