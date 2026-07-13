@@ -17,7 +17,7 @@ function getSecret(): string | null {
  * never lock the owner out with no way back in.
  */
 export function isLockConfigured(): boolean {
-  return Boolean(process.env.APP_PIN && getSecret())
+  return Boolean(process.env.APP_PIN?.trim() && getSecret())
 }
 
 function toHex(buf: ArrayBuffer): string {
@@ -74,9 +74,11 @@ export async function verifyToken(
   return timingSafeEqual(sig, expected)
 }
 
-/** Checks a submitted PIN against APP_PIN in constant time. */
+/** Checks a submitted PIN against APP_PIN in constant time.
+ * Both sides are trimmed so a stray space/newline in the APP_PIN env var
+ * (a common paste artifact in dashboards) can't lock the owner out. */
 export function verifyPin(pin: string): boolean {
-  const expected = process.env.APP_PIN
+  const expected = process.env.APP_PIN?.trim()
   if (!expected) return false
-  return timingSafeEqual(pin, expected)
+  return timingSafeEqual(pin.trim(), expected)
 }
