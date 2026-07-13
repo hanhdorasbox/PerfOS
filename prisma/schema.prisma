@@ -8,65 +8,63 @@ datasource db {
 }
 
 model User {
-  id                         String                      @id @default(cuid())
-  name                       String
-  email                      String                      @unique
-  height                     Float?
-  calendarIcsSources         String? // JSON: [{url, name, type: 'personal'|'work', color?}]
-  createdAt                  DateTime                    @default(now())
-  quarters                   Quarter[]
-  goals                      Goal[]
-  longTermGoals              LongTermGoal[]
-  fitnessLogs                FitnessLog[]
-  workoutLogs                WorkoutLog[]
-  proteinLogs                ProteinLog[]
-  aiConversations            AIConversation[]
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  height    Float?
+  calendarIcsSources String?  // JSON: [{url, name, type: 'personal'|'work', color?}]
+  createdAt DateTime @default(now())
+  quarters  Quarter[]
+  goals     Goal[]
+  longTermGoals LongTermGoal[]
+  fitnessLogs FitnessLog[]
+  workoutLogs WorkoutLog[]
+  proteinLogs ProteinLog[]
+  aiConversations AIConversation[]
   // Career Capital
-  skills                     Skill[]
-  proofOfWork                ProofOfWork[]
-  careerItems                CareerCapitalItem[]
+  skills          Skill[]
+  proofOfWork     ProofOfWork[]
+  careerItems     CareerCapitalItem[]
   // Anti-Drift
-  workItems                  WorkItem[]
-  antiDriftReports           AntiDriftReport[]
+  workItems        WorkItem[]
+  antiDriftReports AntiDriftReport[]
   // Weekly Reports
-  weeklyReports              WeeklyReport[]
+  weeklyReports    WeeklyReport[]
   // Meal Planning
-  foodPreferences            FoodPreference[]
-  mealPlans                  MealPlan[]
+  foodPreferences  FoodPreference[]
+  mealPlans        MealPlan[]
   // Fitness Strategy
-  fitnessStrategies          FitnessStrategy[]
+  fitnessStrategies FitnessStrategy[]
   // Operating Manual
-  behaviorPatterns           BehaviorPattern[]
+  behaviorPatterns BehaviorPattern[]
   // Finance (legacy)
-  bankStatements             BankStatement[]
-  transactionRules           TransactionRule[]
+  bankStatements   BankStatement[]
+  transactionRules TransactionRule[]
   // Finance v2 (Excel-connected)
-  financeWorkbook            FinanceWorkbook?
-  financeImports             FinanceImport[]
+  financeWorkbook  FinanceWorkbook?
+  financeImports   FinanceImport[]
   financeCategorizationRules FinanceCategorizationRule[]
   // Career Trajectory
-  careerTrajectories         CareerTrajectory[]
+  careerTrajectories CareerTrajectory[]
   // Learning
-  capabilityGoals            CapabilityGoal[]
+  capabilityGoals  CapabilityGoal[]
   // Ideas
-  ideas                      Idea[]
+  ideas            Idea[]
   // Life Menu
-  lifeMenuItems              LifeMenuItem[]
+  lifeMenuItems    LifeMenuItem[]
   // Google Calendar
-  calendarToken              GoogleCalendarToken?
+  calendarToken    GoogleCalendarToken?
   // Daily Briefings (cached)
-  dailyBriefings             DailyBriefing[]
+  dailyBriefings   DailyBriefing[]
   // Fitness Schedule Changes
-  scheduleChanges            FitnessScheduleChange[]
+  scheduleChanges  FitnessScheduleChange[]
   // Recipes
-  recipes                    Recipe[]
+  recipes          Recipe[]
   // Career Roadmaps
-  careerRoadmaps             CareerRoadmap[]
+  careerRoadmaps   CareerRoadmap[]
   // Habit Breaker
-  alcoholLogs                AlcoholLog[]
-  alcoholSettings            AlcoholSettings?
-  // Realitní kalkulačka
-  propertyAnalyses           PropertyAnalysis[]
+  alcoholLogs      AlcoholLog[]
+  alcoholSettings  AlcoholSettings?
 }
 
 model LongTermGoal {
@@ -82,43 +80,43 @@ model LongTermGoal {
 }
 
 model Quarter {
-  id                String                  @id @default(cuid())
-  userId            String
-  user              User                    @relation(fields: [userId], references: [id])
-  name              String
-  startDate         DateTime
-  endDate           DateTime
-  status            String                  @default("active") // planned | active | closed
-  createdAt         DateTime                @default(now())
-  goals             Goal[]
-  weeklyPlans       WeeklyPlan[]
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  name           String
+  startDate      DateTime
+  endDate        DateTime
+  status         String   @default("active") // planned | active | closed
+  createdAt      DateTime @default(now())
+  goals          Goal[]
+  weeklyPlans    WeeklyPlan[]
   fitnessStrategies FitnessStrategy[]
   trajectoryPlans   TrajectoryQuarterPlan[]
 }
 
 model Goal {
-  id                String                 @id @default(cuid())
-  quarterId         String
-  quarter           Quarter                @relation(fields: [quarterId], references: [id])
-  userId            String
-  user              User                   @relation(fields: [userId], references: [id])
-  title             String
-  category          String
-  priorityWeight    Float                  @default(1.0)
-  trackingType      String                 @default("QUANTITATIVE")
-  startValue        Float?
-  targetValue       Float?
-  currentValue      Float?
-  unit              String?
-  deadline          DateTime
-  status            String                 @default("active")
+  id             String   @id @default(cuid())
+  quarterId      String
+  quarter        Quarter  @relation(fields: [quarterId], references: [id])
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  title          String
+  category       String
+  priorityWeight Float    @default(1.0)
+  trackingType   String   @default("QUANTITATIVE")
+  startValue     Float?
+  targetValue    Float?
+  currentValue   Float?
+  unit           String?
+  deadline       DateTime
+  status         String   @default("active")
   // Strategic role badges
-  strategicRole     String? // career_capital | learning | fitness | finance | high_upside_bet | long_term
-  createdAt         DateTime               @default(now())
-  updatedAt         DateTime               @default(now()) @updatedAt
-  milestones        Milestone[]
-  progressUpdates   ProgressUpdate[]
-  weeklyTasks       WeeklyTask[]
+  strategicRole  String?  // career_capital | learning | fitness | finance | high_upside_bet | long_term
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+  milestones     Milestone[]
+  progressUpdates ProgressUpdate[]
+  weeklyTasks    WeeklyTask[]
   careerCapitalEval CareerCapitalGoalEval?
   capabilityGoals   CapabilityGoal[]
 }
@@ -144,48 +142,48 @@ model ProgressUpdate {
 }
 
 model WeeklyPlan {
-  id        String       @id @default(cuid())
-  quarterId String
-  quarter   Quarter      @relation(fields: [quarterId], references: [id])
-  weekStart DateTime
-  weekEnd   DateTime
-  status    String       @default("active")
-  tasks     WeeklyTask[]
+  id           String   @id @default(cuid())
+  quarterId    String
+  quarter      Quarter  @relation(fields: [quarterId], references: [id])
+  weekStart    DateTime
+  weekEnd      DateTime
+  status       String   @default("active")
+  tasks        WeeklyTask[]
 }
 
 model WeeklyTask {
-  id                 String     @id @default(cuid())
-  weeklyPlanId       String
-  weeklyPlan         WeeklyPlan @relation(fields: [weeklyPlanId], references: [id])
-  goalId             String?
-  goal               Goal?      @relation(fields: [goalId], references: [id])
-  title              String
-  description        String?
-  effort             Int        @default(2) // 1=low 2=medium 3=deep
-  estimatedMinutes   Int? // expected time in minutes
-  completed          Boolean    @default(false)
-  completedAt        DateTime?
-  dueDate            DateTime?
-  scheduledDate      DateTime? // specific day this week
+  id           String      @id @default(cuid())
+  weeklyPlanId String
+  weeklyPlan   WeeklyPlan  @relation(fields: [weeklyPlanId], references: [id])
+  goalId       String?
+  goal         Goal?       @relation(fields: [goalId], references: [id])
+  title        String
+  description  String?
+  effort       Int         @default(2)        // 1=low 2=medium 3=deep
+  estimatedMinutes Int?                      // expected time in minutes
+  completed    Boolean     @default(false)
+  completedAt  DateTime?
+  dueDate      DateTime?
+  scheduledDate DateTime?                     // specific day this week
   // Classification
-  taskType           String? // workout | study | project | admin | review | habit | recovery | finance_review | outreach | writing | analysis
-  domain             String? // fitness | learning | career | finance | nutrition | system | personal
-  priority           Int        @default(2) // 1=must 2=should 3=optional
-  status             String     @default("planned") // planned | done | skipped | moved | dropped
-  doneCriteria       String? // explicit done criteria
-  skippedReason      String?
+  taskType     String?     // workout | study | project | admin | review | habit | recovery | finance_review | outreach | writing | analysis
+  domain       String?     // fitness | learning | career | finance | nutrition | system | personal
+  priority     Int         @default(2)        // 1=must 2=should 3=optional
+  status       String      @default("planned")// planned | done | skipped | moved | dropped
+  doneCriteria String?                        // explicit done criteria
+  skippedReason String?
   // Source linking — where this task came from
-  sourceModule       String? // goal | learning | fitness | career | report | manual
-  sourceType         String? // learning_step | fitness_schedule_item | career_gap_action | report_recommendation | goal_milestone | manual_task
-  sourceId           String? // ID of the source entity
-  createdBy          String? // user | ai | system
+  sourceModule String?     // goal | learning | fitness | career | report | manual
+  sourceType   String?     // learning_step | fitness_schedule_item | career_gap_action | report_recommendation | goal_milestone | manual_task
+  sourceId     String?     // ID of the source entity
+  createdBy    String?     // user | ai | system
   // Rollover tracking
-  rolloverCount      Int        @default(0)
-  rolledFromTaskId   String?
-  originalWeekPlanId String?
+  rolloverCount       Int      @default(0)
+  rolledFromTaskId    String?
+  originalWeekPlanId  String?
   // Timestamps
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
   @@index([sourceModule, sourceType, sourceId])
   @@index([weeklyPlanId, status])
@@ -210,7 +208,7 @@ model WorkoutLog {
   type               String
   duration           Int?
   notes              String?
-  linkedWeeklyTaskId String? // WeeklyTask.id — for bidirectional fitness sync
+  linkedWeeklyTaskId String?  // WeeklyTask.id — for bidirectional fitness sync
 }
 
 model ProteinLog {
@@ -286,51 +284,51 @@ model CareerCapitalGoalEval {
 // ─── MODULE 20: Anti-Drift ───────────────────────────────────────────────────
 
 model WorkItem {
-  id            String   @id @default(cuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  title         String
-  category      String // advancement | maintenance | reactive | busywork
-  domain        String // career | fitness | finance | personal | learning
-  completedAt   DateTime @default(now())
-  weekStart     DateTime
-  impact        String?
-  note          String?
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  category    String   // advancement | maintenance | reactive | busywork
+  domain      String   // career | fitness | finance | personal | learning
+  completedAt DateTime @default(now())
+  weekStart   DateTime
+  impact      String?
+  note        String?
   // Auto-generated flag
-  autoGenerated Boolean  @default(false)
+  autoGenerated Boolean @default(false)
   sourceType    String? // task | milestone | proof_of_work | learning_milestone
   sourceId      String?
 }
 
 model AntiDriftReport {
-  id             String   @id @default(cuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id])
-  periodType     String
-  periodStart    DateTime
-  periodEnd      DateTime
-  advancementPct Float    @default(0)
-  maintenancePct Float    @default(0)
-  reactivePct    Float    @default(0)
-  busyworkPct    Float    @default(0)
-  momentum       String   @default("stagnant")
-  durableAssets  String?
-  aiAnalysis     String?
-  createdAt      DateTime @default(now())
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  periodType      String
+  periodStart     DateTime
+  periodEnd       DateTime
+  advancementPct  Float    @default(0)
+  maintenancePct  Float    @default(0)
+  reactivePct     Float    @default(0)
+  busyworkPct     Float    @default(0)
+  momentum        String   @default("stagnant")
+  durableAssets   String?
+  aiAnalysis      String?
+  createdAt       DateTime @default(now())
 }
 
 // ─── MODULE 21: Weekly Reports ───────────────────────────────────────────────
 
 model WeeklyReport {
-  id               String                 @id @default(cuid())
+  id               String   @id @default(cuid())
   userId           String
-  user             User                   @relation(fields: [userId], references: [id])
+  user             User     @relation(fields: [userId], references: [id])
   weekStart        DateTime
   weekEnd          DateTime
   // Live report fields
-  isLive           Boolean                @default(false)
-  status           String                 @default("stable") // thriving|stable|watch|risk|recovery
-  liveData         String? // JSON: WeekLiveData (computed metrics + AI enrichment)
+  isLive           Boolean  @default(false)
+  status           String   @default("stable") // thriving|stable|watch|risk|recovery
+  liveData         String?  // JSON: WeekLiveData (computed metrics + AI enrichment)
   // Legacy / AI-generated text fields (kept for archived reports)
   executiveSummary String?
   goalBreakdown    String?
@@ -341,9 +339,9 @@ model WeeklyReport {
   antiDriftSection String?
   nextWeekRec      String?
   chiefOfStaffMsg  String?
-  autoGenerated    Boolean                @default(false)
-  updatedAt        DateTime               @default(now()) @updatedAt
-  createdAt        DateTime               @default(now())
+  autoGenerated    Boolean  @default(false)
+  updatedAt        DateTime @default(now()) @updatedAt
+  createdAt        DateTime @default(now())
   // Normalized recommendations (replaces nextWeekTasks JSON)
   recommendations  ReportRecommendation[]
 }
@@ -354,13 +352,13 @@ model ReportRecommendation {
   reportId         String
   report           WeeklyReport @relation(fields: [reportId], references: [id])
   title            String
-  reason           String? // why this was recommended
-  domain           String? // fitness | learning | career | finance | personal
-  priority         Int          @default(2) // 1=must 2=should 3=optional
+  reason           String?      // why this was recommended
+  domain           String?      // fitness | learning | career | finance | personal
+  priority         Int          @default(2)  // 1=must 2=should 3=optional
   estimatedMinutes Int?
-  suggestedDay     String? // Monday | Tuesday | ... | flexible
+  suggestedDay     String?      // Monday | Tuesday | ... | flexible
   status           String       @default("proposed") // proposed | converted_to_task | dismissed | completed
-  convertedTaskId  String? // WeeklyTask.id if converted
+  convertedTaskId  String?      // WeeklyTask.id if converted
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 }
@@ -368,27 +366,27 @@ model ReportRecommendation {
 // ─── MODULE 22: Meal Planning ─────────────────────────────────────────────────
 
 model FoodPreference {
-  id     String  @id @default(cuid())
+  id     String @id @default(cuid())
   userId String
-  user   User    @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
   type   String
   food   String
   notes  String?
 }
 
 model MealPlan {
-  id             String         @id @default(cuid())
+  id             String        @id @default(cuid())
   userId         String
-  user           User           @relation(fields: [userId], references: [id])
+  user           User          @relation(fields: [userId], references: [id])
   weekStart      DateTime
-  status         String         @default("draft")
+  status         String        @default("draft")
   fitnessGoal    String?
   targetCalories Int?
   targetProtein  Int?
   shoppingList   String?
   batchCooking   String?
   aiNotes        String?
-  createdAt      DateTime       @default(now())
+  createdAt      DateTime      @default(now())
   meals          PlannedMeal[]
   feedback       MealFeedback[]
 }
@@ -406,7 +404,7 @@ model PlannedMeal {
   isRepeated  Boolean  @default(false)
   isFavorite  Boolean  @default(false)
   notes       String?
-  recipe      String? // JSON: {cuisine, flavorProfile, prepMinutes, cookMinutes, ingredients:[{name,amount,unit}], steps:[string]}
+  recipe      String?  // JSON: {cuisine, flavorProfile, prepMinutes, cookMinutes, ingredients:[{name,amount,unit}], steps:[string]}
 }
 
 model MealFeedback {
@@ -422,88 +420,88 @@ model MealFeedback {
 // ─── MODULE 23: Fitness Strategy ─────────────────────────────────────────────
 
 model FitnessStrategy {
-  id                 String                  @id @default(cuid())
-  userId             String
-  user               User                    @relation(fields: [userId], references: [id])
-  quarterId          String?
-  quarter            Quarter?                @relation(fields: [quarterId], references: [id])
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  quarterId       String?
+  quarter         Quarter? @relation(fields: [quarterId], references: [id])
   mainObjective      String
-  objectiveShort     String? // Short headline e.g. "12-week body recomposition plan."
-  strengthPlan       String?
-  cardioPlan         String?
-  saunaPlan          String?
-  nutritionDir       String?
-  weeklySchedule     String?
-  trackingMetrics    String?
+  objectiveShort     String?   // Short headline e.g. "12-week body recomposition plan."
+  strengthPlan    String?
+  cardioPlan      String?
+  saunaPlan       String?
+  nutritionDir    String?
+  weeklySchedule  String?
+  trackingMetrics String?
   risks              String?
   decisionRules      String?
-  roadmap            String? // JSON: [{phase, weekRange, purpose, focus, execute, monitor, decisionPoint}]
-  weeklyTargets      String? // JSON: {strength, cardio, sauna, protein, bodyMetricCadence}
-  immediateNextSteps String? // JSON: string[]
-  intakeData         String? // JSON: full intake snapshot
-  workoutPlan        String? // JSON: {progressionRule, trackingNote, days:[{label,theme,exercises:[{name,sets,reps,notes?,substitution?}]}]}
-  status             String                  @default("draft")
-  createdAt          DateTime                @default(now())
+  roadmap            String?   // JSON: [{phase, weekRange, purpose, focus, execute, monitor, decisionPoint}]
+  weeklyTargets      String?   // JSON: {strength, cardio, sauna, protein, bodyMetricCadence}
+  immediateNextSteps String?   // JSON: string[]
+  intakeData         String?   // JSON: full intake snapshot
+  workoutPlan        String?   // JSON: {progressionRule, trackingNote, days:[{label,theme,exercises:[{name,sets,reps,notes?,substitution?}]}]}
+  status             String   @default("draft")
+  createdAt          DateTime @default(now())
   checklistItems     StrategyChecklistItem[]
 }
 
 model StrategyChecklistItem {
-  id          String          @id @default(cuid())
-  strategyId  String
-  strategy    FitnessStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
-  title       String
-  orderIndex  Int             @default(0)
-  completed   Boolean         @default(false)
-  completedAt DateTime?
-  createdAt   DateTime        @default(now())
+  id           String          @id @default(cuid())
+  strategyId   String
+  strategy     FitnessStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+  title        String
+  orderIndex   Int             @default(0)
+  completed    Boolean         @default(false)
+  completedAt  DateTime?
+  createdAt    DateTime        @default(now())
 }
 
 // ─── MODULE 24: Operating Manual ─────────────────────────────────────────────
 
 model BehaviorPattern {
-  id            String   @id @default(cuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  domain        String
-  pattern       String
-  evidence      String?
-  confidence    Int      @default(3)
-  implication   String?
-  firstSeen     DateTime @default(now())
-  updatedAt     DateTime @default(now()) @updatedAt
-  active        Boolean  @default(true)
-  autoGenerated Boolean  @default(true)
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  domain      String
+  pattern     String
+  evidence    String?
+  confidence  Int      @default(3)
+  implication String?
+  firstSeen   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  active      Boolean  @default(true)
+  autoGenerated Boolean @default(true)
 }
 
 // ─── MODULE 25: Finance ───────────────────────────────────────────────────────
 
 model BankStatement {
-  id           String           @id @default(cuid())
+  id           String        @id @default(cuid())
   userId       String
-  user         User             @relation(fields: [userId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
   month        Int
   year         Int
   filename     String
   rawData      String?
-  status       String           @default("pending")
-  createdAt    DateTime         @default(now())
+  status       String        @default("pending")
+  createdAt    DateTime      @default(now())
   transactions Transaction[]
   report       FinancialReport?
 }
 
 model Transaction {
-  id          String        @id @default(cuid())
-  statementId String
-  statement   BankStatement @relation(fields: [statementId], references: [id])
-  date        DateTime
-  amount      Float
-  currency    String        @default("CZK")
-  merchant    String?
-  description String?
-  isIncoming  Boolean       @default(false)
-  category    String?
-  confidence  Float?
-  needsReview Boolean       @default(false)
+  id           String        @id @default(cuid())
+  statementId  String
+  statement    BankStatement @relation(fields: [statementId], references: [id])
+  date         DateTime
+  amount       Float
+  currency     String        @default("CZK")
+  merchant     String?
+  description  String?
+  isIncoming   Boolean       @default(false)
+  category     String?
+  confidence   Float?
+  needsReview  Boolean       @default(false)
 }
 
 model TransactionRule {
@@ -516,66 +514,66 @@ model TransactionRule {
 }
 
 model FinancialReport {
-  id                  String        @id @default(cuid())
-  statementId         String        @unique
-  statement           BankStatement @relation(fields: [statementId], references: [id])
-  totalIncome         Float
-  totalExpenses       Float
-  netResult           Float
-  savedAmount         Float?
-  savingsRate         Float?
-  categoryBreakdown   String?
+  id             String        @id @default(cuid())
+  statementId    String        @unique
+  statement      BankStatement @relation(fields: [statementId], references: [id])
+  totalIncome    Float
+  totalExpenses  Float
+  netResult      Float
+  savedAmount    Float?
+  savingsRate    Float?
+  categoryBreakdown String?
   prevMonthComparison String?
-  aiAnalysis          String?
-  createdAt           DateTime      @default(now())
+  aiAnalysis     String?
+  createdAt      DateTime      @default(now())
 }
 
 // ─── MODULE 26: Career Trajectory ────────────────────────────────────────────
 
 model CareerTrajectory {
-  id                 String                  @id @default(cuid())
-  userId             String
-  user               User                    @relation(fields: [userId], references: [id])
-  currentRole        String
-  currentLevel       String?
-  responsibilities   String?
-  keyStrengths       String?
-  targetPath         String
-  targetRoleTitle    String?
-  timeHorizon        String?
-  status             String                  @default("active")
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  currentRole      String
+  currentLevel     String?
+  responsibilities String?
+  keyStrengths     String?
+  targetPath       String
+  targetRoleTitle  String?
+  timeHorizon      String?
+  status           String   @default("active")
   // Execution system fields
-  readinessScore     Int? // 0-100
-  readinessBreakdown String? // JSON: { skill, proof_of_work, scope, visibility, experience }
-  executionRoadmap   String? // JSON: [{phase, monthRange, focus, milestones:[string], keyOutput}]
-  nextBestAction     String? // One concrete next step for the whole trajectory
-  createdAt          DateTime                @default(now())
-  updatedAt          DateTime                @default(now()) @updatedAt
-  gaps               TrajectoryGap[]
-  quarterlyPlans     TrajectoryQuarterPlan[]
+  readinessScore     Int?     // 0-100
+  readinessBreakdown String?  // JSON: { skill, proof_of_work, scope, visibility, experience }
+  executionRoadmap   String?  // JSON: [{phase, monthRange, focus, milestones:[string], keyOutput}]
+  nextBestAction     String?  // One concrete next step for the whole trajectory
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+  gaps             TrajectoryGap[]
+  quarterlyPlans   TrajectoryQuarterPlan[]
 }
 
 model TrajectoryGap {
-  id              String                @id @default(cuid())
-  trajectoryId    String
-  trajectory      CareerTrajectory      @relation(fields: [trajectoryId], references: [id])
-  gapType         String
-  title           String
-  description     String?
-  priority        Int                   @default(2)
-  closed          Boolean               @default(false)
-  closedAt        DateTime?
+  id           String           @id @default(cuid())
+  trajectoryId String
+  trajectory   CareerTrajectory @relation(fields: [trajectoryId], references: [id])
+  gapType      String
+  title        String
+  description  String?
+  priority     Int              @default(2)
+  closed       Boolean          @default(false)
+  closedAt     DateTime?
   // Execution system fields
-  actionPlan      String? // JSON: [{step, action, timeframe, output}] — legacy, use gapActions
-  nextBestAction  String? // One concrete next action
-  evidenceNeeded  String? // What proof of closure looks like
-  closureEvidence String? // What was done to close it
-  archived        Boolean               @default(false)
+  actionPlan      String?   // JSON: [{step, action, timeframe, output}] — legacy, use gapActions
+  nextBestAction  String?   // One concrete next action
+  evidenceNeeded  String?   // What proof of closure looks like
+  closureEvidence String?   // What was done to close it
+  archived        Boolean   @default(false)
   archivedAt      DateTime?
-  difficulty      String? // easy | medium | hard
-  weekEstimate    Int? // estimated weeks to close
+  difficulty      String?   // easy | medium | hard
+  weekEstimate    Int?      // estimated weeks to close
   // Normalized actions (replaces JSON actionPlan)
-  gapActions      TrajectoryGapAction[]
+  gapActions   TrajectoryGapAction[]
 }
 
 // Normalized career gap action steps — replaces the JSON actionPlan field
@@ -585,8 +583,8 @@ model TrajectoryGapAction {
   gap              TrajectoryGap @relation(fields: [gapId], references: [id], onDelete: Cascade)
   title            String
   description      String?
-  output           String? // tangible deliverable for this step
-  timeframe        String? // e.g. "Week 1-2"
+  output           String?       // tangible deliverable for this step
+  timeframe        String?       // e.g. "Week 1-2"
   priority         Int           @default(2)
   estimatedMinutes Int?
   orderIndex       Int           @default(0)
@@ -597,47 +595,47 @@ model TrajectoryGapAction {
 }
 
 model TrajectoryQuarterPlan {
-  id            String           @id @default(cuid())
-  trajectoryId  String
-  trajectory    CareerTrajectory @relation(fields: [trajectoryId], references: [id])
-  quarterId     String?
-  quarter       Quarter?         @relation(fields: [quarterId], references: [id])
-  priorities    String?
-  keyOutput     String?
+  id           String           @id @default(cuid())
+  trajectoryId String
+  trajectory   CareerTrajectory @relation(fields: [trajectoryId], references: [id])
+  quarterId    String?
+  quarter      Quarter?         @relation(fields: [quarterId], references: [id])
+  priorities   String?
+  keyOutput    String?
   highUpsideBet String?
-  review        String?
-  reviewedAt    DateTime?
-  createdAt     DateTime         @default(now())
+  review       String?
+  reviewedAt   DateTime?
+  createdAt    DateTime         @default(now())
 }
 
 // ─── MODULE 27: Learning ─────────────────────────────────────────────────────
 
 model CapabilityGoal {
-  id                  String              @id @default(cuid())
+  id                  String             @id @default(cuid())
   userId              String
-  user                User                @relation(fields: [userId], references: [id])
+  user                User               @relation(fields: [userId], references: [id])
   linkedGoalId        String?
-  linkedGoal          Goal?               @relation(fields: [linkedGoalId], references: [id])
+  linkedGoal          Goal?              @relation(fields: [linkedGoalId], references: [id])
   title               String
   capabilityStatement String
   whyItMatters        String?
-  startingLevel       Int                 @default(1)
-  targetLevel         Int                 @default(4)
+  startingLevel       Int                @default(1)
+  targetLevel         Int                @default(4)
   evidenceOfMastery   String?
   finalOutput         String?
-  status              String              @default("active") // active | archived | completed
+  status              String             @default("active") // active | archived | completed
   // New fields
-  roadmapType         String? // skill | career | school | portfolio | certification | project | tool | exam
+  roadmapType         String?            // skill | career | school | portfolio | certification | project | tool | exam
   deadline            DateTime?
   weeklyHours         Float?
-  detailLevel         String              @default("standard") // standard | eli5
-  healthStatus        String              @default("not_started") // not_started | on_track | at_risk | behind | stalled | completed
+  detailLevel         String             @default("standard") // standard | eli5
+  healthStatus        String             @default("not_started") // not_started | on_track | at_risk | behind | stalled | completed
   nextBestAction      String?
-  strategicRoadmap    String? // JSON: { title, summary, capitalPotential, capitalOutputs, phases }
-  capitalPotential    String? // high | medium | low
+  strategicRoadmap    String?            // JSON: { title, summary, capitalPotential, capitalOutputs, phases }
+  capitalPotential    String?            // high | medium | low
   archivedAt          DateTime?
-  updatedAt           DateTime            @updatedAt
-  createdAt           DateTime            @default(now())
+  updatedAt           DateTime           @updatedAt
+  createdAt           DateTime           @default(now())
   milestones          LearningMilestone[]
 }
 
@@ -646,7 +644,7 @@ model LearningMilestone {
   capabilityGoalId String
   capabilityGoal   CapabilityGoal @relation(fields: [capabilityGoalId], references: [id])
   title            String
-  type             String // knowledge | practice | output
+  type             String         // knowledge | practice | output
   completed        Boolean        @default(false)
   completedAt      DateTime?
   evidence         String?
@@ -670,7 +668,7 @@ model LearningStep {
   stepType           String            @default("practice") // read | watch | practice | build | reflect | exercise
   completed          Boolean           @default(false)
   completedAt        DateTime?
-  weeklyTaskId       String? // deprecated — use WeeklyTask.sourceType='learning_step' + sourceId=step.id
+  weeklyTaskId       String?           // deprecated — use WeeklyTask.sourceType='learning_step' + sourceId=step.id
   suggestedDay       String?
 }
 
@@ -705,7 +703,7 @@ model GoogleCalendarToken {
   refreshToken       String?
   expiresAt          DateTime
   calendarId         String   @default("primary")
-  connectedCalendars String? // JSON: [{id, name, type: 'personal'|'work', color}]
+  connectedCalendars String?  // JSON: [{id, name, type: 'personal'|'work', color}]
   createdAt          DateTime @default(now())
   updatedAt          DateTime @default(now()) @updatedAt
 }
@@ -713,19 +711,19 @@ model GoogleCalendarToken {
 // ─── Daily Briefing Cache ─────────────────────────────────────────────────────
 
 model DailyBriefing {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id])
-  date            String // YYYY-MM-DD
-  summary         String
-  instruction     String
-  directive       String // weekly strategic directive
-  priorities      String? // JSON: [{text, priority: must|should|optional, goalTitle?, whyToday?}]
-  worldBriefing   String? // JSON: [{headline, why, category}] — 3-5 items
-  relevantUpdates String? // JSON: [{topic, update}] — 2-3 items
-  externalContext String? // plain text, optional one-liner
-  dailyFacts      String? // JSON: [{category, fact, whyItMatters}]
-  generatedAt     DateTime @default(now())
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  date             String   // YYYY-MM-DD
+  summary          String
+  instruction      String
+  directive        String   // weekly strategic directive
+  priorities       String?  // JSON: [{text, priority: must|should|optional, goalTitle?, whyToday?}]
+  worldBriefing    String?  // JSON: [{headline, why, category}] — 3-5 items
+  relevantUpdates  String?  // JSON: [{topic, update}] — 2-3 items
+  externalContext  String?  // plain text, optional one-liner
+  dailyFacts       String?  // JSON: [{category, fact, whyItMatters}]
+  generatedAt      DateTime @default(now())
 
   @@unique([userId, date])
 }
@@ -738,24 +736,24 @@ model FinanceWorkbook {
   user            User      @relation(fields: [userId], references: [id])
   filePath        String
   fileName        String
-  blobUrl         String? // Vercel Blob URL for cloud storage
+  blobUrl         String?   // Vercel Blob URL for cloud storage
   connectedAt     DateTime  @default(now())
   lastImportAt    DateTime?
   lastImportMonth String?
 }
 
 model FinanceImport {
-  id             String               @id @default(cuid())
-  userId         String
-  user           User                 @relation(fields: [userId], references: [id])
-  statementMonth String
-  status         String // pending_review | approved | written
-  sourceFileName String?
-  createdAt      DateTime             @default(now())
-  approvedAt     DateTime?
-  writtenAt      DateTime?
-  transactions   FinanceTransaction[]
-  report         FinanceReport?
+  id              String               @id @default(cuid())
+  userId          String
+  user            User                 @relation(fields: [userId], references: [id])
+  statementMonth  String
+  status          String               // pending_review | approved | written
+  sourceFileName  String?
+  createdAt       DateTime             @default(now())
+  approvedAt      DateTime?
+  writtenAt       DateTime?
+  transactions    FinanceTransaction[]
+  report          FinanceReport?
 }
 
 model FinanceTransaction {
@@ -771,7 +769,7 @@ model FinanceTransaction {
   account        String?
   transferTo     String?
   txStatus       String        @default("pending") // pending | approved | excluded | duplicate
-  confidence     String? // high | medium | low
+  confidence     String?       // high | medium | low
   reviewNote     String?
   writtenToExcel Boolean       @default(false)
   excelRow       Int?
@@ -792,55 +790,55 @@ model FinanceCategorizationRule {
 }
 
 model FinanceReport {
-  id          String        @id @default(cuid())
-  userId      String
-  importId    String        @unique
-  import      FinanceImport @relation(fields: [importId], references: [id])
-  reportMonth String
-  summaryData String // JSON: workbook outputs
-  narrative   String
-  chartData   String? // JSON: chart-ready data
-  createdAt   DateTime      @default(now())
+  id           String        @id @default(cuid())
+  userId       String
+  importId     String        @unique
+  import       FinanceImport @relation(fields: [importId], references: [id])
+  reportMonth  String
+  summaryData  String        // JSON: workbook outputs
+  narrative    String
+  chartData    String?       // JSON: chart-ready data
+  createdAt    DateTime      @default(now())
 }
 
 // ─── FITNESS SCHEDULE CHANGES ─────────────────────────────────────────────────
 
 model FitnessScheduleChange {
-  id               String   @id @default(cuid())
-  userId           String
-  user             User     @relation(fields: [userId], references: [id])
-  weekId           String // Monday date of the week: "2026-05-26"
-  sessionLabel     String // e.g. "Lower body strength"
-  sessionDay       String // e.g. "Friday"
-  sessionType      String   @default("strength") // strength|cardio|sauna|walk|recovery|other
-  action           String // removed|skipped|rescheduled|replaced|completed
-  reason           String? // cannot_this_week|replace_lighter|plan_too_much|already_done|remove_permanent|moving_day|other
-  replacementText  String?
-  affectsAdherence Boolean  @default(true)
-  undone           Boolean  @default(false)
-  notes            String?
-  createdAt        DateTime @default(now())
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  weekId          String   // Monday date of the week: "2026-05-26"
+  sessionLabel    String   // e.g. "Lower body strength"
+  sessionDay      String   // e.g. "Friday"
+  sessionType     String   @default("strength") // strength|cardio|sauna|walk|recovery|other
+  action          String   // removed|skipped|rescheduled|replaced|completed
+  reason          String?  // cannot_this_week|replace_lighter|plan_too_much|already_done|remove_permanent|moving_day|other
+  replacementText String?
+  affectsAdherence Boolean @default(true)
+  undone          Boolean  @default(false)
+  notes           String?
+  createdAt       DateTime @default(now())
 }
 
 // ─── RECIPE LIBRARY ──────────────────────────────────────────────────────────
 
 model Recipe {
-  id            String             @id @default(cuid())
+  id            String   @id @default(cuid())
   userId        String
-  user          User               @relation(fields: [userId], references: [id])
+  user          User     @relation(fields: [userId], references: [id])
   name          String
-  mealType      String // breakfast|lunch|dinner|snack|pre_workout|post_workout|meal_prep|other
+  mealType      String   // breakfast|lunch|dinner|snack|pre_workout|post_workout|meal_prep|other
   description   String?
   prepMinutes   Int?
   cookMinutes   Int?
-  portions      Int                @default(1)
-  difficulty    String? // easy|medium|hard
-  tags          String? // JSON: string[]
+  portions      Int      @default(1)
+  difficulty    String?  // easy|medium|hard
+  tags          String?  // JSON: string[]
   notes         String?
   liked         Boolean?
   storageDays   Int?
-  isMealPrep    Boolean            @default(false)
-  status        String             @default("active") // active|archived
+  isMealPrep    Boolean  @default(false)
+  status        String   @default("active") // active|archived
   // Calculated totals (sum of ingredients)
   totalCalories Float?
   totalProtein  Float?
@@ -849,9 +847,9 @@ model Recipe {
   totalFiber    Float?
   // Usage tracking
   lastUsedAt    DateTime?
-  usageCount    Int                @default(0)
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @default(now()) @updatedAt
+  usageCount    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
   ingredients   RecipeIngredient[]
   steps         RecipeStep[]
 }
@@ -889,7 +887,7 @@ model CareerRoadmap {
   goal      String
   timeframe String?
   context   String?
-  roadmap   String // JSON: { title, summary, phases }
+  roadmap   String   // JSON: { title, summary, phases }
   createdAt DateTime @default(now())
 }
 
@@ -900,20 +898,20 @@ model AlcoholLog {
   userId           String
   user             User     @relation(fields: [userId], references: [id])
   date             DateTime
-  drinks           Float // standard drinks
-  occasion         String? // social|work|stress|habit|celebration|other
+  drinks           Float                        // standard drinks
+  occasion         String?                      // social|work|stress|habit|celebration|other
   afterWorkout     Boolean  @default(false)
-  beforeWorkoutDay Boolean  @default(false) // next day has a workout scheduled
+  beforeWorkoutDay Boolean  @default(false)     // next day has a workout scheduled
   sleepHours       Float?
-  sleepQuality     Int? // 1-5
-  nextDayEnergy    Int? // 1-5
+  sleepQuality     Int?                         // 1-5
+  nextDayEnergy    Int?                         // 1-5
   missedWorkout    Boolean  @default(false)
   missedSteps      Boolean  @default(false)
-  proteinHit       Boolean? // null = not tracked
-  calorieOverage   Int? // estimated kcal over target
+  proteinHit       Boolean?                     // null = not tracked
+  calorieOverage   Int?                         // estimated kcal over target
   hadCravings      Boolean  @default(false)
-  moodScore        Int? // 1-5
-  recoveryRating   Int? // 1-5
+  moodScore        Int?                         // 1-5
+  recoveryRating   Int?                         // 1-5
   notes            String?
   createdAt        DateTime @default(now())
 }
@@ -922,9 +920,9 @@ model AlcoholSettings {
   id                   String   @id @default(cuid())
   userId               String   @unique
   user                 User     @relation(fields: [userId], references: [id])
-  budgetType           String   @default("flexible") // strict|flexible|custom
+  budgetType           String   @default("flexible")  // strict|flexible|custom
   weeklyBudget         Int      @default(2)
-  goal                 String   @default("fat_loss") // fat_loss|performance|general
+  goal                 String   @default("fat_loss")  // fat_loss|performance|general
   damageControlEnabled Boolean  @default(true)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @default(now()) @updatedAt
@@ -933,82 +931,55 @@ model AlcoholSettings {
 // ─── LIFE MENU ────────────────────────────────────────────────────────────────
 
 model LifeMenuItem {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
 
-  title       String
-  type        String // try|buy|go|eat_drink|learn|build|social|recovery|beauty_identity|fitness|guilty_pleasure|big_want
-  description String?
-  tags        String? // JSON: string[]
+  title         String
+  type          String   // try|buy|go|eat_drink|learn|build|social|recovery|beauty_identity|fitness|guilty_pleasure|big_want
+  description   String?
+  tags          String?  // JSON: string[]
 
-  estimatedCost     Float?
-  actualCost        Float?
-  currency          String @default("CZK")
+  estimatedCost    Float?
+  actualCost       Float?
+  currency         String  @default("CZK")
   timeNeededMinutes Int?
 
-  energyNeeded String @default("medium") // low|medium|high
-  socialMode   String @default("either") // solo|friend|group|date|either
+  energyNeeded  String  @default("medium") // low|medium|high
+  socialMode    String  @default("either") // solo|friend|group|date|either
 
   // Scores 1–10 (all optional)
-  curiosityScore   Int?
-  joyScore         Int?
-  utilityScore     Int?
-  goalSupportScore Int?
-  regretRisk       Int?
-  comfortZoneLevel Int?
-  repeatPotential  Int?
-  recoveryValue    Int?
-  careerValue      Int?
+  curiosityScore    Int?
+  joyScore          Int?
+  utilityScore      Int?
+  goalSupportScore  Int?
+  regretRisk        Int?
+  comfortZoneLevel  Int?
+  repeatPotential   Int?
+  recoveryValue     Int?
+  careerValue       Int?
 
   // Impact
-  fitnessImpact String @default("neutral") // positive|neutral|negative
-  alcoholImpact String @default("none") // none|low|medium|high
+  fitnessImpact String  @default("neutral") // positive|neutral|negative
+  alcoholImpact String  @default("none")    // none|low|medium|high
 
   // Status
-  status String @default("idea")
+  status        String  @default("idea")
   // idea | want_to_try | wishlist | planned | scheduled
   // tried | loved | meh | not_again | repeat
   // approved | earned | bought | postponed | rejected
 
   // Dates & review
-  plannedDate DateTime?
-  triedAt     DateTime?
-  ratingAfter Int? // 1-10
-  notesBefore String?
-  notesAfter  String?
+  plannedDate   DateTime?
+  triedAt       DateTime?
+  ratingAfter   Int?      // 1-10
+  notesBefore   String?
+  notesAfter    String?
 
   // Links
   linkedGoalId          String?
   linkedFinanceCategory String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// ─── Realitní kalkulačka ──────────────────────────────────────────────────────
-// Uložená analýza výhodnosti investice do konkrétní nemovitosti. Vstupní
-// parametry se ukládají jako JSON (viz PropertyInputs v lib/reality/calc.ts),
-// vybrané výsledky jako sloupce pro rychlý přehled v seznamu.
-model PropertyAnalysis {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  title   String
-  address String?
-
-  // Kompletní vstupy (PropertyInputs) — zdroj pravdy pro přepočet.
-  inputs Json
-
-  // Snapshot klíčových výsledků pro seznam a řazení.
-  purchasePrice   Float
-  financing       String // 'cash' | 'mortgage'
-  monthlyCashFlow Float // měsíční cash flow před zdaněním
-  netYield        Float // čistý výnos (cap rate) %
-  cashOnCash      Float // cash-on-cash výnos %
-  verdictRating   String // 'good' | 'borderline' | 'poor'
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

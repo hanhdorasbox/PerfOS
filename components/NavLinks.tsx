@@ -9,7 +9,7 @@ import {
   Briefcase, Activity, Settings,
   TrendingUp, BookOpen, Lightbulb, Target,
   Dumbbell, UtensilsCrossed, ClipboardList, Shield,
-  Compass, Settings2, Wallet, Star, ShoppingBag, Heart, LineChart, Building2,
+  Compass, Settings2, Wallet, Star, ShoppingBag, Heart, LineChart,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -48,7 +48,6 @@ export const menuGroups: Array<{ label: string; icon: LucideIcon; links: NavLink
       { href: '/life-menu', label: 'Life Menu',    icon: Star },
       { href: '/budget',    label: 'Budget List',  icon: ShoppingBag },
       { href: '/invest',    label: 'Finance OS',   icon: LineChart },
-      { href: '/reality',   label: 'Reality',      icon: Building2 },
     ],
   },
   {

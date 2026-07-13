@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Realitní kalkulačka — vyplatí se koupit?</title>
+<style>
+  /* ─── Tokeny: „mosazný realitní ledger" ─────────────────────────────────── */
+  :root {
+    --bg:        #F5F1E8;
+    --bg-2:      #EDE7D8;
+    --surface:   #FFFFFF;
+    --surface-2: #FBF8F0;
+    --field:     #F3EEE2;
+    --ink:       #211D15;
+    --ink-2:     #5C544425;
+    --muted:     #7A7160;
+    --faint:     #9A927F;
+    --line:      #E3DBC9;
+    --line-2:    #D6CCB4;
+    --brass:     #A57C2B;
+    --brass-2:   #8A6620;
+    --brass-bg:  rgba(165, 124, 43, 0.10);
+    --good:      #2E8B62;  --good-bg: rgba(46, 139, 98, 0.12);  --good-bd: rgba(46,139,98,.3);
+    --warn:      #B07C1E;  --warn-bg: rgba(176, 124, 30, 0.12); --warn-bd: rgba(176,124,30,.3);
+    --bad:       #C25A3A;  --bad-bg:  rgba(194, 90, 58, 0.12);  --bad-bd:  rgba(194,90,58,.3);
+    --shadow:    0 1px 2px rgba(40,32,12,.05), 0 6px 20px rgba(40,32,12,.06);
+    --radius:    14px;
+    --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --mono: ui-monospace, 'SF Mono', 'Menlo', 'Cascadia Mono', 'Roboto Mono', monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:        #14120E;
+      --bg-2:      #1A1712;
+      --surface:   #1E1B15;
+      --surface-2: #232019;
+      --field:     #17140F;
+      --ink:       #EDE7D9;
+      --muted:     #9A9282;
+      --faint:     #6E6759;
+      --line:      rgba(233, 220, 190, 0.09);
+      --line-2:    rgba(233, 220, 190, 0.16);
+      --brass:     #C9A24B;
+      --brass-2:   #DDB865;
+      --brass-bg:  rgba(201, 162, 75, 0.12);
+      --good:      #78C9A0;  --good-bg: rgba(120, 201, 160, 0.11); --good-bd: rgba(120,201,160,.24);
+      --warn:      #E0B457;  --warn-bg: rgba(224, 180, 87, 0.11);  --warn-bd: rgba(224,180,87,.24);
+      --bad:       #E08A6E;  --bad-bg:  rgba(224, 138, 110, 0.11); --bad-bd:  rgba(224,138,110,.26);
+      --shadow:    0 1px 0 rgba(255,255,255,.03), 0 8px 30px rgba(0,0,0,.4);
+    }
+  }
+  /* Explicitní přepínač motivu — musí přebít media query v obou směrech */
+  :root[data-theme="light"] {
+    --bg:#F5F1E8; --bg-2:#EDE7D8; --surface:#FFFFFF; --surface-2:#FBF8F0; --field:#F3EEE2;
+    --ink:#211D15; --muted:#7A7160; --faint:#9A927F; --line:#E3DBC9; --line-2:#D6CCB4;
+    --brass:#A57C2B; --brass-2:#8A6620; --brass-bg:rgba(165,124,43,.10);
+    --good:#2E8B62; --good-bg:rgba(46,139,98,.12); --good-bd:rgba(46,139,98,.3);
+    --warn:#B07C1E; --warn-bg:rgba(176,124,30,.12); --warn-bd:rgba(176,124,30,.3);
+    --bad:#C25A3A;  --bad-bg:rgba(194,90,58,.12);  --bad-bd:rgba(194,90,58,.3);
+    --shadow:0 1px 2px rgba(40,32,12,.05), 0 6px 20px rgba(40,32,12,.06);
+  }
+  :root[data-theme="dark"] {
+    --bg:#14120E; --bg-2:#1A1712; --surface:#1E1B15; --surface-2:#232019; --field:#17140F;
+    --ink:#EDE7D9; --muted:#9A9282; --faint:#6E6759; --line:rgba(233,220,190,.09); --line-2:rgba(233,220,190,.16);
+    --brass:#C9A24B; --brass-2:#DDB865; --brass-bg:rgba(201,162,75,.12);
+    --good:#78C9A0; --good-bg:rgba(120,201,160,.11); --good-bd:rgba(120,201,160,.24);
+    --warn:#E0B457; --warn-bg:rgba(224,180,87,.11); --warn-bd:rgba(224,180,87,.24);
+    --bad:#E08A6E;  --bad-bg:rgba(224,138,110,.11); --bad-bd:rgba(224,138,110,.26);
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 8px 30px rgba(0,0,0,.4);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { margin: 0; }
+  button { font-family: inherit; cursor: pointer; }
+  a { color: inherit; }
+
+  /* ─── Masthead ─────────────────────────────────────────────────────────── */
+  .masthead {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px clamp(16px, 4vw, 40px);
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: baseline; gap: 11px; min-width: 0; }
+  .brand .mark {
+    font-family: var(--serif); font-size: 21px; font-weight: 700;
+    letter-spacing: -.02em; color: var(--ink); white-space: nowrap;
+  }
+  .brand .mark b { color: var(--brass); font-weight: 700; }
+  .brand .tag {
+    font-size: 11.5px; color: var(--muted); white-space: nowrap;
+    padding-left: 11px; border-left: 1px solid var(--line-2);
+  }
+  .spacer { margin-left: auto; }
+  .mh-actions { display: flex; align-items: center; gap: 8px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 14px; border-radius: 10px;
+    border: 1px solid var(--line-2); background: var(--surface);
+    color: var(--ink); font-size: 13px; font-weight: 550;
+    transition: border-color .15s, background .15s, color .15s, transform .05s;
+  }
+  .btn:hover { border-color: var(--brass); }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--brass); border-color: var(--brass); color: #1a1305; font-weight: 650; }
+  :root[data-theme="light"] .btn-primary { color: #fff; }
+  @media (prefers-color-scheme: light) { .btn-primary { color: #fff; } }
+  :root[data-theme="dark"] .btn-primary { color: #1a1305; }
+  .btn-primary:hover { background: var(--brass-2); border-color: var(--brass-2); }
+  .btn-icon { padding: 8px 10px; }
+  .btn-ghost { background: transparent; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btn.danger:hover { border-color: var(--bad); color: var(--bad); }
+
+  /* ─── Saved dropdown ───────────────────────────────────────────────────── */
+  .dd { position: relative; }
+  .dd-panel {
+    position: absolute; right: 0; top: calc(100% + 8px); width: min(340px, 86vw);
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: 14px;
+    box-shadow: var(--shadow); padding: 8px; z-index: 60; display: none;
+    max-height: 70vh; overflow-y: auto;
+  }
+  .dd-panel.open { display: block; }
+  .dd-empty { padding: 18px 12px; color: var(--muted); font-size: 13px; text-align: center; }
+  .saved-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+    border-radius: 10px; cursor: pointer;
+  }
+  .saved-item:hover { background: var(--surface-2); }
+  .saved-item .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+  .saved-item .si-main { min-width: 0; flex: 1; }
+  .saved-item .si-title { font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .saved-item .si-sub { font-size: 11.5px; color: var(--muted); }
+  .saved-item .si-del {
+    border: none; background: transparent; color: var(--faint); font-size: 16px;
+    padding: 2px 6px; border-radius: 7px; line-height: 1;
+  }
+  .saved-item .si-del:hover { color: var(--bad); background: var(--bad-bg); }
+
+  /* ─── Layout ───────────────────────────────────────────────────────────── */
+  .wrap { max-width: 1220px; margin: 0 auto; padding: clamp(18px, 3vw, 30px) clamp(16px, 4vw, 40px) 90px; }
+  .lede { max-width: 640px; margin: 0 0 22px; color: var(--muted); font-size: 14.5px; }
+  .lede b { color: var(--ink); font-weight: 600; }
+
+  .grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 22px; align-items: start; }
+  @media (max-width: 940px) { .grid { grid-template-columns: 1fr; } .results { position: static !important; } }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+  }
+  .form-card { padding: clamp(16px, 2.4vw, 24px); }
+  .results { position: sticky; top: 78px; display: flex; flex-direction: column; gap: 16px; }
+
+  /* ─── Form ─────────────────────────────────────────────────────────────── */
+  .section + .section { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .sec-title {
+    font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--brass); margin-bottom: 13px;
+  }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 13px 14px; }
+  @media (max-width: 460px) { .fields { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .field.col2 { grid-column: 1 / -1; }
+  .field label { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+  .field label .opt { color: var(--faint); font-weight: 400; }
+  .inwrap { position: relative; display: flex; align-items: center; }
+  .in {
+    width: 100%; background: var(--field); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 46px 10px 12px; color: var(--ink);
+    font-size: 14.5px; font-family: var(--mono); font-variant-numeric: tabular-nums;
+    transition: border-color .15s, background .15s;
+  }
+  .in.text { font-family: var(--sans); padding-right: 12px; }
+  .in:focus { outline: none; border-color: var(--brass); background: var(--surface); }
+  .in:focus-visible { outline: 2px solid var(--brass-bg); outline-offset: 1px; }
+  .suffix { position: absolute; right: 12px; font-size: 12px; color: var(--faint); pointer-events: none; font-family: var(--sans); }
+
+  .toggle { display: inline-flex; gap: 3px; padding: 3px; background: var(--field); border: 1px solid var(--line); border-radius: 11px; }
+  .toggle button { border: none; background: transparent; color: var(--muted); font-size: 13px; font-weight: 550; padding: 7px 18px; border-radius: 8px; }
+  .toggle button.active { background: var(--brass-bg); color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass-bd, var(--brass)); }
+  .note { font-size: 11.5px; color: var(--faint); line-height: 1.5; margin: 9px 0 0; }
+
+  /* ─── Verdict ──────────────────────────────────────────────────────────── */
+  .verdict { border-radius: var(--radius); padding: 18px 20px; border: 1px solid; }
+  .verdict.good { background: var(--good-bg); border-color: var(--good-bd); }
+  .verdict.borderline { background: var(--warn-bg); border-color: var(--warn-bd); }
+  .verdict.poor { background: var(--bad-bg); border-color: var(--bad-bd); }
+  .v-top { display: flex; align-items: center; gap: 11px; }
+  .v-badge { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+  .verdict.good .v-badge { background: var(--good); }
+  .verdict.borderline .v-badge { background: var(--warn); }
+  .verdict.poor .v-badge { background: var(--bad); }
+  .v-label { font-family: var(--serif); font-size: 21px; font-weight: 700; letter-spacing: -.02em; text-wrap: balance; }
+  .verdict.good .v-label { color: var(--good); }
+  .verdict.borderline .v-label { color: var(--warn); }
+  .verdict.poor .v-label { color: var(--bad); }
+  .v-summary { font-size: 13px; color: var(--muted); margin: 8px 0 0; line-height: 1.55; }
+  .reasons { list-style: none; margin: 13px 0 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+  .reasons li { position: relative; padding-left: 16px; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+  .reasons li::before { content: '›'; position: absolute; left: 3px; color: var(--brass); font-weight: 700; }
+
+  /* ─── Metrics ──────────────────────────────────────────────────────────── */
+  .pad { padding: 18px; }
+  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+  .metric { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .m-label { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 5px; }
+  .m-value { font-family: var(--serif); font-size: 25px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.05; }
+  .m-sub { font-size: 11px; color: var(--faint); margin-top: 3px; }
+  .pos { color: var(--good); } .neg { color: var(--bad); } .gold { color: var(--brass); }
+
+  .block-title { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--brass); margin: 0 0 6px; }
+  .rows { display: flex; flex-direction: column; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--line); }
+  .row:last-child { border-bottom: none; }
+  .row .k { color: var(--muted); }
+  .row .v { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+  .row.total { border-top: 1.5px solid var(--line-2); }
+  .row.total .k { color: var(--ink); font-weight: 600; }
+
+  /* ─── Chart ────────────────────────────────────────────────────────────── */
+  .chart-wrap { position: relative; }
+  svg.chart { width: 100%; height: auto; display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 15px; margin-top: 10px; font-size: 11.5px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
+  .tip {
+    position: absolute; pointer-events: none; z-index: 5; background: var(--surface);
+    border: 1px solid var(--line-2); border-radius: 10px; box-shadow: var(--shadow);
+    padding: 9px 11px; font-size: 11.5px; min-width: 150px; opacity: 0; transition: opacity .1s;
+  }
+  .tip .tip-yr { font-weight: 700; margin-bottom: 5px; font-size: 12px; }
+  .tip .tip-row { display: flex; justify-content: space-between; gap: 12px; }
+  .tip .tip-row b { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  details.proj { margin-top: 14px; }
+  details.proj > summary { cursor: pointer; font-size: 12.5px; color: var(--muted); padding: 4px 0; list-style: none; }
+  details.proj > summary::-webkit-details-marker { display: none; }
+  details.proj > summary::before { content: '▸ '; color: var(--brass); }
+  details.proj[open] > summary::before { content: '▾ '; }
+  .table-scroll { overflow-x: auto; margin-top: 8px; }
+  table.proj { width: 100%; border-collapse: collapse; font-size: 12px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  table.proj th, table.proj td { padding: 7px 9px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+  table.proj th { color: var(--faint); font-weight: 500; font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase; font-family: var(--sans); }
+  table.proj th:first-child, table.proj td:first-child { text-align: left; }
+  table.proj td { color: var(--muted); }
+
+  .actions { display: flex; flex-direction: column; gap: 12px; }
+  .actions .row-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .toast { font-size: 13px; }
+  .toast.ok { color: var(--good); }
+  .toast.err { color: var(--bad); }
+  .disclaimer { font-size: 11.5px; color: var(--faint); line-height: 1.55; margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="brand">
+      <span class="mark">Realitní <b>kalkulačka</b></span>
+      <span class="tag">vyplatí se koupit?</span>
+    </div>
+    <div class="spacer"></div>
+    <div class="mh-actions">
+      <div class="dd">
+        <button class="btn btn-ghost" id="savedBtn" aria-haspopup="true" aria-expanded="false">
+          Uložené <span id="savedCount" style="color:var(--faint)"></span> ▾
+        </button>
+        <div class="dd-panel" id="savedPanel" role="menu"></div>
+      </div>
+      <button class="btn btn-ghost" id="newBtn">+ Nová</button>
+      <button class="btn btn-icon btn-ghost" id="themeBtn" title="Přepnout světlý / tmavý motiv" aria-label="Přepnout motiv">◐</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <p class="lede">
+      Zadej parametry konkrétní nemovitosti a hned uvidíš, jestli se investice vyplatí —
+      <b>měsíční cash flow</b>, <b>čistý výnos</b>, <b>návratnost vloženého kapitálu</b> a vývoj hodnoty i kapitálu za několik let.
+      Vše počítá lokálně u tebe v prohlížeči; uložené analýzy zůstávají jen na tomto zařízení.
+    </p>
+
+    <div class="grid">
+      <!-- ═══ FORMULÁŘ ═══ -->
+      <form class="card form-card" id="form" autocomplete="off">
+        <div class="section">
+          <div class="fields">
+            <div class="field col2">
+              <label for="f-title">Název analýzy</label>
+              <div class="inwrap"><input class="in text" id="f-title" placeholder="Byt 2+kk, Brno-Žabovřesky"></div>
+            </div>
+            <div class="field col2">
+              <label for="f-address">Adresa / poznámka <span class="opt">(nepovinné)</span></label>
+              <div class="inwrap"><input class="in text" id="f-address" placeholder="Minská 12"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="sec-title">Pořízení</div>
+          <div class="fields" id="grp-buy"></div>
+          <p class="note">Vedlejší náklady = provize RK, právník, kolky, případná daň z nabytí.</p>
+        </div>
+
+        <div class="section">
+          <div class="sec-title">Financování</div>
+          <div class="toggle" id="finToggle">
+            <button type="button" data-fin="mortgage">Hypotéka</button>
+            <button type="button" data-fin="cash">Za hotové</button>
+          </div>
+          <div class="fields" id="grp-fin" style="margin-top:13px"></div>
+        </div>
+
+        <div class="section">
+          <div class="sec-title">Příjmy</div>
+          <div class="fields" id="grp-income"></div>
+        </div>
+
+        <div class="section">
+          <div class="sec-title">Provozní náklady</div>
+          <div class="fields" id="grp-costs"></div>
+          <p class="note">Energie a služby obvykle platí nájemník. Údržba je roční rezerva na opravy (% z nájmu).</p>
+        </div>
+
+        <div class="section">
+          <div class="sec-title">Předpoklady vývoje</div>
+          <div class="fields" id="grp-assump"></div>
+        </div>
+      </form>
+
+      <!-- ═══ VÝSLEDKY ═══ -->
+      <div class="results">
+        <div class="verdict" id="verdict">
+          <div class="v-top"><span class="v-badge"></span><h2 class="v-label" id="v-label"></h2></div>
+          <p class="v-summary" id="v-summary"></p>
+          <ul class="reasons" id="v-reasons"></ul>
+        </div>
+
+        <div class="card pad">
+          <div class="metrics" id="metrics"></div>
+        </div>
+
+        <div class="card pad">
+          <div class="rows" id="acquisition"></div>
+          <div style="height:14px"></div>
+          <div class="block-title">Roční cash flow (1. rok)</div>
+          <div class="rows" id="cashflow"></div>
+          <p class="note" id="breakeven"></p>
+        </div>
+
+        <div class="card pad">
+          <div class="block-title" id="chart-title">Vývoj</div>
+          <div class="chart-wrap" id="chartWrap">
+            <svg class="chart" id="chart" viewBox="0 0 560 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Graf vývoje hodnoty, úvěru, vlastního kapitálu a kumulovaného cash flow"></svg>
+            <div class="tip" id="tip"></div>
+          </div>
+          <div class="legend">
+            <span><i style="background:#C9A24B"></i>Hodnota nemovitosti</span>
+            <span><i style="background:#78C9A0"></i>Vlastní kapitál</span>
+            <span><i style="background:#E08A6E"></i>Zůstatek úvěru</span>
+            <span><i style="background:#8AA0FF"></i>Kum. cash flow</span>
+          </div>
+          <details class="proj">
+            <summary>Zobrazit tabulku po letech</summary>
+            <div class="table-scroll">
+              <table class="proj" id="projTable"></table>
+            </div>
+          </details>
+        </div>
+
+        <div class="card pad actions">
+          <div id="toast" class="toast"></div>
+          <div class="row-btns">
+            <button class="btn btn-primary" id="saveBtn" type="button">Uložit analýzu</button>
+            <button class="btn danger" id="deleteBtn" type="button" style="display:none">Smazat</button>
+          </div>
+          <p class="disclaimer">Orientační propočet, ne investiční doporučení. Předpoklady (růst nájmu, neobsazenost, daně, zhodnocení) si ověř podle konkrétní situace a lokality.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script>
+"use strict";
+/* ════════════════════════════════════════════════════════════════════════════
+   Realitní kalkulačka — výpočetní jádro + UI. Vše lokálně, bez závislostí.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+// ─── Formátování (cs-CZ, CZK) ──────────────────────────────────────────────
+const czk = (n, d=0) => new Intl.NumberFormat('cs-CZ',{style:'currency',currency:'CZK',maximumFractionDigits:d,minimumFractionDigits:d}).format(isFinite(n)?n:0);
+const pct = (n, d=1) => `${(isFinite(n)?n:0).toFixed(d)} %`;
+function czkCompact(v){
+  const a=Math.abs(v);
+  if(a>=1e6) return (v/1e6).toLocaleString('cs-CZ',{maximumFractionDigits:1})+' mil.';
+  if(a>=1e3) return Math.round(v/1e3).toLocaleString('cs-CZ')+' tis.';
+  return Math.round(v).toLocaleString('cs-CZ');
+}
+const clampPct = v => Math.min(100, Math.max(0, v));
+
+// ─── Výpočetní jádro ───────────────────────────────────────────────────────
+function monthlyPayment(P, ratePct, years){
+  if(P<=0 || years<=0) return 0;
+  const r = ratePct/100/12, n = years*12;
+  if(r===0) return P/n;
+  return (P*r)/(1-Math.pow(1+r,-n));
+}
+function amortizeYear(balance, ratePct, payment){
+  const r = ratePct/100/12; let interest=0, principal=0;
+  for(let m=0;m<12 && balance>0.005;m++){
+    const mi=balance*r; let mp=payment-mi; if(mp>balance)mp=balance;
+    interest+=mi; principal+=mp; balance-=mp;
+  }
+  return {interest, principal, endingBalance:Math.max(0,balance)};
+}
+function irr(flows){
+  const npv = rate => flows.reduce((a,f,i)=>a+f/Math.pow(1+rate,i),0);
+  if(!flows.some(f=>f>0)||!flows.some(f=>f<0)) return 0;
+  let lo=-0.9999, hi=2, nLo=npv(lo);
+  if(nLo*npv(hi)>0) return 0;
+  for(let i=0;i<100;i++){
+    const mid=(lo+hi)/2, val=npv(mid);
+    if(Math.abs(val)<1e-6) return mid;
+    if(nLo*val<0){ hi=mid; } else { lo=mid; nLo=val; }
+  }
+  return (lo+hi)/2;
+}
+
+function calculate(input){
+  const isM = input.financing==='mortgage';
+  const totalAcq = input.purchasePrice + input.acquisitionCosts + input.renovationCosts;
+  const downPayment = isM ? input.purchasePrice*clampPct(input.downPaymentPct)/100 : input.purchasePrice;
+  const loanAmount = isM ? Math.max(0, input.purchasePrice-downPayment) : 0;
+  const totalCash = downPayment + input.acquisitionCosts + input.renovationCosts;
+  const ltv = input.purchasePrice>0 ? loanAmount/input.purchasePrice*100 : 0;
+
+  const payment = monthlyPayment(loanAmount, input.interestRate, input.loanTermYears);
+  const annualDebt = payment*12;
+
+  const vac = clampPct(input.vacancyPct)/100;
+  const grossAnnual = (input.monthlyRent+input.otherMonthlyIncome)*12;
+  const effAnnual = grossAnnual*(1-vac);
+  const mgmt = effAnnual*clampPct(input.managementPct)/100;
+  const maint = effAnnual*clampPct(input.maintenancePct)/100;
+  const opex = input.hoaMonthly*12 + input.propertyTaxYearly + input.insuranceYearly + mgmt + maint;
+  const noi = effAnnual - opex;
+  const preTax = noi - annualDebt;
+
+  const grossYield = totalAcq>0 ? grossAnnual/totalAcq*100 : 0;
+  const netYield = totalAcq>0 ? noi/totalAcq*100 : 0;
+  const coc = totalCash>0 ? preTax/totalCash*100 : 0;
+  const dscr = isM && annualDebt>0 ? noi/annualDebt : null;
+
+  const fixed = input.hoaMonthly*12 + input.propertyTaxYearly + input.insuranceYearly;
+  const varRate = (clampPct(input.managementPct)+clampPct(input.maintenancePct))/100;
+  const denom = (1-vac)*(1-varRate);
+  const beGross = denom>0 ? (fixed+annualDebt)/denom : 0;
+  const breakEvenRent = Math.max(0, beGross/12 - input.otherMonthlyIncome);
+
+  const horizon = Math.max(1, Math.round(input.horizonYears));
+  const g = input.rentGrowthPct/100, ap = input.appreciationPct/100, tax = clampPct(input.incomeTaxPct)/100;
+  const projection=[]; let balance=loanAmount, cumulative=0;
+  const flows=[-totalCash];
+
+  for(let y=1;y<=horizon;y++){
+    const grow=Math.pow(1+g,y-1);
+    const grossRent=grossAnnual*grow, effRent=grossRent*(1-vac);
+    const mgmtY=effRent*clampPct(input.managementPct)/100, maintY=effRent*clampPct(input.maintenancePct)/100;
+    const opexY=(input.hoaMonthly*12+input.propertyTaxYearly+input.insuranceYearly)*grow+mgmtY+maintY;
+    const noiY=effRent-opexY;
+    let interest=0, principal=0;
+    if(isM && balance>0){ const am=amortizeYear(balance,input.interestRate,payment); interest=am.interest; principal=am.principal; balance=am.endingBalance; }
+    const debt=interest+principal;
+    const taxable=Math.max(0, effRent-opexY-interest);
+    const incomeTax=taxable*tax;
+    const pre=noiY-debt, after=pre-incomeTax;
+    cumulative+=after;
+    const value=input.purchasePrice*Math.pow(1+ap,y);
+    const equity=value-balance;
+    let flow=after; if(y===horizon) flow+=value-balance;
+    flows.push(flow);
+    projection.push({year:y,value,grossRent,effRent,opex:opexY,noi:noiY,interest,principal,debt,incomeTax,pre,after,balance,equity,cumulative});
+  }
+
+  const last=projection[projection.length-1];
+  const proceeds=last.value-last.balance;
+  const profit=proceeds+cumulative-totalCash;
+  const totalReturn=totalCash>0?profit/totalCash*100:0;
+  const annualized=irr(flows)*100;
+
+  const verdict=buildVerdict({isM, monthlyPre:preTax/12, coc, netYield, grossYield, rate:input.interestRate, dscr, annualized});
+
+  return {
+    totalAcq, downPayment, loanAmount, totalCash, ltv,
+    monthlyMortgage:payment, monthlyOpex:opex/12, monthlyPre:preTax/12, monthlyAfter:projection[0].after/12,
+    grossAnnual, effAnnual, opex, noi, annualDebt, preTax, annualAfter:projection[0].after,
+    grossYield, netYield, coc, dscr,
+    paybackYears: projection[0].after>0 ? totalCash/projection[0].after : null,
+    breakEvenRent, projection, totalReturn, annualized, verdict, isM,
+  };
+}
+
+function buildVerdict(m){
+  let score=0; const reasons=[]; const f=n=>Math.round(n).toLocaleString('cs-CZ');
+  if(m.monthlyPre>=2000){ score+=2; reasons.push(`Kladný měsíční cash flow ${f(m.monthlyPre)} Kč — nájem pokrývá náklady i splátku.`); }
+  else if(m.monthlyPre>=0){ score+=1; reasons.push(`Cash flow je mírně kladný (${f(m.monthlyPre)} Kč/měs) — rezerva na výpadky je malá.`); }
+  else { reasons.push(`Záporný cash flow ${f(m.monthlyPre)} Kč/měs — každý měsíc doplácíš z vlastní kapsy.`); }
+
+  if(m.netYield>=5){ score+=2; reasons.push(`Čistý výnos ${m.netYield.toFixed(1)} % je nadprůměrný.`); }
+  else if(m.netYield>=3.5){ score+=1; reasons.push(`Čistý výnos ${m.netYield.toFixed(1)} % je průměrný.`); }
+  else { reasons.push(`Čistý výnos ${m.netYield.toFixed(1)} % je nízký — blízko výnosu spořicích produktů, ale s rizikem nemovitosti.`); }
+
+  if(m.coc>=6){ score+=2; reasons.push(`Cash-on-cash výnos ${m.coc.toFixed(1)} % — vložený kapitál se dobře zhodnocuje.`); }
+  else if(m.coc>=3){ score+=1; reasons.push(`Cash-on-cash výnos ${m.coc.toFixed(1)} % je slušný.`); }
+  else if(m.coc>=0){ reasons.push(`Cash-on-cash výnos jen ${m.coc.toFixed(1)} % — kapitál pracuje pomalu.`); }
+  else { reasons.push(`Záporný cash-on-cash výnos (${m.coc.toFixed(1)} %).`); }
+
+  if(m.isM){
+    if(m.netYield>m.rate){ score+=1; reasons.push(`Kladná páka: čistý výnos ${m.netYield.toFixed(1)} % převyšuje úrok ${m.rate.toFixed(1)} %.`); }
+    else { reasons.push(`Záporná páka: úrok ${m.rate.toFixed(1)} % je vyšší než čistý výnos ${m.netYield.toFixed(1)} % — hypotéka výnos ubírá.`); }
+    if(m.dscr!==null){
+      if(m.dscr>=1.25){ score+=1; reasons.push(`Krytí dluhové služby (DSCR) ${m.dscr.toFixed(2)} — je polštář na splátky.`); }
+      else if(m.dscr<1){ reasons.push(`DSCR ${m.dscr.toFixed(2)} pod 1,0 — provozní zisk nepokryje splátky.`); }
+    }
+  }
+  if(m.annualized>=8){ reasons.push(`Odhadovaný celkový výnos ${m.annualized.toFixed(1)} % p.a. (vč. zhodnocení a umoření úvěru) je atraktivní.`); }
+  else if(m.annualized>0){ reasons.push(`Odhadovaný celkový výnos ${m.annualized.toFixed(1)} % p.a. včetně zhodnocení.`); }
+
+  const max=m.isM?10:8, ratio=score/max;
+  if(ratio>=0.6 && m.monthlyPre>=0) return {rating:'good', label:'Vypadá to jako dobrá investice', summary:'Nájem pokrývá náklady a kapitál se rozumně zhodnocuje. Za daných předpokladů dává investice smysl.', reasons};
+  if(ratio>=0.35) return {rating:'borderline', label:'Hraniční — zvaž podmínky', summary:'Čísla nejsou špatná, ale ani přesvědčivá. Citlivé na cenu, úrok a neobsazenost — vyplatí se smlouvat o ceně nebo počkat.', reasons};
+  return {rating:'poor', label:'Spíš se nevyplatí', summary:'Za těchto podmínek nemovitost nevydělá dost, aby ospravedlnila vložený kapitál a riziko.', reasons};
+}
+
+// ─── Výchozí vstupy + definice polí ────────────────────────────────────────
+const DEFAULTS = {
+  purchasePrice:5000000, acquisitionCosts:200000, renovationCosts:0,
+  financing:'mortgage', downPaymentPct:20, interestRate:5.2, loanTermYears:30,
+  monthlyRent:18000, otherMonthlyIncome:0, vacancyPct:5,
+  hoaMonthly:3500, propertyTaxYearly:1200, insuranceYearly:3000, managementPct:0, maintenancePct:5,
+  appreciationPct:3, rentGrowthPct:2, incomeTaxPct:15, horizonYears:10,
+};
+const FIELDS = {
+  buy: [
+    ['purchasePrice','Kupní cena','Kč',50000,0],
+    ['acquisitionCosts','Vedlejší náklady','Kč',10000,0],
+    ['renovationCosts','Rekonstrukce','Kč',10000,0],
+  ],
+  fin: [
+    ['downPaymentPct','Akontace','%',5,0],
+    ['interestRate','Úroková sazba','% p.a.',0.1,0],
+    ['loanTermYears','Splatnost','let',1,1],
+  ],
+  income: [
+    ['monthlyRent','Měsíční nájem','Kč',500,0],
+    ['otherMonthlyIncome','Ostatní příjmy','Kč/měs',500,0],
+    ['vacancyPct','Neobsazenost','%',1,0],
+  ],
+  costs: [
+    ['hoaMonthly','SVJ / fond oprav','Kč/měs',100,0],
+    ['propertyTaxYearly','Daň z nemovitosti','Kč/rok',100,0],
+    ['insuranceYearly','Pojištění','Kč/rok',100,0],
+    ['managementPct','Správa','% z nájmu',1,0],
+    ['maintenancePct','Údržba / rezerva','% z nájmu',1,0],
+  ],
+  assump: [
+    ['appreciationPct','Zhodnocení nemovitosti','% / rok',0.5,null],
+    ['rentGrowthPct','Růst nájmu a nákladů','% / rok',0.5,null],
+    ['incomeTaxPct','Daň z příjmu z nájmu','%',1,0],
+    ['horizonYears','Horizont','let',1,1],
+  ],
+};
+
+// ─── Stav ──────────────────────────────────────────────────────────────────
+let state = {...DEFAULTS};
+let currentId = null;
+const STORE = 'reality.analyses.v1';
+
+// ─── Render formuláře ──────────────────────────────────────────────────────
+function fieldHTML(key,label,suffix,step,min){
+  const minAttr = min===null ? '' : `min="${min}"`;
+  return `<div class="field"><label for="i-${key}">${label}</label>
+    <div class="inwrap"><input class="in" type="number" inputmode="decimal" id="i-${key}" data-key="${key}" step="${step}" ${minAttr}>
+    <span class="suffix">${suffix}</span></div></div>`;
+}
+function buildForm(){
+  document.getElementById('grp-buy').innerHTML    = FIELDS.buy.map(a=>fieldHTML(...a)).join('');
+  document.getElementById('grp-fin').innerHTML    = FIELDS.fin.map(a=>fieldHTML(...a)).join('');
+  document.getElementById('grp-income').innerHTML = FIELDS.income.map(a=>fieldHTML(...a)).join('');
+  document.getElementById('grp-costs').innerHTML  = FIELDS.costs.map(a=>fieldHTML(...a)).join('');
+  document.getElementById('grp-assump').innerHTML = FIELDS.assump.map(a=>fieldHTML(...a)).join('');
+  document.querySelectorAll('input[data-key]').forEach(el=>{
+    el.addEventListener('input', ()=>{ const v=el.value===''?0:Number(el.value); state[el.dataset.key]=isFinite(v)?v:0; render(); });
+    el.addEventListener('focus', ()=>el.select());
+  });
+}
+function syncInputs(){
+  document.querySelectorAll('input[data-key]').forEach(el=>{ el.value = state[el.dataset.key]; });
+  document.getElementById('f-title').value = state._title||'';
+  document.getElementById('f-address').value = state._address||'';
+  document.querySelectorAll('#finToggle button').forEach(b=> b.classList.toggle('active', b.dataset.fin===state.financing));
+  document.getElementById('grp-fin').parentElement.querySelector('#grp-fin').style.display = state.financing==='mortgage' ? '' : 'none';
+}
+
+// ─── Render výsledků ───────────────────────────────────────────────────────
+function metricHTML(label,value,sub,tone){ const c=tone?` ${tone}`:''; return `<div class="metric"><div class="m-label">${label}</div><div class="m-value${c}">${value}</div>${sub?`<div class="m-sub">${sub}</div>`:''}</div>`; }
+function rowHTML(k,v,cls='',vcls=''){ return `<div class="row ${cls}"><span class="k">${k}</span><span class="v ${vcls}">${v}</span></div>`; }
+
+function render(){
+  const r = calculate(state);
+  const isM = r.isM;
+
+  // Verdikt
+  const vc = document.getElementById('verdict');
+  vc.className = 'verdict '+r.verdict.rating;
+  document.getElementById('v-label').textContent = r.verdict.label;
+  document.getElementById('v-summary').textContent = r.verdict.summary;
+  document.getElementById('v-reasons').innerHTML = r.verdict.reasons.map(x=>`<li>${x}</li>`).join('');
+
+  // Metriky
+  const cf=r.monthlyPre;
+  document.getElementById('metrics').innerHTML = [
+    metricHTML('Měsíční cash flow', czk(cf), 'před zdaněním, po splátce', cf>=0?'pos':'neg'),
+    metricHTML('Čistý výnos (cap rate)', pct(r.netYield), 'NOI / pořizovací cena', 'gold'),
+    metricHTML('Cash-on-cash', pct(r.coc), 'výnos vloženého kapitálu', r.coc>=0?'':'neg'),
+    metricHTML('Hrubý výnos', pct(r.grossYield), 'roční nájem / cena'),
+    metricHTML('Celkový výnos p.a.', pct(r.annualized), `IRR za ${state.horizonYears} let vč. prodeje`, r.annualized>=0?'pos':'neg'),
+    isM ? metricHTML('DSCR', r.dscr!==null?r.dscr.toFixed(2):'—', 'krytí dluhové služby', r.dscr!==null&&r.dscr>=1?'pos':'neg')
+        : metricHTML('Návratnost', r.paybackYears!==null?`${r.paybackYears.toFixed(1)} let`:'—', 'z cash flow po zdanění'),
+  ].join('');
+
+  // Pořízení
+  let acq = rowHTML('Celkové pořizovací náklady', czk(r.totalAcq))
+          + rowHTML('Vlastní kapitál (vloženo)', czk(r.totalCash), '', 'gold');
+  if(isM){ acq += rowHTML('Výše úvěru · LTV', `${czk(r.loanAmount)} · ${pct(r.ltv,0)}`)
+                + rowHTML('Měsíční splátka hypotéky', czk(r.monthlyMortgage)); }
+  document.getElementById('acquisition').innerHTML = acq;
+
+  // Rozpad cash flow
+  let cfb = rowHTML('Efektivní nájem (po neobsazenosti)', czk(r.effAnnual))
+          + rowHTML('− Provozní náklady', '−'+czk(r.opex))
+          + rowHTML('= NOI (provozní zisk)', czk(r.noi));
+  if(isM) cfb += rowHTML('− Splátky úvěru', '−'+czk(r.annualDebt));
+  cfb += rowHTML('Cash flow před zdaněním', czk(r.preTax), 'total', r.preTax>=0?'pos':'neg')
+       + rowHTML('Po zdanění příjmu z nájmu', czk(r.annualAfter), '', r.annualAfter>=0?'pos':'neg');
+  document.getElementById('cashflow').innerHTML = cfb;
+  document.getElementById('breakeven').innerHTML = `Break-even nájem (nulový cash flow): <b style="color:var(--muted)">${czk(r.breakEvenRent)}/měs</b>.`;
+
+  // Graf + tabulka
+  document.getElementById('chart-title').textContent = `Vývoj za ${state.horizonYears} let`;
+  drawChart(r);
+  document.getElementById('projTable').innerHTML =
+    `<thead><tr><th>Rok</th><th>Hodnota</th><th>Úvěr</th><th>Kapitál</th><th>Cash flow</th><th>Kum. CF</th></tr></thead><tbody>`+
+    r.projection.map(p=>`<tr><td>${p.year}.</td><td>${czkCompact(p.value)}</td><td>${czkCompact(p.balance)}</td><td>${czkCompact(p.equity)}</td><td style="color:${p.after>=0?'var(--good)':'var(--bad)'}">${czkCompact(p.after)}</td><td>${czkCompact(p.cumulative)}</td></tr>`).join('')+
+    `</tbody>`;
+
+  lastResult = r;
+}
+let lastResult = null;
+
+// ─── SVG graf projekce ─────────────────────────────────────────────────────
+const CHART = {w:560, h:260, pl:56, pr:14, pt:14, pb:26};
+function drawChart(r){
+  const {w,h,pl,pr,pt,pb}=CHART, iw=w-pl-pr, ih=h-pt-pb;
+  // Řada bodů, rok 0 = výchozí stav
+  const pts = [{year:0, value:state.purchasePrice, balance:r.loanAmount, equity:state.purchasePrice-r.loanAmount, cumulative:0}, ...r.projection];
+  const n = pts.length-1;
+  const series = {
+    value:  pts.map(p=>p.value),
+    equity: pts.map(p=>p.equity),
+    balance:pts.map(p=>p.balance),
+    cumulative:pts.map(p=>p.cumulative),
+  };
+  const all = [...series.value, ...series.equity, ...series.balance, ...series.cumulative];
+  let ymin=Math.min(0,...all), ymax=Math.max(...all,1);
+  const pad=(ymax-ymin)*0.06; ymax+=pad; ymin-=pad;
+  const X = i => pl + (n===0?0:i/n)*iw;
+  const Y = v => pt + (1-(v-ymin)/(ymax-ymin||1))*ih;
+  const path = arr => arr.map((v,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+  const area = arr => `${path(arr)} L${X(n).toFixed(1)},${Y(Math.max(0,ymin)).toFixed(1)} L${X(0).toFixed(1)},${Y(Math.max(0,ymin)).toFixed(1)} Z`;
+
+  // Gridlines (y)
+  const gl=[]; const steps=4;
+  for(let s=0;s<=steps;s++){ const val=ymin+(ymax-ymin)*s/steps, y=Y(val);
+    gl.push(`<line x1="${pl}" y1="${y.toFixed(1)}" x2="${w-pr}" y2="${y.toFixed(1)}" stroke="var(--line)" stroke-width="1"/>`);
+    gl.push(`<text x="${pl-8}" y="${(y+3.5).toFixed(1)}" text-anchor="end" font-size="9.5" fill="var(--faint)" font-family="var(--sans)">${czkCompact(val)}</text>`);
+  }
+  // Osa x popisky (roky) — max ~6 popisků
+  const xl=[]; const stepX=Math.max(1,Math.ceil(n/6));
+  for(let i=0;i<=n;i+=stepX){ xl.push(`<text x="${X(i).toFixed(1)}" y="${h-8}" text-anchor="middle" font-size="9.5" fill="var(--faint)" font-family="var(--sans)">${i===0?'nyní':i+'. r'}</text>`); }
+  // Nulová linie (pro cum. CF v mínusu)
+  const zero = (ymin<0&&ymax>0) ? `<line x1="${pl}" y1="${Y(0).toFixed(1)}" x2="${w-pr}" y2="${Y(0).toFixed(1)}" stroke="var(--line-2)" stroke-width="1" stroke-dasharray="2 3"/>` : '';
+
+  const svg = `
+    <defs><linearGradient id="eqg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#78C9A0" stop-opacity="0.28"/><stop offset="100%" stop-color="#78C9A0" stop-opacity="0.02"/>
+    </linearGradient></defs>
+    ${gl.join('')}${zero}${xl.join('')}
+    <path d="${area(series.equity)}" fill="url(#eqg)" stroke="none"/>
+    <path d="${path(series.balance)}" fill="none" stroke="#E08A6E" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <path d="${path(series.value)}" fill="none" stroke="#C9A24B" stroke-width="2.2"/>
+    <path d="${path(series.equity)}" fill="none" stroke="#78C9A0" stroke-width="2.2"/>
+    <path d="${path(series.cumulative)}" fill="none" stroke="#8AA0FF" stroke-width="2"/>
+    <circle cx="${X(n).toFixed(1)}" cy="${Y(series.value[n]).toFixed(1)}" r="3" fill="#C9A24B"/>
+    <circle cx="${X(n).toFixed(1)}" cy="${Y(series.equity[n]).toFixed(1)}" r="3" fill="#78C9A0"/>
+    <rect id="hitbox" x="${pl}" y="${pt}" width="${iw}" height="${ih}" fill="transparent"/>
+    <g id="cross" style="display:none"><line stroke="var(--line-2)" stroke-width="1"/></g>
+  `;
+  const chart=document.getElementById('chart');
+  chart.innerHTML = svg;
+
+  // Hover
+  const cross=chart.querySelector('#cross'), crossLine=cross.querySelector('line');
+  const tip=document.getElementById('tip'), wrap=document.getElementById('chartWrap');
+  const move = ev => {
+    const rect=chart.getBoundingClientRect();
+    const relX=(ev.clientX-rect.left)/rect.width*w;
+    let i=Math.round((relX-pl)/(iw)*n); i=Math.max(0,Math.min(n,i));
+    const px=X(i);
+    cross.style.display=''; crossLine.setAttribute('x1',px); crossLine.setAttribute('x2',px); crossLine.setAttribute('y1',pt); crossLine.setAttribute('y2',pt+ih);
+    tip.style.opacity=1;
+    tip.innerHTML = `<div class="tip-yr">${i===0?'Nyní':i+'. rok'}</div>`+
+      `<div class="tip-row"><span style="color:#C9A24B">Hodnota</span><b>${czkCompact(series.value[i])}</b></div>`+
+      `<div class="tip-row"><span style="color:#78C9A0">Kapitál</span><b>${czkCompact(series.equity[i])}</b></div>`+
+      `<div class="tip-row"><span style="color:#E08A6E">Úvěr</span><b>${czkCompact(series.balance[i])}</b></div>`+
+      `<div class="tip-row"><span style="color:#8AA0FF">Kum. CF</span><b>${czkCompact(series.cumulative[i])}</b></div>`;
+    const tipLeft = Math.min(wrap.clientWidth-tip.offsetWidth-4, Math.max(0, (px/w)*wrap.clientWidth - tip.offsetWidth/2));
+    tip.style.left=tipLeft+'px'; tip.style.top='4px';
+  };
+  const hit=chart.querySelector('#hitbox');
+  hit.addEventListener('mousemove', move);
+  hit.addEventListener('mouseleave', ()=>{ cross.style.display='none'; tip.style.opacity=0; });
+}
+
+// ─── Ukládání (localStorage) ───────────────────────────────────────────────
+function loadAll(){ try{ return JSON.parse(localStorage.getItem(STORE)||'[]'); }catch{ return []; } }
+function saveAll(a){ localStorage.setItem(STORE, JSON.stringify(a)); }
+function uid(){ return 'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+function currentInputs(){
+  const {_title,_address,...rest}=state; return rest;
+}
+function doSave(){
+  const title=document.getElementById('f-title').value.trim();
+  if(!title){ toast('Zadej název analýzy (např. „Byt 2+kk, Brno").','err'); document.getElementById('f-title').focus(); return; }
+  const address=document.getElementById('f-address').value.trim();
+  const all=loadAll();
+  const rec={ id:currentId||uid(), title, address, inputs:currentInputs(), updatedAt:Date.now() };
+  const idx=all.findIndex(x=>x.id===rec.id);
+  if(idx>=0) all[idx]=rec; else all.unshift(rec);
+  saveAll(all); currentId=rec.id;
+  renderSaved(); updateActions(); toast('Uloženo ✓','ok');
+}
+function doDelete(){
+  if(!currentId) return;
+  if(!confirm('Opravdu smazat tuto analýzu?')) return;
+  saveAll(loadAll().filter(x=>x.id!==currentId));
+  newAnalysis(); renderSaved(); toast('Analýza smazána.','ok');
+}
+function loadRecord(id){
+  const rec=loadAll().find(x=>x.id===id); if(!rec) return;
+  state={...DEFAULTS, ...rec.inputs, _title:rec.title, _address:rec.address||''};
+  currentId=rec.id; syncInputs(); render(); updateActions(); closeSaved();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function newAnalysis(){
+  state={...DEFAULTS}; currentId=null;
+  document.getElementById('f-title').value=''; document.getElementById('f-address').value='';
+  syncInputs(); render(); updateActions(); closeSaved();
+}
+function updateActions(){
+  document.getElementById('deleteBtn').style.display = currentId ? '' : 'none';
+  document.getElementById('saveBtn').textContent = currentId ? 'Uložit změny' : 'Uložit analýzu';
+}
+function renderSaved(){
+  const all=loadAll(); const panel=document.getElementById('savedPanel');
+  document.getElementById('savedCount').textContent = all.length ? `(${all.length})` : '';
+  if(!all.length){ panel.innerHTML=`<div class="dd-empty">Zatím žádná uložená analýza.<br>Vyplň formulář a klikni na <b>Uložit</b>.</div>`; return; }
+  const dotColor={good:'var(--good)',borderline:'var(--warn)',poor:'var(--bad)'};
+  panel.innerHTML = all.map(rec=>{
+    const r=calculate({...DEFAULTS,...rec.inputs});
+    return `<div class="saved-item" data-id="${rec.id}">
+      <span class="dot" style="background:${dotColor[r.verdict.rating]}"></span>
+      <div class="si-main">
+        <div class="si-title">${escapeHtml(rec.title)}</div>
+        <div class="si-sub">${czk(r.monthlyPre)}/měs · čistý výnos ${pct(r.netYield)}</div>
+      </div>
+      <button class="si-del" data-del="${rec.id}" title="Smazat" aria-label="Smazat">×</button>
+    </div>`;
+  }).join('');
+  panel.querySelectorAll('.saved-item').forEach(el=>{
+    el.addEventListener('click', e=>{ if(e.target.closest('[data-del]')) return; loadRecord(el.dataset.id); });
+  });
+  panel.querySelectorAll('[data-del]').forEach(b=>{
+    b.addEventListener('click', e=>{ e.stopPropagation(); const id=b.dataset.del;
+      if(confirm('Smazat tuto analýzu?')){ saveAll(loadAll().filter(x=>x.id!==id)); if(currentId===id) newAnalysis(); renderSaved(); } });
+  });
+}
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+let toastTimer=null;
+function toast(msg,kind){ const t=document.getElementById('toast'); t.textContent=msg; t.className='toast '+(kind||''); clearTimeout(toastTimer); toastTimer=setTimeout(()=>{ t.textContent=''; },3500); }
+
+// ─── Dropdown ──────────────────────────────────────────────────────────────
+function openSaved(){ document.getElementById('savedPanel').classList.add('open'); document.getElementById('savedBtn').setAttribute('aria-expanded','true'); }
+function closeSaved(){ document.getElementById('savedPanel').classList.remove('open'); document.getElementById('savedBtn').setAttribute('aria-expanded','false'); }
+
+// ─── Motiv ─────────────────────────────────────────────────────────────────
+const THEME='reality.theme';
+function applyTheme(t){ if(t==='light'||t==='dark') document.documentElement.setAttribute('data-theme',t); else document.documentElement.removeAttribute('data-theme'); }
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  const prefersDark=matchMedia('(prefers-color-scheme: dark)').matches;
+  const now = cur ? cur : (prefersDark?'dark':'light');
+  const next = now==='dark'?'light':'dark';
+  applyTheme(next); localStorage.setItem(THEME,next); if(lastResult) drawChart(lastResult);
+}
+
+// ─── Init ──────────────────────────────────────────────────────────────────
+function init(){
+  applyTheme(localStorage.getItem(THEME));
+  buildForm(); syncInputs(); render(); renderSaved(); updateActions();
+
+  document.getElementById('finToggle').addEventListener('click', e=>{
+    const b=e.target.closest('button[data-fin]'); if(!b) return;
+    state.financing=b.dataset.fin; syncInputs(); render();
+  });
+  document.getElementById('f-title').addEventListener('input', e=>{ state._title=e.target.value; });
+  document.getElementById('f-address').addEventListener('input', e=>{ state._address=e.target.value; });
+  document.getElementById('saveBtn').addEventListener('click', doSave);
+  document.getElementById('deleteBtn').addEventListener('click', doDelete);
+  document.getElementById('newBtn').addEventListener('click', newAnalysis);
+  document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+  document.getElementById('savedBtn').addEventListener('click', e=>{
+    e.stopPropagation();
+    const open=document.getElementById('savedPanel').classList.contains('open');
+    open?closeSaved():openSaved();
+  });
+  document.addEventListener('click', e=>{ if(!e.target.closest('.dd')) closeSaved(); });
+  window.addEventListener('resize', ()=>{ if(lastResult) drawChart(lastResult); });
+}
+init();
+</script>
+</body>
+</html>
