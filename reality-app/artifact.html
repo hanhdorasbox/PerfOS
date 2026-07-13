@@ -288,6 +288,9 @@
   .ai-bubble.bot { align-self: flex-start; background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
   .ai-chat-row { display: flex; gap: 8px; }
   .ai-chat-row .in { flex: 1; }
+  .ai-file-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
+  .ai-file-row input[type=file] { font-size: 12.5px; color: var(--muted); max-width: 100%; }
+  .ai-file-row input[type=file]::file-selector-button { font-family: inherit; font-size: 12px; font-weight: 550; color: var(--brass); background: var(--brass-bg); border: 1px solid var(--brass); border-radius: 8px; padding: 5px 10px; margin-right: 8px; cursor: pointer; }
 
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .anim { opacity: 1 !important; } }
 </style>
@@ -424,6 +427,7 @@
             <button type="button" data-ai="review" class="active" data-i18n="ai_tab_review">Zhodnotit</button>
             <button type="button" data-ai="estimate" data-i18n="ai_tab_estimate">Odhad z popisu</button>
             <button type="button" data-ai="chat" data-i18n="ai_tab_chat">Chat</button>
+            <button type="button" data-ai="import" data-i18n="ai_tab_import">Z inzerátu</button>
           </div>
           <div class="ai-pane" data-pane="review">
             <button class="btn btn-primary" id="aiReviewBtn" type="button" data-i18n="ai_review_btn">Zhodnotit analýzu</button>
@@ -440,6 +444,17 @@
               <input class="in text" id="aiChatIn" data-i18n-ph="ai_chat_ph">
               <button class="btn btn-primary" id="aiChatSend" type="button" data-i18n="ai_chat_send">Odeslat</button>
             </div>
+          </div>
+          <div class="ai-pane" data-pane="import" hidden>
+            <div class="ai-chat-row">
+              <input class="in text" id="aiUrlIn" data-i18n-ph="ai_url_ph">
+              <button class="btn btn-primary" id="aiUrlBtn" type="button" data-i18n="ai_url_btn">Načíst</button>
+            </div>
+            <div class="ai-file-row">
+              <span data-i18n="ai_img_label">nebo screenshot:</span>
+              <input type="file" id="aiImgIn" accept="image/*">
+            </div>
+            <div class="ai-out" id="aiImportOut"></div>
           </div>
           <p class="note" data-i18n="ai_disclaimer"></p>
         </div>
@@ -667,6 +682,12 @@ const I18N = {
     ai_loading:'Přemýšlím…', ai_error:e=>`Chyba: ${e}`,
     ai_offline:'AI funkce fungují až po nasazení na Vercel s nastaveným klíčem ANTHROPIC_API_KEY. V náhledu ani lokálně (soubor v prohlížeči) nefungují.',
     ai_disclaimer:'AI odpovědi jsou orientační, ne investiční doporučení.',
+    ai_tab_import:'Z inzerátu',
+    ai_url_ph:'Odkaz na inzerát (Sreality, Bezrealitky…)', ai_url_btn:'Načíst',
+    ai_img_label:'nebo screenshot:',
+    ai_import_done:x=>`Vyplněno z inzerátu: ${x}. Zkontroluj a případně uprav.`,
+    ai_import_none:'Nepodařilo se vyčíst použitelné údaje. Zkus screenshot, kde je vidět cena a poplatky.',
+    ai_rent_est:'Nájem je odhad — v inzerátu nebyl uveden.',
     need_title:'Zadej název analýzy (např. „Byt 2+kk, Brno").',
     confirm_delete:'Opravdu smazat tuto analýzu?', confirm_delete_one:'Smazat tuto analýzu?',
     disclaimer:'Orientační propočet, ne investiční doporučení. Předpoklady (růst nájmu, neobsazenost, daně, zhodnocení) si ověř podle konkrétní situace a lokality.',
@@ -738,6 +759,12 @@ const I18N = {
     ai_loading:'Đang suy nghĩ…', ai_error:e=>`Lỗi: ${e}`,
     ai_offline:'Tính năng AI chỉ hoạt động sau khi triển khai lên Vercel với khóa ANTHROPIC_API_KEY. Bản xem trước hoặc mở file cục bộ sẽ không chạy.',
     ai_disclaimer:'Câu trả lời của AI chỉ mang tính tham khảo, không phải lời khuyên đầu tư.',
+    ai_tab_import:'Từ tin rao',
+    ai_url_ph:'Link tin rao (Sreality, Bezrealitky…)', ai_url_btn:'Tải',
+    ai_img_label:'hoặc ảnh chụp:',
+    ai_import_done:x=>`Đã điền từ tin rao: ${x}. Kiểm tra và chỉnh nếu cần.`,
+    ai_import_none:'Không đọc được dữ liệu dùng được. Thử ảnh chụp có giá và phí.',
+    ai_rent_est:'Tiền thuê là ước tính — tin rao không nêu.',
     need_title:'Nhập tên phân tích (VD: „Căn hộ 2+kk, Brno").',
     confirm_delete:'Xóa phân tích này?', confirm_delete_one:'Xóa phân tích này?',
     disclaimer:'Ước tính tham khảo, không phải lời khuyên đầu tư. Hãy kiểm chứng các giả định (tăng tiền thuê, tỷ lệ trống, thuế, tăng giá) theo tình huống và khu vực cụ thể.',
@@ -1039,14 +1066,57 @@ function aiContext(){
   ].join('\n');
 }
 
-async function aiCall(payload){
+async function aiCallRaw(payload){
   const res = await fetch(AI_ENDPOINT, {
     method:'POST', headers:{'content-type':'application/json'},
     body: JSON.stringify({ ...payload, lang: LANG }),
   });
   const data = await res.json().catch(()=>({}));
   if(!res.ok) throw new Error(data.error || ('HTTP '+res.status));
-  return data.text || '';
+  return data;
+}
+async function aiCall(payload){ return (await aiCallRaw(payload)).text || ''; }
+
+// Zmenší obrázek přes canvas a vrátí base64 (bez prefixu) — kvůli velikosti požadavku.
+function fileToB64(file, maxDim=1600){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>{ try{
+      const s=Math.min(1, maxDim/Math.max(img.width,img.height));
+      const w=Math.max(1,Math.round(img.width*s)), h=Math.max(1,Math.round(img.height*s));
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(c.toDataURL('image/jpeg',0.85).split(',')[1]);
+    }catch(err){ reject(err); } finally{ URL.revokeObjectURL(img.src); } };
+    img.onerror=()=>reject(new Error('Nepodařilo se načíst obrázek'));
+    img.src=URL.createObjectURL(file);
+  });
+}
+// Aplikuje vytěžené hodnoty do formuláře a vrátí seznam vyplněných polí (popisky).
+function applyExtracted(f){
+  const map={purchasePrice:'f_price', acquisitionCosts:'f_acq', hoaMonthly:'f_hoa', monthlyRent:'f_rent'};
+  const applied=[];
+  for(const [k,lk] of Object.entries(map)){
+    const v=f[k];
+    if(typeof v==='number' && isFinite(v) && v>=0){ state[k]=Math.round(v); applied.push(t(lk)); }
+  }
+  if(typeof f.title==='string' && f.title.trim()) state._title=f.title.trim();
+  if(typeof f.address==='string' && f.address.trim()) state._address=f.address.trim();
+  if(applied.length){ syncInputs(); render(true); }
+  return applied;
+}
+async function aiImport(payload){
+  const out=document.getElementById('aiImportOut'), off=aiOffline();
+  if(off){ out.className='ai-out muted'; out.textContent=off; return; }
+  out.className='ai-out muted'; out.textContent=t('ai_loading');
+  try{
+    const data=await aiCallRaw({mode:'extract', ...payload});
+    const f=data.fields||{};
+    const applied=applyExtracted(f);
+    const extra=(f.rentEstimated?'\n'+t('ai_rent_est'):'')+(f.note?'\n'+f.note:'');
+    if(applied.length===0){ out.className='ai-out muted'; out.textContent=t('ai_import_none')+extra; }
+    else { out.className='ai-out'; out.textContent=t('ai_import_done', applied.join(', '))+extra; }
+  }catch(e){ out.className='ai-out muted'; out.textContent=t('ai_error', e.message); }
 }
 function aiOffline(){ return location.protocol==='file:' ? t('ai_offline') : null; }
 
@@ -1097,6 +1167,16 @@ function initAI(){
   document.getElementById('aiEstimateBtn').addEventListener('click', aiEstimate);
   document.getElementById('aiChatSend').addEventListener('click', aiSend);
   document.getElementById('aiChatIn').addEventListener('keydown', e=>{ if(e.key==='Enter') aiSend(); });
+  const urlGo=()=>{ const u=document.getElementById('aiUrlIn').value.trim(); if(u) aiImport({url:u}); };
+  document.getElementById('aiUrlBtn').addEventListener('click', urlGo);
+  document.getElementById('aiUrlIn').addEventListener('keydown', e=>{ if(e.key==='Enter') urlGo(); });
+  document.getElementById('aiImgIn').addEventListener('change', async e=>{
+    const file=e.target.files && e.target.files[0]; if(!file) return;
+    const out=document.getElementById('aiImportOut'); out.className='ai-out muted'; out.textContent=t('ai_loading');
+    try{ const b64=await fileToB64(file); await aiImport({image:b64, mediaType:'image/jpeg'}); }
+    catch(err){ out.className='ai-out muted'; out.textContent=t('ai_error', err.message); }
+    finally{ e.target.value=''; }
+  });
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────

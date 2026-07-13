@@ -23,6 +23,11 @@ const SYSTEMS = {
   },
 };
 
+const EXTRACT_SYSTEM = {
+  cs: 'Z inzerátu nemovitosti (obrázek nebo text) vytěž údaje pro investiční kalkulačku. Odpověz POUZE JSON objektem, bez markdownu a bez komentářů, s klíči:\n- title: string|null (stručný název, např. „Byt 2+kk, Brno-Žabovřesky")\n- address: string|null\n- purchasePrice: number|null (kupní cena v Kč, celé číslo)\n- acquisitionCosts: number|null (provize RK v Kč, jen pokud je uvedena)\n- hoaMonthly: number|null (měsíční poplatky – SVJ, fond oprav, správa – v Kč)\n- monthlyRent: number|null (obvyklý měsíční nájem v Kč)\n- rentEstimated: boolean (true, pokud jsi nájem odhadl, protože nebyl v inzerátu)\n- area: number|null (plocha v m²)\n- note: string|null (jedna krátká věta česky: co bylo v inzerátu a co jsi odhadl)\nČísla piš bez mezer a bez měny. Když obvyklý měsíční nájem není uveden (běžné u prodeje), odhadni ho z lokality a plochy a nastav rentEstimated=true. Neznámé hodnoty = null.',
+  vi: 'Từ tin rao bất động sản (ảnh hoặc văn bản), trích xuất dữ liệu cho công cụ tính đầu tư. CHỈ trả lời bằng một đối tượng JSON, không markdown, không chú thích, với các khóa:\n- title: string|null\n- address: string|null\n- purchasePrice: number|null (giá mua bằng Kč, số nguyên)\n- acquisitionCosts: number|null (phí môi giới bằng Kč, nếu có)\n- hoaMonthly: number|null (phí hàng tháng – quản lý, quỹ sửa chữa – bằng Kč)\n- monthlyRent: number|null (tiền thuê hàng tháng thông thường bằng Kč)\n- rentEstimated: boolean (true nếu bạn ước tính tiền thuê vì tin rao không nêu)\n- area: number|null (diện tích m²)\n- note: string|null (một câu ngắn tiếng Việt: có gì trong tin rao và bạn ước tính gì)\nViết số không có dấu cách, không có tiền tệ. Nếu tin rao không nêu tiền thuê (thường gặp khi bán), hãy ước tính từ khu vực và diện tích rồi đặt rentEstimated=true. Giá trị chưa biết = null.',
+};
+
 const clip = (s, n) => String(s == null ? '' : s).slice(0, n);
 
 export default async function handler(req, res) {
@@ -39,11 +44,28 @@ export default async function handler(req, res) {
   try {
     const body = await readJson(req);
     const lang = body.lang === 'vi' ? 'vi' : 'cs';
-    const mode = ['komentar', 'odhad', 'chat'].includes(body.mode) ? body.mode : 'chat';
-    const system = SYSTEMS[mode][lang];
+    const mode = ['komentar', 'odhad', 'chat', 'extract'].includes(body.mode) ? body.mode : 'chat';
+    const system = mode === 'extract' ? EXTRACT_SYSTEM[lang] : SYSTEMS[mode][lang];
 
     let messages;
-    if (mode === 'chat') {
+    if (mode === 'extract') {
+      if (body.image) {
+        messages = [{ role: 'user', content: [
+          { type: 'image', source: { type: 'base64', media_type: body.mediaType || 'image/jpeg', data: body.image } },
+          { type: 'text', text: lang === 'vi' ? 'Trích xuất dữ liệu từ tin rao này.' : 'Vytěž údaje z tohoto inzerátu nemovitosti.' },
+        ] }];
+      } else if (body.url) {
+        const page = await fetchPageText(body.url);
+        if (!page) {
+          res.status(400).json({ error: lang === 'vi' ? 'Không tải được trang (có thể bị chặn). Hãy thử ảnh chụp màn hình.' : 'Nepodařilo se načíst stránku (možná ji web blokuje). Zkus screenshot.' });
+          return;
+        }
+        messages = [{ role: 'user', content: `${lang === 'vi' ? 'Nguồn' : 'Zdroj'}: ${clip(body.url, 300)}\n\n${clip(page, 8000)}` }];
+      } else {
+        res.status(400).json({ error: 'Chybí image nebo url.' });
+        return;
+      }
+    } else if (mode === 'chat') {
       const hist = Array.isArray(body.messages) ? body.messages.slice(-12) : [];
       const ack = lang === 'vi' ? 'Đã rõ bối cảnh. Bạn hỏi gì?' : 'Rozumím kontextu. Na co se chceš zeptat?';
       messages = [
@@ -79,10 +101,52 @@ export default async function handler(req, res) {
       .map((b) => b.text)
       .join('\n')
       .trim();
+    if (mode === 'extract') {
+      res.status(200).json({ text, fields: parseFields(text) });
+      return;
+    }
     res.status(200).json({ text });
   } catch (e) {
     res.status(500).json({ error: e?.message || 'Chyba serveru' });
   }
+}
+
+// Z odpovědi Claude vytáhne JSON objekt (i kdyby kolem něj byl text).
+function parseFields(text) {
+  try {
+    const s = text.indexOf('{'), e = text.lastIndexOf('}');
+    if (s < 0 || e < 0) return {};
+    return JSON.parse(text.slice(s, e + 1));
+  } catch { return {}; }
+}
+
+// Načte text stránky inzerátu (best-effort): meta tagy + JSON-LD + viditelný text.
+async function fetchPageText(url) {
+  try {
+    if (!/^https?:\/\//i.test(url)) return '';
+    const host = new URL(url).hostname.toLowerCase();
+    if (/^(localhost|127\.|0\.0\.0\.0|10\.|192\.168\.|169\.254\.|::1)/.test(host) || /^172\.(1[6-9]|2\d|3[01])\./.test(host)) return '';
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const r = await fetch(url, {
+      signal: ctrl.signal,
+      headers: { 'user-agent': 'Mozilla/5.0 (compatible; RealityCalc/1.0)', 'accept-language': 'cs,en;q=0.8' },
+    });
+    clearTimeout(timer);
+    const html = await r.text();
+    const ld = (html.match(/<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi) || [])
+      .map((s) => s.replace(/<[^>]+>/g, '')).join('\n');
+    const metas = (html.match(/<meta[^>]+(?:og:title|og:description|name=["']description["'])[^>]*>/gi) || [])
+      .map((m) => (m.match(/content=["']([^"']+)["']/i) || [])[1] || '').join('\n');
+    const bodyText = html
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return [metas, ld, bodyText].filter(Boolean).join('\n').slice(0, 12000);
+  } catch { return ''; }
 }
 
 // Přečte JSON tělo requestu (Vercel ho někdy předparsuje, jindy ne).
