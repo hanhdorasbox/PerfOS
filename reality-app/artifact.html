@@ -270,6 +270,25 @@
   .toast.ok { color: var(--good); } .toast.err { color: var(--bad); }
   .disclaimer { font-size: 11.5px; color: var(--faint); line-height: 1.55; margin: 0; }
 
+  /* ─── AI poradce ───────────────────────────────────────────────────────── */
+  .ai-tabs { display: inline-flex; gap: 3px; padding: 3px; background: var(--field); border: 1px solid var(--line); border-radius: 11px; margin-bottom: 14px; }
+  .ai-tabs button { border: none; background: transparent; color: var(--muted); font-size: 12.5px; font-weight: 550; padding: 6px 13px; border-radius: 8px; transition: background .2s var(--ease), color .2s var(--ease); }
+  .ai-tabs button.active { background: var(--brass-bg); color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass); }
+  .ai-pane { display: flex; flex-direction: column; gap: 10px; }
+  .ai-pane[hidden] { display: none; }
+  .ai-textarea { width: 100%; box-sizing: border-box; background: var(--field); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; color: var(--ink); font-family: var(--sans); font-size: 13.5px; line-height: 1.5; resize: vertical; transition: border-color .16s var(--ease), background .16s var(--ease); }
+  .ai-textarea:focus { outline: none; border-color: var(--brass); background: var(--surface); box-shadow: 0 0 0 3px var(--brass-bg); }
+  .ai-out { font-size: 13px; color: var(--ink); line-height: 1.6; white-space: pre-wrap; }
+  .ai-out:empty { display: none; }
+  .ai-out.muted { color: var(--muted); }
+  .ai-chat { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 2px; }
+  .ai-chat:empty { display: none; }
+  .ai-bubble { padding: 9px 12px; border-radius: 13px; font-size: 13px; line-height: 1.5; max-width: 88%; white-space: pre-wrap; animation: fadeUp .3s var(--ease) both; }
+  .ai-bubble.user { align-self: flex-end; background: var(--brass-bg); color: var(--ink); border: 1px solid var(--brass); }
+  .ai-bubble.bot { align-self: flex-start; background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+  .ai-chat-row { display: flex; gap: 8px; }
+  .ai-chat-row .in { flex: 1; }
+
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .anim { opacity: 1 !important; } }
 </style>
 
@@ -399,7 +418,33 @@
           </details>
         </div>
 
-        <div class="card pad actions anim" style="animation-delay:.34s">
+        <div class="card pad anim ai-card" style="animation-delay:.33s">
+          <div class="block-title" data-i18n="ai_title">AI poradce</div>
+          <div class="ai-tabs" id="aiTabs">
+            <button type="button" data-ai="review" class="active" data-i18n="ai_tab_review">Zhodnotit</button>
+            <button type="button" data-ai="estimate" data-i18n="ai_tab_estimate">Odhad z popisu</button>
+            <button type="button" data-ai="chat" data-i18n="ai_tab_chat">Chat</button>
+          </div>
+          <div class="ai-pane" data-pane="review">
+            <button class="btn btn-primary" id="aiReviewBtn" type="button" data-i18n="ai_review_btn">Zhodnotit analýzu</button>
+            <div class="ai-out" id="aiReviewOut"></div>
+          </div>
+          <div class="ai-pane" data-pane="estimate" hidden>
+            <textarea class="ai-textarea" id="aiEstimateIn" rows="3" data-i18n-ph="ai_estimate_ph"></textarea>
+            <button class="btn btn-primary" id="aiEstimateBtn" type="button" data-i18n="ai_estimate_btn">Odhadnout nájem a cenu</button>
+            <div class="ai-out" id="aiEstimateOut"></div>
+          </div>
+          <div class="ai-pane" data-pane="chat" hidden>
+            <div class="ai-chat" id="aiChatLog"></div>
+            <div class="ai-chat-row">
+              <input class="in text" id="aiChatIn" data-i18n-ph="ai_chat_ph">
+              <button class="btn btn-primary" id="aiChatSend" type="button" data-i18n="ai_chat_send">Odeslat</button>
+            </div>
+          </div>
+          <p class="note" data-i18n="ai_disclaimer"></p>
+        </div>
+
+        <div class="card pad actions anim" style="animation-delay:.40s">
           <div id="toast" class="toast"></div>
           <div class="row-btns">
             <button class="btn btn-primary" id="saveBtn" type="button"></button>
@@ -615,6 +660,13 @@ const I18N = {
     tbl_year:'Rok', tbl_value:'Hodnota', tbl_loan:'Úvěr', tbl_equity:'Kapitál', tbl_cf:'Cash flow', tbl_cumcf:'Kum. CF',
     ax_now:'nyní', ax_year:i=>`${i}. r`, tip_now:'Nyní', tip_year:i=>`${i}. rok`,
     save:'Uložit analýzu', save_edit:'Uložit změny', delete:'Smazat', saved_ok:'Uloženo ✓', deleted_ok:'Analýza smazána.',
+    ai_title:'AI poradce', ai_tab_review:'Zhodnotit', ai_tab_estimate:'Odhad z popisu', ai_tab_chat:'Chat',
+    ai_review_btn:'Zhodnotit analýzu',
+    ai_estimate_ph:'Popiš nemovitost: lokalita, dispozice (2+kk), plocha, stav, patro…', ai_estimate_btn:'Odhadnout nájem a cenu',
+    ai_chat_ph:'Zeptej se, např.: co když dám akontaci 30 %?', ai_chat_send:'Odeslat',
+    ai_loading:'Přemýšlím…', ai_error:e=>`Chyba: ${e}`,
+    ai_offline:'AI funkce fungují až po nasazení na Vercel s nastaveným klíčem ANTHROPIC_API_KEY. V náhledu ani lokálně (soubor v prohlížeči) nefungují.',
+    ai_disclaimer:'AI odpovědi jsou orientační, ne investiční doporučení.',
     need_title:'Zadej název analýzy (např. „Byt 2+kk, Brno").',
     confirm_delete:'Opravdu smazat tuto analýzu?', confirm_delete_one:'Smazat tuto analýzu?',
     disclaimer:'Orientační propočet, ne investiční doporučení. Předpoklady (růst nájmu, neobsazenost, daně, zhodnocení) si ověř podle konkrétní situace a lokality.',
@@ -679,6 +731,13 @@ const I18N = {
     tbl_year:'Năm', tbl_value:'Giá trị', tbl_loan:'Dư nợ', tbl_equity:'Vốn', tbl_cf:'Dòng tiền', tbl_cumcf:'Lũy kế',
     ax_now:'nay', ax_year:i=>`N${i}`, tip_now:'Hiện tại', tip_year:i=>`Năm ${i}`,
     save:'Lưu phân tích', save_edit:'Lưu thay đổi', delete:'Xóa', saved_ok:'Đã lưu ✓', deleted_ok:'Đã xóa phân tích.',
+    ai_title:'Cố vấn AI', ai_tab_review:'Đánh giá', ai_tab_estimate:'Ước tính từ mô tả', ai_tab_chat:'Trò chuyện',
+    ai_review_btn:'Đánh giá phân tích',
+    ai_estimate_ph:'Mô tả bất động sản: khu vực, bố cục (2+kk), diện tích, tình trạng, tầng…', ai_estimate_btn:'Ước tính tiền thuê & giá',
+    ai_chat_ph:'Hỏi ví dụ: nếu trả trước 30 % thì sao?', ai_chat_send:'Gửi',
+    ai_loading:'Đang suy nghĩ…', ai_error:e=>`Lỗi: ${e}`,
+    ai_offline:'Tính năng AI chỉ hoạt động sau khi triển khai lên Vercel với khóa ANTHROPIC_API_KEY. Bản xem trước hoặc mở file cục bộ sẽ không chạy.',
+    ai_disclaimer:'Câu trả lời của AI chỉ mang tính tham khảo, không phải lời khuyên đầu tư.',
     need_title:'Nhập tên phân tích (VD: „Căn hộ 2+kk, Brno").',
     confirm_delete:'Xóa phân tích này?', confirm_delete_one:'Xóa phân tích này?',
     disclaimer:'Ước tính tham khảo, không phải lời khuyên đầu tư. Hãy kiểm chứng các giả định (tăng tiền thuê, tỷ lệ trống, thuế, tăng giá) theo tình huống và khu vực cụ thể.',
@@ -961,6 +1020,85 @@ function applyTheme(tm){ if(tm==='light'||tm==='dark') document.documentElement.
 function currentTheme(){ const a=document.documentElement.getAttribute('data-theme'); if(a) return a; return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'; }
 function toggleTheme(){ const next=currentTheme()==='dark'?'light':'dark'; applyTheme(next); localStorage.setItem(THEME,next); if(lastResult) drawChart(lastResult,false); }
 
+// ─── AI poradce (přes serverless funkci /api/rada) ──────────────────────────
+const AI_ENDPOINT = '/api/rada';
+let aiChat = [];
+
+function aiContext(){
+  if(!lastResult) return '';
+  const r=lastResult, i=state;
+  return [
+    `${t('f_price')}: ${czk(i.purchasePrice)} (+ ${t('f_acq')} ${czk(i.acquisitionCosts)}, ${t('f_renov')} ${czk(i.renovationCosts)})`,
+    i.financing==='mortgage'
+      ? `${t('fin_mortgage')}: ${t('f_down')} ${i.downPaymentPct}%, ${t('f_rate')} ${i.interestRate}% p.a., ${t('f_term')} ${i.loanTermYears}, ${t('f_fixation')} ${i.fixationYears}, ${t('f_ratefix')} ${i.rateAfterFix}%`
+      : t('fin_cash'),
+    `${t('f_rent')}: ${czk(i.monthlyRent)} · ${t('f_vac')} ${i.vacancyPct}% · ${t('f_appr')} ${i.appreciationPct}%/r · ${t('f_growth')} ${i.rentGrowthPct}%/r`,
+    `${t('m_cf')}: ${czk(r.monthlyPre)} · ${t('m_ny')} ${pct(r.netYield)} · ${t('m_gy')} ${pct(r.grossYield)} · ${t('m_coc')} ${pct(r.coc)}`,
+    `${t('m_tot')}: ${pct(r.annualized)} (IRR, ${i.horizonYears}) ${r.isM && r.dscr!==null ? '· DSCR '+nf(r.dscr,2) : ''}`,
+    `Verdikt: ${r.verdict.label}`,
+  ].join('\n');
+}
+
+async function aiCall(payload){
+  const res = await fetch(AI_ENDPOINT, {
+    method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({ ...payload, lang: LANG }),
+  });
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error || ('HTTP '+res.status));
+  return data.text || '';
+}
+function aiOffline(){ return location.protocol==='file:' ? t('ai_offline') : null; }
+
+async function aiReview(){
+  const out=document.getElementById('aiReviewOut'), off=aiOffline();
+  if(off){ out.className='ai-out muted'; out.textContent=off; return; }
+  const btn=document.getElementById('aiReviewBtn'); btn.disabled=true;
+  out.className='ai-out muted'; out.textContent=t('ai_loading');
+  try{ out.textContent=await aiCall({mode:'komentar', context:aiContext()}); out.className='ai-out'; }
+  catch(e){ out.className='ai-out muted'; out.textContent=t('ai_error', e.message); }
+  finally{ btn.disabled=false; }
+}
+async function aiEstimate(){
+  const inp=document.getElementById('aiEstimateIn'), out=document.getElementById('aiEstimateOut');
+  const desc=inp.value.trim(); if(!desc){ inp.focus(); return; }
+  const off=aiOffline(); if(off){ out.className='ai-out muted'; out.textContent=off; return; }
+  const btn=document.getElementById('aiEstimateBtn'); btn.disabled=true;
+  out.className='ai-out muted'; out.textContent=t('ai_loading');
+  try{ out.textContent=await aiCall({mode:'odhad', description:desc}); out.className='ai-out'; }
+  catch(e){ out.className='ai-out muted'; out.textContent=t('ai_error', e.message); }
+  finally{ btn.disabled=false; }
+}
+function renderChat(){
+  const log=document.getElementById('aiChatLog');
+  log.innerHTML=aiChat.map(m=>`<div class="ai-bubble ${m.role==='user'?'user':'bot'}">${escapeHtml(m.content)}</div>`).join('');
+  log.scrollTop=log.scrollHeight;
+}
+async function aiSend(){
+  const inp=document.getElementById('aiChatIn'), q=inp.value.trim(); if(!q) return;
+  const off=aiOffline(); if(off){ aiChat.push({role:'user',content:q},{role:'assistant',content:off}); inp.value=''; renderChat(); return; }
+  aiChat.push({role:'user', content:q}); inp.value='';
+  aiChat.push({role:'assistant', content:t('ai_loading')}); renderChat();
+  const btn=document.getElementById('aiChatSend'); btn.disabled=true;
+  try{
+    const history=aiChat.slice(0,-1);
+    const text=await aiCall({mode:'chat', context:aiContext(), messages:history});
+    aiChat[aiChat.length-1]={role:'assistant', content:text};
+  }catch(e){ aiChat[aiChat.length-1]={role:'assistant', content:t('ai_error', e.message)}; }
+  finally{ btn.disabled=false; renderChat(); }
+}
+function initAI(){
+  document.getElementById('aiTabs').addEventListener('click', e=>{
+    const b=e.target.closest('button[data-ai]'); if(!b) return;
+    document.querySelectorAll('#aiTabs button').forEach(x=>x.classList.toggle('active', x===b));
+    document.querySelectorAll('.ai-pane').forEach(p=>{ p.hidden = p.dataset.pane!==b.dataset.ai; });
+  });
+  document.getElementById('aiReviewBtn').addEventListener('click', aiReview);
+  document.getElementById('aiEstimateBtn').addEventListener('click', aiEstimate);
+  document.getElementById('aiChatSend').addEventListener('click', aiSend);
+  document.getElementById('aiChatIn').addEventListener('keydown', e=>{ if(e.key==='Enter') aiSend(); });
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 function init(){
   // Světlý režim jako výchozí (pokud si uživatel dřív nezvolil jinak)
@@ -980,6 +1118,7 @@ function init(){
   document.getElementById('savedBtn').addEventListener('click', e=>{ e.stopPropagation(); document.getElementById('savedPanel').classList.contains('open')?closeSaved():openSaved(); });
   document.addEventListener('click', e=>{ if(!e.target.closest('.dd')) closeSaved(); });
   window.addEventListener('resize', ()=>{ if(lastResult) drawChart(lastResult,false); });
+  initAI();
 }
 init();
 </script>
