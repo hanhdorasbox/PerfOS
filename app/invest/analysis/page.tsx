@@ -3,6 +3,7 @@ import { asc, desc, eq } from 'drizzle-orm'
 import { getInvestDb, analyses, assets, watchlistItems } from '@/lib/invest/db'
 import { formatDate, formatMoney, formatPercentSigned } from '@/lib/invest/format'
 import WatchlistManager, { type WatchlistRow } from '@/components/invest/WatchlistManager'
+import RefreshPricesButton from '@/components/invest/RefreshPricesButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -96,9 +97,12 @@ export default async function AnalyzaPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <h2 className="fin-serif" style={{ fontSize: 22, margin: 0 }}>Analyses</h2>
-        <Link href="/invest/analysis/new" className="fin-btn fin-btn-primary" style={{ marginLeft: 'auto', textDecoration: 'none' }}>
-          + New analysis
-        </Link>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <RefreshPricesButton />
+          <Link href="/invest/analysis/new" className="fin-btn fin-btn-primary" style={{ textDecoration: 'none' }}>
+            + New analysis
+          </Link>
+        </div>
       </div>
 
       <div className="fin-card" style={{ padding: 0, overflowX: 'auto' }}>
