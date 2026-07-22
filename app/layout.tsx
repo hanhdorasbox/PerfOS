@@ -27,7 +27,11 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const user = await prisma.user.findFirst()
+  // The root layout wraps every route, so a DB call here runs during static
+  // prerender (build) and on every request. Degrade to null when the database
+  // is unreachable — the shell still renders; only QuickCapture is hidden —
+  // instead of failing the build or 500ing the whole app on a Neon blip.
+  const user = await prisma.user.findFirst().catch(() => null)
 
   return (
     <html lang="en">
