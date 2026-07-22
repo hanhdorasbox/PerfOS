@@ -239,7 +239,25 @@ export async function register() {
   try {
     const { PrismaClient } = await import('@prisma/client')
     const db = new PrismaClient()
-    await runMigrations(db)
+
+    // Neon compute may be scaled to zero on a cold start; wait for it to accept
+    // connections before migrating, otherwise every step fails on "Can't reach
+    // database server". If it never wakes, skip — the request path retries too.
+    let reachable = false
+    for (let attempt = 1; attempt <= 5; attempt++) {
+      try {
+        await db.$queryRawUnsafe('SELECT 1')
+        reachable = true
+        break
+      } catch {
+        await new Promise((r) => setTimeout(r, 300 * attempt))
+      }
+    }
+    if (reachable) {
+      await runMigrations(db)
+    } else {
+      console.error('[instrumentation] database unreachable — skipping migrations this boot')
+    }
     await db.$disconnect()
   } catch (e) {
     console.error('[instrumentation] unexpected error:', e)
