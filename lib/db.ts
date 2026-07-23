@@ -1,5 +1,8 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 
+// NOTE: for serverless, DATABASE_URL should point at Neon's pooled endpoint
+// (the "-pooler" host) so connections survive cold starts and rotation.
+//
 // Neon (serverless Postgres) scales its compute to zero after inactivity. The
 // first query after a cold start can fail with P1001 "Can't reach database
 // server" while the compute wakes back up. Such init/connection errors mean the
