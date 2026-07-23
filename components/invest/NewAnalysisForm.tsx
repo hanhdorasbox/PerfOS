@@ -11,6 +11,7 @@ export default function NewAnalysisForm({ assets }: { assets: AssetOption[] }) {
   const [assetId, setAssetId] = useState(assets[0]?.id ?? '')
   const [newAsset, setNewAsset] = useState({ ticker: '', name: '', currency: 'USD' })
   const [title, setTitle] = useState('')
+  const [fillMode, setFillMode] = useState<'manual' | 'ai'>('manual')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -47,12 +48,20 @@ export default function NewAnalysisForm({ assets }: { assets: AssetOption[] }) {
       }),
     })
     const data = await res.json().catch(() => null)
-    setSaving(false)
     if (!res.ok) {
+      setSaving(false)
       setError(data?.error ?? `Failed to create analysis (${res.status})`)
       return
     }
-    router.push(`/invest/analysis/${data.analysis.id}`)
+
+    const analysisId = data.analysis.id
+    if (fillMode === 'ai') {
+      // Best-effort: on failure still open the calculator, where the user can
+      // retry with the "Fill with AI" button.
+      await fetch(`/api/invest/analyses/${analysisId}/inputs/ai`, { method: 'POST' }).catch(() => {})
+    }
+    setSaving(false)
+    router.push(`/invest/analysis/${analysisId}`)
   }
 
   return (
@@ -141,16 +150,42 @@ export default function NewAnalysisForm({ assets }: { assets: AssetOption[] }) {
         />
       </div>
 
+      <div>
+        <label className="fin-field-label">Inputs</label>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            type="button"
+            className={fillMode === 'manual' ? 'fin-btn fin-btn-primary' : 'fin-btn'}
+            onClick={() => setFillMode('manual')}
+          >
+            Manual
+          </button>
+          <button
+            type="button"
+            className={fillMode === 'ai' ? 'fin-btn fin-btn-primary' : 'fin-btn'}
+            onClick={() => setFillMode('ai')}
+          >
+            AI
+          </button>
+        </div>
+        <p className="fin-subtle" style={{ margin: '6px 0 0', fontSize: 12 }}>
+          {fillMode === 'ai'
+            ? 'AI estimates the judgment assumptions (FCF growth path, terminal growth, WACC components, sector benchmarks) from the ticker — a starting point to verify. Hard fundamentals still come from the API.'
+            : 'Opens the calculator with fetched fundamentals; you fill the assumptions in yourself.'}
+        </p>
+      </div>
+
       {error && <p className="fin-loss" style={{ margin: 0, fontSize: 13 }}>{error}</p>}
 
       <div>
         <button type="submit" className="fin-btn fin-btn-primary" disabled={saving}>
-          {saving ? "Creating and fetching fundamentals…" : "Create analysis"}
+          {saving
+            ? fillMode === 'ai'
+              ? 'Creating & computing with AI…'
+              : 'Creating and fetching fundamentals…'
+            : 'Create analysis'}
         </button>
       </div>
-      <p className="fin-subtle" style={{ margin: 0, fontSize: 12 }}>
-        After creation, fundamentals are fetched from the API (where available); fill in the rest manually in the calculator.
-      </p>
     </form>
   )
 }
