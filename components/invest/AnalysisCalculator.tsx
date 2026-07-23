@@ -85,6 +85,8 @@ export default function AnalysisCalculator({
   const [refetching, setRefetching] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [fading, setFading] = useState(false)
+  const [aiFilling, setAiFilling] = useState(false)
+  const [aiNote, setAiNote] = useState<string | null>(null)
 
   const computed = useMemo(
     () => computeValuation(Object.values(inputs), currentPrice),
@@ -211,6 +213,35 @@ export default function AnalysisCalculator({
       if (!ok) break
     }
     setFading(false)
+  }
+
+  // Ask the AI to estimate the judgment assumptions (growth path, terminal,
+  // WACC components, relative benchmarks) and write them as overrides. Fetched
+  // fundamentals are left untouched; the result is a starting point to verify.
+  async function applyAiFill() {
+    setAiFilling(true)
+    setError(null)
+    setAiNote(null)
+    const res = await fetch(`/api/invest/analyses/${analysis.id}/inputs/ai`, { method: 'POST' })
+    const data = await res.json().catch(() => null)
+    setAiFilling(false)
+    if (!res.ok) {
+      setError(data?.error ?? `AI fill failed (${res.status})`)
+      return
+    }
+    for (const { field, manualValue } of (data.applied ?? []) as Array<{ field: string; manualValue: string }>) {
+      setLocal(field, { manualValue })
+      setDrafts((d) => {
+        const next = { ...d }
+        delete next[field]
+        return next
+      })
+    }
+    setAiNote(
+      data.rationale
+        ? `AI estimate (verify before trusting): ${data.rationale}`
+        : 'AI filled the assumptions — a starting point to review and adjust.',
+    )
   }
 
   async function deleteAnalysis() {
@@ -465,20 +496,35 @@ export default function AnalysisCalculator({
             DCF — inputs (FCFF, 5 years + terminal)
             <InfoHint text="Projects free cash flow for 5 years, then a perpetual terminal value, discounts both to today at the discount rate (mid-year convention — cash arrives through the year, not on Dec 31), subtracts net debt, and divides by shares. Most of the value usually sits in the terminal value — so the discount rate and terminal growth matter most." />
           </div>
-          <button
-            type="button"
-            className="fin-btn"
-            style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6 }}
-            onClick={() => void applyFade()}
-            disabled={fading}
-          >
-            {fading ? 'Fading…' : 'Fade to terminal'}
-            <InfoHint text="Fills years 1–5 by linearly stepping from your Year-1 growth down to the terminal growth. More realistic than holding one high growth rate flat for 5 years. You can still fine-tune any single year afterwards." />
-          </button>
+          <div style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="fin-btn"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              onClick={() => void applyAiFill()}
+              disabled={aiFilling}
+            >
+              {aiFilling ? 'AI estimating…' : 'Fill with AI'}
+              <InfoHint text="Asks the AI to estimate the judgment assumptions for this ticker — the FCF growth path, terminal growth, WACC components (risk-free rate, equity risk premium, cost of debt, tax) and the sector P/E and EV/EBITDA benchmarks — and fills them as overrides. Fetched fundamentals are left as they are. The model can't see live filings, so treat the result as a starting point to verify, not advice." />
+            </button>
+            <button
+              type="button"
+              className="fin-btn"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              onClick={() => void applyFade()}
+              disabled={fading}
+            >
+              {fading ? 'Fading…' : 'Fade to terminal'}
+              <InfoHint text="Fills years 1–5 by linearly stepping from your Year-1 growth down to the terminal growth. More realistic than holding one high growth rate flat for 5 years. You can still fine-tune any single year afterwards." />
+            </button>
+          </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
           {group('dcf').map(fieldRow)}
         </div>
+        {aiNote && (
+          <p className="fin-subtle" style={{ margin: '12px 0 0', fontSize: 12 }}>{aiNote}</p>
+        )}
       </div>
 
       {/* ── WACC helper ── */}
