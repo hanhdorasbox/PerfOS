@@ -16,7 +16,7 @@ export default async function Dashboard() {
   const user = await prisma.user.findFirst()
   if (!user) {
     return (
-      <div style={{ color: '#E8907A', padding: '40px' }}>
+      <div style={{ color: '#ff8263', padding: '40px' }}>
         No user found. Run: npx prisma db seed
       </div>
     )
@@ -82,8 +82,8 @@ export default async function Dashboard() {
 
   if (!quarter) {
     return (
-      <div style={{ color: '#DDB96A', padding: '40px' }}>
-        No active quarter. Go to <a href="/quarterly" style={{ color: '#B8A4FF' }}>Quarterly</a> to create one.
+      <div style={{ color: '#ffc648', padding: '40px' }}>
+        No active quarter. Go to <a href="/quarterly" style={{ color: '#a085ff' }}>Quarterly</a> to create one.
       </div>
     )
   }
@@ -308,9 +308,21 @@ export default async function Dashboard() {
             }}>
               Active Goals
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {/* Bento grid: reflows into multiple columns on wide screens
+                (auto-fill), collapses to a single column on mobile. The first
+                goal spans two columns as a hero tile when there's room. */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+              gridAutoFlow: 'dense',
+              gap: 16,
+            }}>
               {goalsWithMetrics.map((goal, i) => (
-                <div key={goal.id} className={`animate-entrance-delay-${Math.min(i + 2, 6)}`}>
+                <div
+                  key={goal.id}
+                  className={`animate-entrance-delay-${Math.min(i + 2, 6)}`}
+                  style={goalsWithMetrics.length > 2 && i === 0 ? { gridColumn: 'span 2' } : undefined}
+                >
                   <GoalCard goal={goal} metrics={goal.metrics} />
                 </div>
               ))}

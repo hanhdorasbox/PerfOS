@@ -28,7 +28,7 @@ export default function BulletDirective({ text, expanded, onToggle }: { text: st
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {shown.filter(Boolean).map((s, i) => (
             <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-              <span style={{ color: '#B8A4FF', flexShrink: 0, fontSize: 11, marginTop: 2, fontWeight: 800 }}>→</span>
+              <span style={{ color: '#a085ff', flexShrink: 0, fontSize: 11, marginTop: 2, fontWeight: 800 }}>→</span>
               <span style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.6 }}>{s.trim()}</span>
             </div>
           ))}
@@ -58,14 +58,14 @@ export default function BulletDirective({ text, expanded, onToggle }: { text: st
       {/* Always show first bullet */}
       {(framingShown.length === 0 ? firstBullet : (expanded ? bullets : firstBullet)).map((b, i) => (
         <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-          <span style={{ color: '#B8A4FF', flexShrink: 0, fontSize: 13, marginTop: 1, lineHeight: 1, fontWeight: 700 }}>•</span>
+          <span style={{ color: '#a085ff', flexShrink: 0, fontSize: 13, marginTop: 1, lineHeight: 1, fontWeight: 700 }}>•</span>
           <span style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.6 }}>{b}</span>
         </div>
       ))}
       {/* If framing exists, show rest of bullets only when expanded */}
       {framingShown.length > 0 && expanded && restBullets.map((b, i) => (
         <div key={`rb${i}`} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-          <span style={{ color: '#B8A4FF', flexShrink: 0, fontSize: 13, marginTop: 1, lineHeight: 1, fontWeight: 700 }}>•</span>
+          <span style={{ color: '#a085ff', flexShrink: 0, fontSize: 13, marginTop: 1, lineHeight: 1, fontWeight: 700 }}>•</span>
           <span style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.6 }}>{b}</span>
         </div>
       ))}

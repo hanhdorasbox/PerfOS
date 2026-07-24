@@ -6,7 +6,7 @@ import { formatMoney, formatPercent } from '@/lib/invest/format'
 // Validated categorical palette for the dark surface (dataviz skill,
 // OKLCH band + CVD-checked ordering). Slot order is fixed, never cycled;
 // slices beyond 8 fold into "Ostatní".
-const SERIES = ['#3987e5', '#199e70', '#c98500', '#008300', '#9085e9', '#e66767', '#d55181', '#d95926']
+const SERIES = ['#1f85ff', '#00b778', '#c98500', '#008300', '#7f6fff', '#ff4e4e', '#fc2a76', '#ff4900']
 const SURFACE = '#1A1A1E'
 
 export interface DonutSlice {

@@ -96,7 +96,7 @@ export default function PriorityItem({
             {task.title}
             {isCelebrating && (
               <span style={{
-                marginLeft: 8, fontSize: 11, color: '#7FD5AA', fontWeight: 700,
+                marginLeft: 8, fontSize: 11, color: '#64f0aa', fontWeight: 700,
                 animation: 'fadeOut 1.2s ease-out forwards',
                 position: 'absolute',
               }}>
@@ -126,7 +126,7 @@ export default function PriorityItem({
               <Link
                 href={SOURCE_LINK[task.sourceModule].href}
                 style={{ fontSize: 10, color: '#6E6E7680', textDecoration: 'none', letterSpacing: '0.02em' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#B8A4FF')}
+                onMouseEnter={e => (e.currentTarget.style.color = '#a085ff')}
                 onMouseLeave={e => (e.currentTarget.style.color = '#6E6E7680')}
               >
                 {SOURCE_LINK[task.sourceModule].label}
@@ -147,7 +147,7 @@ export default function PriorityItem({
               opacity: isLoadingThisStep ? 0.5 : 1,
               transition: 'color 0.12s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#B8A4FF')}
+            onMouseEnter={e => (e.currentTarget.style.color = '#a085ff')}
             onMouseLeave={e => (e.currentTarget.style.color = '#52525A')}
           >
             {isLoadingThisStep ? '…' : '⋯ Steps'}
@@ -162,7 +162,7 @@ export default function PriorityItem({
       {steps && (
         <div className="expand-enter" style={{
           marginLeft: 30, marginBottom: 8, padding: '8px 10px',
-          background: 'rgba(184,164,255,0.05)', border: '1px solid rgba(184,164,255,0.15)',
+          background: 'rgba(160, 133, 255,0.05)', border: '1px solid rgba(160, 133, 255,0.15)',
           borderRadius: 8, borderTop: 'none', borderTopLeftRadius: 0, borderTopRightRadius: 0,
         }}>
           {steps.map((step, i) => {
@@ -175,12 +175,12 @@ export default function PriorityItem({
               >
                 <div style={{
                   width: 14, height: 14, borderRadius: '50%', flexShrink: 0,
-                  border: `1.5px solid ${done ? '#7FD5AA' : 'rgba(255,255,255,0.18)'}`,
-                  background: done ? 'rgba(127,213,170,0.18)' : 'transparent',
+                  border: `1.5px solid ${done ? '#64f0aa' : 'rgba(255,255,255,0.18)'}`,
+                  background: done ? 'rgba(100, 240, 170,0.18)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.15s ease',
                 }}>
-                  {done && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#7FD5AA' }} />}
+                  {done && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#64f0aa' }} />}
                 </div>
                 <span style={{
                   fontSize: 11, flex: 1, lineHeight: 1.45,

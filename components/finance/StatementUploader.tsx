@@ -56,16 +56,16 @@ export default function StatementUploader({ userId }: { userId: string }) {
         onDrop={handleDrop}
         onClick={() => fileRef.current?.click()}
         style={{
-          border: `2px dashed ${dragOver ? 'rgba(184,164,255,0.6)' : 'rgba(255,255,255,0.12)'}`,
+          border: `2px dashed ${dragOver ? 'rgba(160, 133, 255,0.6)' : 'rgba(255,255,255,0.12)'}`,
           borderRadius: 12, padding: '32px 24px', textAlign: 'center', cursor: 'pointer',
-          background: dragOver ? 'rgba(184,164,255,0.05)' : 'transparent',
+          background: dragOver ? 'rgba(160, 133, 255,0.05)' : 'transparent',
           transition: 'all 0.2s',
         }}
       >
         {loading ? (
           <div>
-            <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'center' }}><Spinner size={24} color="#B8A4FF" strokeWidth={2} /></div>
-            <p style={{ color: '#B8A4FF', fontSize: 14, fontWeight: 600 }}>Processing...</p>
+            <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'center' }}><Spinner size={24} color="#a085ff" strokeWidth={2} /></div>
+            <p style={{ color: '#a085ff', fontSize: 14, fontWeight: 600 }}>Processing...</p>
           </div>
         ) : (
           <>
@@ -87,21 +87,21 @@ export default function StatementUploader({ userId }: { userId: string }) {
       />
 
       {error && (
-        <p style={{ color: '#FF9B87', fontSize: 13, marginTop: 10 }}>{error}</p>
+        <p style={{ color: '#ff8168', fontSize: 13, marginTop: 10 }}>{error}</p>
       )}
 
       {result && (
         <div style={{
-          marginTop: 12, background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
+          marginTop: 12, background: 'rgba(100, 240, 170,0.08)', border: '1px solid rgba(100, 240, 170,0.2)',
           borderRadius: 10, padding: '12px 16px', display: 'flex', gap: 24,
         }}>
           <div>
-            <span style={{ color: '#7FD5AA', fontWeight: 700, fontSize: 18 }}>{result.transactionCount}</span>
+            <span style={{ color: '#64f0aa', fontWeight: 700, fontSize: 18 }}>{result.transactionCount}</span>
             <span style={{ color: '#A1A1A6', fontSize: 13, marginLeft: 6 }}>transactions imported</span>
           </div>
           {result.reviewNeeded > 0 && (
             <div>
-              <span style={{ color: '#ECC666', fontWeight: 700, fontSize: 18 }}>{result.reviewNeeded}</span>
+              <span style={{ color: '#ffce53', fontWeight: 700, fontSize: 18 }}>{result.reviewNeeded}</span>
               <span style={{ color: '#A1A1A6', fontSize: 13, marginLeft: 6 }}>need review</span>
             </div>
           )}

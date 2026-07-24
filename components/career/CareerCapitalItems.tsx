@@ -126,10 +126,10 @@ export default function CareerCapitalItems({
         <button
           onClick={() => setShowForm(v => !v)}
           style={{
-            background: 'rgba(127,213,170,0.12)',
-            border: '1px solid rgba(127,213,170,0.3)',
+            background: 'rgba(100, 240, 170,0.12)',
+            border: '1px solid rgba(100, 240, 170,0.3)',
             borderRadius: 7,
-            color: '#7FD5AA',
+            color: '#64f0aa',
             padding: '5px 12px',
             fontSize: 12,
             fontWeight: 600,
@@ -199,7 +199,7 @@ export default function CareerCapitalItems({
               type="submit"
               disabled={submitting}
               style={{
-                background: '#7FD5AA',
+                background: '#64f0aa',
                 border: 'none',
                 borderRadius: 7,
                 color: '#1A1916',

@@ -13,7 +13,7 @@ interface Task {
 }
 
 const effortLabel: Record<number, string> = { 1: 'Easy', 2: 'Medium', 3: 'Deep work' }
-const effortColor: Record<number, string> = { 1: '#7FD5AA', 2: '#DDB96A', 3: '#E8907A' }
+const effortColor: Record<number, string> = { 1: '#64f0aa', 2: '#ffc648', 3: '#ff8263' }
 const priorityLabel: Record<number, string> = { 1: 'must', 2: 'should', 3: 'optional' }
 
 function TaskRow({
@@ -47,7 +47,7 @@ function TaskRow({
           borderRadius: 10,
           flexShrink: 0,
           background: isDone
-            ? (hovered ? 'rgba(127,213,170,0.15)' : 'rgba(127,213,170,0.08)')
+            ? (hovered ? 'rgba(100, 240, 170,0.15)' : 'rgba(100, 240, 170,0.08)')
             : (hovered ? 'rgba(255,255,255,0.06)' : 'transparent'),
           border: 'none',
           cursor: 'pointer',
@@ -66,14 +66,14 @@ function TaskRow({
             height: 18,
             borderRadius: isDone ? '50%' : 6,
             border: isDone
-              ? '2px solid #7FD5AA'
+              ? '2px solid #64f0aa'
               : `1.5px solid ${hovered ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.2)'}`,
-            background: isDone ? 'rgba(127,213,170,0.2)' : 'transparent',
+            background: isDone ? 'rgba(100, 240, 170,0.2)' : 'transparent',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: 10,
-            color: isDone ? '#7FD5AA' : '#6E6E76',
+            color: isDone ? '#64f0aa' : '#6E6E76',
             fontWeight: 700,
             transition: 'all 0.12s',
             pointerEvents: 'none',
@@ -239,7 +239,7 @@ export default function TodayTasks({
           <button
             onClick={() => setShowAdd(v => !v)}
             className="btn-motion"
-            style={{ fontSize: 11, color: '#B8A4FF', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            style={{ fontSize: 11, color: '#a085ff', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
             {showAdd ? 'Cancel' : '+ Add'}
           </button>
@@ -264,9 +264,9 @@ export default function TodayTasks({
                 style={{
                   fontSize: 10, padding: '3px 7px', borderRadius: 6, border: '1px solid',
                   cursor: 'pointer',
-                  background: newEffort === e ? 'rgba(184,164,255,0.15)' : 'transparent',
-                  borderColor: newEffort === e ? 'rgba(184,164,255,0.4)' : 'rgba(255,255,255,0.08)',
-                  color: newEffort === e ? '#B8A4FF' : '#6E6E76',
+                  background: newEffort === e ? 'rgba(160, 133, 255,0.15)' : 'transparent',
+                  borderColor: newEffort === e ? 'rgba(160, 133, 255,0.4)' : 'rgba(255,255,255,0.08)',
+                  color: newEffort === e ? '#a085ff' : '#6E6E76',
                 }}
               >
                 {effortLabel[e]}
@@ -276,7 +276,7 @@ export default function TodayTasks({
               onClick={addTask}
               disabled={adding || !newTitle.trim()}
               className="btn-motion"
-              style={{ marginLeft: 'auto', fontSize: 11, padding: '3px 12px', borderRadius: 6, background: '#B8A4FF', color: '#050506', border: 'none', cursor: 'pointer', fontWeight: 700, opacity: adding ? 0.6 : 1 }}
+              style={{ marginLeft: 'auto', fontSize: 11, padding: '3px 12px', borderRadius: 6, background: '#a085ff', color: '#050506', border: 'none', cursor: 'pointer', fontWeight: 700, opacity: adding ? 0.6 : 1 }}
             >
               {adding ? '…' : 'Add'}
             </button>
@@ -293,17 +293,17 @@ export default function TodayTasks({
         <div>
           <div className="animate-fade-in" style={{
             padding: '12px 14px', borderRadius: 10,
-            background: 'rgba(127,213,170,0.06)',
-            border: '1px solid rgba(127,213,170,0.18)',
+            background: 'rgba(100, 240, 170,0.06)',
+            border: '1px solid rgba(100, 240, 170,0.18)',
             marginBottom: 10,
           }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#7FD5AA', marginBottom: 3 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#64f0aa', marginBottom: 3 }}>
               ✓ This week complete
             </div>
             <div style={{ fontSize: 11, color: '#6E6E76' }}>
               All {done.length} task{done.length !== 1 ? 's' : ''} done.
             </div>
-            <a href="/weekly" style={{ fontSize: 11, color: '#B8A4FF', textDecoration: 'none', display: 'block', marginTop: 2 }}>
+            <a href="/weekly" style={{ fontSize: 11, color: '#a085ff', textDecoration: 'none', display: 'block', marginTop: 2 }}>
               Plan next week →
             </a>
           </div>
@@ -319,7 +319,7 @@ export default function TodayTasks({
           {mustTasks.length > 0 && (
             <div>
               {mustTasks.length > 0 && (
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#E8907A', marginBottom: 6, marginTop: 6, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#ff8263', marginBottom: 6, marginTop: 6, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                   Must Do ({mustTasks.length})
                 </div>
               )}

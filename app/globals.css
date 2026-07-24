@@ -27,33 +27,33 @@
   --border-inset:    rgba(0, 0, 0, 0.35);
 
   /* ── Pastel accent palette ── */
-  --purple-text:   #B8A4FF;
-  --purple-bg:     rgba(184, 164, 255, 0.10);
-  --purple-border: rgba(184, 164, 255, 0.20);
+  --purple-text:   #a085ff;
+  --purple-bg:     rgba(160, 133, 255, 0.10);
+  --purple-border: rgba(160, 133, 255, 0.20);
 
-  --blue-text:     #80BDFF;
-  --blue-bg:       rgba(128, 189, 255, 0.10);
-  --blue-border:   rgba(128, 189, 255, 0.20);
+  --blue-text:     #61adff;
+  --blue-bg:       rgba(97, 173, 255, 0.10);
+  --blue-border:   rgba(97, 173, 255, 0.20);
 
-  --mint-text:     #7FD5AA;
-  --mint-bg:       rgba(127, 213, 170, 0.09);
-  --mint-border:   rgba(127, 213, 170, 0.20);
+  --mint-text:     #64f0aa;
+  --mint-bg:       rgba(100, 240, 170, 0.09);
+  --mint-border:   rgba(100, 240, 170, 0.20);
 
-  --amber-text:    #DDB96A;
-  --amber-bg:      rgba(221, 185, 106, 0.09);
-  --amber-border:  rgba(221, 185, 106, 0.20);
+  --amber-text:    #ffc648;
+  --amber-bg:      rgba(255, 198, 72, 0.09);
+  --amber-border:  rgba(255, 198, 72, 0.20);
 
-  --peach-text:    #E8966A;
-  --peach-bg:      rgba(232, 150, 106, 0.09);
-  --peach-border:  rgba(232, 150, 106, 0.20);
+  --peach-text:    #ff8f53;
+  --peach-bg:      rgba(255, 143, 83, 0.09);
+  --peach-border:  rgba(255, 143, 83, 0.20);
 
-  --rose-text:     #E88CA0;
-  --rose-bg:       rgba(232, 140, 160, 0.09);
-  --rose-border:   rgba(232, 140, 160, 0.20);
+  --rose-text:     #ff567b;
+  --rose-bg:       rgba(255, 86, 123, 0.09);
+  --rose-border:   rgba(255, 86, 123, 0.20);
 
-  --red-text:      #E8907A;
-  --red-bg:        rgba(232, 144, 122, 0.09);
-  --red-border:    rgba(232, 144, 122, 0.22);
+  --red-text:      #ff8263;
+  --red-bg:        rgba(255, 130, 99, 0.09);
+  --red-border:    rgba(255, 130, 99, 0.22);
 
   /* ── Semantic shorthand ── */
   --accent:   var(--blue-text);
@@ -62,12 +62,12 @@
   --danger:   var(--red-text);
 
   /* Kept for gradient references */
-  --blue:    #80BDFF;
-  --green:   #7FD5AA;
-  --yellow:  #DDB96A;
-  --orange:  #E8966A;
-  --red:     #E8907A;
-  --purple:  #B8A4FF;
+  --blue:    #61adff;
+  --green:   #64f0aa;
+  --yellow:  #ffc648;
+  --orange:  #ff8f53;
+  --red:     #ff8263;
+  --purple:  #a085ff;
 
   /* ── Radius ── */
   --r-sm:   12px;
@@ -102,8 +102,8 @@ html {
 body {
   background: var(--bg-app);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-               "Helvetica Neue", "Inter", "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-jakarta), -apple-system, BlinkMacSystemFont, "SF Pro Display",
+               "SF Pro Text", "Helvetica Neue", "Inter", "Segoe UI", system-ui, sans-serif;
   font-size: 15px;
   line-height: 1.5;
   min-height: 100vh;
@@ -117,11 +117,11 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
 
 /* Selection */
-::selection { background: rgba(128, 189, 255, 0.28); color: var(--text-primary); }
+::selection { background: rgba(97, 173, 255, 0.28); color: var(--text-primary); }
 
 /* Keyboard focus — visible but quiet */
 :focus-visible {
-  outline: 2px solid rgba(128, 189, 255, 0.45);
+  outline: 2px solid rgba(97, 173, 255, 0.45);
   outline-offset: 2px;
 }
 
@@ -193,9 +193,9 @@ body {
 
 /* Primary — muted blue, refined CTA */
 .btn-primary {
-  background: rgba(128, 189, 255, 0.12);
-  color: #B8D8FF;
-  border: 1px solid rgba(128, 189, 255, 0.26);
+  background: rgba(97, 173, 255, 0.12);
+  color: #99c7ff;
+  border: 1px solid rgba(97, 173, 255, 0.26);
   border-radius: var(--r-md);
   padding: 9px 20px;
   font-size: 13px;
@@ -204,7 +204,7 @@ body {
   letter-spacing: 0.005em;
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
-.btn-primary:hover  { background: rgba(128, 189, 255, 0.18); border-color: rgba(128, 189, 255, 0.38); }
+.btn-primary:hover  { background: rgba(97, 173, 255, 0.18); border-color: rgba(97, 173, 255, 0.38); }
 .btn-primary:active { transform: scale(0.97); }
 .btn-primary:disabled { opacity: 0.38; cursor: not-allowed; }
 
@@ -250,7 +250,7 @@ body {
   cursor: pointer;
   transition: background 0.14s ease, border-color 0.14s ease;
 }
-.btn-destructive:hover { background: rgba(232,144,122,0.16); border-color: rgba(232,144,122,0.34); }
+.btn-destructive:hover { background: rgba(255, 130, 99,0.16); border-color: rgba(255, 130, 99,0.34); }
 
 /* Legacy motion helper */
 .btn-motion {
@@ -276,8 +276,8 @@ body {
 }
 .input-apple::placeholder { color: var(--text-subtle); }
 .input-apple:focus {
-  border-color: rgba(128, 189, 255, 0.34);
-  box-shadow: 0 0 0 3px rgba(128, 189, 255, 0.10);
+  border-color: rgba(97, 173, 255, 0.34);
+  box-shadow: 0 0 0 3px rgba(97, 173, 255, 0.10);
 }
 
 /* ─── Progress bar ────────────────────────────────────────────────────────────── */

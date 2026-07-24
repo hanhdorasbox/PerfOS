@@ -453,7 +453,7 @@ export default function DailyCommandCenter({
             }}
           >
             {loadingBrief
-              ? <Spinner size={11} color="#8E80C4" strokeWidth={1.8} />
+              ? <Spinner size={11} color="#7f67dd" strokeWidth={1.8} />
               : <RotateCw size={11} strokeWidth={2} />
             }
             <span>{loadingBrief ? 'Refreshing' : 'Refresh'}</span>
@@ -544,11 +544,11 @@ export default function DailyCommandCenter({
           {showMorningBanner && (
             <div style={{
               marginBottom: 16, padding: '14px 16px',
-              background: 'rgba(127,213,170,0.06)',
-              border: '1px solid rgba(127,213,170,0.18)',
+              background: 'rgba(100, 240, 170,0.06)',
+              border: '1px solid rgba(100, 240, 170,0.18)',
               borderRadius: 12,
             }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#7FD5AA', marginBottom: 6 }}>Morning check-in</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#64f0aa', marginBottom: 6 }}>Morning check-in</div>
               <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 6 }}>
                 Today&apos;s focus:
               </div>
@@ -558,8 +558,8 @@ export default function DailyCommandCenter({
               <button
                 onClick={dismissMorning}
                 style={{
-                  fontSize: 12, fontWeight: 600, color: '#7FD5AA',
-                  background: 'rgba(127,213,170,0.12)', border: '1px solid rgba(127,213,170,0.25)',
+                  fontSize: 12, fontWeight: 600, color: '#64f0aa',
+                  background: 'rgba(100, 240, 170,0.12)', border: '1px solid rgba(100, 240, 170,0.25)',
                   borderRadius: 7, padding: '6px 14px', cursor: 'pointer',
                 }}
               >
@@ -569,7 +569,7 @@ export default function DailyCommandCenter({
           )}
 
           {/* Strategic Directive */}
-          <div style={{ borderLeft: '3px solid #B8A4FF', paddingLeft: 14, marginBottom: briefing?.instruction ? 10 : 18 }}>
+          <div style={{ borderLeft: '3px solid #a085ff', paddingLeft: 14, marginBottom: briefing?.instruction ? 10 : 18 }}>
             <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6E6E76', marginBottom: 6 }}>
               This Week&apos;s Directive
             </div>
@@ -596,8 +596,8 @@ export default function DailyCommandCenter({
 
           {/* Today instruction */}
           {briefing?.instruction && (
-            <div style={{ marginTop: 16, marginBottom: 18, padding: '10px 14px', background: 'rgba(127,213,170,0.04)', borderRadius: 14, border: '1px solid rgba(127,213,170,0.12)' }}>
-              <div style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#7FD5AA', marginBottom: 5, opacity: 0.8 }}>
+            <div style={{ marginTop: 16, marginBottom: 18, padding: '10px 14px', background: 'rgba(100, 240, 170,0.04)', borderRadius: 14, border: '1px solid rgba(100, 240, 170,0.12)' }}>
+              <div style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#64f0aa', marginBottom: 5, opacity: 0.8 }}>
                 Today
               </div>
               <span style={{ fontSize: 12, color: '#9E9EA6', lineHeight: 1.65 }}>{briefing.instruction}</span>
@@ -608,20 +608,20 @@ export default function DailyCommandCenter({
           {(atRiskCount > 0 || watchCount > 0) && (
             <div style={{
               marginBottom: 14, padding: '8px 12px', borderRadius: 10,
-              background: atRiskCount > 0 ? 'rgba(232,144,122,0.06)' : 'rgba(221,185,106,0.06)',
-              border: `1px solid ${atRiskCount > 0 ? 'rgba(232,144,122,0.15)' : 'rgba(221,185,106,0.15)'}`,
+              background: atRiskCount > 0 ? 'rgba(255, 130, 99,0.06)' : 'rgba(255, 198, 72,0.06)',
+              border: `1px solid ${atRiskCount > 0 ? 'rgba(255, 130, 99,0.15)' : 'rgba(255, 198, 72,0.15)'}`,
               display: 'flex', alignItems: 'center', gap: 6,
             }}>
-              <span style={{ fontSize: 10, fontWeight: 600, color: atRiskCount > 0 ? '#E8907A' : '#DDB96A' }}>
+              <span style={{ fontSize: 10, fontWeight: 600, color: atRiskCount > 0 ? '#ff8263' : '#ffc648' }}>
                 {atRiskCount > 0 ? 'Goal health' : atRiskCount === 0 && watchCount > 0 ? 'Watch' : 'All clear'}
               </span>
               {atRiskCount > 0 && (
-                <span style={{ fontSize: 10, color: '#E8907A', fontWeight: 700 }}>
+                <span style={{ fontSize: 10, color: '#ff8263', fontWeight: 700 }}>
                   {atRiskCount} at risk
                 </span>
               )}
               {atRiskCount === 0 && watchCount > 0 && (
-                <span style={{ fontSize: 10, color: '#DDB96A' }}>
+                <span style={{ fontSize: 10, color: '#ffc648' }}>
                   {watchCount} {watchCount === 1 ? 'goal' : 'goals'} to watch
                 </span>
               )}
@@ -640,9 +640,9 @@ export default function DailyCommandCenter({
                   onClick={() => setFocusMode(true)}
                   title="Enter Focus Mode"
                   style={{
-                    fontSize: 10, color: '#B8A4FF',
-                    background: 'rgba(184,164,255,0.08)',
-                    border: '1px solid rgba(184,164,255,0.2)',
+                    fontSize: 10, color: '#a085ff',
+                    background: 'rgba(160, 133, 255,0.08)',
+                    border: '1px solid rgba(160, 133, 255,0.2)',
                     borderRadius: 6, padding: '3px 8px', cursor: 'pointer',
                   }}
                 >
@@ -655,7 +655,7 @@ export default function DailyCommandCenter({
             {(doneTodayCount > 0 || remainingCount > 0) && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                 {doneTodayCount > 0 && (
-                  <span style={{ fontSize: 10, color: '#7FD5AA', fontWeight: 600 }}>
+                  <span style={{ fontSize: 10, color: '#64f0aa', fontWeight: 600 }}>
                     ✓ {doneTodayCount} done
                   </span>
                 )}
@@ -672,8 +672,8 @@ export default function DailyCommandCenter({
             {allDone && (
               <div style={{
                 marginBottom: 12, padding: '10px 14px',
-                background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
-                borderRadius: 10, fontSize: 12, color: '#7FD5AA', fontWeight: 600,
+                background: 'rgba(100, 240, 170,0.08)', border: '1px solid rgba(100, 240, 170,0.2)',
+                borderRadius: 10, fontSize: 12, color: '#64f0aa', fontWeight: 600,
               }}>
                 Day complete — everything&apos;s done.
               </div>
@@ -681,8 +681,8 @@ export default function DailyCommandCenter({
             {!allDone && allMustDone && (
               <div style={{
                 marginBottom: 12, padding: '10px 14px',
-                background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
-                borderRadius: 10, fontSize: 12, color: '#7FD5AA', fontWeight: 600,
+                background: 'rgba(100, 240, 170,0.08)', border: '1px solid rgba(100, 240, 170,0.2)',
+                borderRadius: 10, fontSize: 12, color: '#64f0aa', fontWeight: 600,
               }}>
                 ✓ Must-dos done. Nice work.
               </div>
@@ -724,11 +724,11 @@ export default function DailyCommandCenter({
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
                   padding: '7px 11px', borderRadius: 8, marginBottom: 10,
-                  background: tight ? 'rgba(232,144,122,0.05)' : 'rgba(127,213,170,0.04)',
-                  border: `1px solid ${tight ? 'rgba(232,144,122,0.14)' : 'rgba(127,213,170,0.1)'}`,
+                  background: tight ? 'rgba(255, 130, 99,0.05)' : 'rgba(100, 240, 170,0.04)',
+                  border: `1px solid ${tight ? 'rgba(255, 130, 99,0.14)' : 'rgba(100, 240, 170,0.1)'}`,
                 }}>
                   <span style={{ fontSize: 11, color: '#6E6E76' }}>
-                    Tasks: <strong style={{ color: tight ? '#E8907A' : '#9E9EA6', fontVariantNumeric: 'tabular-nums' }}>
+                    Tasks: <strong style={{ color: tight ? '#ff8263' : '#9E9EA6', fontVariantNumeric: 'tabular-nums' }}>
                       {tH > 0 ? `${tH}h ` : ''}{tM}m
                     </strong>
                   </span>
@@ -754,14 +754,14 @@ export default function DailyCommandCenter({
                     return meetsAfterWork > 0 ? (
                       <>
                         <span style={{ fontSize: 9, color: '#3E3E44' }}>·</span>
-                        <span style={{ fontSize: 10, color: '#DDB96A' }}>
+                        <span style={{ fontSize: 10, color: '#ffc648' }}>
                           {meetsAfterWork} evening meeting{meetsAfterWork === 1 ? '' : 's'}
                         </span>
                       </>
                     ) : null
                   })()}
                   {tight && (
-                    <span style={{ fontSize: 10, color: '#E8907A', marginLeft: 'auto', fontWeight: 700 }}>
+                    <span style={{ fontSize: 10, color: '#ff8263', marginLeft: 'auto', fontWeight: 700 }}>
                       Overloaded
                     </span>
                   )}
@@ -804,9 +804,9 @@ export default function DailyCommandCenter({
                 Energy
               </span>
               {([
-                { key: 'low',    label: 'Low',    dot: '#E8907A' },
-                { key: 'medium', label: 'Medium', dot: '#DDB96A' },
-                { key: 'high',   label: 'High',   dot: '#7FD5AA' },
+                { key: 'low',    label: 'Low',    dot: '#ff8263' },
+                { key: 'medium', label: 'Medium', dot: '#ffc648' },
+                { key: 'high',   label: 'High',   dot: '#64f0aa' },
               ] as const).map(({ key, label, dot }) => (
                 <button
                   key={key}
@@ -834,13 +834,13 @@ export default function DailyCommandCenter({
             ) : incompleteTasks.length === 0 && doneTodayCount === 0 ? (
               <div style={{ fontSize: 12, color: '#6E6E76', fontStyle: 'italic' }}>
                 No tasks this week.{' '}
-                <Link href="/weekly" style={{ color: '#B8A4FF', textDecoration: 'none' }}>Plan this week →</Link>
+                <Link href="/weekly" style={{ color: '#a085ff', textDecoration: 'none' }}>Plan this week →</Link>
               </div>
             ) : (
               <>
                 {visibleMust.length > 0 && (
                   <div style={{ marginBottom: 12 }}>
-                    <div style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#E8907A', marginBottom: 4, opacity: 0.85 }}>Must Do</div>
+                    <div style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ff8263', marginBottom: 4, opacity: 0.85 }}>Must Do</div>
                     {visibleMust.map(t => (
                       <PriorityItem
                         key={t.id} task={t} briefItem={findBriefItem(t)}
@@ -857,7 +857,7 @@ export default function DailyCommandCenter({
                 )}
                 {visibleShould.length > 0 && (
                   <div style={{ marginBottom: 12 }}>
-                    <div style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#DDB96A', marginBottom: 4, opacity: 0.85 }}>Should Do</div>
+                    <div style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ffc648', marginBottom: 4, opacity: 0.85 }}>Should Do</div>
                     {visibleShould.map(t => (
                       <PriorityItem
                         key={t.id} task={t} briefItem={findBriefItem(t)}
@@ -929,7 +929,7 @@ export default function DailyCommandCenter({
           boxShadow: '0 16px 48px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3)',
           maxWidth: 'min(92vw, 440px)',
         }}>
-          <span style={{ fontSize: 12, color: '#7FD5AA', fontWeight: 600, flexShrink: 0 }}>✓ Done</span>
+          <span style={{ fontSize: 12, color: '#64f0aa', fontWeight: 600, flexShrink: 0 }}>✓ Done</span>
           <span style={{
             fontSize: 12, color: '#9E9EA6', overflow: 'hidden',
             textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -939,8 +939,8 @@ export default function DailyCommandCenter({
           <button
             onClick={undoLastComplete}
             style={{
-              fontSize: 12, fontWeight: 600, color: '#B8A4FF', flexShrink: 0,
-              background: 'rgba(184,164,255,0.10)', border: '1px solid rgba(184,164,255,0.22)',
+              fontSize: 12, fontWeight: 600, color: '#a085ff', flexShrink: 0,
+              background: 'rgba(160, 133, 255,0.10)', border: '1px solid rgba(160, 133, 255,0.22)',
               borderRadius: 8, padding: '4px 12px', cursor: 'pointer',
             }}
           >

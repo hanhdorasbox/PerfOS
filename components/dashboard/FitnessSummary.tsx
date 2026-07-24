@@ -60,7 +60,7 @@ export default function FitnessSummary({ fitnessLog, workoutsThisWeek, userId }:
           </div>
         )}
         <div>
-          <div style={{ fontSize: '22px', fontWeight: 700, color: workoutsThisWeek >= 3 ? '#7FD5AA' : '#DDB96A' }}>{workoutsThisWeek}/3</div>
+          <div style={{ fontSize: '22px', fontWeight: 700, color: workoutsThisWeek >= 3 ? '#64f0aa' : '#ffc648' }}>{workoutsThisWeek}/3</div>
           <div style={{ fontSize: '11px', color: '#6E6E76' }}>workouts/week</div>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function FitnessSummary({ fitnessLog, workoutsThisWeek, userId }:
               onClick={() => setLogOpen(true)}
               style={{
                 flex: 1, fontSize: '11px', fontWeight: 600, color: '#0A0A0C',
-                background: '#A3D977', border: 'none', borderRadius: 6,
+                background: '#a0f759', border: 'none', borderRadius: 6,
                 padding: '6px 12px', cursor: 'pointer',
               }}
             >
@@ -90,9 +90,9 @@ export default function FitnessSummary({ fitnessLog, workoutsThisWeek, userId }:
                 onClick={() => setWorkoutType(t)}
                 style={{
                   fontSize: 10, padding: '4px 10px', borderRadius: 5, cursor: 'pointer',
-                  background: workoutType === t ? 'rgba(163,217,119,0.2)' : 'transparent',
-                  border: workoutType === t ? '1px solid rgba(163,217,119,0.5)' : '1px solid rgba(255,255,255,0.1)',
-                  color: workoutType === t ? '#A3D977' : '#6E6E76',
+                  background: workoutType === t ? 'rgba(160, 247, 89,0.2)' : 'transparent',
+                  border: workoutType === t ? '1px solid rgba(160, 247, 89,0.5)' : '1px solid rgba(255,255,255,0.1)',
+                  color: workoutType === t ? '#a0f759' : '#6E6E76',
                   fontWeight: workoutType === t ? 600 : 400,
                 }}
               >
@@ -119,7 +119,7 @@ export default function FitnessSummary({ fitnessLog, workoutsThisWeek, userId }:
               onClick={logWorkout}
               disabled={logging}
               style={{
-                padding: '6px 14px', borderRadius: 6, background: '#A3D977', border: 'none',
+                padding: '6px 14px', borderRadius: 6, background: '#a0f759', border: 'none',
                 color: '#0A0A0C', fontSize: 11, fontWeight: 700, cursor: 'pointer',
                 opacity: logging ? 0.6 : 1,
               }}

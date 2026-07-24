@@ -25,11 +25,11 @@ const DOMAIN_NORMALIZE = (domain: string): string => {
 }
 
 const DISPLAY_META: Record<string, { color: string }> = {
-  'Fitness':              { color: '#7FD5AA' },
-  'Learning':             { color: '#80BDFF' },
-  'Meals':                { color: '#ECC666' },
-  'Planning & Execution': { color: '#B8A4FF' },
-  'Time Use':             { color: '#F5A56A' },
+  'Fitness':              { color: '#64f0aa' },
+  'Learning':             { color: '#61adff' },
+  'Meals':                { color: '#ffce53' },
+  'Planning & Execution': { color: '#a085ff' },
+  'Time Use':             { color: '#ffa360' },
 }
 
 function getMeta(displayDomain: string) {
@@ -69,7 +69,7 @@ function ConfidenceDots({ confidence }: { confidence: number }) {
           key={i}
           style={{
             width: 7, height: 7, borderRadius: '50%',
-            background: i <= confidence ? '#B8A4FF' : 'rgba(255,255,255,0.1)',
+            background: i <= confidence ? '#a085ff' : 'rgba(255,255,255,0.1)',
           }}
         />
       ))}
@@ -85,7 +85,7 @@ function ConfidenceRing({ pct }: { pct: number }) {
   const SZ = (R + SW) * 2 + 4
   const CIRC = 2 * Math.PI * R
   const offset = CIRC * (1 - pct / 100)
-  const color = pct >= 70 ? '#7FD5AA' : pct >= 45 ? '#ECC666' : '#F5A56A'
+  const color = pct >= 70 ? '#64f0aa' : pct >= 45 ? '#ffce53' : '#ffa360'
 
   return (
     <div style={{ position: 'relative', width: SZ, height: SZ }}>
@@ -199,8 +199,8 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
           {strongest.pattern}
         </div>
         {strongest.implication && (
-          <div style={{ marginTop: 8, padding: '7px 10px', background: 'rgba(184,164,255,0.07)', borderRadius: 8, border: '1px solid rgba(184,164,255,0.15)' }}>
-            <div style={{ fontSize: 11, color: '#B8A4FF', lineHeight: 1.5 }}>→ {strongest.implication}</div>
+          <div style={{ marginTop: 8, padding: '7px 10px', background: 'rgba(160, 133, 255,0.07)', borderRadius: 8, border: '1px solid rgba(160, 133, 255,0.15)' }}>
+            <div style={{ fontSize: 11, color: '#a085ff', lineHeight: 1.5 }}>→ {strongest.implication}</div>
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
@@ -255,7 +255,7 @@ function OperatingSnapshot({ patterns }: { patterns: Pattern[] }) {
 
 export default async function OperatingManualPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF9B87' }}>No user found</div>
+  if (!user) return <div style={{ color: '#ff8168' }}>No user found</div>
 
   const twoQuartersAgo = new Date()
   twoQuartersAgo.setMonth(twoQuartersAgo.getMonth() - 6)
@@ -289,8 +289,8 @@ export default async function OperatingManualPage() {
         <h1 style={{ fontSize: 24, fontWeight: 800, color: '#F5F5F7', letterSpacing: '-0.02em', marginBottom: 8 }}>
           Personal Operating Manual
         </h1>
-        <div className="card" style={{ background: 'rgba(236,198,102,0.07)', border: '1px solid rgba(236,198,102,0.25)' }}>
-          <p style={{ color: '#ECC666', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
+        <div className="card" style={{ background: 'rgba(255, 206, 83,0.07)', border: '1px solid rgba(255, 206, 83,0.25)' }}>
+          <p style={{ color: '#ffce53', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
             Database migration in progress
           </p>
           <p style={{ color: '#6E6E73', fontSize: 13 }}>

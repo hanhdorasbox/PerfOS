@@ -81,7 +81,7 @@ export default function TransactionReviewer({ statement, rules: _rules, userId: 
             </span>
           </h3>
           {reviewNeeded > 0 && (
-            <p style={{ color: '#ECC666', fontSize: 13, marginTop: 2 }}>
+            <p style={{ color: '#ffce53', fontSize: 13, marginTop: 2 }}>
               {reviewNeeded} need review
             </p>
           )}
@@ -92,8 +92,8 @@ export default function TransactionReviewer({ statement, rules: _rules, userId: 
               onClick={commitAll}
               disabled={committing}
               style={{
-                background: 'rgba(127,213,170,0.15)', border: '1px solid rgba(127,213,170,0.4)',
-                color: '#7FD5AA', padding: '7px 16px', borderRadius: 10,
+                background: 'rgba(100, 240, 170,0.15)', border: '1px solid rgba(100, 240, 170,0.4)',
+                color: '#64f0aa', padding: '7px 16px', borderRadius: 10,
                 fontSize: 13, fontWeight: 600, cursor: committing ? 'not-allowed' : 'pointer',
               }}
             >
@@ -105,8 +105,8 @@ export default function TransactionReviewer({ statement, rules: _rules, userId: 
               onClick={generateReport}
               disabled={generatingReport}
               style={{
-                background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.4)',
-                color: '#B8A4FF', padding: '7px 16px', borderRadius: 10,
+                background: 'rgba(160, 133, 255,0.15)', border: '1px solid rgba(160, 133, 255,0.4)',
+                color: '#a085ff', padding: '7px 16px', borderRadius: 10,
                 fontSize: 13, fontWeight: 600, cursor: generatingReport ? 'not-allowed' : 'pointer',
               }}
             >
@@ -116,7 +116,7 @@ export default function TransactionReviewer({ statement, rules: _rules, userId: 
         </div>
       </div>
 
-      {error && <p style={{ color: '#FF9B87', fontSize: 13, marginBottom: 12 }}>{error}</p>}
+      {error && <p style={{ color: '#ff8168', fontSize: 13, marginBottom: 12 }}>{error}</p>}
 
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
@@ -141,7 +141,7 @@ export default function TransactionReviewer({ statement, rules: _rules, userId: 
                 <tr
                   key={tx.id}
                   style={{
-                    background: isReview ? 'rgba(236,198,102,0.04)' : 'transparent',
+                    background: isReview ? 'rgba(255, 206, 83,0.04)' : 'transparent',
                     borderBottom: '1px solid rgba(255,255,255,0.04)',
                   }}
                 >
@@ -160,7 +160,7 @@ export default function TransactionReviewer({ statement, rules: _rules, userId: 
                   </td>
                   <td style={{
                     padding: '8px 10px', fontWeight: 600,
-                    color: tx.isIncoming ? '#7FD5AA' : '#F5F5F7',
+                    color: tx.isIncoming ? '#64f0aa' : '#F5F5F7',
                     whiteSpace: 'nowrap',
                   }}>
                     {tx.isIncoming ? '+' : ''}{tx.amount.toLocaleString('cs-CZ', { minimumFractionDigits: 2 })} {tx.currency}
@@ -182,7 +182,7 @@ export default function TransactionReviewer({ statement, rules: _rules, userId: 
                   </td>
                   <td style={{ padding: '8px 10px' }}>
                     {isReview && (
-                      <span style={{ color: '#ECC666', fontSize: 11, fontWeight: 700 }}>Review</span>
+                      <span style={{ color: '#ffce53', fontSize: 11, fontWeight: 700 }}>Review</span>
                     )}
                   </td>
                 </tr>

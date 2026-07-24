@@ -19,14 +19,14 @@ export default function QuarterOverview({
 }: Props) {
   const gap = weightedCompletion - qProgress.pct
   const onTrack = gap >= -5 && atRiskCount === 0
-  const statusColor = onTrack ? '#7FD5AA' : '#DDB96A'
+  const statusColor = onTrack ? '#64f0aa' : '#ffc648'
   const weeksRemaining = Math.ceil(qProgress.daysRemaining / 7)
   const tasksPct = tasksTotal > 0 ? (tasksDone / tasksTotal) * 100 : 0
 
   const rings = [
     { pct: weightedCompletion, color: statusColor, label: 'Goals', value: `${Math.round(weightedCompletion)}%` },
-    { pct: qProgress.pct, color: '#80BDFF', label: 'Quarter elapsed', value: `${Math.round(qProgress.pct)}%` },
-    { pct: tasksPct, color: '#B8A4FF', label: 'Week tasks', value: tasksTotal > 0 ? `${tasksDone}/${tasksTotal}` : '—' },
+    { pct: qProgress.pct, color: '#61adff', label: 'Quarter elapsed', value: `${Math.round(qProgress.pct)}%` },
+    { pct: tasksPct, color: '#a085ff', label: 'Week tasks', value: tasksTotal > 0 ? `${tasksDone}/${tasksTotal}` : '—' },
   ]
 
   return (
@@ -71,7 +71,7 @@ export default function QuarterOverview({
               <StatItem
                 label="Progress gap"
                 value={`${gap >= 0 ? '+' : ''}${Math.round(gap)}%`}
-                valueColor={gap >= 0 ? '#7FD5AA' : '#DDB96A'}
+                valueColor={gap >= 0 ? '#64f0aa' : '#ffc648'}
               />
             </div>
           </div>
@@ -91,22 +91,22 @@ export default function QuarterOverview({
           <div style={{
             fontSize: 13, color: '#9E9EA6', lineHeight: 1.55,
             padding: '9px 13px',
-            background: onTrack ? 'rgba(127,213,170,0.06)' : 'rgba(221,185,106,0.06)',
+            background: onTrack ? 'rgba(100, 240, 170,0.06)' : 'rgba(255, 198, 72,0.06)',
             borderRadius: 12,
-            border: `1px solid ${onTrack ? 'rgba(127,213,170,0.15)' : 'rgba(221,185,106,0.15)'}`,
+            border: `1px solid ${onTrack ? 'rgba(100, 240, 170,0.15)' : 'rgba(255, 198, 72,0.15)'}`,
           }}>
             {Math.round(qProgress.pct)}% of quarter elapsed.{' '}
             {onTrack
-              ? <span style={{ color: '#7FD5AA', fontWeight: 600 }}>On track.</span>
-              : <span style={{ color: '#DDB96A', fontWeight: 600 }}>
+              ? <span style={{ color: '#64f0aa', fontWeight: 600 }}>On track.</span>
+              : <span style={{ color: '#ffc648', fontWeight: 600 }}>
                   Behind by {Math.round(Math.abs(gap))}%.
                 </span>
             }
             {atRiskCount > 0 && (
-              <span style={{ color: '#E8907A', fontWeight: 600 }}> · {atRiskCount} {atRiskCount === 1 ? 'goal at risk' : 'goals at risk'}.</span>
+              <span style={{ color: '#ff8263', fontWeight: 600 }}> · {atRiskCount} {atRiskCount === 1 ? 'goal at risk' : 'goals at risk'}.</span>
             )}
             {watchCount > 0 && atRiskCount === 0 && (
-              <span style={{ color: '#DDB96A' }}> · {watchCount} {watchCount === 1 ? 'goal' : 'goals'} to watch.</span>
+              <span style={{ color: '#ffc648' }}> · {watchCount} {watchCount === 1 ? 'goal' : 'goals'} to watch.</span>
             )}
           </div>
         </div>

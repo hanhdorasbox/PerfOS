@@ -8,16 +8,16 @@ const SZ = 5 // base pixel size
 const COLOR: Record<string, string> = {
   H: '#0E0C0A', // very dark hair (near-black)
   m: '#4A3208', // mid ombre (dark brown)
-  b: '#9B6C14', // dark blonde
-  l: '#C99A2E', // golden blonde
-  f: '#D4946A', // skin
-  n: '#BF7850', // neck / shadow skin
-  s: '#A86438', // deep skin shadow
+  b: '#af7200', // dark blonde
+  l: '#f7ac00', // golden blonde
+  f: '#f58d49', // skin
+  n: '#e46e2b', // neck / shadow skin
+  s: '#cc5c14', // deep skin shadow
   e: '#261404', // eyebrow / lash
   y: '#1C0A02', // eye pupil
-  w: '#EDE4C8', // eye white
-  p: '#C47878', // upper lip
-  P: '#A85858', // lower lip / shadow
+  w: '#f6e1a0', // eye white
+  p: '#df5d5d', // upper lip
+  P: '#c73939', // lower lip / shadow
   C: '#1E2D4A', // clothing dark navy
   c: '#2B3F68', // clothing mid
 }

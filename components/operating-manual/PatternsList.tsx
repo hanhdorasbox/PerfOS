@@ -27,7 +27,7 @@ function ConfidenceDots({ confidence }: { confidence: number }) {
           key={i}
           style={{
             width: 7, height: 7, borderRadius: '50%',
-            background: i <= confidence ? '#B8A4FF' : 'rgba(255,255,255,0.1)',
+            background: i <= confidence ? '#a085ff' : 'rgba(255,255,255,0.1)',
           }}
         />
       ))}

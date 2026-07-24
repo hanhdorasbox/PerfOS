@@ -157,9 +157,9 @@ export default function BodyMetricLogger({ userId, logs: initLogs }: Props) {
               type="submit"
               disabled={saving || (!waist && !hip)}
               style={{
-                background: 'rgba(127,213,170,0.12)',
-                border: '1px solid rgba(127,213,170,0.3)',
-                color: '#7FD5AA',
+                background: 'rgba(100, 240, 170,0.12)',
+                border: '1px solid rgba(100, 240, 170,0.3)',
+                color: '#64f0aa',
                 borderRadius: 8,
                 padding: '8px 18px',
                 fontSize: 13,
@@ -174,7 +174,7 @@ export default function BodyMetricLogger({ userId, logs: initLogs }: Props) {
           </div>
 
           {msg && (
-            <div style={{ marginTop: 8, fontSize: 12, color: msgIsError ? '#FF9B87' : '#7FD5AA' }}>
+            <div style={{ marginTop: 8, fontSize: 12, color: msgIsError ? '#ff8168' : '#64f0aa' }}>
               {msg}
             </div>
           )}

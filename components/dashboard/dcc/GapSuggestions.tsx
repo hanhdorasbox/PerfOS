@@ -94,15 +94,15 @@ export default function GapSuggestions({
   return (
     <div style={{
       marginBottom: 12, padding: '10px 12px', borderRadius: 12,
-      background: 'rgba(128,189,255,0.04)', border: '1px solid rgba(128,189,255,0.12)',
+      background: 'rgba(97, 173, 255,0.04)', border: '1px solid rgba(97, 173, 255,0.12)',
     }}>
-      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#80BDFF', marginBottom: 8, opacity: 0.85 }}>
+      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#61adff', marginBottom: 8, opacity: 0.85 }}>
         Fits your day
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {suggestions.map(({ gapStart, gapEnd, task }) => (
           <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#80BDFF', fontVariantNumeric: 'tabular-nums', flexShrink: 0, minWidth: 88 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: '#61adff', fontVariantNumeric: 'tabular-nums', flexShrink: 0, minWidth: 88 }}>
               {minToTimeStr(gapStart)} – {minToTimeStr(gapEnd)}
             </span>
             <span style={{
@@ -118,8 +118,8 @@ export default function GapSuggestions({
               onClick={() => onFocusTask(task)}
               title="Start Focus Mode with this task"
               style={{
-                fontSize: 10, fontWeight: 600, color: '#B8A4FF', flexShrink: 0,
-                background: 'rgba(184,164,255,0.08)', border: '1px solid rgba(184,164,255,0.2)',
+                fontSize: 10, fontWeight: 600, color: '#a085ff', flexShrink: 0,
+                background: 'rgba(160, 133, 255,0.08)', border: '1px solid rgba(160, 133, 255,0.2)',
                 borderRadius: 6, padding: '2px 9px', cursor: 'pointer',
               }}
             >

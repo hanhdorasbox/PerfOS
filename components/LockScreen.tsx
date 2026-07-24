@@ -101,9 +101,9 @@ export default function LockScreen({ next }: { next: string }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            border: '1px solid rgba(201,169,97,0.35)',
-            background: 'rgba(201,169,97,0.08)',
-            color: '#C9A961',
+            border: '1px solid rgba(235, 182, 63,0.35)',
+            background: 'rgba(235, 182, 63,0.08)',
+            color: '#ebb63f',
           }}
         >
           <Lock size={22} strokeWidth={1.8} />
@@ -129,8 +129,8 @@ export default function LockScreen({ next }: { next: string }) {
                 width: 12,
                 height: 12,
                 borderRadius: '50%',
-                background: i < pin.length ? '#C9A961' : 'transparent',
-                border: '1px solid ' + (i < pin.length ? '#C9A961' : 'rgba(255,255,255,0.18)'),
+                background: i < pin.length ? '#ebb63f' : 'transparent',
+                border: '1px solid ' + (i < pin.length ? '#ebb63f' : 'rgba(255,255,255,0.18)'),
                 transition: 'background 0.1s',
               }}
             />
@@ -166,9 +166,9 @@ export default function LockScreen({ next }: { next: string }) {
         style={{
           padding: '11px 30px',
           borderRadius: 12,
-          border: '1px solid rgba(201,169,97,0.35)',
-          background: pin.length > 0 ? 'rgba(201,169,97,0.12)' : 'transparent',
-          color: '#C9A961',
+          border: '1px solid rgba(235, 182, 63,0.35)',
+          background: pin.length > 0 ? 'rgba(235, 182, 63,0.12)' : 'transparent',
+          color: '#ebb63f',
           fontSize: 15,
           fontWeight: 600,
           opacity: pin.length === 0 || busy ? 0.4 : 1,

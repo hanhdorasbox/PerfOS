@@ -122,7 +122,7 @@ export default function CommandPalette() {
             placeholder="Go to…"
             style={{
               flex: 1, background: 'none', border: 'none', outline: 'none',
-              fontSize: 15, color: '#EEEEF2', caretColor: '#80BDFF',
+              fontSize: 15, color: '#EEEEF2', caretColor: '#61adff',
             }}
           />
           <kbd style={{ fontSize: 10, color: '#52525A', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 5, padding: '2px 6px' }}>esc</kbd>
@@ -146,11 +146,11 @@ export default function CommandPalette() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10, width: '100%',
                   padding: '9px 12px', borderRadius: 10, border: 'none', cursor: 'pointer',
-                  background: isActive ? 'rgba(128,189,255,0.10)' : 'transparent',
+                  background: isActive ? 'rgba(97, 173, 255,0.10)' : 'transparent',
                   textAlign: 'left', transition: 'background 0.08s',
                 }}
               >
-                {Icon && <Icon size={14} strokeWidth={1.7} color={isActive ? '#80BDFF' : '#6E6E76'} style={{ flexShrink: 0 }} />}
+                {Icon && <Icon size={14} strokeWidth={1.7} color={isActive ? '#61adff' : '#6E6E76'} style={{ flexShrink: 0 }} />}
                 <span style={{ fontSize: 13, color: isActive ? '#EEEEF2' : '#9E9EA6', flex: 1 }}>{item.label}</span>
                 <span style={{ fontSize: 10, color: '#52525A' }}>{item.group}</span>
                 {isActive && <CornerDownLeft size={11} color="#52525A" strokeWidth={2} />}

@@ -3,10 +3,10 @@ import type { Idea } from '@prisma/client'
 import IdeaCard from './IdeaCard'
 
 const COLUMNS: { status: string; label: string; color: string }[] = [
-  { status: 'inbox', label: 'Inbox', color: '#ECC666' },
-  { status: 'worth_exploring', label: 'Worth Exploring', color: '#7FD5AA' },
+  { status: 'inbox', label: 'Inbox', color: '#ffce53' },
+  { status: 'worth_exploring', label: 'Worth Exploring', color: '#64f0aa' },
   { status: 'hold', label: 'Hold', color: '#6E6E73' },
-  { status: 'convert_to_goal', label: 'Convert / Archive', color: '#B8A4FF' },
+  { status: 'convert_to_goal', label: 'Convert / Archive', color: '#a085ff' },
 ]
 
 interface Props {

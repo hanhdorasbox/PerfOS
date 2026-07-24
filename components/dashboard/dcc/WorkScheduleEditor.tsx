@@ -52,9 +52,9 @@ export default function WorkScheduleEditor({
                 onClick={() => setDay(day, val ? null : { start: 9 * 60, end: 17 * 60 })}
                 style={{
                   fontSize: 10, padding: '2px 9px', borderRadius: 12, cursor: 'pointer',
-                  border: `1px solid ${val ? 'rgba(128,189,255,0.25)' : 'rgba(255,255,255,0.08)'}`,
-                  background: val ? 'rgba(128,189,255,0.10)' : 'rgba(255,255,255,0.03)',
-                  color: val ? '#80BDFF' : '#6E6E76',
+                  border: `1px solid ${val ? 'rgba(97, 173, 255,0.25)' : 'rgba(255,255,255,0.08)'}`,
+                  background: val ? 'rgba(97, 173, 255,0.10)' : 'rgba(255,255,255,0.03)',
+                  color: val ? '#61adff' : '#6E6E76',
                 }}
               >
                 {val ? 'Work' : 'Off'}

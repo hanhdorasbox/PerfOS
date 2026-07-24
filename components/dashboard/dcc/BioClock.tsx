@@ -12,12 +12,12 @@ function toPct(h: number, m = 0) {
 }
 
 const BIO_ZONES = [
-  { start: 7,  end: 9,  accent: '#C8A06A', label: 'Ramp Up',    bestFor: 'Light tasks, admin, morning routine' },
-  { start: 9,  end: 12, accent: '#5EAA88', label: 'Peak Focus', bestFor: 'Deep work, complex decisions, writing' },
+  { start: 7,  end: 9,  accent: '#e7a54b', label: 'Ramp Up',    bestFor: 'Light tasks, admin, morning routine' },
+  { start: 9,  end: 12, accent: '#40c88b', label: 'Peak Focus', bestFor: 'Deep work, complex decisions, writing' },
   { start: 12, end: 14, accent: '#6E6E76', label: 'Low Tide',   bestFor: 'Lunch, light reading, short breaks' },
-  { start: 14, end: 17, accent: '#5E94BB', label: '2nd Wind',   bestFor: 'Collaboration, calls, creative work' },
-  { start: 17, end: 20, accent: '#C8906A', label: 'Wind Down',  bestFor: 'Review, planning, low-intensity work' },
-  { start: 20, end: 22, accent: '#8E80C4', label: 'Recovery',   bestFor: 'Rest, reading, reflection' },
+  { start: 14, end: 17, accent: '#3e99db', label: '2nd Wind',   bestFor: 'Collaboration, calls, creative work' },
+  { start: 17, end: 20, accent: '#e78a4b', label: 'Wind Down',  bestFor: 'Review, planning, low-intensity work' },
+  { start: 20, end: 22, accent: '#7f67dd', label: 'Recovery',   bestFor: 'Rest, reading, reflection' },
 ]
 
 export default function BioClock() {

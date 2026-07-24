@@ -13,18 +13,18 @@ import { getOrCreateYearQuarters, currentYearAndQuarter, quarterDates } from '@/
 export const dynamic = 'force-dynamic'
 
 const STATUS_META: Record<string, { label: string; color: string; dot: string }> = {
-  active:  { label: 'Active',   color: '#7FD5AA', dot: '#7FD5AA' },
-  planned: { label: 'Planned',  color: '#80BDFF', dot: '#80BDFF' },
+  active:  { label: 'Active',   color: '#64f0aa', dot: '#64f0aa' },
+  planned: { label: 'Planned',  color: '#61adff', dot: '#61adff' },
   closed:  { label: 'Closed',   color: '#6E6E73', dot: '#6E6E73' },
 }
 
 const ROLE_META: Record<string, { color: string }> = {
-  career_capital: { color: '#B8A4FF' },
-  learning:       { color: '#80BDFF' },
-  fitness:        { color: '#7FD5AA' },
-  finance:        { color: '#ECC666' },
-  high_upside_bet:{ color: '#F5A56A' },
-  long_term:      { color: '#80BDFF' },
+  career_capital: { color: '#a085ff' },
+  learning:       { color: '#61adff' },
+  fitness:        { color: '#64f0aa' },
+  finance:        { color: '#ffce53' },
+  high_upside_bet:{ color: '#ffa360' },
+  long_term:      { color: '#61adff' },
 }
 
 export default async function QuarterlyPage({
@@ -38,7 +38,7 @@ export default async function QuarterlyPage({
   const qNum = parseInt(sp.q   ?? String(now.qNum))
 
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF9B87', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#ff8168', padding: 40 }}>No user found.</div>
 
   // Ensure all 4 quarters exist for the selected year (upgrades legacy quarters)
   const yearQuarters = await getOrCreateYearQuarters(user.id, year)
@@ -79,7 +79,7 @@ export default async function QuarterlyPage({
   const weightedCompletion = totalWeight > 0 ? goalsWithMetrics.reduce((s, g) => s + g.progressPct * g.priorityWeight, 0) / totalWeight : 0
   const expectedPct        = qProgress?.pct ?? 0
   const gap                = weightedCompletion - expectedPct
-  const gapColor           = gap >= 0 ? '#7FD5AA' : gap >= -10 ? '#ECC666' : '#FF9B87'
+  const gapColor           = gap >= 0 ? '#64f0aa' : gap >= -10 ? '#ffce53' : '#ff8168'
 
   const onTrackCount  = goalsWithMetrics.filter(g => ['ahead', 'on_track', 'completed'].includes(g.metrics.status)).length
   const watchCount    = goalsWithMetrics.filter(g => g.metrics.status === 'watch').length
@@ -88,9 +88,9 @@ export default async function QuarterlyPage({
 
   const portfolioBuckets = [
     { label: 'Core Commitments',   color: '#F5F5F7', goals: goalsWithMetrics.filter(g => !g.strategicRole || g.strategicRole === 'long_term') },
-    { label: 'Growth Investments',  color: '#B8A4FF', goals: goalsWithMetrics.filter(g => g.strategicRole === 'career_capital' || g.strategicRole === 'learning') },
-    { label: 'High-Upside Bets',    color: '#F5A56A', goals: goalsWithMetrics.filter(g => g.strategicRole === 'high_upside_bet') },
-    { label: 'Maintenance Systems', color: '#7FD5AA', goals: goalsWithMetrics.filter(g => g.strategicRole === 'fitness' || g.strategicRole === 'finance') },
+    { label: 'Growth Investments',  color: '#a085ff', goals: goalsWithMetrics.filter(g => g.strategicRole === 'career_capital' || g.strategicRole === 'learning') },
+    { label: 'High-Upside Bets',    color: '#ffa360', goals: goalsWithMetrics.filter(g => g.strategicRole === 'high_upside_bet') },
+    { label: 'Maintenance Systems', color: '#64f0aa', goals: goalsWithMetrics.filter(g => g.strategicRole === 'fitness' || g.strategicRole === 'finance') },
   ]
 
   // All quarters available to GoalManager for cross-quarter goal assignment
@@ -203,12 +203,12 @@ export default async function QuarterlyPage({
       {isPlanned && (
         <div style={{
           padding: '14px 18px', borderRadius: 10,
-          background: 'rgba(128,189,255,0.08)', border: '1px solid rgba(128,189,255,0.2)',
+          background: 'rgba(97, 173, 255,0.08)', border: '1px solid rgba(97, 173, 255,0.2)',
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#80BDFF', flexShrink: 0 }} />
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#61adff', flexShrink: 0 }} />
           <div>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#80BDFF' }}>Planning Mode</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#61adff' }}>Planning Mode</span>
             <span style={{ fontSize: 13, color: '#A1A1A6', marginLeft: 8 }}>
               Goals activate automatically on {activatesOn}.
               They will not appear in the current dashboard or weekly tasks until then.
@@ -233,11 +233,11 @@ export default async function QuarterlyPage({
       {showPreQuarterWarning && (
         <div style={{
           padding: '14px 18px', borderRadius: 10,
-          background: 'rgba(236,198,102,0.08)', border: '1px solid rgba(236,198,102,0.25)',
+          background: 'rgba(255, 206, 83,0.08)', border: '1px solid rgba(255, 206, 83,0.25)',
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ECC666', flexShrink: 0 }} />
-          <span style={{ fontSize: 13, color: '#ECC666', fontWeight: 600 }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ffce53', flexShrink: 0 }} />
+          <span style={{ fontSize: 13, color: '#ffce53', fontWeight: 600 }}>
             Q{selectedQ.quarterNumber} starts in {daysUntilStart} day{daysUntilStart === 1 ? '' : 's'}.
           </span>
           <span style={{ fontSize: 13, color: '#A1A1A6' }}>Review your planned goals before it activates.</span>
@@ -268,10 +268,10 @@ export default async function QuarterlyPage({
             <>
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
                 {[
-                  { label: 'On Track', count: onTrackCount, color: '#7FD5AA', bg: 'rgba(127,213,170,0.1)' },
-                  { label: 'Watch',    count: watchCount,   color: '#ECC666', bg: 'rgba(236,198,102,0.1)' },
-                  { label: 'At Risk',  count: atRiskCount,  color: '#F5A56A', bg: 'rgba(255,159,107,0.1)' },
-                  { label: 'Critical', count: criticalCount,color: '#FF9B87', bg: 'rgba(255,155,135,0.1)' },
+                  { label: 'On Track', count: onTrackCount, color: '#64f0aa', bg: 'rgba(100, 240, 170,0.1)' },
+                  { label: 'Watch',    count: watchCount,   color: '#ffce53', bg: 'rgba(255, 206, 83,0.1)' },
+                  { label: 'At Risk',  count: atRiskCount,  color: '#ffa360', bg: 'rgba(255, 159, 107,0.1)' },
+                  { label: 'Critical', count: criticalCount,color: '#ff8168', bg: 'rgba(255, 129, 104,0.1)' },
                 ].map(s => (
                   <div key={s.label} style={{
                     display: 'flex', alignItems: 'center', gap: 6,
@@ -302,7 +302,7 @@ export default async function QuarterlyPage({
           </div>
           <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
             {[
-              { label: 'Goals Planned', value: String(goalsWithMetrics.length), color: '#80BDFF' },
+              { label: 'Goals Planned', value: String(goalsWithMetrics.length), color: '#61adff' },
               { label: 'Activates', value: activatesOn ?? '—', color: '#F5F5F7', small: true },
               { label: 'Days Until Start', value: daysUntilStart != null ? `${daysUntilStart}d` : '—', color: '#A1A1A6' },
             ].map(s => (

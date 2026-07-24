@@ -97,7 +97,7 @@ export default function TrajectorySetup({ userId }: { userId: string }) {
         {[1, 2, 3].map(s => (
           <div key={s} style={{
             flex: 1, height: 4, borderRadius: 2,
-            background: s <= step ? '#B8A4FF' : 'rgba(255,255,255,0.1)',
+            background: s <= step ? '#a085ff' : 'rgba(255,255,255,0.1)',
           }} />
         ))}
       </div>
@@ -127,8 +127,8 @@ export default function TrajectorySetup({ userId }: { userId: string }) {
             onClick={() => setStep(2)}
             disabled={!currentRole.trim()}
             style={{
-              marginTop: 18, background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.4)',
-              color: '#B8A4FF', padding: '8px 20px', borderRadius: 10,
+              marginTop: 18, background: 'rgba(160, 133, 255,0.15)', border: '1px solid rgba(160, 133, 255,0.4)',
+              color: '#a085ff', padding: '8px 20px', borderRadius: 10,
               fontSize: 13, fontWeight: 600, cursor: !currentRole.trim() ? 'not-allowed' : 'pointer',
             }}
           >
@@ -168,15 +168,15 @@ export default function TrajectorySetup({ userId }: { userId: string }) {
               onClick={analyzeGaps}
               disabled={analyzingGaps}
               style={{
-                background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.4)',
-                color: '#B8A4FF', padding: '8px 20px', borderRadius: 10,
+                background: 'rgba(160, 133, 255,0.15)', border: '1px solid rgba(160, 133, 255,0.4)',
+                color: '#a085ff', padding: '8px 20px', borderRadius: 10,
                 fontSize: 13, fontWeight: 600, cursor: analyzingGaps ? 'not-allowed' : 'pointer',
               }}
             >
               {analyzingGaps ? 'Analyzing gaps...' : 'AI Gap Analysis →'}
             </button>
           </div>
-          {error && <p style={{ color: '#FF9B87', fontSize: 13, marginTop: 8 }}>{error}</p>}
+          {error && <p style={{ color: '#ff8168', fontSize: 13, marginTop: 8 }}>{error}</p>}
         </div>
       )}
 
@@ -193,13 +193,13 @@ export default function TrajectorySetup({ userId }: { userId: string }) {
             <div key={i} className="card" style={{ marginBottom: 10 }}>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
                 <span style={{
-                  background: 'rgba(184,164,255,0.12)', color: '#B8A4FF',
-                  border: '1px solid rgba(184,164,255,0.25)',
+                  background: 'rgba(160, 133, 255,0.12)', color: '#a085ff',
+                  border: '1px solid rgba(160, 133, 255,0.25)',
                   padding: '2px 8px', borderRadius: 999, fontSize: 11, fontWeight: 700,
                 }}>
                   {gap.gapType}
                 </span>
-                <span style={{ color: gap.priority === 1 ? '#FF9B87' : gap.priority === 2 ? '#ECC666' : '#6E6E73', fontSize: 12, fontWeight: 600 }}>
+                <span style={{ color: gap.priority === 1 ? '#ff8168' : gap.priority === 2 ? '#ffce53' : '#6E6E73', fontSize: 12, fontWeight: 600 }}>
                   {gap.priority === 1 ? 'High' : gap.priority === 2 ? 'Medium' : 'Low'} priority
                 </span>
               </div>
@@ -214,15 +214,15 @@ export default function TrajectorySetup({ userId }: { userId: string }) {
               onClick={saveTrajectory}
               disabled={loading}
               style={{
-                background: 'rgba(127,213,170,0.15)', border: '1px solid rgba(127,213,170,0.4)',
-                color: '#7FD5AA', padding: '8px 20px', borderRadius: 10,
+                background: 'rgba(100, 240, 170,0.15)', border: '1px solid rgba(100, 240, 170,0.4)',
+                color: '#64f0aa', padding: '8px 20px', borderRadius: 10,
                 fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
               }}
             >
               {loading ? 'Saving...' : 'Save Trajectory'}
             </button>
           </div>
-          {error && <p style={{ color: '#FF9B87', fontSize: 13, marginTop: 8 }}>{error}</p>}
+          {error && <p style={{ color: '#ff8168', fontSize: 13, marginTop: 8 }}>{error}</p>}
         </div>
       )}
     </div>

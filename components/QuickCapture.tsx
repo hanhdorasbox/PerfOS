@@ -75,19 +75,19 @@ export default function QuickCapture({ userId }: Props) {
         style={{
           position: 'fixed', bottom: 28, right: 28, zIndex: 200,
           width: 50, height: 50, borderRadius: '50%',
-          background: '#B8A4FF', border: 'none', cursor: 'pointer',
+          background: '#a085ff', border: 'none', cursor: 'pointer',
           fontSize: 26, fontWeight: 300, color: '#0A0A0C',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(184,164,255,0.45)',
+          boxShadow: '0 4px 20px rgba(160, 133, 255,0.45)',
           lineHeight: 1, transition: 'transform 0.12s, box-shadow 0.12s',
         }}
         onMouseEnter={e => {
           e.currentTarget.style.transform = 'scale(1.08)'
-          e.currentTarget.style.boxShadow = '0 6px 28px rgba(184,164,255,0.6)'
+          e.currentTarget.style.boxShadow = '0 6px 28px rgba(160, 133, 255,0.6)'
         }}
         onMouseLeave={e => {
           e.currentTarget.style.transform = 'scale(1)'
-          e.currentTarget.style.boxShadow = '0 4px 20px rgba(184,164,255,0.45)'
+          e.currentTarget.style.boxShadow = '0 4px 20px rgba(160, 133, 255,0.45)'
         }}
       >
         +
@@ -115,9 +115,9 @@ export default function QuickCapture({ userId }: Props) {
                 <button key={m} onClick={() => setMode(m)}
                   style={{
                     flex: 1, padding: '7px 0', borderRadius: 8, cursor: 'pointer',
-                    border: mode === m ? '1px solid rgba(184,164,255,0.45)' : '1px solid rgba(255,255,255,0.07)',
-                    background: mode === m ? 'rgba(184,164,255,0.12)' : 'transparent',
-                    color: mode === m ? '#B8A4FF' : '#6E6E73',
+                    border: mode === m ? '1px solid rgba(160, 133, 255,0.45)' : '1px solid rgba(255,255,255,0.07)',
+                    background: mode === m ? 'rgba(160, 133, 255,0.12)' : 'transparent',
+                    color: mode === m ? '#a085ff' : '#6E6E73',
                     fontSize: 12, fontWeight: 600, letterSpacing: '0.02em',
                   }}>
                   {m === 'task' ? '✓ Task' : '💡 Idea'}
@@ -150,9 +150,9 @@ export default function QuickCapture({ userId }: Props) {
                       <button key={p} onClick={() => setPriority(p)}
                         style={{
                           flex: 1, padding: '5px 0', borderRadius: 5, cursor: 'pointer', fontSize: 9, fontWeight: 700,
-                          border: priority === p ? '1px solid rgba(255,155,135,0.45)' : '1px solid rgba(255,255,255,0.06)',
-                          background: priority === p ? 'rgba(255,155,135,0.12)' : 'transparent',
-                          color: priority === p ? '#FF9B87' : '#52525A',
+                          border: priority === p ? '1px solid rgba(255, 129, 104,0.45)' : '1px solid rgba(255,255,255,0.06)',
+                          background: priority === p ? 'rgba(255, 129, 104,0.12)' : 'transparent',
+                          color: priority === p ? '#ff8168' : '#52525A',
                         }}>
                         {p === 'must' ? 'Must' : p === 'should' ? 'Should' : 'Opt'}
                       </button>
@@ -166,9 +166,9 @@ export default function QuickCapture({ userId }: Props) {
                       <button key={e} onClick={() => setEffort(e)}
                         style={{
                           flex: 1, padding: '5px 0', borderRadius: 5, cursor: 'pointer', fontSize: 9, fontWeight: 700,
-                          border: effort === e ? '1px solid rgba(184,164,255,0.45)' : '1px solid rgba(255,255,255,0.06)',
-                          background: effort === e ? 'rgba(184,164,255,0.12)' : 'transparent',
-                          color: effort === e ? '#B8A4FF' : '#52525A',
+                          border: effort === e ? '1px solid rgba(160, 133, 255,0.45)' : '1px solid rgba(255,255,255,0.06)',
+                          background: effort === e ? 'rgba(160, 133, 255,0.12)' : 'transparent',
+                          color: effort === e ? '#a085ff' : '#52525A',
                         }}>
                         {e === 'low' ? '~15m' : e === 'medium' ? '~25m' : '~45m'}
                       </button>
@@ -184,7 +184,7 @@ export default function QuickCapture({ userId }: Props) {
               disabled={loading || !title.trim()}
               style={{
                 width: '100%', marginTop: 14, padding: '10px 0', borderRadius: 9,
-                background: saved ? '#7FD5AA' : title.trim() ? '#B8A4FF' : 'rgba(184,164,255,0.25)',
+                background: saved ? '#64f0aa' : title.trim() ? '#a085ff' : 'rgba(160, 133, 255,0.25)',
                 border: 'none', cursor: !title.trim() ? 'default' : 'pointer',
                 color: '#0A0A0C', fontSize: 13, fontWeight: 700,
                 transition: 'background 0.2s',

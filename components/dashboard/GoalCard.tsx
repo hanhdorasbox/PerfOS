@@ -12,18 +12,18 @@ interface Props {
 }
 
 const statusColors: Record<string, string> = {
-  ahead:     '#7FD5AA',
-  on_track:  '#80BDFF',
-  watch:     '#DDB96A',
-  at_risk:   '#E8966A',
-  critical:  '#E8907A',
-  completed: '#7FD5AA',
+  ahead:     '#64f0aa',
+  on_track:  '#61adff',
+  watch:     '#ffc648',
+  at_risk:   '#ff8f53',
+  critical:  '#ff8263',
+  completed: '#64f0aa',
 }
 
 // Progress fill color: blue as default, status color only for off-track states
 function progressColor(status: string): string {
-  if (status === 'ahead' || status === 'on_track' || status === 'completed') return '#80BDFF'
-  return statusColors[status] ?? '#80BDFF'
+  if (status === 'ahead' || status === 'on_track' || status === 'completed') return '#61adff'
+  return statusColors[status] ?? '#61adff'
 }
 
 export default function GoalCard({ goal, metrics }: Props) {
@@ -36,7 +36,7 @@ export default function GoalCard({ goal, metrics }: Props) {
   const daysUntilDeadline = goal.deadline ? Math.ceil((new Date(goal.deadline).getTime() - Date.now()) / (24 * 60 * 60 * 1000)) : null
   const isDeadlineSoon = daysUntilDeadline !== null && daysUntilDeadline < 3
   const isDeadlineCritical = daysUntilDeadline !== null && daysUntilDeadline < 1
-  const deadlineColor = isDeadlineCritical ? '#E8907A' : isDeadlineSoon ? '#DDB96A' : undefined
+  const deadlineColor = isDeadlineCritical ? '#ff8263' : isDeadlineSoon ? '#ffc648' : undefined
 
   // H8: inline quick-log for QUANTITATIVE goals
   const [logOpen, setLogOpen]   = useState(false)
@@ -100,7 +100,7 @@ export default function GoalCard({ goal, metrics }: Props) {
       {hasNoData && (
         <div style={{ marginBottom: 14, padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.07)' }}>
           <span style={{ fontSize: 12, color: '#6E6E76' }}>No data logged yet — </span>
-          <button onClick={() => setLogOpen(v => !v)} style={{ fontSize: 12, color: '#B8A4FF', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
+          <button onClick={() => setLogOpen(v => !v)} style={{ fontSize: 12, color: '#a085ff', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
             log first value
           </button>
         </div>
@@ -136,7 +136,7 @@ export default function GoalCard({ goal, metrics }: Props) {
           </div>
           <div style={{
             fontSize: 12, fontWeight: 500, marginTop: 3,
-            color: metrics.gap >= 0 ? '#7FD5AA' : '#E8907A',
+            color: metrics.gap >= 0 ? '#64f0aa' : '#ff8263',
           }}>
             {metrics.gap >= 0 ? '+' : ''}{Math.round(metrics.gap)}%
           </div>
@@ -202,7 +202,7 @@ export default function GoalCard({ goal, metrics }: Props) {
         <div style={{ marginTop: 10, fontSize: 12, color: '#52525A' }}>
           Forecast{' '}
           <span style={{
-            color: metrics.forecastedCompletionDate > new Date(goal.deadline) ? '#E8907A' : '#7FD5AA',
+            color: metrics.forecastedCompletionDate > new Date(goal.deadline) ? '#ff8263' : '#64f0aa',
             fontWeight: 500,
           }}>
             {metrics.forecastedCompletionDate.toLocaleDateString('cs-CZ', { month: 'short', day: 'numeric' })}
@@ -218,7 +218,7 @@ export default function GoalCard({ goal, metrics }: Props) {
       {goal.trackingType === 'QUANTITATIVE' && (
         <div style={{ marginTop: 12 }}>
           {!logOpen ? (
-            <button onClick={() => setLogOpen(true)} style={{ fontSize: 11, color: '#B8A4FF', background: 'none', border: '1px dashed rgba(184,164,255,0.3)', borderRadius: 6, padding: '4px 12px', cursor: 'pointer', width: '100%' }}>
+            <button onClick={() => setLogOpen(true)} style={{ fontSize: 11, color: '#a085ff', background: 'none', border: '1px dashed rgba(160, 133, 255,0.3)', borderRadius: 6, padding: '4px 12px', cursor: 'pointer', width: '100%' }}>
               + Log Progress
             </button>
           ) : (
@@ -230,9 +230,9 @@ export default function GoalCard({ goal, metrics }: Props) {
                 onKeyDown={e => e.key === 'Enter' && quickLog()}
                 placeholder={`New value${goal.unit ? ` (${goal.unit})` : ''}`}
                 autoFocus
-                style={{ flex: 1, padding: '6px 10px', borderRadius: 7, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(184,164,255,0.3)', color: '#EEEEF2', fontSize: 13, outline: 'none' }}
+                style={{ flex: 1, padding: '6px 10px', borderRadius: 7, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(160, 133, 255,0.3)', color: '#EEEEF2', fontSize: 13, outline: 'none' }}
               />
-              <button onClick={quickLog} disabled={logSaving || !logValue.trim()} style={{ padding: '6px 14px', borderRadius: 7, background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.35)', color: '#B8A4FF', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+              <button onClick={quickLog} disabled={logSaving || !logValue.trim()} style={{ padding: '6px 14px', borderRadius: 7, background: 'rgba(160, 133, 255,0.15)', border: '1px solid rgba(160, 133, 255,0.35)', color: '#a085ff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
                 {logSaving ? '…' : 'Save'}
               </button>
               <button onClick={() => setLogOpen(false)} style={{ padding: '6px 10px', borderRadius: 7, background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E76', fontSize: 12, cursor: 'pointer' }}>✕</button>
@@ -257,8 +257,8 @@ export default function GoalCard({ goal, metrics }: Props) {
             }}>
               <div style={{
                 width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
-                background: m.completed ? '#7FD5AA' : 'transparent',
-                border: `2px solid ${m.completed ? '#7FD5AA' : 'rgba(255,255,255,0.2)'}`,
+                background: m.completed ? '#64f0aa' : 'transparent',
+                border: `2px solid ${m.completed ? '#64f0aa' : 'rgba(255,255,255,0.2)'}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 {m.completed && (

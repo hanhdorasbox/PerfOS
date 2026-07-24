@@ -26,7 +26,7 @@ export default function TodaysMeetings({ events, workStartMin, workEndMin }: { e
           const endMin = endH * 60 + endM
           const isDuringWork = startMin >= workStartMin && endMin <= workEndMin
           const isPostWork = startMin >= workEndMin
-          const eventColor = isPostWork ? '#DDB96A' : isDuringWork ? '#80BDFF' : '#6E6E76'
+          const eventColor = isPostWork ? '#ffc648' : isDuringWork ? '#61adff' : '#6E6E76'
           const durationMin = endMin - startMin
           const durationLabel = durationMin > 60
             ? `${Math.floor(durationMin / 60)}h ${durationMin % 60}m`

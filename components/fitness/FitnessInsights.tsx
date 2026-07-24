@@ -30,12 +30,12 @@ export interface FitnessInsightsProps {
 // ── Palette ────────────────────────────────────────────────────────────────────
 
 const C = {
-  green:   '#7FD5AA',
-  blue:    '#80BDFF',
-  purple:  '#B8A4FF',
-  amber:   '#ECC666',
-  orange:  '#F5A56A',
-  red:     '#FF9B87',
+  green:   '#64f0aa',
+  blue:    '#61adff',
+  purple:  '#a085ff',
+  amber:   '#ffce53',
+  orange:  '#ffa360',
+  red:     '#ff8168',
   muted:   '#6E6E73',
   dim:     '#48484A',
   text:    '#F5F5F7',

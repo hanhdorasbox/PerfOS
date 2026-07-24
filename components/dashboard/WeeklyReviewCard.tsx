@@ -26,7 +26,7 @@ export default function WeeklyReviewCard({
   tasksDone, tasksTotal, progressLogs, workouts, proteinAvg, proteinTarget,
 }: Props) {
   const completion = tasksTotal > 0 ? Math.round((tasksDone / tasksTotal) * 100) : 0
-  const completionColor = completion >= 80 ? '#7FD5AA' : completion >= 50 ? '#DDB96A' : '#E8907A'
+  const completionColor = completion >= 80 ? '#64f0aa' : completion >= 50 ? '#ffc648' : '#ff8263'
 
   const summary =
     completion >= 80 ? 'Strong week. Carry the momentum into Monday.' :
@@ -35,9 +35,9 @@ export default function WeeklyReviewCard({
     'Tough week. Roll the essentials forward and start fresh.'
 
   return (
-    <div className="card" style={{ borderColor: 'rgba(184,164,255,0.16)' }}>
+    <div className="card" style={{ borderColor: 'rgba(160, 133, 255,0.16)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#B8A4FF' }}>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#a085ff' }}>
           Week in Review
         </div>
         <span style={{ fontSize: 10, color: '#52525A' }}>Sunday reflection</span>
@@ -54,14 +54,14 @@ export default function WeeklyReviewCard({
         <Stat
           value={proteinAvg != null ? `${proteinAvg}g` : '—'}
           label={proteinTarget ? `avg protein / ${proteinTarget}g` : 'avg protein'}
-          color={proteinAvg != null && proteinTarget && proteinAvg >= proteinTarget ? '#7FD5AA' : undefined}
+          color={proteinAvg != null && proteinTarget && proteinAvg >= proteinTarget ? '#64f0aa' : undefined}
         />
       </div>
 
       <div style={{
         fontSize: 13, color: '#9E9EA6', lineHeight: 1.6,
         padding: '10px 14px', borderRadius: 12,
-        background: 'rgba(184,164,255,0.05)', border: '1px solid rgba(184,164,255,0.12)',
+        background: 'rgba(160, 133, 255,0.05)', border: '1px solid rgba(160, 133, 255,0.12)',
       }}>
         {summary}
       </div>

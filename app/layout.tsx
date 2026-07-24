@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import NavLinks from "@/components/NavLinks";
 import Link from "next/link";
@@ -11,6 +12,14 @@ import { prisma } from "@/lib/db";
 const lockEnabled = Boolean(
   process.env.APP_PIN && (process.env.APP_SESSION_SECRET || process.env.CRON_SECRET),
 );
+
+// App-wide font, self-hosted by Next (no CDN import). Exposed as a CSS variable
+// the body font-family stack consumes in globals.css.
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jakarta",
+});
 
 export const metadata: Metadata = {
   title: "Project Hanh — Performance Operating System",
@@ -34,7 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const user = await prisma.user.findFirst().catch(() => null)
 
   return (
-    <html lang="en">
+    <html lang="en" className={jakarta.variable}>
       <body style={{ minHeight: '100vh', overflowX: 'hidden' }}>
         <nav style={{
           position: 'sticky',

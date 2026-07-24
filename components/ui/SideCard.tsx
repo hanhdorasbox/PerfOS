@@ -15,7 +15,7 @@ export default function SideCard({ label, action, children }: Props) {
           {label}
         </div>
         {action && (
-          <Link href={action.href} style={{ fontSize: 11, color: '#B8A4FF', textDecoration: 'none' }}>
+          <Link href={action.href} style={{ fontSize: 11, color: '#a085ff', textDecoration: 'none' }}>
             {action.label}
           </Link>
         )}
