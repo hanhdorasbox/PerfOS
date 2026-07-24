@@ -46,7 +46,7 @@ export default function PastMealPlans({ plans: initPlans }: { plans: PastPlan[] 
       </div>
 
       {error && (
-        <div style={{ background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.2)', color: '#FF9B87', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 12 }}>
+        <div style={{ background: 'rgba(255, 129, 104,0.1)', border: '1px solid rgba(255, 129, 104,0.2)', color: '#ff8168', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 12 }}>
           {error}
         </div>
       )}
@@ -76,8 +76,8 @@ export default function PastMealPlans({ plans: initPlans }: { plans: PastPlan[] 
               disabled={deleting === plan.id}
               style={{
                 background: 'none',
-                border: '1px solid rgba(255,155,135,0.2)',
-                color: '#FF9B87',
+                border: '1px solid rgba(255, 129, 104,0.2)',
+                color: '#ff8168',
                 borderRadius: 7,
                 padding: '5px 12px',
                 fontSize: 12,

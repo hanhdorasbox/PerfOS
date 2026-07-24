@@ -16,21 +16,21 @@ const STATUS_GROUPS = [
     id: 'active',
     label: 'Wishlist',
     statuses: ['idea', 'wishlist', 'want_to_try'],
-    color: '#80BDFF',
+    color: '#61adff',
     emptyLabel: 'Nothing on your wishlist yet.',
   },
   {
     id: 'approved',
     label: 'Approved to Buy',
     statuses: ['approved', 'earned', 'planned', 'scheduled'],
-    color: '#7FD5AA',
+    color: '#64f0aa',
     emptyLabel: 'Nothing approved.',
   },
   {
     id: 'bought',
     label: 'Bought',
     statuses: ['bought', 'tried', 'loved'],
-    color: '#ECC666',
+    color: '#ffce53',
     emptyLabel: 'No purchases logged yet.',
   },
   {
@@ -44,17 +44,17 @@ const STATUS_GROUPS = [
 
 const STATUS_META: Record<string, { label: string; color: string }> = {
   idea:         { label: 'Idea',        color: '#6E6E73' },
-  want_to_try:  { label: 'Want',        color: '#80BDFF' },
-  wishlist:     { label: 'Wishlist',    color: '#80BDFF' },
-  planned:      { label: 'Planned',     color: '#B8A4FF' },
-  scheduled:    { label: 'Scheduled',   color: '#B8A4FF' },
-  approved:     { label: 'Approved',    color: '#7FD5AA' },
-  earned:       { label: 'Earned',      color: '#ECC666' },
-  bought:       { label: 'Bought',      color: '#ECC666' },
-  tried:        { label: 'Got it',      color: '#7FD5AA' },
-  loved:        { label: '❤️ Love it',  color: '#7FD5AA' },
+  want_to_try:  { label: 'Want',        color: '#61adff' },
+  wishlist:     { label: 'Wishlist',    color: '#61adff' },
+  planned:      { label: 'Planned',     color: '#a085ff' },
+  scheduled:    { label: 'Scheduled',   color: '#a085ff' },
+  approved:     { label: 'Approved',    color: '#64f0aa' },
+  earned:       { label: 'Earned',      color: '#ffce53' },
+  bought:       { label: 'Bought',      color: '#ffce53' },
+  tried:        { label: 'Got it',      color: '#64f0aa' },
+  loved:        { label: '❤️ Love it',  color: '#64f0aa' },
   meh:          { label: 'Meh',         color: '#A1A1A6' },
-  not_again:    { label: '✗ Not again', color: '#E8907A' },
+  not_again:    { label: '✗ Not again', color: '#ff8263' },
   postponed:    { label: 'On hold',     color: '#6E6E73' },
   rejected:     { label: 'Skipped',     color: '#6E6E73' },
 }
@@ -201,12 +201,12 @@ function AddForm({ userId, onSaved, onCancel }: { userId: string; onSaved: (item
         <input value={notes} onChange={e => setNotes(e.target.value)} placeholder="Why this? When? Alternative?" style={inputStyle} />
       </div>
 
-      {err && <div style={{ color: '#E8907A', fontSize: 12, marginBottom: 10 }}>{err}</div>}
+      {err && <div style={{ color: '#ff8263', fontSize: 12, marginBottom: 10 }}>{err}</div>}
 
       <div style={{ display: 'flex', gap: 8 }}>
         <button type="submit" disabled={saving || !title.trim()} style={{
-          background: 'rgba(236,198,102,0.12)', border: '1px solid rgba(236,198,102,0.3)',
-          color: '#ECC666', borderRadius: 8, padding: '8px 20px', fontSize: 13,
+          background: 'rgba(255, 206, 83,0.12)', border: '1px solid rgba(255, 206, 83,0.3)',
+          color: '#ffce53', borderRadius: 8, padding: '8px 20px', fontSize: 13,
           fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1,
         }}>
           {saving ? 'Saving…' : '+ Add'}
@@ -257,22 +257,22 @@ function BudgetItem({
         {/* Score pills */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: hint ? 8 : 0 }}>
           {item.joyScore && (
-            <span style={{ fontSize: 10, color: '#7FD5AA', background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 5, padding: '1px 6px', fontWeight: 700 }}>
+            <span style={{ fontSize: 10, color: '#64f0aa', background: 'rgba(100, 240, 170,0.1)', border: '1px solid rgba(100, 240, 170,0.2)', borderRadius: 5, padding: '1px 6px', fontWeight: 700 }}>
               Joy {item.joyScore}/10
             </span>
           )}
           {item.utilityScore && (
-            <span style={{ fontSize: 10, color: '#80BDFF', background: 'rgba(128,189,255,0.1)', border: '1px solid rgba(128,189,255,0.2)', borderRadius: 5, padding: '1px 6px', fontWeight: 700 }}>
+            <span style={{ fontSize: 10, color: '#61adff', background: 'rgba(97, 173, 255,0.1)', border: '1px solid rgba(97, 173, 255,0.2)', borderRadius: 5, padding: '1px 6px', fontWeight: 700 }}>
               Utility {item.utilityScore}/10
             </span>
           )}
           {(item.regretRisk ?? 0) >= 5 && (
-            <span style={{ fontSize: 10, color: '#E8907A', background: 'rgba(232,144,122,0.1)', border: '1px solid rgba(232,144,122,0.2)', borderRadius: 5, padding: '1px 6px', fontWeight: 700 }}>
+            <span style={{ fontSize: 10, color: '#ff8263', background: 'rgba(255, 130, 99,0.1)', border: '1px solid rgba(255, 130, 99,0.2)', borderRadius: 5, padding: '1px 6px', fontWeight: 700 }}>
               Regret risk {item.regretRisk}/10
             </span>
           )}
           {item.goalSupportScore && item.goalSupportScore >= 6 && (
-            <span style={{ fontSize: 10, color: '#B8A4FF', background: 'rgba(184,164,255,0.1)', border: '1px solid rgba(184,164,255,0.2)', borderRadius: 5, padding: '1px 6px', fontWeight: 700 }}>
+            <span style={{ fontSize: 10, color: '#a085ff', background: 'rgba(160, 133, 255,0.1)', border: '1px solid rgba(160, 133, 255,0.2)', borderRadius: 5, padding: '1px 6px', fontWeight: 700 }}>
               Goal support {item.goalSupportScore}/10
             </span>
           )}
@@ -286,7 +286,7 @@ function BudgetItem({
           <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 2 }}>{item.notesBefore}</div>
         )}
         {item.notesAfter && isBought && (
-          <div style={{ fontSize: 12, color: '#7FD5AA', fontStyle: 'italic', marginTop: 4 }}>"{item.notesAfter}"</div>
+          <div style={{ fontSize: 12, color: '#64f0aa', fontStyle: 'italic', marginTop: 4 }}>"{item.notesAfter}"</div>
         )}
 
         {/* Actions */}
@@ -308,7 +308,7 @@ function BudgetItem({
           {!isBought && item.status !== 'approved' && item.status !== 'earned' && (
             <button
               onClick={() => onStatusChange(item.id, 'approved')}
-              style={{ background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.25)', color: '#7FD5AA', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}
+              style={{ background: 'rgba(100, 240, 170,0.1)', border: '1px solid rgba(100, 240, 170,0.25)', color: '#64f0aa', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}
             >
               ✓ Approve
             </button>
@@ -316,7 +316,7 @@ function BudgetItem({
           {(item.status === 'approved' || item.status === 'earned') && (
             <button
               onClick={() => onStatusChange(item.id, 'bought')}
-              style={{ background: 'rgba(236,198,102,0.1)', border: '1px solid rgba(236,198,102,0.25)', color: '#ECC666', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}
+              style={{ background: 'rgba(255, 206, 83,0.1)', border: '1px solid rgba(255, 206, 83,0.25)', color: '#ffce53', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}
             >
               🛍️ Mark Bought
             </button>
@@ -343,7 +343,7 @@ function BudgetItem({
       {/* Right: cost + status badge */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
         {item.estimatedCost && (
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#ECC666', fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#ffce53', fontVariantNumeric: 'tabular-nums' }}>
             {fmtCost(item.estimatedCost, item.currency)}
           </span>
         )}
@@ -407,10 +407,10 @@ export default function BudgetBoard({ items: initItems, userId }: Props) {
       {/* Stats */}
       <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
         {[
-          { label: 'Wishlist', value: wishlistItems.length, sub: wishlistBudget > 0 ? fmtCost(wishlistBudget, 'CZK') : null, color: '#80BDFF' },
-          { label: 'Approved', value: approvedItems.length, sub: approvedBudget > 0 ? fmtCost(approvedBudget, 'CZK') : null, color: '#7FD5AA' },
-          { label: 'Bought', value: boughtItems.length, sub: spentBudget > 0 ? fmtCost(spentBudget, 'CZK') : null, color: '#ECC666' },
-          { label: 'Total Wishlist', value: wishlistBudget > 0 ? fmtCost(wishlistBudget + approvedBudget, 'CZK') : '—', sub: null, color: '#B8A4FF' },
+          { label: 'Wishlist', value: wishlistItems.length, sub: wishlistBudget > 0 ? fmtCost(wishlistBudget, 'CZK') : null, color: '#61adff' },
+          { label: 'Approved', value: approvedItems.length, sub: approvedBudget > 0 ? fmtCost(approvedBudget, 'CZK') : null, color: '#64f0aa' },
+          { label: 'Bought', value: boughtItems.length, sub: spentBudget > 0 ? fmtCost(spentBudget, 'CZK') : null, color: '#ffce53' },
+          { label: 'Total Wishlist', value: wishlistBudget > 0 ? fmtCost(wishlistBudget + approvedBudget, 'CZK') : '—', sub: null, color: '#a085ff' },
         ].map(stat => (
           <div key={stat.label} className="card" style={{ padding: '14px 16px', textAlign: 'center' }}>
             <div style={{ fontSize: stat.label === 'Total Wishlist' ? 15 : 22, fontWeight: 700, color: stat.color, fontVariantNumeric: 'tabular-nums' }}>{stat.value}</div>
@@ -424,8 +424,8 @@ export default function BudgetBoard({ items: initItems, userId }: Props) {
       {!showForm ? (
         <button onClick={() => setShowForm(true)} style={{
           display: 'flex', alignItems: 'center', gap: 7,
-          background: 'rgba(236,198,102,0.1)', border: '1px solid rgba(236,198,102,0.25)',
-          color: '#ECC666', borderRadius: 10, padding: '10px 18px', fontSize: 13,
+          background: 'rgba(255, 206, 83,0.1)', border: '1px solid rgba(255, 206, 83,0.25)',
+          color: '#ffce53', borderRadius: 10, padding: '10px 18px', fontSize: 13,
           fontWeight: 600, cursor: 'pointer', marginBottom: 24,
         }}>
           + Add item

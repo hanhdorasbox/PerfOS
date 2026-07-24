@@ -6,19 +6,19 @@ import Spinner from '@/components/ui/Spinner'
 import type { Idea } from '@prisma/client'
 
 const domainColors: Record<string, string> = {
-  work_improvement: '#80BDFF',
-  automation: '#B8A4FF',
-  product: '#7FD5AA',
-  content: '#ECC666',
-  research: '#F5A56A',
-  project: '#FF9B87',
+  work_improvement: '#61adff',
+  automation: '#a085ff',
+  product: '#64f0aa',
+  content: '#ffce53',
+  research: '#ffa360',
+  project: '#ff8168',
   other: '#6E6E73',
 }
 
 const effortColors: Record<string, string> = {
-  low: '#7FD5AA',
-  medium: '#ECC666',
-  high: '#FF9B87',
+  low: '#64f0aa',
+  medium: '#ffce53',
+  high: '#ff8168',
 }
 
 const STATUS_TRANSITIONS: Record<string, { label: string; nextStatus: string }> = {
@@ -94,8 +94,8 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
       <div style={{ marginBottom: 8 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
           <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, flex: 1, paddingRight: 8 }}>
-            {idea.isTimeSensitive && <Clock size={12} color="#ECC666" style={{ marginRight: 4, verticalAlign: 'middle' }} />}
-            {idea.isHighUpsideBet && <Star size={12} color="#B8A4FF" style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+            {idea.isTimeSensitive && <Clock size={12} color="#ffce53" style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+            {idea.isHighUpsideBet && <Star size={12} color="#a085ff" style={{ marginRight: 4, verticalAlign: 'middle' }} />}
             {idea.title}
           </p>
         </div>
@@ -130,18 +130,18 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
       </div>
 
       {idea.nextStep && (
-        <p style={{ color: '#B8A4FF', fontSize: 11, marginBottom: 8 }}>
+        <p style={{ color: '#a085ff', fontSize: 11, marginBottom: 8 }}>
           → {idea.nextStep}
         </p>
       )}
 
       {evalData && showEval && (
         <div style={{
-          background: 'rgba(184,164,255,0.06)', border: '1px solid rgba(184,164,255,0.15)',
+          background: 'rgba(160, 133, 255,0.06)', border: '1px solid rgba(160, 133, 255,0.15)',
           borderRadius: 8, padding: '8px 10px', marginBottom: 8,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-            <span style={{ color: evalData.isStrategicRelevant ? '#7FD5AA' : '#FF9B87', fontSize: 11, fontWeight: 700 }}>
+            <span style={{ color: evalData.isStrategicRelevant ? '#64f0aa' : '#ff8168', fontSize: 11, fontWeight: 700 }}>
               {evalData.isStrategicRelevant ? '✓ Strategic' : '✗ Not strategic'}
             </span>
             <span style={{ color: '#6E6E73', fontSize: 11 }}>Timing: {evalData.timing}</span>
@@ -154,13 +154,13 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
       {evalData && !showEval && (
         <button
           onClick={() => setShowEval(true)}
-          style={{ background: 'none', border: 'none', color: '#B8A4FF', fontSize: 11, cursor: 'pointer', padding: '0 0 8px 0', display: 'block' }}
+          style={{ background: 'none', border: 'none', color: '#a085ff', fontSize: 11, cursor: 'pointer', padding: '0 0 8px 0', display: 'block' }}
         >
           Show AI evaluation ▼
         </button>
       )}
 
-      {error && <p style={{ color: '#FF9B87', fontSize: 11, marginBottom: 6 }}>{error}</p>}
+      {error && <p style={{ color: '#ff8168', fontSize: 11, marginBottom: 6 }}>{error}</p>}
 
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
         {!idea.aiEvaluation && (
@@ -168,20 +168,20 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
             onClick={evaluate}
             disabled={evaluating}
             style={{
-              background: 'rgba(184,164,255,0.1)', border: '1px solid rgba(184,164,255,0.25)',
-              color: '#B8A4FF', padding: '4px 8px', borderRadius: 6,
+              background: 'rgba(160, 133, 255,0.1)', border: '1px solid rgba(160, 133, 255,0.25)',
+              color: '#a085ff', padding: '4px 8px', borderRadius: 6,
               fontSize: 11, fontWeight: 600, cursor: evaluating ? 'not-allowed' : 'pointer',
             }}
           >
-            {evaluating ? <Spinner size={11} color="#B8A4FF" strokeWidth={2} /> : <><Bot size={12} style={{ marginRight: 4 }} />Evaluate</>}
+            {evaluating ? <Spinner size={11} color="#a085ff" strokeWidth={2} /> : <><Bot size={12} style={{ marginRight: 4 }} />Evaluate</>}
           </button>
         )}
         {transition && (
           <button
             onClick={advanceStatus}
             style={{
-              background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)',
-              color: '#7FD5AA', padding: '4px 8px', borderRadius: 6,
+              background: 'rgba(100, 240, 170,0.08)', border: '1px solid rgba(100, 240, 170,0.2)',
+              color: '#64f0aa', padding: '4px 8px', borderRadius: 6,
               fontSize: 11, fontWeight: 600, cursor: 'pointer',
             }}
           >

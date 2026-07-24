@@ -36,7 +36,7 @@ export default function GoalDetailChart({ progressUpdates, startDate, deadline, 
         <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#6E6E73' }} axisLine={false} tickLine={false} />
         <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: '#6E6E73' }} axisLine={false} tickLine={false} unit="%" />
         <Tooltip contentStyle={{ background: '#0A0A0B', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '12px', color: '#F5F5F7' }} />
-        <Line type="monotone" dataKey="actual" stroke="#B8A4FF" strokeWidth={2.5} dot={{ fill: '#B8A4FF', r: 4 }} name="Actual" />
+        <Line type="monotone" dataKey="actual" stroke="#a085ff" strokeWidth={2.5} dot={{ fill: '#a085ff', r: 4 }} name="Actual" />
         <Line type="monotone" dataKey="expected" stroke="rgba(255,255,255,0.25)" strokeWidth={1.5} strokeDasharray="4 4" dot={false} name="Expected" />
       </LineChart>
     </ResponsiveContainer>

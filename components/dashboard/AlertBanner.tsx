@@ -9,9 +9,9 @@ export default function AlertBanner({ alerts }: { alerts: Alert[] }) {
         const isCritical = a.status === 'critical'
         const isAtRisk   = a.status === 'at_risk'
         const isWatch    = a.status === 'watch'
-        const color   = isCritical ? '#E8907A' : isAtRisk ? '#E8966A' : '#DDB96A'
-        const bgColor = isCritical ? 'rgba(232,144,122,0.07)' : isAtRisk ? 'rgba(232,150,106,0.07)' : 'rgba(221,185,106,0.05)'
-        const border  = isCritical ? 'rgba(232,144,122,0.2)' : isAtRisk ? 'rgba(232,150,106,0.2)' : 'rgba(221,185,106,0.15)'
+        const color   = isCritical ? '#ff8263' : isAtRisk ? '#ff8f53' : '#ffc648'
+        const bgColor = isCritical ? 'rgba(255, 130, 99,0.07)' : isAtRisk ? 'rgba(255, 143, 83,0.07)' : 'rgba(255, 198, 72,0.05)'
+        const border  = isCritical ? 'rgba(255, 130, 99,0.2)' : isAtRisk ? 'rgba(255, 143, 83,0.2)' : 'rgba(255, 198, 72,0.15)'
         const icon    = isCritical ? '!' : isAtRisk ? '↑' : '~'
         return (
           <div key={i} style={{

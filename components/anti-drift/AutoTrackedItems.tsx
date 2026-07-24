@@ -29,10 +29,10 @@ export default function AutoTrackedItems({ items: initItems }: { items: WorkItem
   }
 
   const CATEGORY_COLORS: Record<string, string> = {
-    advancement: '#7FD5AA',
-    maintenance: '#80BDFF',
-    reactive: '#ECC666',
-    busywork: '#FF9B87',
+    advancement: '#64f0aa',
+    maintenance: '#61adff',
+    reactive: '#ffce53',
+    busywork: '#ff8168',
   }
 
   return (
@@ -40,16 +40,16 @@ export default function AutoTrackedItems({ items: initItems }: { items: WorkItem
       style={{
         marginTop: 20,
         padding: '14px 18px',
-        background: 'rgba(127,213,170,0.04)',
-        border: '1px solid rgba(127,213,170,0.15)',
+        background: 'rgba(100, 240, 170,0.04)',
+        border: '1px solid rgba(100, 240, 170,0.15)',
         borderRadius: 12,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7FD5AA' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#64f0aa' }}>
           Auto-Tracked from Completed Tasks &amp; Milestones
         </div>
-        <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(127,213,170,0.15)', color: '#7FD5AA', fontWeight: 700 }}>
+        <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(100, 240, 170,0.15)', color: '#64f0aa', fontWeight: 700 }}>
           {items.length} items
         </span>
       </div>
@@ -72,8 +72,8 @@ export default function AutoTrackedItems({ items: initItems }: { items: WorkItem
                 fontSize: 9,
                 padding: '1px 5px',
                 borderRadius: 3,
-                background: 'rgba(127,213,170,0.12)',
-                color: '#7FD5AA',
+                background: 'rgba(100, 240, 170,0.12)',
+                color: '#64f0aa',
                 fontWeight: 700,
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
@@ -87,7 +87,7 @@ export default function AutoTrackedItems({ items: initItems }: { items: WorkItem
                 fontSize: 10,
                 padding: '1px 6px',
                 borderRadius: 3,
-                background: item.category === 'advancement' ? 'rgba(127,213,170,0.08)' : 'rgba(128,189,255,0.08)',
+                background: item.category === 'advancement' ? 'rgba(100, 240, 170,0.08)' : 'rgba(97, 173, 255,0.08)',
                 color: CATEGORY_COLORS[item.category] ?? '#A1A1A6',
                 fontWeight: 600,
                 flexShrink: 0,

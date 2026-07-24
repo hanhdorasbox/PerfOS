@@ -33,20 +33,20 @@ export default function GenerateReportButton({ statementId, userId }: { statemen
         disabled={loading}
         className="btn-motion"
         style={{
-          background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.4)',
-          color: '#B8A4FF', padding: '8px 18px', borderRadius: 10,
+          background: 'rgba(160, 133, 255,0.15)', border: '1px solid rgba(160, 133, 255,0.4)',
+          color: '#a085ff', padding: '8px 18px', borderRadius: 10,
           fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
           display: 'inline-flex', alignItems: 'center', gap: 7,
         }}
       >
         {loading ? (
           <>
-            <Spinner size={13} color="#7FD5AA" strokeWidth={1.5} />
+            <Spinner size={13} color="#64f0aa" strokeWidth={1.5} />
             Generating…
           </>
         ) : 'Generate Monthly Report'}
       </button>
-      {error && <p style={{ color: '#FF9B87', fontSize: 13, marginTop: 6 }}>{error}</p>}
+      {error && <p style={{ color: '#ff8168', fontSize: 13, marginTop: 6 }}>{error}</p>}
     </div>
   )
 }

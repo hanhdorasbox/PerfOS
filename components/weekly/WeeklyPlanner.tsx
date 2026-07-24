@@ -28,9 +28,9 @@ interface Props {
 }
 
 const EFFORT_LABEL: Record<number, string> = { 1: 'Easy', 2: 'Medium', 3: 'Deep work' }
-const EFFORT_COLOR: Record<number, string> = { 1: '#6E6E73', 2: '#80BDFF', 3: '#B8A4FF' }
+const EFFORT_COLOR: Record<number, string> = { 1: '#6E6E73', 2: '#61adff', 3: '#a085ff' }
 const PRIORITY_LABEL: Record<number, string> = { 1: 'Must', 2: 'Should', 3: 'Optional' }
-const PRIORITY_COLOR: Record<number, string> = { 1: '#FF9B87', 2: '#ECC666', 3: '#6E6E73' }
+const PRIORITY_COLOR: Record<number, string> = { 1: '#ff8168', 2: '#ffce53', 3: '#6E6E73' }
 
 export default function WeeklyPlanner({ userId, weeklyPlanId, tasks, goals }: Props) {
   const router = useRouter()
@@ -92,7 +92,7 @@ export default function WeeklyPlanner({ userId, weeklyPlanId, tasks, goals }: Pr
         </div>
         <div>
           <div style={{ fontSize: 10, fontWeight: 700, color: '#6E6E73', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 3 }}>Done</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: '#7FD5AA' }}>{done.length}</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: '#64f0aa' }}>{done.length}</div>
         </div>
         <div>
           <div style={{ fontSize: 10, fontWeight: 700, color: '#6E6E73', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 3 }}>Remaining</div>
@@ -101,15 +101,15 @@ export default function WeeklyPlanner({ userId, weeklyPlanId, tasks, goals }: Pr
         <div style={{ flex: 1, minWidth: 120 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
             <span style={{ fontSize: 10, color: '#6E6E73' }}>Completion</span>
-            <span style={{ fontSize: 10, fontWeight: 700, color: completionRate >= 80 ? '#7FD5AA' : completionRate >= 50 ? '#ECC666' : '#F5F5F7' }}>{completionRate}%</span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: completionRate >= 80 ? '#64f0aa' : completionRate >= 50 ? '#ffce53' : '#F5F5F7' }}>{completionRate}%</span>
           </div>
           <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${completionRate}%`, background: completionRate >= 80 ? '#7FD5AA' : '#ECC666', borderRadius: 4 }} />
+            <div style={{ height: '100%', width: `${completionRate}%`, background: completionRate >= 80 ? '#64f0aa' : '#ffce53', borderRadius: 4 }} />
           </div>
         </div>
         <button
           onClick={() => setShowAdd(v => !v)}
-          style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 700, color: '#B8A4FF', background: 'rgba(184,164,255,0.1)', border: '1px solid rgba(184,164,255,0.25)', borderRadius: 8, padding: '7px 16px', cursor: 'pointer' }}
+          style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 700, color: '#a085ff', background: 'rgba(160, 133, 255,0.1)', border: '1px solid rgba(160, 133, 255,0.25)', borderRadius: 8, padding: '7px 16px', cursor: 'pointer' }}
         >
           {showAdd ? '✕ Cancel' : '+ Add Task'}
         </button>
@@ -176,7 +176,7 @@ export default function WeeklyPlanner({ userId, weeklyPlanId, tasks, goals }: Pr
             <button
               onClick={addTask}
               disabled={adding || !title.trim()}
-              style={{ fontSize: 12, fontWeight: 700, padding: '8px 20px', borderRadius: 8, background: title.trim() ? 'rgba(184,164,255,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${title.trim() ? 'rgba(184,164,255,0.35)' : 'rgba(255,255,255,0.08)'}`, color: title.trim() ? '#B8A4FF' : '#4A4845', cursor: title.trim() ? 'pointer' : 'default' }}
+              style={{ fontSize: 12, fontWeight: 700, padding: '8px 20px', borderRadius: 8, background: title.trim() ? 'rgba(160, 133, 255,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${title.trim() ? 'rgba(160, 133, 255,0.35)' : 'rgba(255,255,255,0.08)'}`, color: title.trim() ? '#a085ff' : '#4A4845', cursor: title.trim() ? 'pointer' : 'default' }}
             >
               {adding ? 'Adding…' : 'Add Task'}
             </button>
@@ -194,8 +194,8 @@ export default function WeeklyPlanner({ userId, weeklyPlanId, tasks, goals }: Pr
 
       {/* Task groups */}
       {[
-        { label: 'Must do', tasks: musts, color: '#FF9B87' },
-        { label: 'Should do', tasks: should, color: '#ECC666' },
+        { label: 'Must do', tasks: musts, color: '#ff8168' },
+        { label: 'Should do', tasks: should, color: '#ffce53' },
         { label: 'Optional', tasks: optio, color: '#6E6E73' },
       ].map(group => group.tasks.length > 0 && (
         <div key={group.label} className="card">
@@ -229,7 +229,7 @@ function TaskRow({ task, onToggle, toggling, index }: { task: Task; onToggle: (i
       <button
         onClick={() => onToggle(task.id)}
         disabled={isToggling}
-        style={{ width: 22, height: 22, minWidth: 22, borderRadius: isDone ? '50%' : 6, border: isDone ? '2px solid #7FD5AA' : '1.5px solid rgba(255,255,255,0.2)', background: isDone ? 'rgba(127,213,170,0.2)' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: isDone ? '#7FD5AA' : '#6E6E73', fontWeight: 700, flexShrink: 0, marginTop: 1 }}
+        style={{ width: 22, height: 22, minWidth: 22, borderRadius: isDone ? '50%' : 6, border: isDone ? '2px solid #64f0aa' : '1.5px solid rgba(255,255,255,0.2)', background: isDone ? 'rgba(100, 240, 170,0.2)' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: isDone ? '#64f0aa' : '#6E6E73', fontWeight: 700, flexShrink: 0, marginTop: 1 }}
       >
         {isDone ? '✓' : isToggling ? '…' : (index !== undefined ? index + 1 : '')}
       </button>
@@ -249,9 +249,9 @@ function TaskRow({ task, onToggle, toggling, index }: { task: Task; onToggle: (i
             <Link
               href={task.sourceUrl}
               style={{
-                fontSize: 10, color: '#B8A4FF',
-                background: 'rgba(184,164,255,0.1)',
-                border: '1px solid rgba(184,164,255,0.2)',
+                fontSize: 10, color: '#a085ff',
+                background: 'rgba(160, 133, 255,0.1)',
+                border: '1px solid rgba(160, 133, 255,0.2)',
                 borderRadius: 4, padding: '1px 7px',
                 textDecoration: 'none', fontWeight: 600,
               }}
@@ -273,7 +273,7 @@ function CompletedSection({ tasks, onToggle, toggling }: { tasks: Task[]; onTogg
     <div className="card">
       <button onClick={() => setOpen(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, padding: 0 }}>
         <span style={{ fontSize: 10, color: '#6E6E73' }}>{open ? '▲' : '▼'}</span>
-        <span style={{ fontSize: 11, fontWeight: 700, color: '#7FD5AA', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: '#64f0aa', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
           Completed · {tasks.length}
         </span>
       </button>

@@ -31,21 +31,21 @@ const ROLE_OPTIONS = [
 ]
 
 const ROLE_META: Record<string, { label: string; color: string; bg: string }> = {
-  career_capital: { label: 'Career Capital', color: '#B8A4FF', bg: 'rgba(184,164,255,0.12)' },
-  learning: { label: 'Learning', color: '#80BDFF', bg: 'rgba(128,189,255,0.12)' },
-  fitness: { label: 'Fitness', color: '#7FD5AA', bg: 'rgba(127,213,170,0.12)' },
-  finance: { label: 'Finance', color: '#ECC666', bg: 'rgba(236,198,102,0.12)' },
-  high_upside_bet: { label: 'High-Upside Bet', color: '#F5A56A', bg: 'rgba(255,159,107,0.12)' },
-  long_term: { label: 'Long-Term', color: '#80BDFF', bg: 'rgba(77,217,217,0.12)' },
+  career_capital: { label: 'Career Capital', color: '#a085ff', bg: 'rgba(160, 133, 255,0.12)' },
+  learning: { label: 'Learning', color: '#61adff', bg: 'rgba(97, 173, 255,0.12)' },
+  fitness: { label: 'Fitness', color: '#64f0aa', bg: 'rgba(100, 240, 170,0.12)' },
+  finance: { label: 'Finance', color: '#ffce53', bg: 'rgba(255, 206, 83,0.12)' },
+  high_upside_bet: { label: 'High-Upside Bet', color: '#ffa360', bg: 'rgba(255, 159, 107,0.12)' },
+  long_term: { label: 'Long-Term', color: '#61adff', bg: 'rgba(39, 255, 255,0.12)' },
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  ahead: '#7FD5AA',
-  on_track: '#7FD5AA',
-  watch: '#ECC666',
-  at_risk: '#F5A56A',
-  critical: '#FF9B87',
-  completed: '#B8A4FF',
+  ahead: '#64f0aa',
+  on_track: '#64f0aa',
+  watch: '#ffce53',
+  at_risk: '#ffa360',
+  critical: '#ff8168',
+  completed: '#a085ff',
   paused: '#6E6E73',
 }
 
@@ -75,7 +75,7 @@ export default function QuarterlyGoalRow({ goal }: GoalRowProps) {
 
   const statusColor = STATUS_COLORS[goal.metrics.status] || '#6E6E73'
   const roleMeta = role ? ROLE_META[role] : null
-  const gapColor = goal.metrics.gap >= 0 ? '#7FD5AA' : goal.metrics.gap >= -10 ? '#ECC666' : '#FF9B87'
+  const gapColor = goal.metrics.gap >= 0 ? '#64f0aa' : goal.metrics.gap >= -10 ? '#ffce53' : '#ff8168'
 
   return (
     <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>

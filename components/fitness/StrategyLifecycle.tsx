@@ -66,7 +66,7 @@ export function computeLifecycle(createdAt: string, roadmapJson?: string | null)
   }
 }
 
-const PHASE_COLORS = ['#7FD5AA', '#80BDFF', '#B8A4FF']
+const PHASE_COLORS = ['#64f0aa', '#61adff', '#a085ff']
 
 // ─── Compact row (for Fitness overview page) ──────────────────────────────────
 export function StrategyLifecycleCompact({ createdAt, roadmapJson }: { createdAt: string; roadmapJson?: string | null }) {
@@ -85,7 +85,7 @@ export function StrategyLifecycleCompact({ createdAt, roadmapJson }: { createdAt
         <span style={{ fontSize: 10, color: '#6E6E73' }}>· Next phase in {lc.daysUntilNextPhase}d</span>
       )}
       {lc.daysUntilEnd <= 14 && lc.daysUntilEnd > 0 && (
-        <span style={{ fontSize: 10, color: '#ECC666', fontWeight: 600 }}>· Ends in {lc.daysUntilEnd}d</span>
+        <span style={{ fontSize: 10, color: '#ffce53', fontWeight: 600 }}>· Ends in {lc.daysUntilEnd}d</span>
       )}
     </div>
   )
@@ -125,7 +125,7 @@ export function StrategyLifecycleMedium({ createdAt, roadmapJson }: { createdAt:
           </span>
         )}
         {lc.daysUntilEnd <= 14 && lc.daysUntilEnd > 0 && (
-          <span style={{ fontSize: 11, color: '#ECC666', fontWeight: 600 }}>· Ends in {lc.daysUntilEnd} days</span>
+          <span style={{ fontSize: 11, color: '#ffce53', fontWeight: 600 }}>· Ends in {lc.daysUntilEnd} days</span>
         )}
       </div>
 
@@ -203,7 +203,7 @@ export function StrategyLifecycleFull({ createdAt, roadmapJson }: { createdAt: s
           </span>
         )}
         {lc.daysUntilEnd <= 14 && lc.daysUntilEnd > 0 && (
-          <span style={{ fontSize: 11, color: '#ECC666', fontWeight: 600 }}>· Ends in {lc.daysUntilEnd} days</span>
+          <span style={{ fontSize: 11, color: '#ffce53', fontWeight: 600 }}>· Ends in {lc.daysUntilEnd} days</span>
         )}
       </div>
 

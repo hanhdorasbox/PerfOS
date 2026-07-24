@@ -113,7 +113,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
       <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div>
-            <p style={{ color: '#FF9B87', fontSize: 13, fontWeight: 600 }}>No workbook connected</p>
+            <p style={{ color: '#ff8168', fontSize: 13, fontWeight: 600 }}>No workbook connected</p>
             <p style={{ color: '#6E6E73', fontSize: 12, marginTop: 4 }}>Upload your Finance Tracker .xlsx to connect it</p>
           </div>
           <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
@@ -131,9 +131,9 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
               className="btn-motion"
               style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                background: 'rgba(184,164,255,0.15)',
-                border: '1px solid rgba(184,164,255,0.4)',
-                color: '#B8A4FF', padding: '10px 22px', borderRadius: 8,
+                background: 'rgba(160, 133, 255,0.15)',
+                border: '1px solid rgba(160, 133, 255,0.4)',
+                color: '#a085ff', padding: '10px 22px', borderRadius: 8,
                 fontSize: 13, fontWeight: 600, cursor: uploading ? 'not-allowed' : 'pointer',
                 opacity: uploading ? 0.9 : 1, minWidth: 160,
               }}
@@ -142,12 +142,12 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
                 {!uploading ? <><Cloud size={13} /> Upload Workbook</> : uploadPhase === 1 ? 'Preparing…' : uploadPhase === 3 ? 'Saving…' : uploadPct >= 98 ? 'Finalizing…' : `Uploading ${uploadPct}%`}
               </span>
               {uploading && (
-                <div style={{ width: '100%', height: 3, background: 'rgba(184,164,255,0.2)', borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{ width: '100%', height: 3, background: 'rgba(160, 133, 255,0.2)', borderRadius: 2, overflow: 'hidden' }}>
                   {uploadPct >= 98 ? (
                     /* Pulsing stripe during finalization so it doesn't look frozen */
                     <div style={{
                       height: '100%', borderRadius: 2,
-                      background: 'linear-gradient(90deg, rgba(184,164,255,0.4) 0%, rgba(184,164,255,0.9) 50%, rgba(184,164,255,0.4) 100%)',
+                      background: 'linear-gradient(90deg, rgba(160, 133, 255,0.4) 0%, rgba(160, 133, 255,0.9) 50%, rgba(160, 133, 255,0.4) 100%)',
                       backgroundSize: '200% 100%',
                       animation: 'shimmer 1.4s infinite',
                       width: '100%',
@@ -155,7 +155,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
                   ) : (
                     <div style={{
                       height: '100%', borderRadius: 2,
-                      background: 'rgba(184,164,255,0.8)',
+                      background: 'rgba(160, 133, 255,0.8)',
                       width: `${uploadPct}%`,
                       transition: 'width 0.4s ease',
                     }} />
@@ -167,8 +167,8 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
         </div>
         {uploadErr && (
           <div style={{
-            background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.3)',
-            color: '#FF9B87', padding: '8px 12px', borderRadius: 6, fontSize: 12, marginTop: 4,
+            background: 'rgba(255, 129, 104,0.1)', border: '1px solid rgba(255, 129, 104,0.3)',
+            color: '#ff8168', padding: '8px 12px', borderRadius: 6, fontSize: 12, marginTop: 4,
           }}>
             {uploadErr}
           </div>
@@ -185,8 +185,8 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 8,
-            background: 'rgba(127,213,170,0.12)',
-            border: '1px solid rgba(127,213,170,0.25)',
+            background: 'rgba(100, 240, 170,0.12)',
+            border: '1px solid rgba(100, 240, 170,0.25)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 18,
           }}>
@@ -202,9 +202,9 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            background: 'rgba(127,213,170,0.1)',
-            border: '1px solid rgba(127,213,170,0.25)',
-            color: '#7FD5AA',
+            background: 'rgba(100, 240, 170,0.1)',
+            border: '1px solid rgba(100, 240, 170,0.25)',
+            color: '#64f0aa',
             padding: '3px 10px',
             borderRadius: 999,
             fontSize: 11,
@@ -237,7 +237,7 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
               <div style={{ width: '100%', height: 2, background: 'rgba(255,255,255,0.08)', borderRadius: 1, overflow: 'hidden' }}>
                 <div style={{
                   height: '100%', borderRadius: 1,
-                  background: 'rgba(184,164,255,0.6)',
+                  background: 'rgba(160, 133, 255,0.6)',
                   width: `${uploadPct}%`,
                   transition: 'width 0.3s ease',
                 }} />
@@ -248,8 +248,8 @@ export default function WorkbookStatusCard({ workbook, ruleCount, onConnect, onU
       </div>
       {uploadErr && (
         <div style={{
-          background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.3)',
-          color: '#FF9B87', padding: '8px 12px', borderRadius: 6, fontSize: 12, marginTop: 12,
+          background: 'rgba(255, 129, 104,0.1)', border: '1px solid rgba(255, 129, 104,0.3)',
+          color: '#ff8168', padding: '8px 12px', borderRadius: 6, fontSize: 12, marginTop: 12,
         }}>
           {uploadErr}
         </div>

@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
 
   // Determine which calendar IDs to query
   const connectedCalendars: { id: string; name: string; type: 'personal' | 'work'; color: string }[] =
-    token.connectedCalendars ? JSON.parse(token.connectedCalendars) : [{ id: 'primary', name: 'Primary', type: 'personal', color: '#B4A7E5' }]
+    token.connectedCalendars ? JSON.parse(token.connectedCalendars) : [{ id: 'primary', name: 'Primary', type: 'personal', color: '#9277f6' }]
 
   const needsSetup = !token.connectedCalendars
   if (needsSetup) {

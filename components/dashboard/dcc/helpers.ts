@@ -12,8 +12,8 @@ export const SOURCE_LINK: Record<string, { href: string; label: string }> = {
 
 
 export const PRIORITY_COLOR: Record<string, string> = {
-  must:     '#E8907A',
-  should:   '#DDB96A',
+  must:     '#ff8263',
+  should:   '#ffc648',
   optional: '#6E6E76',
 }
 export const PRIORITY_LABEL: Record<string, string> = {
@@ -26,18 +26,18 @@ export const EFFORT_MINUTES: Record<number, string> = { 1: '~15m', 2: '~25m', 3:
 export const MEAL_ORDER: Record<string, number> = { breakfast: 0, lunch: 1, dinner: 2, snack: 3 }
 
 export const INTEL_COLORS: Record<string, string> = {
-  geopolitics:  '#C8A06A',
-  business:     '#B89A3E',
-  tech:         '#8E80C4',
-  society:      '#5E94BB',
-  science:      '#5EAA88',
+  geopolitics:  '#e7a54b',
+  business:     '#dfae17',
+  tech:         '#7f67dd',
+  society:      '#3e99db',
+  science:      '#40c88b',
   markets:      '#B06E7E',
   psychology:   '#B06E7E',
-  health:       '#5EAA88',
-  fitness:      '#5EAA88',
-  nutrition:    '#B89A3E',
-  recovery:     '#8E80C4',
-  productivity: '#C8A06A',
+  health:       '#40c88b',
+  fitness:      '#40c88b',
+  nutrition:    '#dfae17',
+  recovery:     '#7f67dd',
+  productivity: '#e7a54b',
   habits:       '#B06E7E',
 }
 

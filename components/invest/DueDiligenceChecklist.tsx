@@ -15,9 +15,9 @@ const STATUS_META: Record<
   Exclude<ChecklistStatus, 'pending'>,
   { label: string; symbol: string; color: string; bg: string; border: string }
 > = {
-  pass: { label: 'Pass', symbol: '✓', color: 'var(--fin-gain, #4ea87a)', bg: 'var(--fin-gain-bg, rgba(78,168,122,0.12))', border: 'var(--fin-gain-border, rgba(78,168,122,0.4))' },
-  concern: { label: 'Concern', symbol: '~', color: 'var(--fin-warn, #c9a961)', bg: 'rgba(201,169,97,0.12)', border: 'var(--fin-warn-border, rgba(201,169,97,0.4))' },
-  fail: { label: 'Fail', symbol: '✕', color: 'var(--fin-loss, #c96a6a)', bg: 'var(--fin-loss-bg, rgba(201,106,106,0.12))', border: 'var(--fin-loss-border, rgba(201,106,106,0.4))' },
+  pass: { label: 'Pass', symbol: '✓', color: 'var(--fin-gain, #2dc979)', bg: 'var(--fin-gain-bg, rgba(45, 201, 121,0.12))', border: 'var(--fin-gain-border, rgba(45, 201, 121,0.4))' },
+  concern: { label: 'Concern', symbol: '~', color: 'var(--fin-warn, #ebb63f)', bg: 'rgba(235, 182, 63,0.12)', border: 'var(--fin-warn-border, rgba(235, 182, 63,0.4))' },
+  fail: { label: 'Fail', symbol: '✕', color: 'var(--fin-loss, #e84b4b)', bg: 'var(--fin-loss-bg, rgba(232, 75, 75,0.12))', border: 'var(--fin-loss-border, rgba(232, 75, 75,0.4))' },
 }
 
 export default function DueDiligenceChecklist({

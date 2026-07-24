@@ -40,7 +40,7 @@ function inlineFormat(text: string): React.ReactNode {
         if (part.startsWith('*') && part.endsWith('*'))
           return <em key={i} style={{ color: '#A1A1A6' }}>{part.slice(1, -1)}</em>
         if (part.startsWith('`') && part.endsWith('`'))
-          return <code key={i} style={{ fontSize: 11, background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 4, color: '#B8A4FF' }}>{part.slice(1, -1)}</code>
+          return <code key={i} style={{ fontSize: 11, background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 4, color: '#a085ff' }}>{part.slice(1, -1)}</code>
         return part
       })}
     </>
@@ -69,7 +69,7 @@ function MarkdownText({ content }: { content: string }) {
       elements.push(
         <div key={`code-${i}`} style={{ margin: '6px 0', borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
           {lang && <div style={{ padding: '3px 10px', background: 'rgba(255,255,255,0.06)', fontSize: 10, color: '#6E6E73', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{lang}</div>}
-          <pre style={{ margin: 0, padding: '10px 12px', background: 'rgba(255,255,255,0.04)', overflowX: 'auto', fontSize: 11, color: '#B8A4FF', lineHeight: 1.6, fontFamily: 'monospace' }}>{codeLines.join('\n')}</pre>
+          <pre style={{ margin: 0, padding: '10px 12px', background: 'rgba(255,255,255,0.04)', overflowX: 'auto', fontSize: 11, color: '#a085ff', lineHeight: 1.6, fontFamily: 'monospace' }}>{codeLines.join('\n')}</pre>
         </div>
       )
       continue
@@ -79,7 +79,7 @@ function MarkdownText({ content }: { content: string }) {
       const items: string[] = []
       while (i < lines.length && /^>\s?/.test(lines[i])) { items.push(lines[i].replace(/^>\s?/, '')); i++ }
       elements.push(
-        <div key={`bq-${i}`} style={{ margin: '4px 0', paddingLeft: 12, borderLeft: '3px solid rgba(184,164,255,0.4)', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div key={`bq-${i}`} style={{ margin: '4px 0', paddingLeft: 12, borderLeft: '3px solid rgba(160, 133, 255,0.4)', display: 'flex', flexDirection: 'column', gap: 2 }}>
           {items.map((item, ii) => <div key={ii} style={{ fontSize: 13, color: '#6E6E73', lineHeight: 1.6, fontStyle: 'italic' }}>{inlineFormat(item)}</div>)}
         </div>
       )
@@ -87,7 +87,7 @@ function MarkdownText({ content }: { content: string }) {
     }
 
     if (/^###\s+/.test(line)) {
-      elements.push(<div key={i} style={{ fontSize: 11, fontWeight: 700, color: '#B8A4FF', marginTop: 10, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{inlineFormat(line.replace(/^###\s+/, ''))}</div>)
+      elements.push(<div key={i} style={{ fontSize: 11, fontWeight: 700, color: '#a085ff', marginTop: 10, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{inlineFormat(line.replace(/^###\s+/, ''))}</div>)
       i++; continue
     }
 
@@ -108,7 +108,7 @@ function MarkdownText({ content }: { content: string }) {
         <ul key={`ul-${i}`} style={{ margin: '4px 0', paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 3 }}>
           {items.map((item, ii) => (
             <li key={ii} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 13, color: '#A1A1A6', lineHeight: 1.55 }}>
-              <span style={{ color: '#B8A4FF', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
+              <span style={{ color: '#a085ff', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
               <span>{inlineFormat(item)}</span>
             </li>
           ))}
@@ -124,7 +124,7 @@ function MarkdownText({ content }: { content: string }) {
         <ol key={`ol-${i}`} style={{ margin: '4px 0', paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 3 }}>
           {items.map((item, ii) => (
             <li key={ii} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 13, color: '#A1A1A6', lineHeight: 1.55 }}>
-              <span style={{ color: '#B8A4FF', flexShrink: 0, fontWeight: 700, minWidth: 18, fontSize: 11 }}>{ii + 1}.</span>
+              <span style={{ color: '#a085ff', flexShrink: 0, fontWeight: 700, minWidth: 18, fontSize: 11 }}>{ii + 1}.</span>
               <span>{inlineFormat(item)}</span>
             </li>
           ))}
@@ -154,11 +154,11 @@ function ActionResultCard({ results }: { results: ActionResult[] }) {
         <div key={i} style={{
           display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
           borderRadius: 8, fontSize: 12,
-          background: r.result.success ? 'rgba(127,213,170,0.08)' : 'rgba(255,155,135,0.08)',
-          border: `1px solid ${r.result.success ? 'rgba(127,213,170,0.2)' : 'rgba(255,155,135,0.2)'}`,
+          background: r.result.success ? 'rgba(100, 240, 170,0.08)' : 'rgba(255, 129, 104,0.08)',
+          border: `1px solid ${r.result.success ? 'rgba(100, 240, 170,0.2)' : 'rgba(255, 129, 104,0.2)'}`,
         }}>
-          {r.result.success ? <CheckCircle2 size={14} color="#7FD5AA" style={{ flexShrink: 0 }} /> : <XCircle size={14} color="#FF9B87" style={{ flexShrink: 0 }} />}
-          <span style={{ color: r.result.success ? '#7FD5AA' : '#FF9B87', fontWeight: 600 }}>{r.result.message}</span>
+          {r.result.success ? <CheckCircle2 size={14} color="#64f0aa" style={{ flexShrink: 0 }} /> : <XCircle size={14} color="#ff8168" style={{ flexShrink: 0 }} />}
+          <span style={{ color: r.result.success ? '#64f0aa' : '#ff8168', fontWeight: 600 }}>{r.result.message}</span>
         </div>
       ))}
     </div>
@@ -181,9 +181,9 @@ function ConfirmationCard({
   return (
     <div style={{
       marginTop: 10, padding: '12px 14px', borderRadius: 10,
-      background: 'rgba(255,155,135,0.07)', border: '1px solid rgba(255,155,135,0.22)',
+      background: 'rgba(255, 129, 104,0.07)', border: '1px solid rgba(255, 129, 104,0.22)',
     }}>
-      <div style={{ fontSize: 12, color: '#FF9B87', fontWeight: 700, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ fontSize: 12, color: '#ff8168', fontWeight: 700, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
         <AlertTriangle size={13} /> Confirmation required
       </div>
       <div style={{ fontSize: 13, color: '#A1A1A6', marginBottom: 10 }}>{data.preview}</div>
@@ -191,7 +191,7 @@ function ConfirmationCard({
         <button
           onClick={onConfirm}
           disabled={loading}
-          style={{ padding: '6px 14px', borderRadius: 8, background: 'rgba(255,155,135,0.15)', border: '1px solid rgba(255,155,135,0.3)', color: '#FF9B87', fontWeight: 700, fontSize: 12, cursor: 'pointer', opacity: loading ? 0.5 : 1 }}
+          style={{ padding: '6px 14px', borderRadius: 8, background: 'rgba(255, 129, 104,0.15)', border: '1px solid rgba(255, 129, 104,0.3)', color: '#ff8168', fontWeight: 700, fontSize: 12, cursor: 'pointer', opacity: loading ? 0.5 : 1 }}
         >
           {loading ? 'Executing…' : 'Confirm'}
         </button>
@@ -361,9 +361,9 @@ export default function AIAdvisor() {
         <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em', background: 'linear-gradient(180deg,#FFFFFF,#C7C4BC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>
           AI Chief of Staff
         </h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 999, background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)' }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#7FD5AA', boxShadow: '0 0 5px rgba(127,213,170,0.6)' }} />
-          <span style={{ fontSize: 11, color: '#7FD5AA', fontWeight: 600 }}>Live data</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 999, background: 'rgba(100, 240, 170,0.08)', border: '1px solid rgba(100, 240, 170,0.2)' }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#64f0aa', boxShadow: '0 0 5px rgba(100, 240, 170,0.6)' }} />
+          <span style={{ fontSize: 11, color: '#64f0aa', fontWeight: 600 }}>Live data</span>
         </div>
       </div>
 
@@ -375,8 +375,8 @@ export default function AIAdvisor() {
             <div key={idx} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
 
               {m.role === 'assistant' && (
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2, fontSize: 13 }}>
-                  <Bot size={14} color="#B8A4FF" />
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(160, 133, 255,0.15)', border: '1px solid rgba(160, 133, 255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2, fontSize: 13 }}>
+                  <Bot size={14} color="#a085ff" />
                 </div>
               )}
 
@@ -384,8 +384,8 @@ export default function AIAdvisor() {
                 maxWidth: '78%',
                 padding: '10px 14px',
                 borderRadius: m.role === 'user' ? '14px 14px 4px 14px' : '4px 14px 14px 14px',
-                background: m.role === 'user' ? 'rgba(184,164,255,0.1)' : 'rgba(255,255,255,0.04)',
-                border: `1px solid ${m.role === 'user' ? 'rgba(184,164,255,0.22)' : (m as AssistantMsg).isError ? 'rgba(255,155,135,0.2)' : 'rgba(255,255,255,0.07)'}`,
+                background: m.role === 'user' ? 'rgba(160, 133, 255,0.1)' : 'rgba(255,255,255,0.04)',
+                border: `1px solid ${m.role === 'user' ? 'rgba(160, 133, 255,0.22)' : (m as AssistantMsg).isError ? 'rgba(255, 129, 104,0.2)' : 'rgba(255,255,255,0.07)'}`,
               }}>
                 {m.role === 'user' ? (
                   <div style={{ fontSize: 13, color: '#F5F5F7', lineHeight: 1.6 }}>{m.content}</div>
@@ -416,14 +416,14 @@ export default function AIAdvisor() {
           {/* Thinking indicator */}
           {loading && (
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-              <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Bot size={14} color="#B8A4FF" />
+              <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(160, 133, 255,0.15)', border: '1px solid rgba(160, 133, 255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Bot size={14} color="#a085ff" />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: '4px 14px 14px 14px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
                 <div style={{ display: 'flex', gap: 4 }}>
                   {[0, 1, 2].map(i => (
                     <div key={i} style={{
-                      width: 5, height: 5, borderRadius: '50%', background: '#B8A4FF',
+                      width: 5, height: 5, borderRadius: '50%', background: '#a085ff',
                       animation: `pulse 1.2s ease-in-out ${i * 0.2}s infinite`,
                       opacity: 0.6,
                     }} />
@@ -466,13 +466,13 @@ export default function AIAdvisor() {
               placeholder="Ask anything or tell me what to do…"
               disabled={loading}
               style={{ flex: 1, padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#F5F5F7', fontSize: 13, outline: 'none', transition: 'border-color 0.15s' }}
-              onFocus={e => { e.target.style.borderColor = 'rgba(184,164,255,0.35)' }}
+              onFocus={e => { e.target.style.borderColor = 'rgba(160, 133, 255,0.35)' }}
               onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)' }}
             />
             <button
               onClick={() => send()}
               disabled={loading || !input.trim()}
-              style={{ padding: '10px 20px', borderRadius: 10, background: 'rgba(184,164,255,0.14)', border: '1px solid rgba(184,164,255,0.28)', color: '#B8A4FF', fontWeight: 700, cursor: 'pointer', fontSize: 13, opacity: loading || !input.trim() ? 0.4 : 1, transition: 'all 0.15s' }}
+              style={{ padding: '10px 20px', borderRadius: 10, background: 'rgba(160, 133, 255,0.14)', border: '1px solid rgba(160, 133, 255,0.28)', color: '#a085ff', fontWeight: 700, cursor: 'pointer', fontSize: 13, opacity: loading || !input.trim() ? 0.4 : 1, transition: 'all 0.15s' }}
             >
               Send
             </button>

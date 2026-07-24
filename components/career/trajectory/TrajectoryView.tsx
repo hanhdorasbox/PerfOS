@@ -38,23 +38,23 @@ interface GapLocal extends TrajectoryGap {
 // ─── Colors ───────────────────────────────────────────────────────────────────
 
 const GAP_COLORS: Record<string, string> = {
-  skill: '#80BDFF',
-  proof_of_work: '#7FD5AA',
-  scope: '#ECC666',
-  visibility: '#B8A4FF',
-  experience: '#F5A56A',
+  skill: '#61adff',
+  proof_of_work: '#64f0aa',
+  scope: '#ffce53',
+  visibility: '#a085ff',
+  experience: '#ffa360',
 }
 
 const DIFF_COLORS: Record<string, string> = {
-  easy: '#7FD5AA',
-  medium: '#ECC666',
-  hard: '#FF9B87',
+  easy: '#64f0aa',
+  medium: '#ffce53',
+  hard: '#ff8168',
 }
 
 function gapColor(type: string) { return GAP_COLORS[type] ?? '#6E6E73' }
 
 function ReadinessBar({ score }: { score: number }) {
-  const color = score >= 70 ? '#7FD5AA' : score >= 40 ? '#ECC666' : '#FF9B87'
+  const color = score >= 70 ? '#64f0aa' : score >= 40 ? '#ffce53' : '#ff8168'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <div style={{ flex: 1, height: 8, background: 'rgba(255,255,255,0.07)', borderRadius: 99, overflow: 'hidden' }}>
@@ -352,7 +352,7 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
   return (
     <div>
       {error && (
-        <div style={{ background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.2)', color: '#FF9B87', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
+        <div style={{ background: 'rgba(255, 129, 104,0.1)', border: '1px solid rgba(255, 129, 104,0.2)', color: '#ff8168', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
           {error}
         </div>
       )}
@@ -363,8 +363,8 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
           onClick={deleteTrajectory}
           disabled={deletingTrajectory}
           style={{
-            background: 'rgba(255,155,135,0.08)', border: '1px solid rgba(255,155,135,0.3)',
-            color: '#FF9B87', padding: '7px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600,
+            background: 'rgba(255, 129, 104,0.08)', border: '1px solid rgba(255, 129, 104,0.3)',
+            color: '#ff8168', padding: '7px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600,
             cursor: deletingTrajectory ? 'not-allowed' : 'pointer',
           }}
         >
@@ -373,7 +373,7 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
       </div>
 
       {/* ─── Section A: Target + Readiness Score ─────────────────────────── */}
-      <div className="card" style={{ background: 'rgba(184,164,255,0.07)', border: '1px solid rgba(184,164,255,0.18)', marginBottom: 16 }}>
+      <div className="card" style={{ background: 'rgba(160, 133, 255,0.07)', border: '1px solid rgba(160, 133, 255,0.18)', marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ flex: 1 }}>
             <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Target Role</p>
@@ -382,13 +382,13 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
             </p>
             <p style={{ color: '#A1A1A6', fontSize: 13, marginTop: 3 }}>
               from <span style={{ color: '#F5F5F7' }}>{trajectory.currentRole}</span>
-              {trajectory.timeHorizon && <> · <span style={{ color: '#B8A4FF' }}>{trajectory.timeHorizon}</span></>}
+              {trajectory.timeHorizon && <> · <span style={{ color: '#a085ff' }}>{trajectory.timeHorizon}</span></>}
             </p>
           </div>
           <div style={{ textAlign: 'right', minWidth: 80 }}>
             <p style={{ color: '#6E6E73', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Open gaps</p>
-            <p style={{ color: '#ECC666', fontSize: 22, fontWeight: 700 }}>{openGaps.length}</p>
-            <p style={{ color: '#7FD5AA', fontSize: 12, marginTop: 1 }}>{closedGaps.length} closed</p>
+            <p style={{ color: '#ffce53', fontSize: 22, fontWeight: 700 }}>{openGaps.length}</p>
+            <p style={{ color: '#64f0aa', fontSize: 12, marginTop: 1 }}>{closedGaps.length} closed</p>
           </div>
         </div>
 
@@ -400,7 +400,7 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
               <button
                 onClick={generateRoadmap}
                 disabled={generatingRoadmap}
-                style={{ background: 'none', border: '1px solid rgba(184,164,255,0.3)', color: '#B8A4FF', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: generatingRoadmap ? 'not-allowed' : 'pointer' }}
+                style={{ background: 'none', border: '1px solid rgba(160, 133, 255,0.3)', color: '#a085ff', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: generatingRoadmap ? 'not-allowed' : 'pointer' }}
               >
                 {generatingRoadmap ? '⏳ Updating...' : '↻ Recalculate'}
               </button>
@@ -421,8 +421,8 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
 
         {/* Next Best Action (trajectory-level) */}
         {trajectoryNextAction && (
-          <div style={{ marginTop: 12, background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 10, padding: '10px 14px' }}>
-            <p style={{ color: '#7FD5AA', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Next Best Action</p>
+          <div style={{ marginTop: 12, background: 'rgba(100, 240, 170,0.08)', border: '1px solid rgba(100, 240, 170,0.2)', borderRadius: 10, padding: '10px 14px' }}>
+            <p style={{ color: '#64f0aa', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Next Best Action</p>
             <p style={{ color: '#F5F5F7', fontSize: 13 }}>{trajectoryNextAction}</p>
           </div>
         )}
@@ -433,8 +433,8 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
             onClick={generateRoadmap}
             disabled={generatingRoadmap}
             style={{
-              marginTop: 14, width: '100%', background: 'rgba(184,164,255,0.12)', border: '1px solid rgba(184,164,255,0.35)',
-              color: '#B8A4FF', padding: '10px 0', borderRadius: 10, fontSize: 13, fontWeight: 600,
+              marginTop: 14, width: '100%', background: 'rgba(160, 133, 255,0.12)', border: '1px solid rgba(160, 133, 255,0.35)',
+              color: '#a085ff', padding: '10px 0', borderRadius: 10, fontSize: 13, fontWeight: 600,
               cursor: generatingRoadmap ? 'not-allowed' : 'pointer',
             }}
           >
@@ -449,7 +449,7 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
         <h3 style={{ fontSize: 16, fontWeight: 600, color: '#F5F5F7', marginBottom: 16 }}>Gap Execution Plan</h3>
 
         {openGaps.length === 0 ? (
-          <p style={{ color: '#7FD5AA', fontSize: 14 }}>All gaps closed — ready to define the next horizon.</p>
+          <p style={{ color: '#64f0aa', fontSize: 14 }}>All gaps closed — ready to define the next horizon.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {openGaps.map(gap => {
@@ -487,7 +487,7 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
                             {gap.gapType.replace(/_/g, ' ')}
                           </span>
                           <span style={{
-                            color: gap.priority === 1 ? '#FF9B87' : gap.priority === 2 ? '#ECC666' : '#6E6E73',
+                            color: gap.priority === 1 ? '#ff8168' : gap.priority === 2 ? '#ffce53' : '#6E6E73',
                             fontSize: 10, fontWeight: 700,
                           }}>
                             {gap.priority === 1 ? 'High' : gap.priority === 2 ? 'Med' : 'Low'}
@@ -507,16 +507,16 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
                           <p style={{ color: '#6E6E73', fontSize: 12, lineHeight: 1.5 }}>{gap.description}</p>
                         )}
                         {gap._whyItMatters && (
-                          <p style={{ color: '#B8A4FF', fontSize: 12, marginTop: 5, fontStyle: 'italic' }}>{gap._whyItMatters}</p>
+                          <p style={{ color: '#a085ff', fontSize: 12, marginTop: 5, fontStyle: 'italic' }}>{gap._whyItMatters}</p>
                         )}
                       </div>
                     </div>
 
                     {/* Next best action — always visible if exists */}
                     {gap.nextBestAction && (
-                      <div style={{ background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 8, padding: '7px 11px', marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <div style={{ background: 'rgba(100, 240, 170,0.1)', border: '1px solid rgba(100, 240, 170,0.2)', borderRadius: 8, padding: '7px 11px', marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                         <div style={{ flex: 1 }}>
-                          <p style={{ color: '#7FD5AA', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Next Action</p>
+                          <p style={{ color: '#64f0aa', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Next Action</p>
                           <p style={{ color: '#F5F5F7', fontSize: 12 }}>{gap.nextBestAction}</p>
                         </div>
                         <button
@@ -524,9 +524,9 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
                           disabled={addedNextAction.has(gap.id)}
                           style={{
                             flexShrink: 0,
-                            background: addedNextAction.has(gap.id) ? 'rgba(127,213,170,0.15)' : 'rgba(127,213,170,0.1)',
-                            border: '1px solid rgba(127,213,170,0.3)',
-                            color: '#7FD5AA', borderRadius: 5, padding: '3px 9px',
+                            background: addedNextAction.has(gap.id) ? 'rgba(100, 240, 170,0.15)' : 'rgba(100, 240, 170,0.1)',
+                            border: '1px solid rgba(100, 240, 170,0.3)',
+                            color: '#64f0aa', borderRadius: 5, padding: '3px 9px',
                             fontSize: 10, fontWeight: 600,
                             cursor: addedNextAction.has(gap.id) ? 'default' : 'pointer',
                             transition: 'all 0.15s', marginTop: 2,
@@ -575,8 +575,8 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
                       <button
                         onClick={() => closeGap(gap.id)}
                         style={{
-                          background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.25)',
-                          color: '#7FD5AA', padding: '5px 12px', borderRadius: 8,
+                          background: 'rgba(100, 240, 170,0.1)', border: '1px solid rgba(100, 240, 170,0.25)',
+                          color: '#64f0aa', padding: '5px 12px', borderRadius: 8,
                           fontSize: 11, fontWeight: 600, cursor: 'pointer',
                         }}
                       >
@@ -595,8 +595,8 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
                         onClick={() => deleteGap(gap.id)}
                         disabled={isDeleting}
                         style={{
-                          background: 'none', border: '1px solid rgba(255,155,135,0.2)',
-                          color: '#FF9B87', padding: '5px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
+                          background: 'none', border: '1px solid rgba(255, 129, 104,0.2)',
+                          color: '#ff8168', padding: '5px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
                         }}
                       >
                         {isDeleting ? '…' : 'Delete'}
@@ -657,9 +657,9 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
                                 title="Add to this week"
                                 style={{
                                   flexShrink: 0,
-                                  background: isAdded ? 'rgba(127,213,170,0.1)' : 'rgba(255,255,255,0.04)',
-                                  border: `1px solid ${isAdded ? 'rgba(127,213,170,0.3)' : 'rgba(255,255,255,0.1)'}`,
-                                  color: isAdded ? '#7FD5AA' : '#6E6E73',
+                                  background: isAdded ? 'rgba(100, 240, 170,0.1)' : 'rgba(255,255,255,0.04)',
+                                  border: `1px solid ${isAdded ? 'rgba(100, 240, 170,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                                  color: isAdded ? '#64f0aa' : '#6E6E73',
                                   borderRadius: 5, padding: '3px 8px', fontSize: 10, fontWeight: 600,
                                   cursor: isAdded ? 'default' : 'pointer',
                                   transition: 'all 0.15s',
@@ -714,7 +714,7 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                      <span style={{ color: '#B8A4FF', fontSize: 12, fontWeight: 700 }}>{phase.phase}</span>
+                      <span style={{ color: '#a085ff', fontSize: 12, fontWeight: 700 }}>{phase.phase}</span>
                       <span style={{ color: '#6E6E73', fontSize: 11 }}>{phase.monthRange}</span>
                     </div>
                   </div>
@@ -723,14 +723,14 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginBottom: 6 }}>
                       {phase.milestones.map((m, j) => (
                         <div key={j} style={{ display: 'flex', gap: 7, alignItems: 'flex-start' }}>
-                          <span style={{ color: '#B8A4FF', fontSize: 11, marginTop: 1 }}>·</span>
+                          <span style={{ color: '#a085ff', fontSize: 11, marginTop: 1 }}>·</span>
                           <span style={{ color: '#A1A1A6', fontSize: 12 }}>{m}</span>
                         </div>
                       ))}
                     </div>
                   )}
-                  <div style={{ background: 'rgba(127,213,170,0.07)', borderRadius: 7, padding: '6px 10px' }}>
-                    <span style={{ color: '#7FD5AA', fontSize: 11, fontWeight: 600 }}>Output: </span>
+                  <div style={{ background: 'rgba(100, 240, 170,0.07)', borderRadius: 7, padding: '6px 10px' }}>
+                    <span style={{ color: '#64f0aa', fontSize: 11, fontWeight: 600 }}>Output: </span>
                     <span style={{ color: '#F5F5F7', fontSize: 12 }}>{phase.keyOutput}</span>
                   </div>
                   {phase.gapsClosed && phase.gapsClosed.length > 0 && (
@@ -770,7 +770,7 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
                       {g.replace(/_/g, ' ')}
                     </span>
                   ))}
-                  <span style={{ color: '#7FD5AA', fontSize: 11 }}>→ {p.impact}</span>
+                  <span style={{ color: '#64f0aa', fontSize: 11 }}>→ {p.impact}</span>
                 </div>
               </div>
             ))}
@@ -786,8 +786,8 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
             onClick={generateQuarterPlan}
             disabled={generatingPlan}
             style={{
-              background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.4)',
-              color: '#B8A4FF', padding: '7px 14px', borderRadius: 10,
+              background: 'rgba(160, 133, 255,0.15)', border: '1px solid rgba(160, 133, 255,0.4)',
+              color: '#a085ff', padding: '7px 14px', borderRadius: 10,
               fontSize: 12, fontWeight: 600, cursor: generatingPlan ? 'not-allowed' : 'pointer',
             }}
           >
@@ -805,7 +805,7 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
                 <div style={{ display: 'grid', gap: 6 }}>
                   {((() => { try { return JSON.parse(latestPlan.priorities!) as string[] } catch { return [] } })()).map((p: string, i: number) => (
                     <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                      <span style={{ color: '#B8A4FF', fontWeight: 700, fontSize: 13 }}>{i + 1}.</span>
+                      <span style={{ color: '#a085ff', fontWeight: 700, fontSize: 13 }}>{i + 1}.</span>
                       <span style={{ color: '#F5F5F7', fontSize: 13 }}>{p}</span>
                     </div>
                   ))}
@@ -813,14 +813,14 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
               </div>
             )}
             {latestPlan.keyOutput && (
-              <div style={{ background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)', borderRadius: 10, padding: '10px 14px', marginBottom: 10 }}>
-                <p style={{ color: '#7FD5AA', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Key Output</p>
+              <div style={{ background: 'rgba(100, 240, 170,0.08)', border: '1px solid rgba(100, 240, 170,0.2)', borderRadius: 10, padding: '10px 14px', marginBottom: 10 }}>
+                <p style={{ color: '#64f0aa', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Key Output</p>
                 <p style={{ color: '#F5F5F7', fontSize: 13 }}>{latestPlan.keyOutput}</p>
               </div>
             )}
             {latestPlan.highUpsideBet && (
-              <div style={{ background: 'rgba(236,198,102,0.08)', border: '1px solid rgba(236,198,102,0.2)', borderRadius: 10, padding: '10px 14px' }}>
-                <p style={{ color: '#ECC666', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>High-Upside Bet ⭐</p>
+              <div style={{ background: 'rgba(255, 206, 83,0.08)', border: '1px solid rgba(255, 206, 83,0.2)', borderRadius: 10, padding: '10px 14px' }}>
+                <p style={{ color: '#ffce53', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>High-Upside Bet ⭐</p>
                 <p style={{ color: '#F5F5F7', fontSize: 13 }}>{latestPlan.highUpsideBet}</p>
               </div>
             )}
@@ -838,7 +838,7 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
               width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 0,
             }}
           >
-            <h3 style={{ fontSize: 14, fontWeight: 600, color: '#7FD5AA' }}>✓ Closed Gaps ({closedGaps.length})</h3>
+            <h3 style={{ fontSize: 14, fontWeight: 600, color: '#64f0aa' }}>✓ Closed Gaps ({closedGaps.length})</h3>
             <span style={{ color: '#6E6E73', fontSize: 12 }}>{showClosed ? '▲' : '▼'}</span>
           </button>
           {showClosed && (
@@ -846,11 +846,11 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
               {closedGaps.map(gap => (
                 <div key={gap.id} style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '8px 12px', background: 'rgba(127,213,170,0.05)',
-                  border: '1px solid rgba(127,213,170,0.15)', borderRadius: 8,
+                  padding: '8px 12px', background: 'rgba(100, 240, 170,0.05)',
+                  border: '1px solid rgba(100, 240, 170,0.15)', borderRadius: 8,
                 }}>
                   <div>
-                    <span style={{ color: '#7FD5AA', fontSize: 12, fontWeight: 600 }}>{gap.title}</span>
+                    <span style={{ color: '#64f0aa', fontSize: 12, fontWeight: 600 }}>{gap.title}</span>
                     <span style={{ color: '#6E6E73', fontSize: 11, marginLeft: 8 }}>
                       {gap.gapType.replace(/_/g, ' ')}
                     </span>

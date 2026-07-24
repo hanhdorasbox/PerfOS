@@ -90,7 +90,7 @@ export default function FocusModeOverlay({
 
         {/* Timer */}
         <div style={{
-          fontSize: 64, fontWeight: 800, color: secondsLeft === 0 ? '#7FD5AA' : '#EEEEF2',
+          fontSize: 64, fontWeight: 800, color: secondsLeft === 0 ? '#64f0aa' : '#EEEEF2',
           fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em',
           lineHeight: 1,
         }}>
@@ -114,7 +114,7 @@ export default function FocusModeOverlay({
           onClick={onDone}
           style={{
             fontSize: 15, fontWeight: 700, color: '#0A0A0C',
-            background: '#7FD5AA', border: 'none', borderRadius: 10,
+            background: '#64f0aa', border: 'none', borderRadius: 10,
             padding: '12px 32px', cursor: 'pointer',
           }}
         >

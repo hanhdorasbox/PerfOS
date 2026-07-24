@@ -12,10 +12,10 @@
   --fin-border-strong: var(--border-strong);
 
   /* Accent — gold, used sparingly */
-  --fin-gold: #c9a961;
-  --fin-gold-hover: #d4b876;
-  --fin-gold-bg: rgba(201, 169, 97, 0.09);
-  --fin-gold-border: rgba(201, 169, 97, 0.3);
+  --fin-gold: #ebb63f;
+  --fin-gold-hover: #f2c458;
+  --fin-gold-bg: rgba(235, 182, 63, 0.09);
+  --fin-gold-border: rgba(235, 182, 63, 0.3);
 
   /* Semantic — the app's pastel palette */
   --fin-gain: var(--mint-text);
@@ -131,7 +131,7 @@
 .fin-btn-primary:hover {
   color: var(--fin-gold-hover);
   border-color: var(--fin-gold);
-  background: rgba(201, 169, 97, 0.13);
+  background: rgba(235, 182, 63, 0.13);
 }
 
 .fin-btn-danger:hover {

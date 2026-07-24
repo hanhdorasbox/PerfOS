@@ -12,7 +12,7 @@ export default async function StatementPage({ params }: { params: Promise<{ stat
   const { statementId } = await params
 
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF9B87' }}>No user found</div>
+  if (!user) return <div style={{ color: '#ff8168' }}>No user found</div>
 
   const [statement, transactionRules] = await Promise.all([
     prisma.bankStatement.findUnique({
@@ -28,9 +28,9 @@ export default async function StatementPage({ params }: { params: Promise<{ stat
   if (!statement) notFound()
 
   const statusColors: Record<string, string> = {
-    pending: '#ECC666',
-    reviewing: '#80BDFF',
-    committed: '#7FD5AA',
+    pending: '#ffce53',
+    reviewing: '#61adff',
+    committed: '#64f0aa',
   }
 
   return (

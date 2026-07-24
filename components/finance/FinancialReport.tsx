@@ -35,19 +35,19 @@ interface Props {
 }
 
 const STATUS_CONFIG = {
-  positive: { label: 'Positive', color: '#7FD5AA', bg: 'rgba(127,213,170,0.1)', border: 'rgba(127,213,170,0.25)' },
-  watch:    { label: 'Watch',    color: '#ECC666', bg: 'rgba(236,198,102,0.1)',  border: 'rgba(236,198,102,0.25)' },
-  risk:     { label: 'Risk',     color: '#F5A56A', bg: 'rgba(245,165,106,0.1)',  border: 'rgba(245,165,106,0.25)' },
-  critical: { label: 'Critical', color: '#FF9B87', bg: 'rgba(255,155,135,0.1)', border: 'rgba(255,155,135,0.25)' },
+  positive: { label: 'Positive', color: '#64f0aa', bg: 'rgba(100, 240, 170,0.1)', border: 'rgba(100, 240, 170,0.25)' },
+  watch:    { label: 'Watch',    color: '#ffce53', bg: 'rgba(255, 206, 83,0.1)',  border: 'rgba(255, 206, 83,0.25)' },
+  risk:     { label: 'Risk',     color: '#ffa360', bg: 'rgba(255, 163, 96,0.1)',  border: 'rgba(255, 163, 96,0.25)' },
+  critical: { label: 'Critical', color: '#ff8168', bg: 'rgba(255, 129, 104,0.1)', border: 'rgba(255, 129, 104,0.25)' },
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  incomes: '#7FD5AA',
-  bills: '#B8A4FF',
-  subscriptions: '#80BDFF',
-  expenses: '#FF9B87',
-  'savings & investments': '#7FD5AA',
-  debt: '#ECC666',
+  incomes: '#64f0aa',
+  bills: '#a085ff',
+  subscriptions: '#61adff',
+  expenses: '#ff8168',
+  'savings & investments': '#64f0aa',
+  debt: '#ffce53',
 }
 
 function parseNarrative(raw: string): ParsedReport | null {
@@ -115,8 +115,8 @@ export default function FinancialReport({ report }: Props) {
         <a
           href="/api/finance/workbook/download"
           style={{
-            background: 'rgba(184,164,255,0.1)', border: '1px solid rgba(184,164,255,0.3)',
-            color: '#B8A4FF', padding: '8px 16px', borderRadius: 8,
+            background: 'rgba(160, 133, 255,0.1)', border: '1px solid rgba(160, 133, 255,0.3)',
+            color: '#a085ff', padding: '8px 16px', borderRadius: 8,
             fontSize: 13, fontWeight: 600, textDecoration: 'none',
           }}
         >
@@ -127,10 +127,10 @@ export default function FinancialReport({ report }: Props) {
       {/* KPI row */}
       <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
         {[
-          { label: 'Income',       value: formatKc(incomeVsExpense.income), color: '#7FD5AA' },
-          { label: 'Expenses',     value: formatKc(incomeVsExpense.expense), color: '#FF9B87' },
-          { label: 'Net Balance',  value: (net >= 0 ? '+' : '') + formatKc(net), color: net >= 0 ? '#7FD5AA' : '#FF9B87' },
-          { label: 'Margin',       value: `${margin.toFixed(1)}%`, color: margin >= 10 ? '#7FD5AA' : margin >= 0 ? '#ECC666' : '#FF9B87' },
+          { label: 'Income',       value: formatKc(incomeVsExpense.income), color: '#64f0aa' },
+          { label: 'Expenses',     value: formatKc(incomeVsExpense.expense), color: '#ff8168' },
+          { label: 'Net Balance',  value: (net >= 0 ? '+' : '') + formatKc(net), color: net >= 0 ? '#64f0aa' : '#ff8168' },
+          { label: 'Margin',       value: `${margin.toFixed(1)}%`, color: margin >= 10 ? '#64f0aa' : margin >= 0 ? '#ffce53' : '#ff8168' },
         ].map(kpi => (
           <div key={kpi.label} className="card" style={{ padding: '14px 16px' }}>
             <p style={{ color: '#6E6E73', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>{kpi.label}</p>
@@ -164,7 +164,7 @@ export default function FinancialReport({ report }: Props) {
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <p style={{ color: '#A1A1A6', fontSize: 13 }}>{txCount} transactions processed</p>
-              <p style={{ color: net >= 0 ? '#7FD5AA' : '#FF9B87', fontSize: 13 }}>
+              <p style={{ color: net >= 0 ? '#64f0aa' : '#ff8168', fontSize: 13 }}>
                 Month closed {net >= 0 ? 'positive' : 'negative'}
               </p>
             </div>
@@ -181,7 +181,7 @@ export default function FinancialReport({ report }: Props) {
               .sort(([, a], [, b]) => b - a)
               .map(([cat, val]) => {
                 const pct = (val / maxCatVal) * 100
-                const color = CATEGORY_COLORS[cat] || '#B8A4FF'
+                const color = CATEGORY_COLORS[cat] || '#a085ff'
                 return (
                   <div key={cat}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
@@ -201,16 +201,16 @@ export default function FinancialReport({ report }: Props) {
       {/* Watch points */}
       {parsed?.watchPoints && parsed.watchPoints.length > 0 && (
         <div style={{
-          background: 'rgba(236,198,102,0.06)', border: '1px solid rgba(236,198,102,0.2)',
+          background: 'rgba(255, 206, 83,0.06)', border: '1px solid rgba(255, 206, 83,0.2)',
           borderRadius: 12, padding: '16px 20px', marginBottom: 16,
         }}>
-          <p style={{ color: '#ECC666', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
+          <p style={{ color: '#ffce53', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
             Watch points
           </p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
             {parsed.watchPoints.map((wp, i) => (
               <li key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                <span style={{ color: '#ECC666', fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
+                <span style={{ color: '#ffce53', fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
                 <span style={{ color: '#F5F5F7', fontSize: 13, lineHeight: 1.5 }}>{wp}</span>
               </li>
             ))}
@@ -221,17 +221,17 @@ export default function FinancialReport({ report }: Props) {
       {/* Next actions */}
       {parsed?.nextActions && parsed.nextActions.length > 0 && (
         <div style={{
-          background: 'rgba(127,213,170,0.05)', border: '1px solid rgba(127,213,170,0.2)',
+          background: 'rgba(100, 240, 170,0.05)', border: '1px solid rgba(100, 240, 170,0.2)',
           borderRadius: 12, padding: '16px 20px', marginBottom: 16,
         }}>
-          <p style={{ color: '#7FD5AA', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
+          <p style={{ color: '#64f0aa', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
             Next actions
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {parsed.nextActions.map((action, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                 <span style={{
-                  background: 'rgba(127,213,170,0.15)', color: '#7FD5AA',
+                  background: 'rgba(100, 240, 170,0.15)', color: '#64f0aa',
                   fontSize: 11, fontWeight: 700, width: 20, height: 20, borderRadius: 99,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1,
                 }}>{i + 1}</span>
@@ -285,20 +285,20 @@ export default function FinancialReport({ report }: Props) {
 
       {/* Old-format narrative → regenerate prompt */}
       {!parsed && narrative && (
-        <div style={{ background: 'rgba(236,198,102,0.07)', border: '1px solid rgba(236,198,102,0.25)', borderRadius: 12, padding: '16px 20px' }}>
-          <p style={{ color: '#ECC666', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+        <div style={{ background: 'rgba(255, 206, 83,0.07)', border: '1px solid rgba(255, 206, 83,0.25)', borderRadius: 12, padding: '16px 20px' }}>
+          <p style={{ color: '#ffce53', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
             Analysis is in old format
           </p>
           <p style={{ color: '#6E6E73', fontSize: 12, marginBottom: 14 }}>
             Regenerate to get structured insights: status chip, key bullets, watch signals, action items.
           </p>
-          {regenError && <p style={{ color: '#FF9B87', fontSize: 12, marginBottom: 10 }}>{regenError}</p>}
+          {regenError && <p style={{ color: '#ff8168', fontSize: 12, marginBottom: 10 }}>{regenError}</p>}
           <button
             onClick={regenerate}
             disabled={regenerating}
             style={{
-              background: 'rgba(236,198,102,0.15)', border: '1px solid rgba(236,198,102,0.4)',
-              color: '#ECC666', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+              background: 'rgba(255, 206, 83,0.15)', border: '1px solid rgba(255, 206, 83,0.4)',
+              color: '#ffce53', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
               cursor: regenerating ? 'not-allowed' : 'pointer',
             }}
           >

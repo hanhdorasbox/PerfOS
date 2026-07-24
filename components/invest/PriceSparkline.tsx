@@ -66,7 +66,7 @@ export default function PriceSparkline({
           <Line
             type="monotone"
             dataKey="price"
-            stroke="#3987e5"
+            stroke="#1f85ff"
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}

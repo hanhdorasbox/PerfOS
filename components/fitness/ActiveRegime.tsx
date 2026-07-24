@@ -102,11 +102,11 @@ function buildChips(
   nutrition: PlanBlock | null,
 ): Chip[] {
   const chips: Chip[] = []
-  if (strength?.sessionsPerWeek) chips.push({ label: `Strength ${strength.sessionsPerWeek}×/wk`, color: '#B8A4FF' })
-  if (cardio?.sessionsPerWeek) chips.push({ label: `Cardio ${cardio.sessionsPerWeek}×/wk`, color: '#80BDFF' })
+  if (strength?.sessionsPerWeek) chips.push({ label: `Strength ${strength.sessionsPerWeek}×/wk`, color: '#a085ff' })
+  if (cardio?.sessionsPerWeek) chips.push({ label: `Cardio ${cardio.sessionsPerWeek}×/wk`, color: '#61adff' })
   const protein = (nutrition?.proteinTarget as number | undefined)
     ?? (nutrition as { targetProtein?: number } | null)?.targetProtein
-  if (protein) chips.push({ label: `Protein ${protein}g/day`, color: '#7FD5AA' })
+  if (protein) chips.push({ label: `Protein ${protein}g/day`, color: '#64f0aa' })
   const lower = obj.toLowerCase()
   let focus = ''
   if (/waist/.test(lower)) focus = 'Waist focus'
@@ -114,7 +114,7 @@ function buildChips(
   else if (/fat|weight loss/.test(lower)) focus = 'Fat loss'
   else if (/body composition|recomposition/.test(lower)) focus = 'Body comp'
   else if (/endurance/.test(lower)) focus = 'Endurance'
-  if (focus) chips.push({ label: focus, color: '#F5A56A' })
+  if (focus) chips.push({ label: focus, color: '#ffa360' })
   return chips
 }
 
@@ -214,7 +214,7 @@ function renderPlanBlock(label: string, plan: PlanBlock | null, icon: string): R
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {bullets.map((b, i) => (
           <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
-            <span style={{ fontSize: 9, color: '#4A8A6E', flexShrink: 0, marginTop: 3, fontWeight: 700 }}>•</span>
+            <span style={{ fontSize: 9, color: '#30a471', flexShrink: 0, marginTop: 3, fontWeight: 700 }}>•</span>
             <span style={{ fontSize: 12, color: '#A1A1A6', lineHeight: 1.4 }}>{b}</span>
           </div>
         ))}
@@ -357,13 +357,13 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
 
   if (!strategy) {
     return (
-      <div className="card" style={{ borderLeft: '2px solid rgba(127,213,170,0.2)' }}>
+      <div className="card" style={{ borderLeft: '2px solid rgba(100, 240, 170,0.2)' }}>
         <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 10 }}>
           Current Quarterly Fitness Regime
         </div>
         <div style={{ fontSize: 13, color: '#6E6E73', fontStyle: 'italic' }}>
           No active fitness strategy.{' '}
-          <a href="/fitness/strategy" style={{ color: '#7FD5AA', textDecoration: 'none' }}>
+          <a href="/fitness/strategy" style={{ color: '#64f0aa', textDecoration: 'none' }}>
             Generate one at Fitness Strategy page.
           </a>
         </div>
@@ -378,17 +378,17 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
   const chips = buildChips(strategy.mainObjective, strengthPlan, cardioPlan, nutritionPlan)
 
   return (
-    <div className="card" style={{ borderLeft: `2px solid ${isDraft ? 'rgba(236,198,102,0.4)' : 'rgba(127,213,170,0.3)'}` }}>
+    <div className="card" style={{ borderLeft: `2px solid ${isDraft ? 'rgba(255, 206, 83,0.4)' : 'rgba(100, 240, 170,0.3)'}` }}>
       {isDraft && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', marginBottom: 14, borderRadius: 8, background: 'rgba(236,198,102,0.07)', border: '1px solid rgba(236,198,102,0.2)' }}>
-          <span style={{ fontSize: 12, color: '#ECC666' }}>Draft strategy — review and activate to make it operational</span>
-          <a href="/fitness/strategy" style={{ fontSize: 12, color: '#ECC666', textDecoration: 'none', fontWeight: 700, flexShrink: 0 }}>Review & Activate →</a>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', marginBottom: 14, borderRadius: 8, background: 'rgba(255, 206, 83,0.07)', border: '1px solid rgba(255, 206, 83,0.2)' }}>
+          <span style={{ fontSize: 12, color: '#ffce53' }}>Draft strategy — review and activate to make it operational</span>
+          <a href="/fitness/strategy" style={{ fontSize: 12, color: '#ffce53', textDecoration: 'none', fontWeight: 700, flexShrink: 0 }}>Review & Activate →</a>
         </div>
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: isDraft ? '#ECC666' : '#6E6E73', marginBottom: 4 }}>
+          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: isDraft ? '#ffce53' : '#6E6E73', marginBottom: 4 }}>
             {isDraft ? 'Draft Fitness Strategy' : 'Current Quarterly Fitness Regime'}
           </div>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#D1D1D6', marginBottom: chips.length > 0 ? 8 : 0 }}>
@@ -409,7 +409,7 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
           )}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0, marginLeft: 12 }}>
-          <a href="/fitness/strategy" style={{ fontSize: 11, color: isDraft ? '#ECC666' : '#7FD5AA', textDecoration: 'none', padding: '4px 10px', border: `1px solid ${isDraft ? 'rgba(236,198,102,0.2)' : 'rgba(127,213,170,0.2)'}`, borderRadius: 6, whiteSpace: 'nowrap' }}>
+          <a href="/fitness/strategy" style={{ fontSize: 11, color: isDraft ? '#ffce53' : '#64f0aa', textDecoration: 'none', padding: '4px 10px', border: `1px solid ${isDraft ? 'rgba(255, 206, 83,0.2)' : 'rgba(100, 240, 170,0.2)'}`, borderRadius: 6, whiteSpace: 'nowrap' }}>
             Full Strategy →
           </a>
           {!isDraft && <span style={{ fontSize: 9, color: '#48484A', whiteSpace: 'nowrap' }}>Synced with strategy</span>}
@@ -426,15 +426,15 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '8px 12px', marginBottom: 10, borderRadius: 8,
-          background: feedback.type === 'warn' ? 'rgba(236,198,102,0.08)' : feedback.type === 'protect' ? 'rgba(127,213,170,0.06)' : 'rgba(255,255,255,0.04)',
-          border: `1px solid ${feedback.type === 'warn' ? 'rgba(236,198,102,0.2)' : feedback.type === 'protect' ? 'rgba(127,213,170,0.2)' : 'rgba(255,255,255,0.08)'}`,
+          background: feedback.type === 'warn' ? 'rgba(255, 206, 83,0.08)' : feedback.type === 'protect' ? 'rgba(100, 240, 170,0.06)' : 'rgba(255,255,255,0.04)',
+          border: `1px solid ${feedback.type === 'warn' ? 'rgba(255, 206, 83,0.2)' : feedback.type === 'protect' ? 'rgba(100, 240, 170,0.2)' : 'rgba(255,255,255,0.08)'}`,
         }}>
-          <span style={{ fontSize: 12, color: feedback.type === 'warn' ? '#ECC666' : feedback.type === 'protect' ? '#7FD5AA' : '#A1A1A6' }}>
+          <span style={{ fontSize: 12, color: feedback.type === 'warn' ? '#ffce53' : feedback.type === 'protect' ? '#64f0aa' : '#A1A1A6' }}>
             {feedback.text}
           </span>
           <div style={{ display: 'flex', gap: 8, flexShrink: 0, marginLeft: 12 }}>
             {undoState && (
-              <button onClick={handleUndo} style={{ fontSize: 11, color: '#7FD5AA', background: 'none', border: '1px solid rgba(127,213,170,0.3)', borderRadius: 5, padding: '2px 8px', cursor: 'pointer' }}>
+              <button onClick={handleUndo} style={{ fontSize: 11, color: '#64f0aa', background: 'none', border: '1px solid rgba(100, 240, 170,0.3)', borderRadius: 5, padding: '2px 8px', cursor: 'pointer' }}>
                 Undo
               </button>
             )}
@@ -459,7 +459,7 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
             if (t in wCounts) { wCounts[t]++; if (completedKeys.has(`${day.day}:${session}`)) wDone[t]++ }
           }
         }
-        const CHIP_COLORS: Record<string, string> = { strength: '#7FD5AA', cardio: '#80BDFF', sauna: '#F5A56A', walk: '#B8A4FF' }
+        const CHIP_COLORS: Record<string, string> = { strength: '#64f0aa', cardio: '#61adff', sauna: '#ffa360', walk: '#a085ff' }
         const CHIP_LABELS: Record<string, string> = { strength: 'Strength', cardio: 'Cardio', sauna: 'Sauna', walk: 'Walks' }
 
         return (
@@ -481,17 +481,17 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
               return (
                 <div style={{ marginBottom: 14 }}>
                   {!allDone && (
-                    <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#7FD5AA', marginBottom: 8 }}>
+                    <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#64f0aa', marginBottom: 8 }}>
                       Today · {todayName}
                     </div>
                   )}
 
                   {/* Completion toast — appears briefly when item is marked done */}
                   {completionToast && (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', marginBottom: allDone ? 0 : 8, borderRadius: 8, background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.2)' }}>
-                      <span style={{ fontSize: 12, color: '#7FD5AA' }}>✓ {parseSessionText(completionToast.session).activity} done</span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', marginBottom: allDone ? 0 : 8, borderRadius: 8, background: 'rgba(100, 240, 170,0.08)', border: '1px solid rgba(100, 240, 170,0.2)' }}>
+                      <span style={{ fontSize: 12, color: '#64f0aa' }}>✓ {parseSessionText(completionToast.session).activity} done</span>
                       <div style={{ display: 'flex', gap: 8 }}>
-                        <button onClick={handleUndoCompletion} style={{ fontSize: 11, color: '#7FD5AA', background: 'none', border: '1px solid rgba(127,213,170,0.3)', borderRadius: 5, padding: '2px 8px', cursor: 'pointer' }}>Undo</button>
+                        <button onClick={handleUndoCompletion} style={{ fontSize: 11, color: '#64f0aa', background: 'none', border: '1px solid rgba(100, 240, 170,0.3)', borderRadius: 5, padding: '2px 8px', cursor: 'pointer' }}>Undo</button>
                         <button onClick={() => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); setCompletionToast(null) }} style={{ fontSize: 11, color: '#6E6E73', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
                       </div>
                     </div>
@@ -515,7 +515,7 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                               {meta && <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 1 }}>{meta}</div>}
                             </div>
                             <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                              <button onClick={() => handleMarkDone(labelKey, session, todayName)} style={{ fontSize: 11, fontWeight: 600, color: '#7FD5AA', background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.25)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>✓ Done</button>
+                              <button onClick={() => handleMarkDone(labelKey, session, todayName)} style={{ fontSize: 11, fontWeight: 600, color: '#64f0aa', background: 'rgba(100, 240, 170,0.1)', border: '1px solid rgba(100, 240, 170,0.25)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>✓ Done</button>
                               <button onClick={() => handleRemoveClick(labelKey, session, todayName)} style={{ fontSize: 11, color: '#6E6E73', background: 'none', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '4px 8px', cursor: 'pointer' }}>Skip</button>
                             </div>
                           </div>
@@ -538,8 +538,8 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 6, marginBottom: 12 }}>
               {schedule.slice(0, 7).map((s, di) => (
-                <div key={di} style={{ padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: s.day === todayName ? '1px solid rgba(127,213,170,0.2)' : '1px solid rgba(255,255,255,0.05)' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: s.day === todayName ? '#7FD5AA' : '#6E6E73', marginBottom: 6 }}>{s.day?.slice(0, 3).toUpperCase()}</div>
+                <div key={di} style={{ padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: s.day === todayName ? '1px solid rgba(100, 240, 170,0.2)' : '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: s.day === todayName ? '#64f0aa' : '#6E6E73', marginBottom: 6 }}>{s.day?.slice(0, 3).toUpperCase()}</div>
                   {s.sessionList.length > 0 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                       {s.sessionList.map((session, si) => {
@@ -559,8 +559,8 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
 
                         if (isCompleted) return (
                           <div key={si} style={{ display: 'flex', gap: 5, alignItems: 'flex-start' }}>
-                            <span style={{ fontSize: 9, color: '#7FD5AA', flexShrink: 0, marginTop: 2, fontWeight: 800 }}>✓</span>
-                            <div style={{ fontSize: 11, color: '#7FD5AA', lineHeight: 1.3 }}>{parsed.activity}</div>
+                            <span style={{ fontSize: 9, color: '#64f0aa', flexShrink: 0, marginTop: 2, fontWeight: 800 }}>✓</span>
+                            <div style={{ fontSize: 11, color: '#64f0aa', lineHeight: 1.3 }}>{parsed.activity}</div>
                           </div>
                         )
 
@@ -568,15 +568,15 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                           <div key={si} style={{ display: 'flex', gap: 5, alignItems: 'flex-start', position: 'relative', cursor: 'default' }}
                             onMouseEnter={() => setHoverKey(itemKey)}
                             onMouseLeave={() => setHoverKey(null)}>
-                            <span style={{ fontSize: 9, color: '#7FD5AA', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
+                            <span style={{ fontSize: 9, color: '#64f0aa', flexShrink: 0, marginTop: 2, fontWeight: 700 }}>•</span>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ fontSize: 11, color: '#A1A1A6', lineHeight: 1.3 }}>{parsed.activity}</div>
                               {extractShortMeta(parsed.detail) && <div style={{ fontSize: 10, color: '#6E6E73', marginTop: 1 }}>{extractShortMeta(parsed.detail)}</div>}
                             </div>
                             {isHovered && (
                               <div style={{ position: 'absolute', right: -4, top: -2, display: 'flex', gap: 3 }}>
-                                <button onClick={e => { e.stopPropagation(); handleMarkDone(labelKey, session, s.day) }} title="Mark done" style={{ width: 16, height: 16, borderRadius: '50%', background: 'rgba(127,213,170,0.2)', border: '1px solid rgba(127,213,170,0.4)', color: '#7FD5AA', fontSize: 8, fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, padding: 0 }}>✓</button>
-                                <button onClick={e => { e.stopPropagation(); handleRemoveClick(labelKey, session, s.day) }} title="Skip" style={{ width: 16, height: 16, borderRadius: '50%', background: 'rgba(255,155,135,0.15)', border: '1px solid rgba(255,155,135,0.3)', color: '#FF9B87', fontSize: 9, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, padding: 0 }}>✕</button>
+                                <button onClick={e => { e.stopPropagation(); handleMarkDone(labelKey, session, s.day) }} title="Mark done" style={{ width: 16, height: 16, borderRadius: '50%', background: 'rgba(100, 240, 170,0.2)', border: '1px solid rgba(100, 240, 170,0.4)', color: '#64f0aa', fontSize: 8, fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, padding: 0 }}>✓</button>
+                                <button onClick={e => { e.stopPropagation(); handleRemoveClick(labelKey, session, s.day) }} title="Skip" style={{ width: 16, height: 16, borderRadius: '50%', background: 'rgba(255, 129, 104,0.15)', border: '1px solid rgba(255, 129, 104,0.3)', color: '#ff8168', fontSize: 9, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, padding: 0 }}>✕</button>
                               </div>
                             )}
                           </div>
@@ -633,13 +633,13 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                   onClick={() => setSelectedReason(prev => prev === r.value ? '' : r.value)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', textAlign: 'left',
-                    background: selectedReason === r.value ? 'rgba(127,213,170,0.1)' : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${selectedReason === r.value ? 'rgba(127,213,170,0.35)' : 'rgba(255,255,255,0.06)'}`,
+                    background: selectedReason === r.value ? 'rgba(100, 240, 170,0.1)' : 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${selectedReason === r.value ? 'rgba(100, 240, 170,0.35)' : 'rgba(255,255,255,0.06)'}`,
                     transition: 'all 0.15s',
                   }}
                 >
                   
-                  <span style={{ fontSize: 12, color: selectedReason === r.value ? '#7FD5AA' : '#A1A1A6' }}>{r.label}</span>
+                  <span style={{ fontSize: 12, color: selectedReason === r.value ? '#64f0aa' : '#A1A1A6' }}>{r.label}</span>
                 </button>
               ))}
             </div>
@@ -651,9 +651,9 @@ export default function ActiveRegime({ strategy, isDraft, userId }: Props) {
                 onClick={handleConfirmRemove}
                 disabled={!selectedReason || saving}
                 style={{
-                  flex: 1, padding: '9px 0', background: selectedReason ? 'rgba(255,155,135,0.15)' : 'rgba(255,255,255,0.04)',
-                  border: `1px solid ${selectedReason ? 'rgba(255,155,135,0.3)' : 'rgba(255,255,255,0.06)'}`,
-                  borderRadius: 8, color: selectedReason ? '#FF9B87' : '#4A4845', fontSize: 13, cursor: selectedReason ? 'pointer' : 'default',
+                  flex: 1, padding: '9px 0', background: selectedReason ? 'rgba(255, 129, 104,0.15)' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${selectedReason ? 'rgba(255, 129, 104,0.3)' : 'rgba(255,255,255,0.06)'}`,
+                  borderRadius: 8, color: selectedReason ? '#ff8168' : '#4A4845', fontSize: 13, cursor: selectedReason ? 'pointer' : 'default',
                   fontWeight: 600,
                 }}
               >

@@ -6,10 +6,10 @@ export default {
     extend: {
       colors: {
         background: "#0A0C16",
-        success: "#7FD5AA",
-        warning: "#ECC666",
-        danger: "#FF9B87",
-        purple: "#B8A4FF",
+        success: "#64f0aa",
+        warning: "#ffce53",
+        danger: "#ff8168",
+        purple: "#a085ff",
       },
     },
   },

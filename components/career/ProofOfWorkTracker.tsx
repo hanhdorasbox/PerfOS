@@ -15,12 +15,12 @@ type ProofOfWork = {
 }
 
 const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
-  project: { bg: 'rgba(128,189,255,0.15)', color: '#80BDFF' },
-  automation: { bg: 'rgba(184,164,255,0.15)', color: '#B8A4FF' },
-  portfolio: { bg: 'rgba(127,213,170,0.15)', color: '#7FD5AA' },
-  public_work: { bg: 'rgba(128,189,255,0.15)', color: '#80BDFF' },
-  certification: { bg: 'rgba(245,158,11,0.15)', color: '#ECC666' },
-  case_study: { bg: 'rgba(245,165,106,0.15)', color: '#F5A56A' },
+  project: { bg: 'rgba(97, 173, 255,0.15)', color: '#61adff' },
+  automation: { bg: 'rgba(160, 133, 255,0.15)', color: '#a085ff' },
+  portfolio: { bg: 'rgba(100, 240, 170,0.15)', color: '#64f0aa' },
+  public_work: { bg: 'rgba(97, 173, 255,0.15)', color: '#61adff' },
+  certification: { bg: 'rgba(255, 161, 1,0.15)', color: '#ffce53' },
+  case_study: { bg: 'rgba(255, 163, 96,0.15)', color: '#ffa360' },
 }
 
 const POW_TYPES = ['project', 'automation', 'case_study', 'portfolio', 'certification', 'public_work']
@@ -29,7 +29,7 @@ function Stars({ value }: { value: number }) {
   return (
     <div style={{ display: 'flex', gap: 2 }}>
       {[1, 2, 3, 4, 5].map(i => (
-        <span key={i} style={{ fontSize: 12, color: i <= value ? '#ECC666' : 'rgba(236,198,102,0.2)' }}>★</span>
+        <span key={i} style={{ fontSize: 12, color: i <= value ? '#ffce53' : 'rgba(255, 206, 83,0.2)' }}>★</span>
       ))}
     </div>
   )
@@ -99,10 +99,10 @@ export default function ProofOfWorkTracker({
         <button
           onClick={() => setShowForm(v => !v)}
           style={{
-            background: 'rgba(236,198,102,0.12)',
-            border: '1px solid rgba(236,198,102,0.3)',
+            background: 'rgba(255, 206, 83,0.12)',
+            border: '1px solid rgba(255, 206, 83,0.3)',
             borderRadius: 7,
-            color: '#ECC666',
+            color: '#ffce53',
             padding: '5px 12px',
             fontSize: 12,
             fontWeight: 600,
@@ -160,7 +160,7 @@ export default function ProofOfWorkTracker({
               max={5}
               value={form.reusability}
               onChange={e => setForm(f => ({ ...f, reusability: Number(e.target.value) }))}
-              style={{ width: '100%', accentColor: '#ECC666' }}
+              style={{ width: '100%', accentColor: '#ffce53' }}
             />
           </div>
           <div style={{ display: 'flex', gap: 16 }}>
@@ -169,7 +169,7 @@ export default function ProofOfWorkTracker({
                 type="checkbox"
                 checked={form.monetizable}
                 onChange={e => setForm(f => ({ ...f, monetizable: e.target.checked }))}
-                style={{ accentColor: '#7FD5AA' }}
+                style={{ accentColor: '#64f0aa' }}
               />
               Monetizable
             </label>
@@ -178,7 +178,7 @@ export default function ProofOfWorkTracker({
                 type="checkbox"
                 checked={form.isPublic}
                 onChange={e => setForm(f => ({ ...f, isPublic: e.target.checked }))}
-                style={{ accentColor: '#7FD5AA' }}
+                style={{ accentColor: '#64f0aa' }}
               />
               Public
             </label>
@@ -188,7 +188,7 @@ export default function ProofOfWorkTracker({
               type="submit"
               disabled={submitting}
               style={{
-                background: '#ECC666',
+                background: '#ffce53',
                 border: 'none',
                 borderRadius: 7,
                 color: '#1A1916',
@@ -257,8 +257,8 @@ export default function ProofOfWorkTracker({
                 {pow.monetizable && (
                   <span
                     style={{
-                      background: 'rgba(127,213,170,0.12)',
-                      color: '#7FD5AA',
+                      background: 'rgba(100, 240, 170,0.12)',
+                      color: '#64f0aa',
                       fontSize: 10,
                       padding: '2px 7px',
                       borderRadius: 4,
@@ -271,8 +271,8 @@ export default function ProofOfWorkTracker({
                 {pow.isPublic && (
                   <span
                     style={{
-                      background: 'rgba(128,189,255,0.12)',
-                      color: '#80BDFF',
+                      background: 'rgba(97, 173, 255,0.12)',
+                      color: '#61adff',
                       fontSize: 10,
                       padding: '2px 7px',
                       borderRadius: 4,

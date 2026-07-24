@@ -48,34 +48,34 @@ interface Props {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TYPE_META: Record<string, { label: string; color: string; bg: string; emoji: string }> = {
-  try:              { label: 'Try',             color: '#80BDFF', bg: 'rgba(128,189,255,0.12)', emoji: '🎯' },
-  buy:              { label: 'Buy',             color: '#ECC666', bg: 'rgba(236,198,102,0.12)', emoji: '🛍️' },
-  go:               { label: 'Go',              color: '#7FD5AA', bg: 'rgba(127,213,170,0.12)', emoji: '📍' },
-  eat_drink:        { label: 'Eat & Drink',     color: '#F5A56A', bg: 'rgba(245,165,106,0.12)', emoji: '🍜' },
-  learn:            { label: 'Learn',           color: '#B8A4FF', bg: 'rgba(184,164,255,0.12)', emoji: '📚' },
-  build:            { label: 'Build',           color: '#B8A4FF', bg: 'rgba(184,164,255,0.12)', emoji: '🔧' },
-  social:           { label: 'Social',          color: '#E88CA0', bg: 'rgba(232,140,160,0.12)', emoji: '👥' },
-  recovery:         { label: 'Recovery',        color: '#7FD5AA', bg: 'rgba(127,213,170,0.12)', emoji: '🧘' },
-  beauty_identity:  { label: 'Beauty / ID',     color: '#E88CA0', bg: 'rgba(232,140,160,0.12)', emoji: '✨' },
-  fitness:          { label: 'Fitness',         color: '#7FD5AA', bg: 'rgba(127,213,170,0.12)', emoji: '💪' },
-  guilty_pleasure:  { label: 'Guilty Pleasure', color: '#E8907A', bg: 'rgba(232,144,122,0.12)', emoji: '🍕' },
-  big_want:         { label: 'Big Want',        color: '#ECC666', bg: 'rgba(236,198,102,0.12)', emoji: '⭐' },
+  try:              { label: 'Try',             color: '#61adff', bg: 'rgba(97, 173, 255,0.12)', emoji: '🎯' },
+  buy:              { label: 'Buy',             color: '#ffce53', bg: 'rgba(255, 206, 83,0.12)', emoji: '🛍️' },
+  go:               { label: 'Go',              color: '#64f0aa', bg: 'rgba(100, 240, 170,0.12)', emoji: '📍' },
+  eat_drink:        { label: 'Eat & Drink',     color: '#ffa360', bg: 'rgba(255, 163, 96,0.12)', emoji: '🍜' },
+  learn:            { label: 'Learn',           color: '#a085ff', bg: 'rgba(160, 133, 255,0.12)', emoji: '📚' },
+  build:            { label: 'Build',           color: '#a085ff', bg: 'rgba(160, 133, 255,0.12)', emoji: '🔧' },
+  social:           { label: 'Social',          color: '#ff567b', bg: 'rgba(255, 86, 123,0.12)', emoji: '👥' },
+  recovery:         { label: 'Recovery',        color: '#64f0aa', bg: 'rgba(100, 240, 170,0.12)', emoji: '🧘' },
+  beauty_identity:  { label: 'Beauty / ID',     color: '#ff567b', bg: 'rgba(255, 86, 123,0.12)', emoji: '✨' },
+  fitness:          { label: 'Fitness',         color: '#64f0aa', bg: 'rgba(100, 240, 170,0.12)', emoji: '💪' },
+  guilty_pleasure:  { label: 'Guilty Pleasure', color: '#ff8263', bg: 'rgba(255, 130, 99,0.12)', emoji: '🍕' },
+  big_want:         { label: 'Big Want',        color: '#ffce53', bg: 'rgba(255, 206, 83,0.12)', emoji: '⭐' },
 }
 
 const STATUS_META: Record<string, { label: string; color: string }> = {
   idea:         { label: 'Idea',        color: '#6E6E73' },
-  want_to_try:  { label: 'Want to Try', color: '#80BDFF' },
-  wishlist:     { label: 'Wishlist',    color: '#ECC666' },
-  planned:      { label: 'Planned',     color: '#B8A4FF' },
-  scheduled:    { label: 'Scheduled',   color: '#B8A4FF' },
+  want_to_try:  { label: 'Want to Try', color: '#61adff' },
+  wishlist:     { label: 'Wishlist',    color: '#ffce53' },
+  planned:      { label: 'Planned',     color: '#a085ff' },
+  scheduled:    { label: 'Scheduled',   color: '#a085ff' },
   tried:        { label: 'Tried',       color: '#A1A1A6' },
-  loved:        { label: '❤️ Loved',    color: '#7FD5AA' },
+  loved:        { label: '❤️ Loved',    color: '#64f0aa' },
   meh:          { label: 'Meh',         color: '#A1A1A6' },
-  not_again:    { label: '✗ Not Again', color: '#E8907A' },
-  repeat:       { label: '🔁 Repeat',   color: '#7FD5AA' },
-  approved:     { label: 'Approved',    color: '#7FD5AA' },
-  earned:       { label: 'Earned',      color: '#ECC666' },
-  bought:       { label: 'Bought',      color: '#ECC666' },
+  not_again:    { label: '✗ Not Again', color: '#ff8263' },
+  repeat:       { label: '🔁 Repeat',   color: '#64f0aa' },
+  approved:     { label: 'Approved',    color: '#64f0aa' },
+  earned:       { label: 'Earned',      color: '#ffce53' },
+  bought:       { label: 'Bought',      color: '#ffce53' },
   postponed:    { label: 'Postponed',   color: '#6E6E73' },
   rejected:     { label: 'Rejected',    color: '#6E6E73' },
 }
@@ -249,7 +249,7 @@ function ItemCard({
 
         {/* Cost */}
         {item.estimatedCost && (
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#ECC666', flexShrink: 0 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#ffce53', flexShrink: 0 }}>
             {fmtCost(item.estimatedCost, item.currency)}
           </span>
         )}
@@ -271,10 +271,10 @@ function ItemCard({
           </span>
         )}
         {item.fitnessImpact === 'positive' && (
-          <span style={{ fontSize: 11, color: '#7FD5AA' }}>💪 Fitness+</span>
+          <span style={{ fontSize: 11, color: '#64f0aa' }}>💪 Fitness+</span>
         )}
         {item.alcoholImpact !== 'none' && (
-          <span style={{ fontSize: 11, color: '#E8907A' }}>
+          <span style={{ fontSize: 11, color: '#ff8263' }}>
             🍺 {item.alcoholImpact} alcohol
           </span>
         )}
@@ -283,9 +283,9 @@ function ItemCard({
       {/* Score pills */}
       {(item.joyScore || item.curiosityScore || item.regretRisk) && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 8 }}>
-          <ScorePill label="Joy" value={item.joyScore} color="#7FD5AA" />
-          <ScorePill label="Curiosity" value={item.curiosityScore} color="#80BDFF" />
-          {(item.regretRisk ?? 0) >= 6 && <ScorePill label="Regret risk" value={item.regretRisk} color="#E8907A" />}
+          <ScorePill label="Joy" value={item.joyScore} color="#64f0aa" />
+          <ScorePill label="Curiosity" value={item.curiosityScore} color="#61adff" />
+          {(item.regretRisk ?? 0) >= 6 && <ScorePill label="Regret risk" value={item.regretRisk} color="#ff8263" />}
         </div>
       )}
 
@@ -302,12 +302,12 @@ function ItemCard({
 
       {/* After review */}
       {item.status === 'loved' && item.notesAfter && (
-        <div style={{ marginTop: 8, fontSize: 12, color: '#7FD5AA', fontStyle: 'italic' }}>
+        <div style={{ marginTop: 8, fontSize: 12, color: '#64f0aa', fontStyle: 'italic' }}>
           ❤️ "{item.notesAfter}"
         </div>
       )}
       {item.status === 'not_again' && item.notesAfter && (
-        <div style={{ marginTop: 8, fontSize: 12, color: '#E8907A', fontStyle: 'italic' }}>
+        <div style={{ marginTop: 8, fontSize: 12, color: '#ff8263', fontStyle: 'italic' }}>
           ✗ "{item.notesAfter}"
         </div>
       )}
@@ -349,7 +349,7 @@ function ItemCard({
         {/* Mark tried */}
         {!['tried', 'loved', 'meh', 'not_again', 'repeat', 'rejected', 'bought'].includes(item.status) && (
           <button onClick={() => { onStatusChange(item.id, 'tried'); onReview({ ...item, status: 'tried' }) }}
-            style={{ background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.25)', color: '#7FD5AA', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
+            style={{ background: 'rgba(100, 240, 170,0.1)', border: '1px solid rgba(100, 240, 170,0.25)', color: '#64f0aa', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
             ✓ Done / Tried
           </button>
         )}
@@ -357,7 +357,7 @@ function ItemCard({
         {/* Review again */}
         {['tried', 'loved', 'meh', 'not_again'].includes(item.status) && (
           <button onClick={() => onReview(item)}
-            style={{ background: 'rgba(128,189,255,0.08)', border: '1px solid rgba(128,189,255,0.2)', color: '#80BDFF', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer' }}>
+            style={{ background: 'rgba(97, 173, 255,0.08)', border: '1px solid rgba(97, 173, 255,0.2)', color: '#61adff', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer' }}>
             📝 Review
           </button>
         )}
@@ -365,7 +365,7 @@ function ItemCard({
         {/* Schedule as task */}
         {weeklyPlanId && !['tried', 'loved', 'meh', 'not_again', 'repeat', 'rejected', 'bought', 'scheduled'].includes(item.status) && (
           <button onClick={() => onSchedule(item)}
-            style={{ background: 'rgba(184,164,255,0.08)', border: '1px solid rgba(184,164,255,0.2)', color: '#B8A4FF', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer' }}>
+            style={{ background: 'rgba(160, 133, 255,0.08)', border: '1px solid rgba(160, 133, 255,0.2)', color: '#a085ff', borderRadius: 6, padding: '4px 10px', fontSize: 11, cursor: 'pointer' }}>
             📅 Schedule
           </button>
         )}
@@ -531,12 +531,12 @@ function AddForm({ userId, onSaved, onCancel }: { userId: string; onSaved: (item
         </div>
       </div>
 
-      {err && <div style={{ color: '#E8907A', fontSize: 12, marginBottom: 10 }}>{err}</div>}
+      {err && <div style={{ color: '#ff8263', fontSize: 12, marginBottom: 10 }}>{err}</div>}
 
       <div style={{ display: 'flex', gap: 8 }}>
         <button type="submit" disabled={saving || !form.title.trim()} style={{
-          background: 'rgba(128,189,255,0.15)', border: '1px solid rgba(128,189,255,0.3)',
-          color: '#80BDFF', borderRadius: 8, padding: '8px 20px', fontSize: 13,
+          background: 'rgba(97, 173, 255,0.15)', border: '1px solid rgba(97, 173, 255,0.3)',
+          color: '#61adff', borderRadius: 8, padding: '8px 20px', fontSize: 13,
           fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1,
         }}>
           {saving ? 'Saving…' : '+ Add to Menu'}
@@ -558,10 +558,10 @@ function ReviewModal({ item, onClose, onSaved }: { item: LifeMenuItem; onClose: 
   const [saving, setSaving] = useState(false)
 
   const OUTCOMES = [
-    { id: 'loved',     label: '❤️ Loved it',       color: '#7FD5AA' },
-    { id: 'repeat',    label: '🔁 Would repeat',    color: '#7FD5AA' },
+    { id: 'loved',     label: '❤️ Loved it',       color: '#64f0aa' },
+    { id: 'repeat',    label: '🔁 Would repeat',    color: '#64f0aa' },
     { id: 'meh',       label: '😐 Meh',             color: '#A1A1A6' },
-    { id: 'not_again', label: '✗ Not again',        color: '#E8907A' },
+    { id: 'not_again', label: '✗ Not again',        color: '#ff8263' },
   ]
 
   async function save() {
@@ -608,7 +608,7 @@ function ReviewModal({ item, onClose, onSaved }: { item: LifeMenuItem; onClose: 
             Rating: {rating}/10
           </label>
           <input type="range" min={1} max={10} value={rating} onChange={e => setRating(parseInt(e.target.value))}
-            style={{ width: '100%', accentColor: '#80BDFF' }} />
+            style={{ width: '100%', accentColor: '#61adff' }} />
         </div>
 
         {/* Notes */}
@@ -622,7 +622,7 @@ function ReviewModal({ item, onClose, onSaved }: { item: LifeMenuItem; onClose: 
         </div>
 
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={save} disabled={saving} style={{ flex: 1, background: 'rgba(127,213,170,0.15)', border: '1px solid rgba(127,213,170,0.3)', color: '#7FD5AA', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+          <button onClick={save} disabled={saving} style={{ flex: 1, background: 'rgba(100, 240, 170,0.15)', border: '1px solid rgba(100, 240, 170,0.3)', color: '#64f0aa', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
             {saving ? 'Saving…' : 'Save Review'}
           </button>
           <button onClick={onClose} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 8, padding: '10px 16px', fontSize: 13, cursor: 'pointer' }}>
@@ -702,10 +702,10 @@ export default function LifeMenuBoard({ items: initItems, userId, weeklyPlanId }
       {/* Summary stats */}
       <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
         {[
-          { label: 'On the Menu', value: toTryCount, color: '#80BDFF' },
-          { label: 'Planned', value: plannedCount, color: '#B8A4FF' },
-          { label: 'Loved / Repeat', value: lovedCount, color: '#7FD5AA' },
-          { label: 'Fun Budget', value: totalBudget > 0 ? (totalBudget >= 1000 ? `${(totalBudget / 1000).toFixed(1)}k Kč` : `${totalBudget} Kč`) : '—', color: '#ECC666' },
+          { label: 'On the Menu', value: toTryCount, color: '#61adff' },
+          { label: 'Planned', value: plannedCount, color: '#a085ff' },
+          { label: 'Loved / Repeat', value: lovedCount, color: '#64f0aa' },
+          { label: 'Fun Budget', value: totalBudget > 0 ? (totalBudget >= 1000 ? `${(totalBudget / 1000).toFixed(1)}k Kč` : `${totalBudget} Kč`) : '—', color: '#ffce53' },
         ].map(stat => (
           <div key={stat.label} className="card" style={{ padding: '14px 16px', textAlign: 'center' }}>
             <div style={{ fontSize: 22, fontWeight: 700, color: stat.color, fontVariantNumeric: 'tabular-nums' }}>{stat.value}</div>
@@ -718,8 +718,8 @@ export default function LifeMenuBoard({ items: initItems, userId, weeklyPlanId }
       {!showForm && (
         <button onClick={() => setShowForm(true)} style={{
           display: 'flex', alignItems: 'center', gap: 7,
-          background: 'rgba(128,189,255,0.1)', border: '1px solid rgba(128,189,255,0.25)',
-          color: '#80BDFF', borderRadius: 10, padding: '10px 18px', fontSize: 13,
+          background: 'rgba(97, 173, 255,0.1)', border: '1px solid rgba(97, 173, 255,0.25)',
+          color: '#61adff', borderRadius: 10, padding: '10px 18px', fontSize: 13,
           fontWeight: 600, cursor: 'pointer', marginBottom: 20,
         }}>
           + Add to Life Menu

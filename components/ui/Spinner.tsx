@@ -13,7 +13,7 @@ interface SpinnerProps {
  */
 export default function Spinner({
   size = 16,
-  color = '#B8A4FF',
+  color = '#a085ff',
   strokeWidth = 2,
   style,
 }: SpinnerProps) {

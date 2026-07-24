@@ -72,13 +72,13 @@ export default function FitnessSnapshot({ strategy, userId, onWorkoutLogged }: {
               >
                 <div style={{
                   width: 18, height: 18, borderRadius: 5, flexShrink: 0,
-                  border: `2px solid ${done ? '#7FD5AA' : 'rgba(255,255,255,0.2)'}`,
-                  background: done ? 'rgba(127,213,170,0.2)' : 'transparent',
+                  border: `2px solid ${done ? '#64f0aa' : 'rgba(255,255,255,0.2)'}`,
+                  background: done ? 'rgba(100, 240, 170,0.2)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.15s',
                 }}>
-                  {done && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.5 7.5L8 3" stroke="#7FD5AA" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                  {isLogging && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#A3D977', animation: 'pulse 0.8s ease-in-out infinite' }} />}
+                  {done && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.5 7.5L8 3" stroke="#64f0aa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                  {isLogging && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#a0f759', animation: 'pulse 0.8s ease-in-out infinite' }} />}
                 </div>
                 <span style={{
                   fontSize: 12, color: done ? '#6E6E76' : '#EEEEF2', fontWeight: 500,

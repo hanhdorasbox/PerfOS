@@ -32,7 +32,7 @@ export default function MealPreview({ meals, label, href, isTomorrow = false, to
   const sorted = sortMeals(meals)
   const showProtein = !isTomorrow && proteinTarget && proteinTarget > 0
   const proteinPct = showProtein ? Math.min(100, Math.round((todayProtein / proteinTarget!) * 100)) : 0
-  const proteinColor = proteinPct >= 100 ? '#7FD5AA' : proteinPct >= 70 ? '#DDB96A' : '#E8907A'
+  const proteinColor = proteinPct >= 100 ? '#64f0aa' : proteinPct >= 70 ? '#ffc648' : '#ff8263'
 
   return (
     <SideCard label={label} action={href ? { href, label: 'Full plan →' } : undefined}>
@@ -61,7 +61,7 @@ export default function MealPreview({ meals, label, href, isTomorrow = false, to
             const timing = !isTomorrow ? getNextMealTime(meal) : null
             const isOverdue = timing && timing.minutesUntil < 0
             const isDueSoon = timing && timing.minutesUntil >= 0 && timing.minutesUntil < 30
-            const mealColor = isOverdue ? '#E8907A' : isDueSoon ? '#DDB96A' : '#6E6E76'
+            const mealColor = isOverdue ? '#ff8263' : isDueSoon ? '#ffc648' : '#6E6E76'
 
             return (
               <div key={meal.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
@@ -77,7 +77,7 @@ export default function MealPreview({ meals, label, href, isTomorrow = false, to
                     {timing && timing.minutesUntil >= 0 && (
                       <>
                         <span style={{ color: '#3E3E44' }}>·</span>
-                        <span style={{ color: isDueSoon ? '#DDB96A' : '#6E6E76', fontWeight: isDueSoon ? 600 : 400 }}>
+                        <span style={{ color: isDueSoon ? '#ffc648' : '#6E6E76', fontWeight: isDueSoon ? 600 : 400 }}>
                           {isDueSoon ? `in ${timing.timeStr}` : `in ${timing.timeStr}`}
                         </span>
                       </>
@@ -91,7 +91,7 @@ export default function MealPreview({ meals, label, href, isTomorrow = false, to
       ) : (
         <div style={{ fontSize: 12, color: '#6E6E76' }}>
           {isTomorrow ? 'No meals scheduled.' : 'No meal plan.'} {!isTomorrow && (
-            <Link href="/meals" style={{ color: '#B8A4FF', textDecoration: 'none' }}>Generate →</Link>
+            <Link href="/meals" style={{ color: '#a085ff', textDecoration: 'none' }}>Generate →</Link>
           )}
         </div>
       )}

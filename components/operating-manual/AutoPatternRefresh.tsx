@@ -68,12 +68,12 @@ export default function AutoPatternRefresh({ userId, lastPatternAt }: Props) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       {state === 'refreshing' && (
         <span style={{
-          fontSize: 11, color: '#B8A4FF',
+          fontSize: 11, color: '#a085ff',
           display: 'flex', alignItems: 'center', gap: 5,
         }}>
           <span style={{
             display: 'inline-block', width: 7, height: 7, borderRadius: 99,
-            background: '#B8A4FF',
+            background: '#a085ff',
             animation: 'patternPulse 1s ease-in-out infinite',
           }} />
           Learning from your data…

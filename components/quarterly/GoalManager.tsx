@@ -47,12 +47,12 @@ interface Props {
 
 const STRATEGIC_ROLES = [
   { value: '', label: 'No role' },
-  { value: 'career_capital', label: 'Career Capital', color: '#B8A4FF' },
-  { value: 'learning', label: 'Learning', color: '#80BDFF' },
-  { value: 'fitness', label: 'Fitness', color: '#7FD5AA' },
-  { value: 'finance', label: 'Finance', color: '#ECC666' },
-  { value: 'high_upside_bet', label: 'High-Upside Bet', color: '#F5A56A' },
-  { value: 'long_term', label: 'Long-Term', color: '#80BDFF' },
+  { value: 'career_capital', label: 'Career Capital', color: '#a085ff' },
+  { value: 'learning', label: 'Learning', color: '#61adff' },
+  { value: 'fitness', label: 'Fitness', color: '#64f0aa' },
+  { value: 'finance', label: 'Finance', color: '#ffce53' },
+  { value: 'high_upside_bet', label: 'High-Upside Bet', color: '#ffa360' },
+  { value: 'long_term', label: 'Long-Term', color: '#61adff' },
 ]
 
 const CATEGORIES = ['career', 'fitness', 'health', 'finance', 'learning', 'personal', 'other']
@@ -77,8 +77,8 @@ const STATUS_LABEL: Record<string, string> = {
   closed:  'Closed',
 }
 const STATUS_COLOR: Record<string, string> = {
-  active:  '#7FD5AA',
-  planned: '#80BDFF',
+  active:  '#64f0aa',
+  planned: '#61adff',
   closed:  '#6E6E73',
 }
 
@@ -359,12 +359,12 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
 
           {/* Feedback */}
           {msg && (
-            <div style={{ background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.2)', color: '#7FD5AA', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
+            <div style={{ background: 'rgba(100, 240, 170,0.1)', border: '1px solid rgba(100, 240, 170,0.2)', color: '#64f0aa', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
               {msg}
             </div>
           )}
           {error && (
-            <div style={{ background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.2)', color: '#FF9B87', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
+            <div style={{ background: 'rgba(255, 129, 104,0.1)', border: '1px solid rgba(255, 129, 104,0.2)', color: '#ff8168', borderRadius: 8, padding: '8px 14px', fontSize: 13, marginBottom: 16 }}>
               {error}
             </div>
           )}
@@ -385,7 +385,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(184,164,255,0.2)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(160, 133, 255,0.2)' }}>
                 <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
                     <label style={labelStyle}>Name</label>
@@ -397,7 +397,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={saveProfile} disabled={savingProfile} style={{ background: 'rgba(184,164,255,0.15)', border: '1px solid rgba(184,164,255,0.3)', color: '#B8A4FF', borderRadius: 8, padding: '6px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                  <button onClick={saveProfile} disabled={savingProfile} style={{ background: 'rgba(160, 133, 255,0.15)', border: '1px solid rgba(160, 133, 255,0.3)', color: '#a085ff', borderRadius: 8, padding: '6px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                     {savingProfile ? 'Saving…' : 'Save'}
                   </button>
                   <button onClick={() => { setEditingProfile(false); setProfileName(user.name); setProfileEmail(user.email) }} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 8, padding: '6px 16px', fontSize: 13, cursor: 'pointer' }}>
@@ -421,9 +421,9 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'flex', gap: 8, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(236,198,102,0.2)' }}>
+              <div style={{ display: 'flex', gap: 8, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255, 206, 83,0.2)' }}>
                 <input style={{ ...inputStyle, flex: 1 }} value={quarterName} onChange={e => setQuarterName(e.target.value)} />
-                <button onClick={saveQuarter} disabled={savingQuarter} style={{ background: 'rgba(236,198,102,0.1)', border: '1px solid rgba(236,198,102,0.3)', color: '#ECC666', borderRadius: 8, padding: '6px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={saveQuarter} disabled={savingQuarter} style={{ background: 'rgba(255, 206, 83,0.1)', border: '1px solid rgba(255, 206, 83,0.3)', color: '#ffce53', borderRadius: 8, padding: '6px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                   {savingQuarter ? '…' : 'Save'}
                 </button>
                 <button onClick={() => { setEditingQuarter(false); setQuarterName(quarter.name) }} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73', borderRadius: 8, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>
@@ -442,7 +442,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
               {!showForm && (
                 <button
                   onClick={() => { setForm(EMPTY_FORM); setEditingGoal(null); setShowForm(true) }}
-                  style={{ background: 'rgba(127,213,170,0.1)', border: '1px solid rgba(127,213,170,0.25)', color: '#7FD5AA', borderRadius: 8, padding: '5px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                  style={{ background: 'rgba(100, 240, 170,0.1)', border: '1px solid rgba(100, 240, 170,0.25)', color: '#64f0aa', borderRadius: 8, padding: '5px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                 >
                   + Add Goal
                 </button>
@@ -496,7 +496,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                       {/* C4: Pause/Resume — stops false alerts without deleting */}
                       <button
                         onClick={() => togglePause(goal)}
-                        style={{ background: 'none', border: `1px solid ${goal.status === 'paused' ? 'rgba(127,213,170,0.25)' : 'rgba(255,255,255,0.1)'}`, color: goal.status === 'paused' ? '#7FD5AA' : '#6E6E73', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: 'pointer' }}
+                        style={{ background: 'none', border: `1px solid ${goal.status === 'paused' ? 'rgba(100, 240, 170,0.25)' : 'rgba(255,255,255,0.1)'}`, color: goal.status === 'paused' ? '#64f0aa' : '#6E6E73', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: 'pointer' }}
                         title={goal.status === 'paused' ? 'Resume this goal' : 'Pause — stops alerts for this goal'}
                       >
                         {goal.status === 'paused' ? 'Resume' : 'Pause'}
@@ -504,7 +504,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                       <button
                         onClick={() => deleteGoal(goal.id)}
                         disabled={deleting === goal.id}
-                        style={{ background: 'none', border: '1px solid rgba(255,155,135,0.2)', color: '#FF9B87', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: 'pointer' }}
+                        style={{ background: 'none', border: '1px solid rgba(255, 129, 104,0.2)', color: '#ff8168', borderRadius: 6, padding: '3px 10px', fontSize: 11, cursor: 'pointer' }}
                       >
                         {deleting === goal.id ? '…' : 'Delete'}
                       </button>
@@ -517,8 +517,8 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
 
           {/* ── Goal form ─────────────────────────────────────────────── */}
           {showForm && (
-            <form onSubmit={submitForm} style={{ marginTop: 20, padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(184,164,255,0.15)' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#B8A4FF', marginBottom: 16 }}>
+            <form onSubmit={submitForm} style={{ marginTop: 20, padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(160, 133, 255,0.15)' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#a085ff', marginBottom: 16 }}>
                 {editingGoal ? 'Edit Goal' : 'New Goal'}
               </div>
 
@@ -557,10 +557,10 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                     if (!sq) return null
                     if (sq.status === 'planned') {
                       const d = new Date(sq.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-                      return <div style={{ marginTop: 6, fontSize: 11, color: '#80BDFF' }}>Planned quarter — activates automatically on {d}.</div>
+                      return <div style={{ marginTop: 6, fontSize: 11, color: '#61adff' }}>Planned quarter — activates automatically on {d}.</div>
                     }
                     if (sq.status === 'closed') return <div style={{ marginTop: 6, fontSize: 11, color: '#6E6E73' }}>Closed quarter — goals here are historical.</div>
-                    return <div style={{ marginTop: 6, fontSize: 11, color: '#7FD5AA' }}>Active quarter — goal will appear in current dashboard.</div>
+                    return <div style={{ marginTop: 6, fontSize: 11, color: '#64f0aa' }}>Active quarter — goal will appear in current dashboard.</div>
                   })()}
                 </div>
               )}
@@ -606,8 +606,8 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
               {/* Tracking type */}
               {/* Fitness goal guidance — execution-based, not weight-based */}
               {(form.category === 'fitness' || form.category === 'health') && (
-                <div style={{ marginBottom: 14, padding: '8px 12px', background: 'rgba(127,213,170,0.06)', borderRadius: 8, border: '1px solid rgba(127,213,170,0.15)' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: '#7FD5AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Fitness goal ideas</div>
+                <div style={{ marginBottom: 14, padding: '8px 12px', background: 'rgba(100, 240, 170,0.06)', borderRadius: 8, border: '1px solid rgba(100, 240, 170,0.15)' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#64f0aa', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Fitness goal ideas</div>
                   <div style={{ fontSize: 11, color: '#6E6E73', lineHeight: 1.6 }}>
                     Complete 10 minimum effective weeks · Hit protein 5×/week · Keep alcohol under weekly limit · 3 strength sessions/week at 80%+ adherence
                   </div>
@@ -629,9 +629,9 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                         flex: 1,
                         padding: '8px 12px',
                         borderRadius: 8,
-                        border: form.trackingType === opt.value ? '1px solid rgba(184,164,255,0.4)' : '1px solid rgba(255,255,255,0.08)',
-                        background: form.trackingType === opt.value ? 'rgba(184,164,255,0.1)' : 'rgba(255,255,255,0.03)',
-                        color: form.trackingType === opt.value ? '#B8A4FF' : '#6E6E73',
+                        border: form.trackingType === opt.value ? '1px solid rgba(160, 133, 255,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                        background: form.trackingType === opt.value ? 'rgba(160, 133, 255,0.1)' : 'rgba(255,255,255,0.03)',
+                        color: form.trackingType === opt.value ? '#a085ff' : '#6E6E73',
                         cursor: 'pointer',
                         textAlign: 'center',
                       }}
@@ -711,7 +711,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
                 <button
                   type="submit"
                   disabled={savingGoal}
-                  style={{ background: 'rgba(127,213,170,0.12)', border: '1px solid rgba(127,213,170,0.3)', color: '#7FD5AA', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                  style={{ background: 'rgba(100, 240, 170,0.12)', border: '1px solid rgba(100, 240, 170,0.3)', color: '#64f0aa', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
                 >
                   {savingGoal ? 'Saving…' : editingGoal ? 'Update Goal' : 'Add Goal'}
                 </button>
@@ -730,7 +730,7 @@ export default function GoalManager({ user: initUser, quarter: initQuarter, goal
           <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'flex-end' }}>
             <button
               onClick={() => { setOpen(false); router.refresh() }}
-              style={{ background: 'rgba(184,164,255,0.1)', border: '1px solid rgba(184,164,255,0.2)', color: '#B8A4FF', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+              style={{ background: 'rgba(160, 133, 255,0.1)', border: '1px solid rgba(160, 133, 255,0.2)', color: '#a085ff', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
             >
               Done
             </button>

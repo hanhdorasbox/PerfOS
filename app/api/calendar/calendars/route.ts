@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
       id: c.id,
       name: c.summary,
       description: c.description || null,
-      color: c.backgroundColor || '#B4A7E5',
+      color: c.backgroundColor || '#9277f6',
       primary: c.primary || false,
       accessRole: c.accessRole,
     }))

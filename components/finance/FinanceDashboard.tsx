@@ -294,8 +294,8 @@ export default function FinanceDashboard({ userId }: Props) {
 
         {error && (
           <div style={{
-            background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.3)',
-            color: '#FF9B87', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
+            background: 'rgba(255, 129, 104,0.1)', border: '1px solid rgba(255, 129, 104,0.3)',
+            color: '#ff8168', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
           }}>
             {error}
           </div>
@@ -314,9 +314,9 @@ export default function FinanceDashboard({ userId }: Props) {
           <button
             onClick={() => setStep('upload')}
             style={{
-              background: 'rgba(184,164,255,0.15)',
-              border: '1px solid rgba(184,164,255,0.4)',
-              color: '#B8A4FF',
+              background: 'rgba(160, 133, 255,0.15)',
+              border: '1px solid rgba(160, 133, 255,0.4)',
+              color: '#a085ff',
               padding: '12px 24px',
               borderRadius: 10,
               fontSize: 15,
@@ -331,9 +331,9 @@ export default function FinanceDashboard({ userId }: Props) {
             <button
               onClick={() => { setReportData(status.latestReport!); setStep('report') }}
               style={{
-                background: 'rgba(127,213,170,0.1)',
-                border: '1px solid rgba(127,213,170,0.3)',
-                color: '#7FD5AA',
+                background: 'rgba(100, 240, 170,0.1)',
+                border: '1px solid rgba(100, 240, 170,0.3)',
+                color: '#64f0aa',
                 padding: '12px 24px',
                 borderRadius: 10,
                 fontSize: 15,
@@ -351,11 +351,11 @@ export default function FinanceDashboard({ userId }: Props) {
           <div className="card" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
             padding: '14px 20px', marginBottom: 20,
-            border: '1px solid rgba(236,198,102,0.3)',
-            background: 'rgba(236,198,102,0.05)',
+            border: '1px solid rgba(255, 206, 83,0.3)',
+            background: 'rgba(255, 206, 83,0.05)',
           }}>
             <div>
-              <p style={{ color: '#ECC666', fontWeight: 600, fontSize: 14 }}>
+              <p style={{ color: '#ffce53', fontWeight: 600, fontSize: 14 }}>
                 Pending review — {status.pendingImport.statementMonth}
               </p>
               <p style={{ color: '#6E6E73', fontSize: 12, marginTop: 2 }}>
@@ -365,14 +365,14 @@ export default function FinanceDashboard({ userId }: Props) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
               {confirmDeleteId === status.pendingImport.id ? (
                 <>
-                  <span style={{ fontSize: 12, color: '#ECC666' }}>Discard import?</span>
+                  <span style={{ fontSize: 12, color: '#ffce53' }}>Discard import?</span>
                   <button
                     onClick={() => deleteImport(status.pendingImport!.id)}
                     disabled={deletingImport === status.pendingImport.id}
                     className="btn-motion"
-                    style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: 'rgba(255,155,135,0.15)', border: '1px solid rgba(255,155,135,0.4)', color: '#FF9B87', display: 'flex', alignItems: 'center', gap: 6 }}
+                    style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: 'rgba(255, 129, 104,0.15)', border: '1px solid rgba(255, 129, 104,0.4)', color: '#ff8168', display: 'flex', alignItems: 'center', gap: 6 }}
                   >
-                    {deletingImport === status.pendingImport.id ? <Spinner size={12} color="#FF9B87" strokeWidth={2} /> : null}
+                    {deletingImport === status.pendingImport.id ? <Spinner size={12} color="#ff8168" strokeWidth={2} /> : null}
                     Yes, discard
                   </button>
                   <button onClick={() => setConfirmDeleteId(null)} className="btn-motion" style={{ padding: '7px 12px', borderRadius: 8, fontSize: 12, cursor: 'pointer', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#6E6E73' }}>
@@ -384,7 +384,7 @@ export default function FinanceDashboard({ userId }: Props) {
                   <button
                     onClick={() => resumePendingImport(status.pendingImport!)}
                     className="btn-motion"
-                    style={{ background: 'rgba(236,198,102,0.15)', border: '1px solid rgba(236,198,102,0.4)', color: '#ECC666', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                    style={{ background: 'rgba(255, 206, 83,0.15)', border: '1px solid rgba(255, 206, 83,0.4)', color: '#ffce53', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                   >
                     Resume Review
                   </button>
@@ -424,8 +424,8 @@ export default function FinanceDashboard({ userId }: Props) {
                   >
                     {/* Month badge */}
                     <div style={{
-                      fontSize: 12, fontWeight: 700, color: '#B8A4FF',
-                      background: 'rgba(184,164,255,0.1)', border: '1px solid rgba(184,164,255,0.2)',
+                      fontSize: 12, fontWeight: 700, color: '#a085ff',
+                      background: 'rgba(160, 133, 255,0.1)', border: '1px solid rgba(160, 133, 255,0.2)',
                       borderRadius: 6, padding: '3px 10px', flexShrink: 0, minWidth: 68, textAlign: 'center',
                     }}>
                       {imp.statementMonth}
@@ -445,9 +445,9 @@ export default function FinanceDashboard({ userId }: Props) {
                     {/* Status pill */}
                     <div style={{
                       fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, flexShrink: 0,
-                      background: imp.status === 'written' ? 'rgba(127,213,170,0.1)' : 'rgba(128,189,255,0.1)',
-                      border: `1px solid ${imp.status === 'written' ? 'rgba(127,213,170,0.25)' : 'rgba(128,189,255,0.25)'}`,
-                      color: imp.status === 'written' ? '#7FD5AA' : '#80BDFF',
+                      background: imp.status === 'written' ? 'rgba(100, 240, 170,0.1)' : 'rgba(97, 173, 255,0.1)',
+                      border: `1px solid ${imp.status === 'written' ? 'rgba(100, 240, 170,0.25)' : 'rgba(97, 173, 255,0.25)'}`,
+                      color: imp.status === 'written' ? '#64f0aa' : '#61adff',
                       textTransform: 'uppercase',
                     }}>
                       {imp.status === 'written' ? 'Written' : 'Approved'}
@@ -498,8 +498,8 @@ export default function FinanceDashboard({ userId }: Props) {
 
         {error && (
           <div style={{
-            background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.3)',
-            color: '#FF9B87', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
+            background: 'rgba(255, 129, 104,0.1)', border: '1px solid rgba(255, 129, 104,0.3)',
+            color: '#ff8168', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
           }}>
             {error}
           </div>
@@ -516,9 +516,9 @@ export default function FinanceDashboard({ userId }: Props) {
             textAlign: 'center',
             cursor: 'pointer',
             border: dragOver
-              ? '2px dashed rgba(184,164,255,0.6)'
+              ? '2px dashed rgba(160, 133, 255,0.6)'
               : '2px dashed rgba(255,255,255,0.1)',
-            background: dragOver ? 'rgba(184,164,255,0.05)' : undefined,
+            background: dragOver ? 'rgba(160, 133, 255,0.05)' : undefined,
             transition: 'all 0.2s',
           }}
         >
@@ -535,8 +535,8 @@ export default function FinanceDashboard({ userId }: Props) {
           {uploading ? (
             <div style={{ textAlign: 'left' }} onClick={e => e.stopPropagation()}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-                <Spinner size={18} color="#B8A4FF" strokeWidth={2} />
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#B8A4FF' }}>Processing your statement…</span>
+                <Spinner size={18} color="#a085ff" strokeWidth={2} />
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#a085ff' }}>Processing your statement…</span>
               </div>
               <StepProgress
                 compact
@@ -581,8 +581,8 @@ export default function FinanceDashboard({ userId }: Props) {
 
         {error && (
           <div style={{
-            background: 'rgba(255,155,135,0.1)', border: '1px solid rgba(255,155,135,0.3)',
-            color: '#FF9B87', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
+            background: 'rgba(255, 129, 104,0.1)', border: '1px solid rgba(255, 129, 104,0.3)',
+            color: '#ff8168', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13,
           }}>
             {error}
           </div>
@@ -604,8 +604,8 @@ export default function FinanceDashboard({ userId }: Props) {
     const excelFailed = !!error
     return (
       <div style={{ textAlign: 'center', padding: '60px 32px' }}>
-        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'center' }}><CheckCircle2 size={48} color="#7FD5AA" /></div>
-        <h2 style={{ color: '#7FD5AA', fontSize: 24, fontWeight: 700 }}>
+        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'center' }}><CheckCircle2 size={48} color="#64f0aa" /></div>
+        <h2 style={{ color: '#64f0aa', fontSize: 24, fontWeight: 700 }}>
           {approvedCount} transactions approved
         </h2>
         <p style={{ color: '#6E6E73', fontSize: 14, marginTop: 8 }}>
@@ -614,15 +614,15 @@ export default function FinanceDashboard({ userId }: Props) {
         {excelFailed && error && (
           <div style={{
             maxWidth: 500, margin: '16px auto 0',
-            background: 'rgba(236,198,102,0.08)', border: '1px solid rgba(236,198,102,0.25)',
+            background: 'rgba(255, 206, 83,0.08)', border: '1px solid rgba(255, 206, 83,0.25)',
             borderRadius: 8, padding: '10px 16px', textAlign: 'left',
           }}>
-            <p style={{ color: '#ECC666', fontSize: 12 }}>{error}</p>
+            <p style={{ color: '#ffce53', fontSize: 12 }}>{error}</p>
           </div>
         )}
 
         {saving && (
-          <p style={{ color: '#B8A4FF', fontSize: 14, marginTop: 24 }}>Generating financial report...</p>
+          <p style={{ color: '#a085ff', fontSize: 14, marginTop: 24 }}>Generating financial report...</p>
         )}
 
         {reportData && !saving && (
@@ -630,9 +630,9 @@ export default function FinanceDashboard({ userId }: Props) {
             onClick={() => setStep('report')}
             style={{
               marginTop: 28,
-              background: 'rgba(184,164,255,0.15)',
-              border: '1px solid rgba(184,164,255,0.4)',
-              color: '#B8A4FF',
+              background: 'rgba(160, 133, 255,0.15)',
+              border: '1px solid rgba(160, 133, 255,0.4)',
+              color: '#a085ff',
               padding: '12px 28px',
               borderRadius: 10,
               fontSize: 15,

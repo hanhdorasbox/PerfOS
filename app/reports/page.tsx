@@ -40,7 +40,7 @@ interface ArchiveRow {
 
 export default async function ReportsPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF9B87', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#ff8168', padding: 40 }}>No user found.</div>
 
   const { weekStart, weekEnd } = getWeekBounds()
 

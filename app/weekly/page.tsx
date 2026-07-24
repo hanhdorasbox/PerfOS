@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function WeeklyPage() {
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF9B87', padding: 40 }}>No user found.</div>
+  if (!user) return <div style={{ color: '#ff8168', padding: 40 }}>No user found.</div>
 
   const quarter = await prisma.quarter.findFirst({
     where: { userId: user.id, status: 'active' },
@@ -22,7 +22,7 @@ export default async function WeeklyPage() {
   if (!quarter) {
     return (
       <div style={{ padding: 40 }}>
-        <p style={{ color: '#ECC666' }}>No active quarter. <a href="/quarterly" style={{ color: '#B8A4FF' }}>Create one →</a></p>
+        <p style={{ color: '#ffce53' }}>No active quarter. <a href="/quarterly" style={{ color: '#a085ff' }}>Create one →</a></p>
       </div>
     )
   }

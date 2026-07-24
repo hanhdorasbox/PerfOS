@@ -146,7 +146,7 @@ function BulletText({ text, color = '#9E9EA6' }: { text: string; color?: string 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           {sentences.map((s, i) => (
             <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-              <span style={{ color: '#80BDFF', fontSize: 10, marginTop: 3, flexShrink: 0, opacity: 0.7 }}>•</span>
+              <span style={{ color: '#61adff', fontSize: 10, marginTop: 3, flexShrink: 0, opacity: 0.7 }}>•</span>
               <span style={{ fontSize: 12, color, lineHeight: 1.6 }}>{s.trim()}</span>
             </div>
           ))}
@@ -161,7 +161,7 @@ function BulletText({ text, color = '#9E9EA6' }: { text: string; color?: string 
         const clean = line.replace(/^[•\-\*\d+\.]\s*/, '')
         return (
           <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-            <span style={{ color: '#80BDFF', fontSize: 10, marginTop: 3, flexShrink: 0, opacity: 0.7 }}>•</span>
+            <span style={{ color: '#61adff', fontSize: 10, marginTop: 3, flexShrink: 0, opacity: 0.7 }}>•</span>
             <span style={{ fontSize: 12, color, lineHeight: 1.6 }}>{clean}</span>
           </div>
         )
@@ -180,7 +180,7 @@ function NumberedText({ text, color = '#9E9EA6' }: { text: string; color?: strin
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {sentences.map((s, i) => (
             <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-              <span style={{ color: '#B8A4FF', fontSize: 10, fontWeight: 600, flexShrink: 0, minWidth: 18, opacity: 0.8, marginTop: 2 }}>{i + 1}.</span>
+              <span style={{ color: '#a085ff', fontSize: 10, fontWeight: 600, flexShrink: 0, minWidth: 18, opacity: 0.8, marginTop: 2 }}>{i + 1}.</span>
               <span style={{ fontSize: 13, color, lineHeight: 1.6 }}>{s.trim()}</span>
             </div>
           ))}
@@ -195,7 +195,7 @@ function NumberedText({ text, color = '#9E9EA6' }: { text: string; color?: strin
         const clean = line.replace(/^\d+\.\s*/, '')
         return (
           <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-            <span style={{ color: '#B8A4FF', fontSize: 10, fontWeight: 600, flexShrink: 0, minWidth: 18, opacity: 0.8, marginTop: 2 }}>{i + 1}.</span>
+            <span style={{ color: '#a085ff', fontSize: 10, fontWeight: 600, flexShrink: 0, minWidth: 18, opacity: 0.8, marginTop: 2 }}>{i + 1}.</span>
             <span style={{ fontSize: 13, color, lineHeight: 1.6 }}>{clean}</span>
           </div>
         )
@@ -218,8 +218,8 @@ function RoadmapPhase({ phase, index }: { phase: RoadmapPhaseData; index: number
         style={{ width: '100%', background: open ? 'rgba(255,255,255,0.028)' : 'rgba(255,255,255,0.018)', border: 'none', padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', transition: 'background 0.18s ease' }}
       >
         <div style={{ display: 'flex', gap: 14, alignItems: 'center', textAlign: 'left' }}>
-          <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(184,164,255,0.08)', border: '1px solid rgba(184,164,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, color: '#B8A4FF' }}>{index + 1}</span>
+          <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(160, 133, 255,0.08)', border: '1px solid rgba(160, 133, 255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: '#a085ff' }}>{index + 1}</span>
           </div>
           <div>
             <div style={{ fontSize: 10, fontWeight: 500, color: '#52525A', letterSpacing: '0.04em', marginBottom: 2 }}>{phase.weekRange}</div>
@@ -238,7 +238,7 @@ function RoadmapPhase({ phase, index }: { phase: RoadmapPhaseData; index: number
               <div style={{ fontSize: 10, fontWeight: 500, color: '#52525A', letterSpacing: '0.05em', marginBottom: 8 }}>Focus areas</div>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {phase.focus.map((f, i) => (
-                  <span key={i} style={{ fontSize: 11, padding: '3px 11px', borderRadius: 999, background: 'rgba(184,164,255,0.07)', color: '#B8A4FF', border: '1px solid rgba(184,164,255,0.15)' }}>{f}</span>
+                  <span key={i} style={{ fontSize: 11, padding: '3px 11px', borderRadius: 999, background: 'rgba(160, 133, 255,0.07)', color: '#a085ff', border: '1px solid rgba(160, 133, 255,0.15)' }}>{f}</span>
                 ))}
               </div>
             </div>
@@ -249,7 +249,7 @@ function RoadmapPhase({ phase, index }: { phase: RoadmapPhaseData; index: number
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                 {phase.execute.map((e, i) => (
                   <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                    <span style={{ color: '#7FD5AA', fontSize: 11, marginTop: 2, flexShrink: 0, opacity: 0.6 }}>→</span>
+                    <span style={{ color: '#64f0aa', fontSize: 11, marginTop: 2, flexShrink: 0, opacity: 0.6 }}>→</span>
                     <span style={{ fontSize: 13, color: '#8E8E96', lineHeight: 1.58 }}>{e}</span>
                   </div>
                 ))}
@@ -257,12 +257,12 @@ function RoadmapPhase({ phase, index }: { phase: RoadmapPhaseData; index: number
             </div>
           )}
           <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <div style={{ padding: '11px 14px', background: 'rgba(128,189,255,0.04)', borderRadius: 14, border: '1px solid rgba(128,189,255,0.11)' }}>
-              <div style={{ fontSize: 10, fontWeight: 500, color: '#80BDFF', letterSpacing: '0.04em', marginBottom: 6, opacity: 0.8 }}>Monitor</div>
+            <div style={{ padding: '11px 14px', background: 'rgba(97, 173, 255,0.04)', borderRadius: 14, border: '1px solid rgba(97, 173, 255,0.11)' }}>
+              <div style={{ fontSize: 10, fontWeight: 500, color: '#61adff', letterSpacing: '0.04em', marginBottom: 6, opacity: 0.8 }}>Monitor</div>
               <p style={{ fontSize: 12, color: '#7E7E88', margin: 0, lineHeight: 1.58 }}>{phase.monitor}</p>
             </div>
-            <div style={{ padding: '11px 14px', background: 'rgba(221,185,106,0.04)', borderRadius: 14, border: '1px solid rgba(221,185,106,0.11)' }}>
-              <div style={{ fontSize: 10, fontWeight: 500, color: '#DDB96A', letterSpacing: '0.04em', marginBottom: 6, opacity: 0.8 }}>Decision point</div>
+            <div style={{ padding: '11px 14px', background: 'rgba(255, 198, 72,0.04)', borderRadius: 14, border: '1px solid rgba(255, 198, 72,0.11)' }}>
+              <div style={{ fontSize: 10, fontWeight: 500, color: '#ffc648', letterSpacing: '0.04em', marginBottom: 6, opacity: 0.8 }}>Decision point</div>
               <p style={{ fontSize: 12, color: '#7E7E88', margin: 0, lineHeight: 1.58 }}>{phase.decisionPoint}</p>
             </div>
           </div>
@@ -294,7 +294,7 @@ function WorkoutDayPanel({ day, onClose, onSwap, onSuggest, suggestingIndex }: {
             <div key={i} style={{ padding: '13px 16px', borderRadius: 14, background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#EEEEF2', letterSpacing: '-0.005em' }}>{ex.name}</span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#7FD5AA', background: 'rgba(127,213,170,0.08)', border: '1px solid rgba(127,213,170,0.18)', padding: '2px 10px', borderRadius: 999, whiteSpace: 'nowrap', marginLeft: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#64f0aa', background: 'rgba(100, 240, 170,0.08)', border: '1px solid rgba(100, 240, 170,0.18)', padding: '2px 10px', borderRadius: 999, whiteSpace: 'nowrap', marginLeft: 8 }}>
                   {ex.sets} × {ex.reps}
                 </span>
               </div>
@@ -309,9 +309,9 @@ function WorkoutDayPanel({ day, onClose, onSwap, onSuggest, suggestingIndex }: {
                       <button
                         key={alt}
                         onClick={() => onSwap(i, alt)}
-                        style={{ fontSize: 11, color: '#B8A4FF', background: 'rgba(184,164,255,0.08)', border: '1px solid rgba(184,164,255,0.2)', borderRadius: 999, padding: '3px 10px', cursor: 'pointer', fontWeight: 500, transition: 'background 0.12s, border-color 0.12s' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(184,164,255,0.15)'; e.currentTarget.style.borderColor = 'rgba(184,164,255,0.35)' }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(184,164,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(184,164,255,0.2)' }}
+                        style={{ fontSize: 11, color: '#a085ff', background: 'rgba(160, 133, 255,0.08)', border: '1px solid rgba(160, 133, 255,0.2)', borderRadius: 999, padding: '3px 10px', cursor: 'pointer', fontWeight: 500, transition: 'background 0.12s, border-color 0.12s' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(160, 133, 255,0.15)'; e.currentTarget.style.borderColor = 'rgba(160, 133, 255,0.35)' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(160, 133, 255,0.08)'; e.currentTarget.style.borderColor = 'rgba(160, 133, 255,0.2)' }}
                       >
                         ↔ {alt}
                       </button>
@@ -374,11 +374,11 @@ function WeeklyChips({ schedule, completedKeys, removedKeys, weeklyTargets }: {
   }
 
   const items = [
-    { label: 'Strength', type: 'strength', planned: parseTarget(weeklyTargets?.strength) ?? counts.strength, done: completed.strength, color: '#7FD5AA' },
-    counts.cardio > 0 && { label: 'Cardio', type: 'cardio', planned: parseTarget(weeklyTargets?.cardio) ?? counts.cardio, done: completed.cardio, color: '#80BDFF' },
-    counts.sauna > 0 && { label: 'Sauna', type: 'sauna', planned: parseTarget(weeklyTargets?.sauna) ?? counts.sauna, done: completed.sauna, color: '#E8966A' },
-    counts.walk > 0 && { label: 'Walks', type: 'walk', planned: counts.walk, done: completed.walk, color: '#B8A4FF' },
-    weeklyTargets?.protein && { label: 'Protein', type: 'protein', planned: 7, done: 0, color: '#DDB96A' },
+    { label: 'Strength', type: 'strength', planned: parseTarget(weeklyTargets?.strength) ?? counts.strength, done: completed.strength, color: '#64f0aa' },
+    counts.cardio > 0 && { label: 'Cardio', type: 'cardio', planned: parseTarget(weeklyTargets?.cardio) ?? counts.cardio, done: completed.cardio, color: '#61adff' },
+    counts.sauna > 0 && { label: 'Sauna', type: 'sauna', planned: parseTarget(weeklyTargets?.sauna) ?? counts.sauna, done: completed.sauna, color: '#ff8f53' },
+    counts.walk > 0 && { label: 'Walks', type: 'walk', planned: counts.walk, done: completed.walk, color: '#a085ff' },
+    weeklyTargets?.protein && { label: 'Protein', type: 'protein', planned: 7, done: 0, color: '#ffc648' },
   ].filter(Boolean) as { label: string; type: string; planned: number; done: number; color: string }[]
 
   return (
@@ -494,8 +494,8 @@ function AdjustFreqModal({ current, onClose, onApply, loading }: {
 
         <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
           <button onClick={() => onApply(cfg)} disabled={loading}
-            style={{ flex: 1, padding: '11px 0', borderRadius: 12, fontSize: 13, fontWeight: 500, cursor: 'pointer', background: 'rgba(128,189,255,0.12)', border: '1px solid rgba(128,189,255,0.26)', color: '#80BDFF', opacity: loading ? 0.55 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, transition: 'all 0.14s' }}>
-            {loading && <Spinner size={13} color="#80BDFF" strokeWidth={2} />}
+            style={{ flex: 1, padding: '11px 0', borderRadius: 12, fontSize: 13, fontWeight: 500, cursor: 'pointer', background: 'rgba(97, 173, 255,0.12)', border: '1px solid rgba(97, 173, 255,0.26)', color: '#61adff', opacity: loading ? 0.55 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, transition: 'all 0.14s' }}>
+            {loading && <Spinner size={13} color="#61adff" strokeWidth={2} />}
             {loading ? 'Recalculating…' : 'Recalculate Strategy'}
           </button>
           <button onClick={onClose} style={{ padding: '11px 18px', borderRadius: 12, fontSize: 13, cursor: 'pointer', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#6E6E76' }}>
@@ -871,21 +871,21 @@ export default function FitnessStrategyView({ strategy }: Props) {
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontSize: 10, fontWeight: 500, color: '#52525A', letterSpacing: '0.05em', marginBottom: 6 }}>Remove session</div>
               <div style={{ fontSize: 16, fontWeight: 600, color: '#EEEEF2', lineHeight: 1.4, letterSpacing: '-0.01em' }}>
-                Why are you removing <span style={{ color: '#E8907A' }}>{removeTarget.session}</span>?
+                Why are you removing <span style={{ color: '#ff8263' }}>{removeTarget.session}</span>?
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 22 }}>
               {REMOVE_REASONS.map(r => (
                 <button key={r.value} onClick={() => setSelectedReason(r.value)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', borderRadius: 12, cursor: 'pointer', background: selectedReason === r.value ? 'rgba(127,213,170,0.07)' : 'rgba(255,255,255,0.025)', border: selectedReason === r.value ? '1px solid rgba(127,213,170,0.28)' : '1px solid rgba(255,255,255,0.06)', textAlign: 'left', width: '100%', transition: 'all 0.14s' }}>
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', borderRadius: 12, cursor: 'pointer', background: selectedReason === r.value ? 'rgba(100, 240, 170,0.07)' : 'rgba(255,255,255,0.025)', border: selectedReason === r.value ? '1px solid rgba(100, 240, 170,0.28)' : '1px solid rgba(255,255,255,0.06)', textAlign: 'left', width: '100%', transition: 'all 0.14s' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: selectedReason === r.value ? '#7FD5AA' : '#EEEEF2', letterSpacing: '-0.005em' }}>{r.label}</div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: selectedReason === r.value ? '#64f0aa' : '#EEEEF2', letterSpacing: '-0.005em' }}>{r.label}</div>
                     {!r.affectsAdherence && <div style={{ fontSize: 10, color: '#44444A', marginTop: 2 }}>Won&apos;t count against adherence</div>}
                   </div>
                   {selectedReason === r.value && (
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <circle cx="7" cy="7" r="6.5" stroke="#7FD5AA" strokeOpacity="0.5" />
-                      <path d="M4.5 7L6.5 9L9.5 5" stroke="#7FD5AA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <circle cx="7" cy="7" r="6.5" stroke="#64f0aa" strokeOpacity="0.5" />
+                      <path d="M4.5 7L6.5 9L9.5 5" stroke="#64f0aa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   )}
                 </button>
@@ -893,8 +893,8 @@ export default function FitnessStrategyView({ strategy }: Props) {
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={handleConfirmRemove} disabled={!selectedReason || savingRemoval}
-                style={{ flex: 1, padding: '11px 0', borderRadius: 12, fontSize: 13, fontWeight: 500, cursor: selectedReason ? 'pointer' : 'not-allowed', background: selectedReason ? 'rgba(232,144,122,0.12)' : 'rgba(255,255,255,0.03)', border: `1px solid ${selectedReason ? 'rgba(232,144,122,0.28)' : 'rgba(255,255,255,0.06)'}`, color: selectedReason ? '#E8907A' : '#3E3E44', opacity: savingRemoval ? 0.55 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, transition: 'all 0.14s' }}>
-                {savingRemoval && <Spinner size={13} color="#E8907A" strokeWidth={2} />}
+                style={{ flex: 1, padding: '11px 0', borderRadius: 12, fontSize: 13, fontWeight: 500, cursor: selectedReason ? 'pointer' : 'not-allowed', background: selectedReason ? 'rgba(255, 130, 99,0.12)' : 'rgba(255,255,255,0.03)', border: `1px solid ${selectedReason ? 'rgba(255, 130, 99,0.28)' : 'rgba(255,255,255,0.06)'}`, color: selectedReason ? '#ff8263' : '#3E3E44', opacity: savingRemoval ? 0.55 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, transition: 'all 0.14s' }}>
+                {savingRemoval && <Spinner size={13} color="#ff8263" strokeWidth={2} />}
                 {savingRemoval ? 'Saving…' : 'Confirm Removal'}
               </button>
               <button onClick={() => { setRemoveTarget(null); setSelectedReason('') }}
@@ -906,21 +906,21 @@ export default function FitnessStrategyView({ strategy }: Props) {
 
       {/* ══ A. DRAFT REVIEW BAR ══════════════════════════════════════════════════ */}
       {isDraft && (
-        <div style={{ padding: '18px 22px', background: 'rgba(221,185,106,0.05)', border: '1px solid rgba(221,185,106,0.18)', borderRadius: 22 }}>
-          <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#DDB96A', marginBottom: 14, opacity: 0.9 }}>
+        <div style={{ padding: '18px 22px', background: 'rgba(255, 198, 72,0.05)', border: '1px solid rgba(255, 198, 72,0.18)', borderRadius: 22 }}>
+          <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#ffc648', marginBottom: 14, opacity: 0.9 }}>
             Draft — Review before activating
           </div>
 
           {adjustError && (
-            <div style={{ marginBottom: 12, padding: '9px 14px', background: 'rgba(232,144,122,0.07)', border: '1px solid rgba(232,144,122,0.2)', borderRadius: 12, fontSize: 12, color: '#E8907A' }}>
+            <div style={{ marginBottom: 12, padding: '9px 14px', background: 'rgba(255, 130, 99,0.07)', border: '1px solid rgba(255, 130, 99,0.2)', borderRadius: 12, fontSize: 12, color: '#ff8263' }}>
               {adjustError}
             </div>
           )}
 
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
             <button onClick={activate} disabled={activating} className="btn-motion"
-              style={{ padding: '8px 18px', borderRadius: 12, fontSize: 13, fontWeight: 500, cursor: 'pointer', background: 'rgba(127,213,170,0.10)', border: '1px solid rgba(127,213,170,0.28)', color: '#7FD5AA', opacity: activating ? 0.55 : 1, display: 'flex', alignItems: 'center', gap: 7, transition: 'all 0.15s' }}>
-              {activating && <Spinner size={13} color="#7FD5AA" strokeWidth={2} />}
+              style={{ padding: '8px 18px', borderRadius: 12, fontSize: 13, fontWeight: 500, cursor: 'pointer', background: 'rgba(100, 240, 170,0.10)', border: '1px solid rgba(100, 240, 170,0.28)', color: '#64f0aa', opacity: activating ? 0.55 : 1, display: 'flex', alignItems: 'center', gap: 7, transition: 'all 0.15s' }}>
+              {activating && <Spinner size={13} color="#64f0aa" strokeWidth={2} />}
               {activating ? 'Activating…' : 'Activate'}
             </button>
 
@@ -937,7 +937,7 @@ export default function FitnessStrategyView({ strategy }: Props) {
             </button>
 
             <button onClick={() => setShowFreqModal(true)} disabled={!!adjusting} className="btn-motion"
-              style={{ padding: '8px 16px', borderRadius: 12, fontSize: 13, cursor: 'pointer', background: 'rgba(128,189,255,0.06)', border: '1px solid rgba(128,189,255,0.18)', color: '#80BDFF', opacity: 0.9, transition: 'all 0.15s' }}>
+              style={{ padding: '8px 16px', borderRadius: 12, fontSize: 13, cursor: 'pointer', background: 'rgba(97, 173, 255,0.06)', border: '1px solid rgba(97, 173, 255,0.18)', color: '#61adff', opacity: 0.9, transition: 'all 0.15s' }}>
               Adjust Frequency
             </button>
 
@@ -945,10 +945,10 @@ export default function FitnessStrategyView({ strategy }: Props) {
             <div style={{ marginLeft: 'auto' }}>
               {confirmDelete ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 12, color: '#DDB96A' }}>Discard this draft?</span>
+                  <span style={{ fontSize: 12, color: '#ffc648' }}>Discard this draft?</span>
                   <button onClick={deleteStrategy} disabled={deleting} className="btn-motion"
-                    style={{ padding: '6px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, cursor: 'pointer', background: 'rgba(232,144,122,0.10)', border: '1px solid rgba(232,144,122,0.26)', color: '#E8907A', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    {deleting && <Spinner size={12} color="#E8907A" strokeWidth={2} />}
+                    style={{ padding: '6px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, cursor: 'pointer', background: 'rgba(255, 130, 99,0.10)', border: '1px solid rgba(255, 130, 99,0.26)', color: '#ff8263', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {deleting && <Spinner size={12} color="#ff8263" strokeWidth={2} />}
                     Yes, discard
                   </button>
                   <button onClick={() => setConfirmDelete(false)} className="btn-motion"
@@ -971,12 +971,12 @@ export default function FitnessStrategyView({ strategy }: Props) {
       {showNextSteps && (
         <div style={{
           padding: '18px 22px', borderRadius: 22,
-          background: allStepsDone ? 'rgba(127,213,170,0.05)' : 'rgba(184,164,255,0.05)',
-          border: `1px solid ${allStepsDone ? 'rgba(127,213,170,0.18)' : 'rgba(184,164,255,0.14)'}`,
+          background: allStepsDone ? 'rgba(100, 240, 170,0.05)' : 'rgba(160, 133, 255,0.05)',
+          border: `1px solid ${allStepsDone ? 'rgba(100, 240, 170,0.18)' : 'rgba(160, 133, 255,0.14)'}`,
           transition: 'all 0.4s ease',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: allStepsDone ? 0 : 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, color: allStepsDone ? '#7FD5AA' : '#B8A4FF', letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: 11, fontWeight: 500, color: allStepsDone ? '#64f0aa' : '#a085ff', letterSpacing: '0.04em' }}>
               {allStepsDone ? 'Initial Setup Complete' : 'Immediate Next Steps'}
             </div>
             <button
@@ -1009,15 +1009,15 @@ export default function FitnessStrategyView({ strategy }: Props) {
                     }}
                     style={{
                       width: 20, height: 20, borderRadius: 7, flexShrink: 0, marginTop: 1,
-                      background: item.completed ? 'rgba(127,213,170,0.15)' : 'transparent',
-                      border: item.completed ? '1.5px solid rgba(127,213,170,0.45)' : '1.5px solid rgba(255,255,255,0.10)',
+                      background: item.completed ? 'rgba(100, 240, 170,0.15)' : 'transparent',
+                      border: item.completed ? '1.5px solid rgba(100, 240, 170,0.45)' : '1.5px solid rgba(255,255,255,0.10)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       transition: 'all 0.16s', cursor: 'pointer',
                     }}
                   >
                     {item.completed && (
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                        <path d="M2 5.5L4 7.5L8 3" stroke="#7FD5AA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M2 5.5L4 7.5L8 3" stroke="#64f0aa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     )}
                   </div>
@@ -1051,10 +1051,10 @@ export default function FitnessStrategyView({ strategy }: Props) {
                 onDragOver={e => { e.preventDefault(); setDragOverDay(di) }}
                 onDragLeave={() => setDragOverDay(null)}
                 onDrop={() => handleDrop(di)}>
-                <div style={{ fontSize: 9, fontWeight: 600, marginBottom: 7, letterSpacing: '0.07em', textAlign: 'center', color: dragOverDay === di ? '#B8A4FF' : '#44444A', textTransform: 'uppercase', transition: 'color 0.12s' }}>
+                <div style={{ fontSize: 9, fontWeight: 600, marginBottom: 7, letterSpacing: '0.07em', textAlign: 'center', color: dragOverDay === di ? '#a085ff' : '#44444A', textTransform: 'uppercase', transition: 'color 0.12s' }}>
                   {day.day?.slice(0, 3)}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 5, minHeight: 40, borderRadius: 10, padding: dragOverDay === di ? 3 : 0, background: dragOverDay === di ? 'rgba(184,164,255,0.05)' : 'transparent', border: dragOverDay === di ? '1px dashed rgba(184,164,255,0.25)' : '1px solid transparent', transition: 'all 0.12s' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 5, minHeight: 40, borderRadius: 10, padding: dragOverDay === di ? 3 : 0, background: dragOverDay === di ? 'rgba(160, 133, 255,0.05)' : 'transparent', border: dragOverDay === di ? '1px dashed rgba(160, 133, 255,0.25)' : '1px solid transparent', transition: 'all 0.12s' }}>
                   {(day.sessions ?? []).map((session, si) => {
                     const labelKey = `${day.day}:${session}`
                     const isCompleted = completedKeys.has(labelKey)
@@ -1062,19 +1062,19 @@ export default function FitnessStrategyView({ strategy }: Props) {
                     const isDragging = dragSource?.dayIdx === di && dragSource?.sessionIdx === si
                     const matchedWorkout = workoutByLabel.get(session.toLowerCase())
                     const sessionType = classifySession(session)
-                    const typeColor = sessionType === 'strength' ? '#7FD5AA' : sessionType === 'cardio' ? '#80BDFF' : sessionType === 'sauna' ? '#E8966A' : '#B8A4FF'
+                    const typeColor = sessionType === 'strength' ? '#64f0aa' : sessionType === 'cardio' ? '#61adff' : sessionType === 'sauna' ? '#ff8f53' : '#a085ff'
                     const isMenuOpen = actionMenuKey === labelKey
 
                     return (
                       <div key={si} draggable={!isRemoved && !isCompleted}
                         onDragStart={() => setDragSource({ dayIdx: di, sessionIdx: si })}
                         onDragEnd={() => { setDragSource(null); setDragOverDay(null) }}
-                        style={{ position: 'relative', padding: '8px 9px', borderRadius: 10, background: isCompleted ? 'rgba(127,213,170,0.07)' : isRemoved ? 'rgba(255,255,255,0.013)' : isDragging ? 'rgba(184,164,255,0.14)' : 'rgba(255,255,255,0.03)', border: isCompleted ? '1px solid rgba(127,213,170,0.20)' : isRemoved ? '1px solid rgba(255,255,255,0.04)' : `1px solid ${typeColor}1E`, opacity: isDragging ? 0.5 : isRemoved ? 0.35 : 1, cursor: isRemoved ? 'default' : matchedWorkout ? 'pointer' : 'grab', userSelect: 'none', transition: 'opacity 0.14s, background 0.14s' }}>
+                        style={{ position: 'relative', padding: '8px 9px', borderRadius: 10, background: isCompleted ? 'rgba(100, 240, 170,0.07)' : isRemoved ? 'rgba(255,255,255,0.013)' : isDragging ? 'rgba(160, 133, 255,0.14)' : 'rgba(255,255,255,0.03)', border: isCompleted ? '1px solid rgba(100, 240, 170,0.20)' : isRemoved ? '1px solid rgba(255,255,255,0.04)' : `1px solid ${typeColor}1E`, opacity: isDragging ? 0.5 : isRemoved ? 0.35 : 1, cursor: isRemoved ? 'default' : matchedWorkout ? 'pointer' : 'grab', userSelect: 'none', transition: 'opacity 0.14s, background 0.14s' }}>
                         <div onClick={() => !isRemoved && matchedWorkout && setOpenWorkoutDay(matchedWorkout)}
-                          style={{ fontSize: 10, fontWeight: 500, lineHeight: 1.35, color: isCompleted ? '#7FD5AA' : isRemoved ? '#3A3A3E' : '#E4E4EA', textDecoration: isRemoved ? 'line-through' : 'none', letterSpacing: '-0.005em' }}>
+                          style={{ fontSize: 10, fontWeight: 500, lineHeight: 1.35, color: isCompleted ? '#64f0aa' : isRemoved ? '#3A3A3E' : '#E4E4EA', textDecoration: isRemoved ? 'line-through' : 'none', letterSpacing: '-0.005em' }}>
                           {isCompleted && (
                             <svg width="9" height="9" viewBox="0 0 9 9" fill="none" style={{ marginRight: 4, verticalAlign: 'middle', opacity: 0.8 }}>
-                              <path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#7FD5AA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#64f0aa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
                           )}
                           {session}
@@ -1088,11 +1088,11 @@ export default function FitnessStrategyView({ strategy }: Props) {
                         {isMenuOpen && (
                           <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: '100%', left: 0, zIndex: 200, background: '#1A1A1E', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 12, boxShadow: '0 12px 32px rgba(0,0,0,0.65)', minWidth: 180, padding: '5px', marginTop: 4 }}>
                             {matchedWorkout && <ActionMenuItem icon="↗" label="View workout" onClick={() => { setOpenWorkoutDay(matchedWorkout); setActionMenuKey(null) }} />}
-                            <ActionMenuItem icon={isCompleted ? '↩' : '✓'} label={isCompleted ? 'Unmark done' : 'Mark as done'} onClick={() => handleMarkDone(labelKey, session, day.day)} color="#7FD5AA" />
+                            <ActionMenuItem icon={isCompleted ? '↩' : '✓'} label={isCompleted ? 'Unmark done' : 'Mark as done'} onClick={() => handleMarkDone(labelKey, session, day.day)} color="#64f0aa" />
                             <ActionMenuItem icon="↓" label="Replace with lighter" onClick={() => handleRemoveClick(labelKey, session, day.day)} />
-                            <ActionMenuItem icon="✕" label="Remove this week" onClick={() => handleRemoveClick(labelKey, session, day.day)} color="#E8907A" />
+                            <ActionMenuItem icon="✕" label="Remove this week" onClick={() => handleRemoveClick(labelKey, session, day.day)} color="#ff8263" />
                             <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', margin: '4px 0' }} />
-                            <ActionMenuItem icon="—" label="Remove from plan" onClick={() => { setSelectedReason('remove_from_plan'); handleRemoveClick(labelKey, session, day.day) }} color="#E8907A" />
+                            <ActionMenuItem icon="—" label="Remove from plan" onClick={() => { setSelectedReason('remove_from_plan'); handleRemoveClick(labelKey, session, day.day) }} color="#ff8263" />
                           </div>
                         )}
                       </div>
@@ -1113,10 +1113,10 @@ export default function FitnessStrategyView({ strategy }: Props) {
 
       {/* Feedback banner */}
       {feedback && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 16px', borderRadius: 14, background: feedback.type === 'warn' ? 'rgba(221,185,106,0.06)' : feedback.type === 'protect' ? 'rgba(127,213,170,0.05)' : 'rgba(255,255,255,0.03)', border: `1px solid ${feedback.type === 'warn' ? 'rgba(221,185,106,0.18)' : feedback.type === 'protect' ? 'rgba(127,213,170,0.18)' : 'rgba(255,255,255,0.07)'}` }}>
-          <span style={{ fontSize: 13, color: feedback.type === 'warn' ? '#DDB96A' : feedback.type === 'protect' ? '#7FD5AA' : '#9E9EA6' }}>{feedback.text}</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 16px', borderRadius: 14, background: feedback.type === 'warn' ? 'rgba(255, 198, 72,0.06)' : feedback.type === 'protect' ? 'rgba(100, 240, 170,0.05)' : 'rgba(255,255,255,0.03)', border: `1px solid ${feedback.type === 'warn' ? 'rgba(255, 198, 72,0.18)' : feedback.type === 'protect' ? 'rgba(100, 240, 170,0.18)' : 'rgba(255,255,255,0.07)'}` }}>
+          <span style={{ fontSize: 13, color: feedback.type === 'warn' ? '#ffc648' : feedback.type === 'protect' ? '#64f0aa' : '#9E9EA6' }}>{feedback.text}</span>
           <div style={{ display: 'flex', gap: 8, marginLeft: 16, flexShrink: 0 }}>
-            {undoState && <button onClick={handleUndo} style={{ fontSize: 12, color: '#7FD5AA', background: 'none', border: '1px solid rgba(127,213,170,0.25)', borderRadius: 7, padding: '3px 10px', cursor: 'pointer' }}>Undo</button>}
+            {undoState && <button onClick={handleUndo} style={{ fontSize: 12, color: '#64f0aa', background: 'none', border: '1px solid rgba(100, 240, 170,0.25)', borderRadius: 7, padding: '3px 10px', cursor: 'pointer' }}>Undo</button>}
             <button onClick={() => setFeedback(null)} style={{ fontSize: 12, color: '#52525A', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
           </div>
         </div>
@@ -1126,7 +1126,7 @@ export default function FitnessStrategyView({ strategy }: Props) {
       {workoutPlan && workoutPlan.days?.length > 0 && (
         <div className="card">
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 18 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 500, color: '#7FD5AA', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0, opacity: 0.85 }}>
+            <h2 style={{ fontSize: 11, fontWeight: 500, color: '#64f0aa', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0, opacity: 0.85 }}>
               Training Plan
             </h2>
             <span style={{ fontSize: 11, color: '#3E3E44' }}>Tap any day to see exercises</span>
@@ -1135,14 +1135,14 @@ export default function FitnessStrategyView({ strategy }: Props) {
           {(workoutPlan.progressionRule || workoutPlan.trackingNote) && (
             <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 18 }}>
               {workoutPlan.progressionRule && (
-                <div style={{ padding: '12px 14px', background: 'rgba(127,213,170,0.04)', borderRadius: 14, border: '1px solid rgba(127,213,170,0.11)' }}>
-                  <div style={{ fontSize: 10, fontWeight: 500, color: '#7FD5AA', letterSpacing: '0.04em', marginBottom: 6, opacity: 0.75 }}>Progression rule</div>
+                <div style={{ padding: '12px 14px', background: 'rgba(100, 240, 170,0.04)', borderRadius: 14, border: '1px solid rgba(100, 240, 170,0.11)' }}>
+                  <div style={{ fontSize: 10, fontWeight: 500, color: '#64f0aa', letterSpacing: '0.04em', marginBottom: 6, opacity: 0.75 }}>Progression rule</div>
                   <p style={{ fontSize: 12, color: '#7E7E88', margin: 0, lineHeight: 1.6 }}>{workoutPlan.progressionRule}</p>
                 </div>
               )}
               {workoutPlan.trackingNote && (
-                <div style={{ padding: '12px 14px', background: 'rgba(184,164,255,0.04)', borderRadius: 14, border: '1px solid rgba(184,164,255,0.11)' }}>
-                  <div style={{ fontSize: 10, fontWeight: 500, color: '#B8A4FF', letterSpacing: '0.04em', marginBottom: 6, opacity: 0.75 }}>Track every session</div>
+                <div style={{ padding: '12px 14px', background: 'rgba(160, 133, 255,0.04)', borderRadius: 14, border: '1px solid rgba(160, 133, 255,0.11)' }}>
+                  <div style={{ fontSize: 10, fontWeight: 500, color: '#a085ff', letterSpacing: '0.04em', marginBottom: 6, opacity: 0.75 }}>Track every session</div>
                   <p style={{ fontSize: 12, color: '#7E7E88', margin: 0, lineHeight: 1.6 }}>{workoutPlan.trackingNote}</p>
                 </div>
               )}
@@ -1153,20 +1153,20 @@ export default function FitnessStrategyView({ strategy }: Props) {
             {workoutPlan.days.map((wd, i) => (
               <div key={i} onClick={() => setOpenWorkoutDay(wd)}
                 style={{ padding: '16px 18px', borderRadius: 16, cursor: 'pointer', background: 'rgba(255,255,255,0.022)', border: '1px solid rgba(255,255,255,0.06)', transition: 'all 0.18s ease' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(127,213,170,0.04)'; (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(127,213,170,0.15)' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(100, 240, 170,0.04)'; (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(100, 240, 170,0.15)' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.022)'; (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.06)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#EEEEF2', letterSpacing: '-0.015em' }}>{wd.label}</div>
                     <div style={{ fontSize: 11, color: '#52525A', marginTop: 3 }}>{wd.theme}</div>
                   </div>
-                  <span style={{ fontSize: 10, color: '#7FD5AA', opacity: 0.45, marginTop: 2 }}>↗</span>
+                  <span style={{ fontSize: 10, color: '#64f0aa', opacity: 0.45, marginTop: 2 }}>↗</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {wd.exercises.slice(0, 4).map((ex, ei) => (
                     <div key={ei} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: 11.5, color: '#7E7E88', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '65%' }}>{ex.name}</span>
-                      <span style={{ fontSize: 10.5, color: '#7FD5AA', fontWeight: 600, flexShrink: 0, marginLeft: 8, opacity: 0.8 }}>{ex.sets}×{ex.reps}</span>
+                      <span style={{ fontSize: 10.5, color: '#64f0aa', fontWeight: 600, flexShrink: 0, marginLeft: 8, opacity: 0.8 }}>{ex.sets}×{ex.reps}</span>
                     </div>
                   ))}
                   {wd.exercises.length > 4 && <div style={{ fontSize: 10, color: '#44444A', marginTop: 2 }}>+{wd.exercises.length - 4} more</div>}
@@ -1181,8 +1181,8 @@ export default function FitnessStrategyView({ strategy }: Props) {
       <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
 
         {sp && (
-          <PillarCard title="Strength Training" accent="#7FD5AA" rationale={sp.notes}>
-            <DefRow label="Sessions" value={sp.sessionsPerWeek ? `${sp.sessionsPerWeek}× / week` : null} accent="#7FD5AA" />
+          <PillarCard title="Strength Training" accent="#64f0aa" rationale={sp.notes}>
+            <DefRow label="Sessions" value={sp.sessionsPerWeek ? `${sp.sessionsPerWeek}× / week` : null} accent="#64f0aa" />
             <DefRow label="Split" value={sp.split} />
             <DefRow label="Emphasis" value={sp.emphasis} />
             <DefRow label="Duration" value={sp.sessionDuration} />
@@ -1191,18 +1191,18 @@ export default function FitnessStrategyView({ strategy }: Props) {
         )}
 
         {nutr && (
-          <PillarCard title="Nutrition Direction" accent="#DDB96A" rationale={nutr.rationale}>
+          <PillarCard title="Nutrition Direction" accent="#ffc648" rationale={nutr.rationale}>
             <DefRow label="Approach" value={nutr.approach} />
-            <DefRow label="Protein" value={nutr.proteinTarget ? `${nutr.proteinTarget}g / day` : null} accent="#7FD5AA" />
+            <DefRow label="Protein" value={nutr.proteinTarget ? `${nutr.proteinTarget}g / day` : null} accent="#64f0aa" />
             <DefRow label="Calories" value={nutr.caloricTracking ? 'Tracking' : 'Protein only'} />
-            {nutr.mealPlanLinked && <DefRow label="Meal plan" value="Linked" accent="#B8A4FF" />}
+            {nutr.mealPlanLinked && <DefRow label="Meal plan" value="Linked" accent="#a085ff" />}
             <DefRow label="Key rule" value={nutr.keyRule} />
           </PillarCard>
         )}
 
         {cp && cp.included !== false && (
-          <PillarCard title="Cardio & Movement" accent="#80BDFF" rationale={cp.notes}>
-            <DefRow label="Sessions" value={cp.sessionsPerWeek ? `${cp.sessionsPerWeek}× / week` : null} accent="#80BDFF" />
+          <PillarCard title="Cardio & Movement" accent="#61adff" rationale={cp.notes}>
+            <DefRow label="Sessions" value={cp.sessionsPerWeek ? `${cp.sessionsPerWeek}× / week` : null} accent="#61adff" />
             <DefRow label="Type" value={cp.type} />
             <DefRow label="Duration" value={cp.duration} />
             <DefRow label="Walking" value={cp.walkingTarget} />
@@ -1210,8 +1210,8 @@ export default function FitnessStrategyView({ strategy }: Props) {
         )}
 
         {sauna && sauna.included !== false && (
-          <PillarCard title="Sauna & Recovery" accent="#E8966A" rationale={sauna.integration}>
-            <DefRow label="Sessions" value={sauna.sessionsPerWeek ? `${sauna.sessionsPerWeek}× / week` : null} accent="#E8966A" />
+          <PillarCard title="Sauna & Recovery" accent="#ff8f53" rationale={sauna.integration}>
+            <DefRow label="Sessions" value={sauna.sessionsPerWeek ? `${sauna.sessionsPerWeek}× / week` : null} accent="#ff8f53" />
             <DefRow label="Days" value={Array.isArray(sauna.days) ? sauna.days.join(', ') : sauna.days} />
             <DefRow label="Duration" value={sauna.duration} />
           </PillarCard>
@@ -1236,15 +1236,15 @@ export default function FitnessStrategyView({ strategy }: Props) {
         {trackingMetrics.length > 0 && (
           <div className="card" style={{ padding: '20px 22px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#B8A4FF', opacity: 0.7 }} />
-              <h2 style={{ fontSize: 11, fontWeight: 600, color: '#B8A4FF', margin: 0, letterSpacing: '0.03em', opacity: 0.9 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#a085ff', opacity: 0.7 }} />
+              <h2 style={{ fontSize: 11, fontWeight: 600, color: '#a085ff', margin: 0, letterSpacing: '0.03em', opacity: 0.9 }}>
                 Tracking Metrics
               </h2>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {trackingMetrics.map((metric, i) => (
                 <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: i < trackingMetrics.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none', alignItems: 'flex-start' }}>
-                  <span style={{ color: '#B8A4FF', fontSize: 9, flexShrink: 0, marginTop: 4, opacity: 0.5 }}>◦</span>
+                  <span style={{ color: '#a085ff', fontSize: 9, flexShrink: 0, marginTop: 4, opacity: 0.5 }}>◦</span>
                   <span style={{ fontSize: 13, color: '#9E9EA6', lineHeight: 1.5, letterSpacing: '-0.005em' }}>{metric}</span>
                 </div>
               ))}
@@ -1255,8 +1255,8 @@ export default function FitnessStrategyView({ strategy }: Props) {
         {strategy.decisionRules && (
           <div className="card" style={{ padding: '20px 22px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#B8A4FF', opacity: 0.7 }} />
-              <h2 style={{ fontSize: 11, fontWeight: 600, color: '#B8A4FF', margin: 0, letterSpacing: '0.03em', opacity: 0.9 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#a085ff', opacity: 0.7 }} />
+              <h2 style={{ fontSize: 11, fontWeight: 600, color: '#a085ff', margin: 0, letterSpacing: '0.03em', opacity: 0.9 }}>
                 Decision Rules
               </h2>
             </div>
@@ -1267,10 +1267,10 @@ export default function FitnessStrategyView({ strategy }: Props) {
 
       {/* ══ I. RISKS ═════════════════════════════════════════════════════════════ */}
       {strategy.risks && (
-        <div className="card" style={{ padding: '18px 22px', borderLeft: '3px solid rgba(221,185,106,0.3)' }}>
+        <div className="card" style={{ padding: '18px 22px', borderLeft: '3px solid rgba(255, 198, 72,0.3)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#DDB96A', opacity: 0.7 }} />
-            <h2 style={{ fontSize: 11, fontWeight: 600, color: '#DDB96A', margin: 0, letterSpacing: '0.03em', opacity: 0.85 }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ffc648', opacity: 0.7 }} />
+            <h2 style={{ fontSize: 11, fontWeight: 600, color: '#ffc648', margin: 0, letterSpacing: '0.03em', opacity: 0.85 }}>
               Risks
             </h2>
           </div>
@@ -1283,10 +1283,10 @@ export default function FitnessStrategyView({ strategy }: Props) {
         <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 4 }}>
           {confirmDelete ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 12, color: '#DDB96A' }}>Delete this strategy permanently?</span>
+              <span style={{ fontSize: 12, color: '#ffc648' }}>Delete this strategy permanently?</span>
               <button onClick={deleteStrategy} disabled={deleting} className="btn-motion"
-                style={{ padding: '6px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, cursor: 'pointer', background: 'rgba(232,144,122,0.10)', border: '1px solid rgba(232,144,122,0.26)', color: '#E8907A', display: 'flex', alignItems: 'center', gap: 6 }}>
-                {deleting && <Spinner size={12} color="#E8907A" strokeWidth={2} />}
+                style={{ padding: '6px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, cursor: 'pointer', background: 'rgba(255, 130, 99,0.10)', border: '1px solid rgba(255, 130, 99,0.26)', color: '#ff8263', display: 'flex', alignItems: 'center', gap: 6 }}>
+                {deleting && <Spinner size={12} color="#ff8263" strokeWidth={2} />}
                 Yes, delete
               </button>
               <button onClick={() => setConfirmDelete(false)} className="btn-motion"

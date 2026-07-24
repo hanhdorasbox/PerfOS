@@ -13,15 +13,15 @@ const CATEGORIES = [
 ] as const
 
 const CONFIDENCE_COLORS: Record<string, string> = {
-  high: '#7FD5AA',
-  medium: '#ECC666',
-  low: '#FF9B87',
+  high: '#64f0aa',
+  medium: '#ffce53',
+  low: '#ff8168',
 }
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  pending: { bg: 'rgba(128,189,255,0.12)', text: '#80BDFF', border: 'rgba(128,189,255,0.3)' },
-  approved: { bg: 'rgba(127,213,170,0.12)', text: '#7FD5AA', border: 'rgba(127,213,170,0.3)' },
-  duplicate: { bg: 'rgba(236,198,102,0.12)', text: '#ECC666', border: 'rgba(236,198,102,0.3)' },
+  pending: { bg: 'rgba(97, 173, 255,0.12)', text: '#61adff', border: 'rgba(97, 173, 255,0.3)' },
+  approved: { bg: 'rgba(100, 240, 170,0.12)', text: '#64f0aa', border: 'rgba(100, 240, 170,0.3)' },
+  duplicate: { bg: 'rgba(255, 206, 83,0.12)', text: '#ffce53', border: 'rgba(255, 206, 83,0.3)' },
   excluded: { bg: 'rgba(118,116,110,0.12)', text: '#6E6E73', border: 'rgba(118,116,110,0.3)' },
 }
 
@@ -112,9 +112,9 @@ export default function TransactionReviewTable({ transactions, onSave, onApprove
             <button
               onClick={excludeAllDuplicates}
               style={{
-                background: 'rgba(236,198,102,0.1)',
-                border: '1px solid rgba(236,198,102,0.3)',
-                color: '#ECC666',
+                background: 'rgba(255, 206, 83,0.1)',
+                border: '1px solid rgba(255, 206, 83,0.3)',
+                color: '#ffce53',
                 padding: '8px 14px',
                 borderRadius: 8,
                 fontSize: 13,
@@ -129,9 +129,9 @@ export default function TransactionReviewTable({ transactions, onSave, onApprove
               onClick={handleSave}
               disabled={saving}
               style={{
-                background: 'rgba(184,164,255,0.15)',
-                border: '1px solid rgba(184,164,255,0.4)',
-                color: '#B8A4FF',
+                background: 'rgba(160, 133, 255,0.15)',
+                border: '1px solid rgba(160, 133, 255,0.4)',
+                color: '#a085ff',
                 padding: '8px 14px',
                 borderRadius: 8,
                 fontSize: 13,
@@ -149,9 +149,9 @@ export default function TransactionReviewTable({ transactions, onSave, onApprove
             title={unresolvedDuplicates > 0 ? 'Resolve all duplicates first' : undefined}
             className="btn-motion"
             style={{
-              background: unresolvedDuplicates > 0 ? 'rgba(118,116,110,0.1)' : 'rgba(127,213,170,0.15)',
-              border: `1px solid ${unresolvedDuplicates > 0 ? 'rgba(118,116,110,0.3)' : 'rgba(127,213,170,0.4)'}`,
-              color: unresolvedDuplicates > 0 ? '#6E6E73' : '#7FD5AA',
+              background: unresolvedDuplicates > 0 ? 'rgba(118,116,110,0.1)' : 'rgba(100, 240, 170,0.15)',
+              border: `1px solid ${unresolvedDuplicates > 0 ? 'rgba(118,116,110,0.3)' : 'rgba(100, 240, 170,0.4)'}`,
+              color: unresolvedDuplicates > 0 ? '#6E6E73' : '#64f0aa',
               padding: '8px 18px',
               borderRadius: 8,
               fontSize: 13,
@@ -165,7 +165,7 @@ export default function TransactionReviewTable({ transactions, onSave, onApprove
           >
             {saving ? (
               <>
-                <Spinner size={13} color="#7FD5AA" strokeWidth={1.5} />
+                <Spinner size={13} color="#64f0aa" strokeWidth={1.5} />
                 Writing…
               </>
             ) : 'Approve All & Write to Excel'}
@@ -203,7 +203,7 @@ export default function TransactionReviewTable({ transactions, onSave, onApprove
                     key={tx.id}
                     style={{
                       borderBottom: idx < txs.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                      background: isDuplicate ? 'rgba(236,198,102,0.04)' : isExcluded ? 'rgba(118,116,110,0.04)' : 'transparent',
+                      background: isDuplicate ? 'rgba(255, 206, 83,0.04)' : isExcluded ? 'rgba(118,116,110,0.04)' : 'transparent',
                       opacity: isExcluded ? 0.5 : 1,
                     }}
                   >
@@ -213,7 +213,7 @@ export default function TransactionReviewTable({ transactions, onSave, onApprove
                     <td style={{ padding: '9px 14px', color: '#F5F5F7', fontSize: 13, maxWidth: 240 }}>
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {isDuplicate && (
-                          <span style={{ color: '#ECC666', marginRight: 6, fontSize: 11 }}>DUP</span>
+                          <span style={{ color: '#ffce53', marginRight: 6, fontSize: 11 }}>DUP</span>
                         )}
                         {tx.description}
                       </div>
@@ -223,7 +223,7 @@ export default function TransactionReviewTable({ transactions, onSave, onApprove
                       fontSize: 13,
                       fontWeight: 600,
                       whiteSpace: 'nowrap',
-                      color: tx.amount >= 0 ? '#7FD5AA' : '#FF9B87',
+                      color: tx.amount >= 0 ? '#64f0aa' : '#ff8168',
                     }}>
                       {formatAmount(tx.amount)}
                     </td>
@@ -296,7 +296,7 @@ export default function TransactionReviewTable({ transactions, onSave, onApprove
                         style={{
                           background: 'transparent',
                           border: 'none',
-                          color: isExcluded ? '#7FD5AA' : '#6E6E73',
+                          color: isExcluded ? '#64f0aa' : '#6E6E73',
                           cursor: 'pointer',
                           fontSize: 12,
                           padding: '2px 6px',

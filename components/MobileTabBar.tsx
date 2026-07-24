@@ -28,7 +28,7 @@ export default function MobileTabBar() {
               flex: 1, display: 'flex', flexDirection: 'column',
               alignItems: 'center', gap: 3, padding: '8px 0 6px',
               textDecoration: 'none',
-              color: active ? '#80BDFF' : '#6E6E76',
+              color: active ? '#61adff' : '#6E6E76',
               transition: 'color 0.15s',
             }}
           >

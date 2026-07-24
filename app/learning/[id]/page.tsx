@@ -12,7 +12,7 @@ interface Props {
 export default async function RoadmapDetailPage({ params }: Props) {
   const { id } = await params
   const user = await prisma.user.findFirst()
-  if (!user) return <div style={{ color: '#FF9B87' }}>No user found</div>
+  if (!user) return <div style={{ color: '#ff8168' }}>No user found</div>
 
   const goal = await prisma.capabilityGoal.findUnique({
     where: { id },

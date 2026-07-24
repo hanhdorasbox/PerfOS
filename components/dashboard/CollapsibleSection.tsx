@@ -51,7 +51,7 @@ export default function CollapsibleSection({ title, defaultCollapsed = false, ch
           <span style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
             padding: '2px 6px', borderRadius: 4,
-            background: 'rgba(232,144,122,0.15)', color: '#E8907A',
+            background: 'rgba(255, 130, 99,0.15)', color: '#ff8263',
             textTransform: 'uppercase',
           }}>
             {badge}

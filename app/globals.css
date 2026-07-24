@@ -27,33 +27,42 @@
   --border-inset:    rgba(0, 0, 0, 0.35);
 
   /* ── Pastel accent palette ── */
-  --purple-text:   #B8A4FF;
-  --purple-bg:     rgba(184, 164, 255, 0.10);
-  --purple-border: rgba(184, 164, 255, 0.20);
+  --purple-text:   #a085ff;
+  --purple-bg:     rgba(160, 133, 255, 0.10);
+  --purple-border: rgba(160, 133, 255, 0.20);
 
-  --blue-text:     #80BDFF;
-  --blue-bg:       rgba(128, 189, 255, 0.10);
-  --blue-border:   rgba(128, 189, 255, 0.20);
+  --blue-text:     #61adff;
+  --blue-bg:       rgba(97, 173, 255, 0.10);
+  --blue-border:   rgba(97, 173, 255, 0.20);
 
-  --mint-text:     #7FD5AA;
-  --mint-bg:       rgba(127, 213, 170, 0.09);
-  --mint-border:   rgba(127, 213, 170, 0.20);
+  --mint-text:     #64f0aa;
+  --mint-bg:       rgba(100, 240, 170, 0.09);
+  --mint-border:   rgba(100, 240, 170, 0.20);
 
-  --amber-text:    #DDB96A;
-  --amber-bg:      rgba(221, 185, 106, 0.09);
-  --amber-border:  rgba(221, 185, 106, 0.20);
+  --amber-text:    #ffc648;
+  --amber-bg:      rgba(255, 198, 72, 0.09);
+  --amber-border:  rgba(255, 198, 72, 0.20);
 
-  --peach-text:    #E8966A;
-  --peach-bg:      rgba(232, 150, 106, 0.09);
-  --peach-border:  rgba(232, 150, 106, 0.20);
+  --peach-text:    #ff8f53;
+  --peach-bg:      rgba(255, 143, 83, 0.09);
+  --peach-border:  rgba(255, 143, 83, 0.20);
 
-  --rose-text:     #E88CA0;
-  --rose-bg:       rgba(232, 140, 160, 0.09);
-  --rose-border:   rgba(232, 140, 160, 0.20);
+  --rose-text:     #ff567b;
+  --rose-bg:       rgba(255, 86, 123, 0.09);
+  --rose-border:   rgba(255, 86, 123, 0.20);
 
-  --red-text:      #E8907A;
-  --red-bg:        rgba(232, 144, 122, 0.09);
-  --red-border:    rgba(232, 144, 122, 0.22);
+  --red-text:      #ff8263;
+  --red-bg:        rgba(255, 130, 99, 0.09);
+  --red-border:    rgba(255, 130, 99, 0.22);
+
+  /* ── Accent glows — soft coloured haloes for the neon-pastel look ── */
+  --purple-glow: rgba(160, 133, 255, 0.40);
+  --blue-glow:   rgba(97, 173, 255, 0.40);
+  --mint-glow:   rgba(100, 240, 170, 0.40);
+  --amber-glow:  rgba(255, 198, 72, 0.40);
+  --peach-glow:  rgba(255, 143, 83, 0.40);
+  --rose-glow:   rgba(255, 86, 123, 0.40);
+  --red-glow:    rgba(255, 130, 99, 0.40);
 
   /* ── Semantic shorthand ── */
   --accent:   var(--blue-text);
@@ -62,12 +71,12 @@
   --danger:   var(--red-text);
 
   /* Kept for gradient references */
-  --blue:    #80BDFF;
-  --green:   #7FD5AA;
-  --yellow:  #DDB96A;
-  --orange:  #E8966A;
-  --red:     #E8907A;
-  --purple:  #B8A4FF;
+  --blue:    #61adff;
+  --green:   #64f0aa;
+  --yellow:  #ffc648;
+  --orange:  #ff8f53;
+  --red:     #ff8263;
+  --purple:  #a085ff;
 
   /* ── Radius ── */
   --r-sm:   12px;
@@ -102,8 +111,8 @@ html {
 body {
   background: var(--bg-app);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-               "Helvetica Neue", "Inter", "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-jakarta), -apple-system, BlinkMacSystemFont, "SF Pro Display",
+               "SF Pro Text", "Helvetica Neue", "Inter", "Segoe UI", system-ui, sans-serif;
   font-size: 15px;
   line-height: 1.5;
   min-height: 100vh;
@@ -117,11 +126,11 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
 
 /* Selection */
-::selection { background: rgba(128, 189, 255, 0.28); color: var(--text-primary); }
+::selection { background: rgba(97, 173, 255, 0.28); color: var(--text-primary); }
 
 /* Keyboard focus — visible but quiet */
 :focus-visible {
-  outline: 2px solid rgba(128, 189, 255, 0.45);
+  outline: 2px solid rgba(97, 173, 255, 0.45);
   outline-offset: 2px;
 }
 
@@ -172,41 +181,55 @@ body {
 }
 .card-interactive:hover {
   transform: translateY(-3px) scale(1.003);
-  box-shadow: var(--shadow-raised);
-  border-color: rgba(255,255,255,0.11);
+  box-shadow: var(--shadow-raised), 0 0 44px -20px var(--blue-glow);
+  border-color: rgba(97, 173, 255, 0.22);
 }
 .card-interactive:active {
   transform: translateY(-1px) scale(0.998);
   transition: transform 0.08s ease;
 }
 
-/* ─── Status chips / badges (all muted pastel) ────────────────────────────────── */
+/* ─── Status chips / badges — vivid pastel with a soft matching glow ──────────── */
 
-.badge-ahead     { background: var(--mint-bg);   color: var(--mint-text);   border: 1px solid var(--mint-border);   padding: 3px 11px; border-radius: 999px; font-size: 11px; font-weight: 500; letter-spacing: 0.01em; }
-.badge-on_track  { background: var(--blue-bg);   color: var(--blue-text);   border: 1px solid var(--blue-border);   padding: 3px 11px; border-radius: 999px; font-size: 11px; font-weight: 500; letter-spacing: 0.01em; }
-.badge-watch     { background: var(--amber-bg);  color: var(--amber-text);  border: 1px solid var(--amber-border);  padding: 3px 11px; border-radius: 999px; font-size: 11px; font-weight: 500; letter-spacing: 0.01em; }
-.badge-at_risk   { background: var(--peach-bg);  color: var(--peach-text);  border: 1px solid var(--peach-border);  padding: 3px 11px; border-radius: 999px; font-size: 11px; font-weight: 500; letter-spacing: 0.01em; }
-.badge-critical  { background: var(--red-bg);    color: var(--red-text);    border: 1px solid var(--red-border);    padding: 3px 11px; border-radius: 999px; font-size: 11px; font-weight: 500; letter-spacing: 0.01em; }
-.badge-completed { background: var(--mint-bg);   color: var(--mint-text);   border: 1px solid var(--mint-border);   padding: 3px 11px; border-radius: 999px; font-size: 11px; font-weight: 500; letter-spacing: 0.01em; }
+.badge-ahead,
+.badge-on_track,
+.badge-watch,
+.badge-at_risk,
+.badge-critical,
+.badge-completed {
+  padding: 3px 11px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.01em; border: 1px solid transparent;
+}
+.badge-ahead     { background: var(--mint-bg);   color: var(--mint-text);   border-color: var(--mint-border);   box-shadow: 0 0 16px -7px var(--mint-glow); }
+.badge-on_track  { background: var(--blue-bg);   color: var(--blue-text);   border-color: var(--blue-border);   box-shadow: 0 0 16px -7px var(--blue-glow); }
+.badge-watch     { background: var(--amber-bg);  color: var(--amber-text);  border-color: var(--amber-border);  box-shadow: 0 0 16px -7px var(--amber-glow); }
+.badge-at_risk   { background: var(--peach-bg);  color: var(--peach-text);  border-color: var(--peach-border);  box-shadow: 0 0 16px -7px var(--peach-glow); }
+.badge-critical  { background: var(--red-bg);    color: var(--red-text);    border-color: var(--red-border);    box-shadow: 0 0 16px -7px var(--red-glow); }
+.badge-completed { background: var(--mint-bg);   color: var(--mint-text);   border-color: var(--mint-border);   box-shadow: 0 0 16px -7px var(--mint-glow); }
 
 /* ─── Buttons ─────────────────────────────────────────────────────────────────── */
 
-/* Primary — muted blue, refined CTA */
+/* Primary — vivid blue CTA with a soft gradient and glow */
 .btn-primary {
-  background: rgba(128, 189, 255, 0.12);
-  color: #B8D8FF;
-  border: 1px solid rgba(128, 189, 255, 0.26);
+  background: linear-gradient(180deg, rgba(97, 173, 255, 0.20), rgba(97, 173, 255, 0.11));
+  color: #cfe4ff;
+  border: 1px solid rgba(97, 173, 255, 0.32);
   border-radius: var(--r-md);
   padding: 9px 20px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   letter-spacing: 0.005em;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 0 0 0 var(--blue-glow), 0 1px 0 rgba(255,255,255,0.07) inset;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.18s ease;
 }
-.btn-primary:hover  { background: rgba(128, 189, 255, 0.18); border-color: rgba(128, 189, 255, 0.38); }
+.btn-primary:hover  {
+  background: linear-gradient(180deg, rgba(97, 173, 255, 0.28), rgba(97, 173, 255, 0.16));
+  border-color: rgba(97, 173, 255, 0.48);
+  box-shadow: 0 0 22px -6px var(--blue-glow), 0 1px 0 rgba(255,255,255,0.08) inset;
+}
 .btn-primary:active { transform: scale(0.97); }
-.btn-primary:disabled { opacity: 0.38; cursor: not-allowed; }
+.btn-primary:disabled { opacity: 0.38; cursor: not-allowed; box-shadow: none; }
 
 /* Secondary — neutral surface */
 .btn-secondary {
@@ -250,7 +273,8 @@ body {
   cursor: pointer;
   transition: background 0.14s ease, border-color 0.14s ease;
 }
-.btn-destructive:hover { background: rgba(232,144,122,0.16); border-color: rgba(232,144,122,0.34); }
+.btn-destructive { box-shadow: 0 0 0 0 var(--red-glow); transition: background 0.14s ease, border-color 0.14s ease, box-shadow 0.18s ease; }
+.btn-destructive:hover { background: rgba(255, 130, 99,0.16); border-color: rgba(255, 130, 99,0.34); box-shadow: 0 0 20px -7px var(--red-glow); }
 
 /* Legacy motion helper */
 .btn-motion {
@@ -276,8 +300,8 @@ body {
 }
 .input-apple::placeholder { color: var(--text-subtle); }
 .input-apple:focus {
-  border-color: rgba(128, 189, 255, 0.34);
-  box-shadow: 0 0 0 3px rgba(128, 189, 255, 0.10);
+  border-color: rgba(97, 173, 255, 0.44);
+  box-shadow: 0 0 0 3px rgba(97, 173, 255, 0.12), 0 0 18px -6px var(--blue-glow);
 }
 
 /* ─── Progress bar ────────────────────────────────────────────────────────────── */
@@ -289,12 +313,22 @@ body {
   overflow: hidden;
 }
 .progress-fill {
+  position: relative;
   height: 100%;
   border-radius: 999px;
   transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: width;
   transform-origin: left center;
   animation: progressGrow 1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+/* Glossy top highlight — reads as a soft glow on top of any fill colour */
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0) 62%);
+  pointer-events: none;
 }
 
 /* ─── Section labels ─────────────────────────────────────────────────────────── */
