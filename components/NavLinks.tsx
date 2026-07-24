@@ -110,8 +110,8 @@ function DesktopNav() {
         <Link key={link.href} href={link.href} style={{
           display: 'flex', alignItems: 'center', gap: 5,
           padding: '6px 12px', borderRadius: 10, fontSize: 13, fontWeight: 500,
-          color: isActive(link.href) ? '#F5F5F7' : '#A1A1A6',
-          background: isActive(link.href) ? 'rgba(255,255,255,0.1)' : 'transparent',
+          color: isActive(link.href) ? '#cfe4ff' : '#A1A1A6',
+          background: isActive(link.href) ? 'rgba(97,173,255,0.15)' : 'transparent',
           textDecoration: 'none', whiteSpace: 'nowrap', letterSpacing: '-0.01em',
           transition: 'color 0.15s ease, background 0.15s ease',
         }}
@@ -134,8 +134,8 @@ function DesktopNav() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 5,
                 padding: '6px 12px', borderRadius: 10, fontSize: 13, fontWeight: 500,
-                color: groupActive || isOpen ? '#F5F5F7' : '#A1A1A6',
-                background: groupActive || isOpen ? 'rgba(255,255,255,0.1)' : 'transparent',
+                color: groupActive || isOpen ? '#cfe4ff' : '#A1A1A6',
+                background: groupActive || isOpen ? 'rgba(97,173,255,0.15)' : 'transparent',
                 border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', letterSpacing: '-0.01em',
                 transition: 'color 0.15s ease, background 0.15s ease',
               }}
@@ -153,8 +153,8 @@ function DesktopNav() {
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '8px 12px', borderRadius: 10,
                     fontSize: 13, fontWeight: 500, textDecoration: 'none', letterSpacing: '-0.01em',
-                    color: isActive(link.href) ? '#F5F5F7' : '#A1A1A6',
-                    background: isActive(link.href) ? 'rgba(255,255,255,0.1)' : 'transparent',
+                    color: isActive(link.href) ? '#cfe4ff' : '#A1A1A6',
+                    background: isActive(link.href) ? 'rgba(97,173,255,0.15)' : 'transparent',
                     transition: 'color 0.12s ease, background 0.12s ease',
                   }}
                     onMouseEnter={e => { if (!isActive(link.href)) { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLAnchorElement).style.color = '#F5F5F7' } }}
@@ -218,8 +218,8 @@ function MobileNav() {
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '11px 14px', borderRadius: 12, marginBottom: 2,
               fontSize: 15, fontWeight: 500, textDecoration: 'none', letterSpacing: '-0.01em',
-              color: isActive(link.href) ? '#F5F5F7' : '#A1A1A6',
-              background: isActive(link.href) ? 'rgba(255,255,255,0.1)' : 'transparent',
+              color: isActive(link.href) ? '#cfe4ff' : '#A1A1A6',
+              background: isActive(link.href) ? 'rgba(97,173,255,0.15)' : 'transparent',
             }}>
               <NavIcon icon={link.icon} size={16} />
               {link.label}
@@ -247,8 +247,8 @@ function MobileNav() {
                   display: 'flex', alignItems: 'center', gap: 10,
                   padding: '10px 14px', borderRadius: 12, marginBottom: 2,
                   fontSize: 14, fontWeight: 500, textDecoration: 'none', letterSpacing: '-0.01em',
-                  color: isActive(link.href) ? '#F5F5F7' : '#A1A1A6',
-                  background: isActive(link.href) ? 'rgba(255,255,255,0.1)' : 'transparent',
+                  color: isActive(link.href) ? '#cfe4ff' : '#A1A1A6',
+                  background: isActive(link.href) ? 'rgba(97,173,255,0.15)' : 'transparent',
                 }}>
                   <NavIcon icon={link.icon} size={15} />
                   {link.label}
