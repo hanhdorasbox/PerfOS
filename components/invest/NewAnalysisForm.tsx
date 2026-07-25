@@ -170,7 +170,7 @@ export default function NewAnalysisForm({ assets }: { assets: AssetOption[] }) {
         </div>
         <p className="fin-subtle" style={{ margin: '6px 0 0', fontSize: 12 }}>
           {fillMode === 'ai'
-            ? 'AI estimates the judgment assumptions (FCF growth path, terminal growth, WACC components, sector benchmarks) from the ticker — a starting point to verify. Hard fundamentals still come from the API.'
+            ? 'AI fills every input from the ticker — fundamentals, FCF growth path, terminal growth, WACC components and sector benchmarks. Where the API supplied a fundamental it reuses that value; the rest it estimates. A starting point to verify.'
             : 'Opens the calculator with fetched fundamentals; you fill the assumptions in yourself.'}
         </p>
       </div>

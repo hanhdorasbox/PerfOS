@@ -240,7 +240,7 @@ export default function AnalysisCalculator({
     setAiNote(
       data.rationale
         ? `AI estimate (verify before trusting): ${data.rationale}`
-        : 'AI filled the assumptions — a starting point to review and adjust.',
+        : 'AI filled all inputs — a starting point to review and adjust.',
     )
   }
 
@@ -504,8 +504,8 @@ export default function AnalysisCalculator({
               onClick={() => void applyAiFill()}
               disabled={aiFilling}
             >
-              {aiFilling ? 'AI estimating…' : 'Fill with AI'}
-              <InfoHint text="Asks the AI to estimate the judgment assumptions for this ticker — the FCF growth path, terminal growth, WACC components (risk-free rate, equity risk premium, cost of debt, tax) and the sector P/E and EV/EBITDA benchmarks — and fills them as overrides. Fetched fundamentals are left as they are. The model can't see live filings, so treat the result as a starting point to verify, not advice." />
+              {aiFilling ? 'AI filling…' : 'Fill with AI'}
+              <InfoHint text="Asks the AI to fill EVERY input for this ticker — fundamentals (FCF, net debt, shares, beta, EPS, EBITDA), the FCF growth path, terminal growth, WACC components and the sector P/E and EV/EBITDA benchmarks — as overrides. Where the data API already supplied a fundamental, the AI reuses that exact value; the rest it estimates. The model can't see live filings, so treat the result as a starting point to verify, not advice." />
             </button>
             <button
               type="button"
