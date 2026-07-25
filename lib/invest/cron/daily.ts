@@ -69,7 +69,11 @@ export async function runDailyCron(): Promise<DailyRunResult> {
     const provider = getMarketDataProvider()
     const today = pragueToday()
     const allAssets = await db.select().from(assets)
-    const autoPriced = allAssets.filter((a) => !a.manualPricing)
+    // Skip manual-priced assets, and assets flagged needsMapping — their ticker
+    // isn't confidently resolved to a provider symbol (e.g. non-US listings like
+    // P911/Porsche that Finnhub doesn't know), so pricing them just fails and
+    // turns every daily run red. They surface in Settings for manual pairing.
+    const autoPriced = allAssets.filter((a) => !a.manualPricing && !a.needsMapping)
 
     for (const asset of autoPriced) {
       try {
