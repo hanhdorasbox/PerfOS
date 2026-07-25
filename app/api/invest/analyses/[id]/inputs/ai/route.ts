@@ -20,33 +20,46 @@ const idSchema = z.uuid()
 
 type Ctx = { params: Promise<{ id: string }> }
 
-// The judgment inputs the model estimates. Hard fundamentals (FCF, net debt,
-// beta, shares, EPS, EBITDA…) stay fetched from the API and are NOT touched.
+// Every input on the analysis page. The model fills all of them: for the
+// fundamentals it reuses the exact fetched value when the API supplied one and
+// only estimates the gaps; the judgment inputs it estimates outright.
 // `percent` fields are asked for in percentage points (e.g. 8 = 8%) and stored
-// as a fraction (0.08); `number` fields are stored as-is. min/max are sanity
-// clamps in the model's units.
-const AI_FIELDS: Record<string, { percent: boolean; min: number; max: number }> = {
-  fcfGrowthY1: { percent: true, min: -40, max: 60 },
-  fcfGrowthY2: { percent: true, min: -40, max: 55 },
-  fcfGrowthY3: { percent: true, min: -40, max: 50 },
-  fcfGrowthY4: { percent: true, min: -40, max: 45 },
-  fcfGrowthY5: { percent: true, min: -40, max: 40 },
-  terminalGrowth: { percent: true, min: 0, max: 4 },
-  discountRate: { percent: true, min: 4, max: 20 },
-  riskFreeRate: { percent: true, min: 0, max: 10 },
-  equityRiskPremium: { percent: true, min: 3, max: 8 },
-  costOfDebt: { percent: true, min: 0, max: 15 },
-  taxRate: { percent: true, min: 0, max: 40 },
-  peBenchmark: { percent: false, min: 3, max: 60 },
-  evEbitdaBenchmark: { percent: false, min: 2, max: 40 },
+// as a fraction (0.08); everything else is stored as-is. min/max are sanity
+// clamps in the model's units; `unit` documents the expected value for the prompt.
+const AI_FIELDS: Record<string, { percent: boolean; min: number; max: number; unit: string }> = {
+  // ── Fundamentals (reuse fetched value when present, else estimate) ──
+  fcfBase:           { percent: false, min: -1e12, max: 5e12, unit: 'absolute TTM free cash flow in the reporting currency, full integer (no K/M/B)' },
+  netDebt:           { percent: false, min: -5e12, max: 5e12, unit: 'total debt minus cash, full integer (negative = net cash)' },
+  totalDebt:         { percent: false, min: 0,     max: 5e12, unit: 'gross debt, full integer' },
+  ebitda:            { percent: false, min: -1e12, max: 5e12, unit: 'TTM EBITDA, full integer' },
+  eps:               { percent: false, min: -200,  max: 2000, unit: 'trailing EPS per share in the reporting currency' },
+  sharesOutstanding: { percent: false, min: 1e5,   max: 5e11, unit: 'diluted share count, full integer' },
+  beta:              { percent: false, min: 0,     max: 3.5,  unit: 'plain number, typically 0.7–1.6' },
+  // ── Growth path + terminal ──
+  fcfGrowthY1: { percent: true, min: -40, max: 60, unit: 'percent points' },
+  fcfGrowthY2: { percent: true, min: -40, max: 55, unit: 'percent points' },
+  fcfGrowthY3: { percent: true, min: -40, max: 50, unit: 'percent points' },
+  fcfGrowthY4: { percent: true, min: -40, max: 45, unit: 'percent points' },
+  fcfGrowthY5: { percent: true, min: -40, max: 40, unit: 'percent points' },
+  terminalGrowth: { percent: true, min: 0, max: 4, unit: 'percent points' },
+  // ── WACC components ──
+  discountRate: { percent: true, min: 4, max: 20, unit: 'percent points (WACC)' },
+  riskFreeRate: { percent: true, min: 0, max: 10, unit: 'percent points' },
+  equityRiskPremium: { percent: true, min: 3, max: 8, unit: 'percent points' },
+  costOfDebt: { percent: true, min: 0, max: 15, unit: 'percent points' },
+  taxRate: { percent: true, min: 0, max: 40, unit: 'percent points' },
+  // ── Relative-valuation benchmarks ──
+  peBenchmark: { percent: false, min: 3, max: 60, unit: 'P/E multiple' },
+  evEbitdaBenchmark: { percent: false, min: 2, max: 40, unit: 'EV/EBITDA multiple' },
 }
 
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
 
-// Suggests the DCF/relative-valuation *assumptions* for a ticker and writes them
-// as manual overrides, then recomputes. The model can't see live filings, so
-// these are a starting point to verify — never advice, and the fetched
-// fundamentals stay authoritative.
+// Fills EVERY input on the analysis page for a ticker and writes them as manual
+// overrides, then recomputes. Fundamentals reuse the fetched API value when
+// present (so accurate data isn't degraded) and are estimated only when missing;
+// the judgment inputs are estimated. The model can't see live filings, so the
+// result is a starting point to verify — never advice.
 export async function POST(_req: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params
   if (!idSchema.safeParse(id).success) {
@@ -87,27 +100,28 @@ export async function POST(_req: NextRequest, ctx: Ctx) {
   }
 
   const system = [
-    'You are a valuation assistant helping a retail investor set the ASSUMPTIONS for a 5-year FCFF discounted-cash-flow model.',
-    'You are given a company and the hard fundamentals already fetched from a data API.',
-    'Estimate only the judgment inputs listed below, tailored to THIS company and its sector, grounded in what is generally known about it.',
-    'Rules: FCF growth must fade DOWN from year 1 to year 5 toward the terminal rate (no flat high growth). Terminal growth must be at or below long-run GDP (~2–3%) and strictly below the discount rate. The discount rate should be a realistic WACC for this company. Risk-free rate ≈ the current 10-year government-bond yield for the listing currency. Equity risk premium ≈ 4.5–5.5%.',
+    'You are a valuation assistant filling in EVERY input of a 5-year FCFF discounted-cash-flow model for a stock, tailored to THIS company and sector.',
+    'You are given the company and the hard fundamentals already fetched from a data API (the "fundamentals" object).',
+    'For the fundamental fields (fcfBase, netDebt, totalDebt, ebitda, eps, sharesOutstanding, beta): when the fundamentals object supplies the value, RETURN THAT EXACT VALUE — fcfBase=fcf, totalDebt=totalDebt, ebitda=ebitda, eps=eps, sharesOutstanding=sharesOutstanding, beta=beta, netDebt=totalDebt−cash. Estimate a fundamental only when its source value is null/missing.',
+    'For the judgment inputs, estimate from what is generally known about the company.',
+    'Rules: FCF growth must fade DOWN from year 1 to year 5 toward the terminal rate (no flat high growth). Terminal growth must be at or below long-run GDP (~2–3%) and strictly below the discount rate. The discount rate should be a realistic WACC. Risk-free rate ≈ the current 10-year government-bond yield for the listing currency. Equity risk premium ≈ 4.5–5.5%.',
+    'Give every value as a plain JSON number in the unit noted per field — never abbreviate large figures (write 100000000000, not "100B").',
     'You cannot see live filings or prices, so these are estimates to verify — never a buy/sell recommendation.',
     'Return ONLY a JSON object: {"values": {"<key>": <number>}, "rationale": "<one or two sentences>"}.',
-    'percent fields are in PERCENTAGE POINTS (e.g. 8 means 8%). peBenchmark and evEbitdaBenchmark are plain multiples (e.g. 22).',
   ].join(' ')
 
   const fieldList = Object.entries(AI_FIELDS)
-    .map(([k, c]) => `- ${k}${c.percent ? ' (percent points)' : ' (multiple)'}`)
+    .map(([k, c]) => `- ${k} — ${c.unit}`)
     .join('\n')
 
-  const user = `Company facts (JSON):\n${JSON.stringify(facts, null, 2)}\n\nEstimate these keys:\n${fieldList}\n\nReturn the JSON object now.`
+  const user = `Company facts (JSON):\n${JSON.stringify(facts, null, 2)}\n\nFill these keys:\n${fieldList}\n\nReturn the JSON object now.`
 
   let raw: string
   try {
     const client = createAnthropicClient()
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 2000,
       system,
       messages: [{ role: 'user', content: user }],
     })
