@@ -420,6 +420,43 @@ export default function BudgetBoard({ items: initItems, userId }: Props) {
         ))}
       </div>
 
+      {/* Money by stage — composition bar */}
+      {wishlistBudget + approvedBudget + spentBudget > 0 && (() => {
+        const total = wishlistBudget + approvedBudget + spentBudget
+        const segs = [
+          { label: 'Wishlist', amt: wishlistBudget, color: '#61adff' },
+          { label: 'Approved', amt: approvedBudget, color: '#64f0aa' },
+          { label: 'Spent', amt: spentBudget, color: '#ffce53' },
+        ].filter(s => s.amt > 0)
+        return (
+          <div className="card" style={{ padding: '16px 18px', marginBottom: 24 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6E6E73', marginBottom: 12 }}>
+              Money by stage
+            </div>
+            <div style={{ display: 'flex', gap: 2, height: 12, borderRadius: 999, overflow: 'hidden' }}>
+              {segs.map(s => (
+                <div
+                  key={s.label}
+                  title={`${s.label}: ${fmtCost(s.amt, 'CZK')}`}
+                  style={{ width: `${(s.amt / total) * 100}%`, background: s.color, minWidth: 3 }}
+                />
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginTop: 12 }}>
+              {segs.map(s => (
+                <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 3, background: s.color, flexShrink: 0 }} />
+                  <span style={{ fontSize: 11, color: '#9E9EA6' }}>{s.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#EEEEF2', fontVariantNumeric: 'tabular-nums' }}>
+                    {fmtCost(s.amt, 'CZK')}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Add button / form */}
       {!showForm ? (
         <button onClick={() => setShowForm(true)} style={{

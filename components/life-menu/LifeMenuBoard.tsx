@@ -714,6 +714,51 @@ export default function LifeMenuBoard({ items: initItems, userId, weeklyPlanId }
         ))}
       </div>
 
+      {/* Menu by type — composition bar */}
+      {items.length > 0 && (() => {
+        const m = new Map<string, number>()
+        for (const i of items) {
+          if (i.status === 'rejected') continue
+          m.set(i.type, (m.get(i.type) ?? 0) + 1)
+        }
+        let types = [...m.entries()]
+          .map(([type, count]) => ({
+            type,
+            count,
+            color: TYPE_META[type]?.color ?? '#A1A1A6',
+            label: TYPE_META[type]?.label ?? type,
+            emoji: TYPE_META[type]?.emoji ?? '·',
+          }))
+          .sort((a, b) => b.count - a.count)
+        const total = types.reduce((s, t) => s + t.count, 0)
+        if (total === 0) return null
+        if (types.length > 8) {
+          const rest = types.slice(7)
+          types = [...types.slice(0, 7), { type: 'other', count: rest.reduce((s, t) => s + t.count, 0), color: '#6E6E73', label: 'Other', emoji: '·' }]
+        }
+        return (
+          <div className="card" style={{ padding: '16px 18px', marginBottom: 24 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6E6E73', marginBottom: 12 }}>
+              Menu by type
+            </div>
+            <div style={{ display: 'flex', gap: 2, height: 12, borderRadius: 999, overflow: 'hidden' }}>
+              {types.map(t => (
+                <div key={t.type} title={`${t.label}: ${t.count}`} style={{ width: `${(t.count / total) * 100}%`, background: t.color, minWidth: 3 }} />
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 12 }}>
+              {types.map(t => (
+                <div key={t.type} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 3, background: t.color, flexShrink: 0 }} />
+                  <span style={{ fontSize: 11, color: '#9E9EA6' }}>{t.emoji} {t.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#EEEEF2', fontVariantNumeric: 'tabular-nums' }}>{t.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Add button */}
       {!showForm && (
         <button onClick={() => setShowForm(true)} style={{
