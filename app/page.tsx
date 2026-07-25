@@ -7,6 +7,7 @@ import DailyCommandCenter from '@/components/dashboard/DailyCommandCenter'
 import CollapsibleSection from '@/components/dashboard/CollapsibleSection'
 import EmptyWeekBanner from '@/components/dashboard/EmptyWeekBanner'
 import WeeklyReviewCard from '@/components/dashboard/WeeklyReviewCard'
+import LifeBalance, { type LifeArea } from '@/components/dashboard/LifeBalance'
 import { ensureQuarterStatuses, getWeekBounds } from '@/lib/quarters'
 import { rolloverIncompleteTasks } from '@/lib/execution-planner'
 
@@ -119,6 +120,37 @@ export default async function Dashboard() {
   const qProgress = getQuarterProgress(quarter.startDate, quarter.endDate)
   const totalWeight = goalsWithMetrics.reduce((s, g) => s + g.priorityWeight, 0)
   const weightedCompletion = goalsWithMetrics.reduce((sum, g) => sum + g.progressPct * g.priorityWeight, 0) / Math.max(1, totalWeight)
+
+  // Life balance — group goals by category into weighted-progress + focus-share areas
+  const areaMap = new Map<string, { w: number; wp: number; c: number }>()
+  for (const g of goalsWithMetrics) {
+    const cat = (g.category as string | null) || 'Other'
+    const e = areaMap.get(cat) ?? { w: 0, wp: 0, c: 0 }
+    e.w += g.priorityWeight
+    e.wp += g.progressPct * g.priorityWeight
+    e.c += 1
+    areaMap.set(cat, e)
+  }
+  const totalWeightSafe = totalWeight || 1
+  let lifeAreas: LifeArea[] = [...areaMap.entries()]
+    .map(([name, e]) => ({
+      name,
+      progress: e.w > 0 ? e.wp / e.w : 0,
+      share: e.w / totalWeightSafe,
+      count: e.c,
+    }))
+    .sort((a, b) => b.share - a.share)
+  // Fixed categorical palette folds a 9th+ area into "Other"
+  if (lifeAreas.length > 8) {
+    const head = lifeAreas.slice(0, 7)
+    const rest = lifeAreas.slice(7)
+    const restShare = rest.reduce((s, a) => s + a.share, 0)
+    const restProgress = restShare > 0 ? rest.reduce((s, a) => s + a.progress * a.share, 0) / restShare : 0
+    lifeAreas = [
+      ...head,
+      { name: 'Other', progress: restProgress, share: restShare, count: rest.reduce((s, a) => s + a.count, 0) },
+    ]
+  }
 
   // C2: skip goals with no data (false critical for brand-new QUANTITATIVE goals)
   // C4: skip paused goals
@@ -299,6 +331,12 @@ export default async function Dashboard() {
               tasksTotal={weekTasks.length}
             />
           </div>
+
+          {lifeAreas.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <LifeBalance areas={lifeAreas} />
+            </div>
+          )}
 
           {/* Active Goals — full width */}
           <div style={{ marginTop: 20 }}>
