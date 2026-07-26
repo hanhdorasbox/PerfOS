@@ -93,6 +93,100 @@ function displayMoney(value: string | number | null, currency: string, fxFactor:
   return formatMoney(n * fxFactor, currency)
 }
 
+const METHOD_COLORS = { dcf: 'var(--fin-gold)', pe: '#61adff', ev: '#4fd1c5' }
+
+/**
+ * Horizontal band from the lowest to the highest method value, with a marker
+ * per method, the blended point, and the current price — so the read is a range
+ * with a visible spread, not one number. Positions use the native values (the
+ * FX factor cancels in a ratio); only the end labels are converted.
+ */
+function MethodRange({
+  currency,
+  fxFactor,
+  dcf,
+  pe,
+  ev,
+  blended,
+  low,
+  high,
+  price,
+}: {
+  currency: string
+  fxFactor: number
+  dcf: number | null
+  pe: number | null
+  ev: number | null
+  blended: number
+  low: number
+  high: number
+  price: number | null
+}) {
+  const anchors = [low, high, ...(price != null ? [price] : [])]
+  const dmin = Math.min(...anchors)
+  const dmax = Math.max(...anchors)
+  const pad = (dmax - dmin || Math.abs(dmax) || 1) * 0.12
+  const lo = dmin - pad
+  const hi = dmax + pad
+  const pos = (v: number) => Math.max(0, Math.min(100, ((v - lo) / (hi - lo)) * 100))
+  const markers = [
+    { v: dcf, color: METHOD_COLORS.dcf, label: 'DCF' },
+    { v: pe, color: METHOD_COLORS.pe, label: 'P/E' },
+    { v: ev, color: METHOD_COLORS.ev, label: 'EV/EBITDA' },
+  ]
+  return (
+    <div>
+      <div
+        style={{
+          position: 'relative',
+          height: 8,
+          borderRadius: 4,
+          background: 'rgba(255,255,255,0.06)',
+          marginTop: 30,
+          marginBottom: 32,
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            left: `${pos(low)}%`,
+            width: `${pos(high) - pos(low)}%`,
+            top: 0,
+            bottom: 0,
+            background: 'rgba(212,175,55,0.20)',
+            borderRadius: 4,
+          }}
+        />
+        <div
+          title="Blended fair value"
+          style={{ position: 'absolute', left: `${pos(blended)}%`, top: -4, bottom: -4, width: 2, background: 'var(--fin-gold)', transform: 'translateX(-1px)' }}
+        />
+        {markers.map((m) =>
+          m.v == null ? null : (
+            <div key={m.label} style={{ position: 'absolute', left: `${pos(m.v)}%`, top: '50%', transform: 'translate(-50%,-50%)' }}>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: m.color, border: '2px solid #0b0b0e' }} />
+              <div className="fin-mono" style={{ position: 'absolute', top: -22, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: m.color, whiteSpace: 'nowrap' }}>
+                {m.label}
+              </div>
+            </div>
+          ),
+        )}
+        {price != null && (
+          <div style={{ position: 'absolute', left: `${pos(price)}%`, top: -9, bottom: -9, width: 2, background: 'var(--fin-text)', transform: 'translateX(-1px)' }}>
+            <div className="fin-mono" style={{ position: 'absolute', bottom: -20, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: 'var(--fin-text)', whiteSpace: 'nowrap' }}>
+              price
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="fin-subtle" style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
+        <span className="fin-mono">{formatMoney(low * fxFactor, currency)}</span>
+        <span className="fin-mono">{formatMoney(high * fxFactor, currency)}</span>
+      </div>
+    </div>
+  )
+}
+
 export default function AnalysisCalculator({
   analysis,
   asset,
@@ -300,6 +394,20 @@ export default function AnalysisCalculator({
     const hasProblem = problemFields.has(def.key)
     const draft = drafts[def.key]
 
+    // The discount rate has no fetched value: with no manual override it
+    // auto-derives from the WACC (or CAPM). Show that derived value in the box,
+    // faded, and offer a reset back to it when the user has typed an override.
+    const isDiscount = def.key === 'discountRate'
+    const discountAuto = isDiscount && input.manualValue === null
+    const discountOverride = isDiscount && input.manualValue !== null
+    const autoValue = discountAuto ? computed.effectiveDiscountRate : null
+    const discountLabel =
+      computed.discountRateSource === 'wacc'
+        ? 'auto · WACC'
+        : computed.discountRateSource === 'capm'
+          ? 'auto · cost of equity'
+          : 'auto'
+
     const fetchedDelta =
       isOverridden && Number(input.fetchedValue) !== 0
         ? (Number(input.manualValue) - Number(input.fetchedValue)) /
@@ -312,7 +420,8 @@ export default function AnalysisCalculator({
           {def.label}
           {def.hint && <InfoHint text={def.hint} />}
           {isFetched && <Database size={11} aria-label="value from API" className="fin-subtle" />}
-          {isOverridden && <span className="fin-badge fin-badge-gold" style={{ fontSize: 9, padding: '0 6px' }}>override</span>}
+          {(isOverridden || discountOverride) && <span className="fin-badge fin-badge-gold" style={{ fontSize: 9, padding: '0 6px' }}>override</span>}
+          {discountAuto && <span className="fin-badge" style={{ fontSize: 9, padding: '0 6px' }}>{discountLabel}</span>}
           {diff && diff.changePct !== null && (
             <span className="fin-badge fin-badge-warn" style={{ fontSize: 9, padding: '0 6px' }}>
               fetched changed by {formatPercentSigned(diff.changePct)}
@@ -326,13 +435,17 @@ export default function AnalysisCalculator({
             inputMode="decimal"
             className="fin-input fin-mono"
             style={{
-              ...(isOverridden
+              ...(isOverridden || discountOverride
                 ? { borderColor: 'var(--fin-gold-border)', fontWeight: 700 }
                 : {}),
-              ...(isFetched ? { color: 'var(--fin-text-2)' } : {}),
+              ...(isFetched || discountAuto ? { color: 'var(--fin-text-2)' } : {}),
               ...(hasProblem ? { borderColor: 'var(--fin-loss-border)' } : {}),
             }}
-            value={draft !== undefined ? draft : toEditor(def, effectiveValue(input), fxFactor)}
+            value={
+              draft !== undefined
+                ? draft
+                : toEditor(def, discountAuto ? autoValue : effectiveValue(input), fxFactor)
+            }
             placeholder={def.format === 'percent' ? '% p.a.' : '—'}
             onChange={(e) => setDrafts((d) => ({ ...d, [def.key]: e.target.value }))}
             onBlur={() => void commitDraft(def)}
@@ -342,12 +455,12 @@ export default function AnalysisCalculator({
             disabled={saving === def.key}
           />
           {def.format === 'percent' && <span className="fin-subtle" style={{ fontSize: 12 }}>%</span>}
-          {isOverridden && (
+          {(isOverridden || discountOverride) && (
             <button
               type="button"
               className="fin-btn"
               style={{ padding: '4px 8px', fontSize: 11 }}
-              title="Reset to fetched value"
+              title={discountOverride ? 'Reset to auto (WACC)' : 'Reset to fetched value'}
               onClick={() => void resetField(def)}
             >
               <RotateCcw size={11} />
@@ -362,7 +475,16 @@ export default function AnalysisCalculator({
             )}
           </div>
         )}
-        {def.help && !isOverridden && (
+        {discountAuto && (
+          <div className="fin-subtle" style={{ fontSize: 11 }}>
+            {computed.discountRateSource === 'wacc'
+              ? 'Following the computed WACC. Type a value to override.'
+              : computed.discountRateSource === 'capm'
+                ? 'Following the CAPM cost of equity (no debt inputs yet for a full WACC). Type to override.'
+                : 'Enter WACC components below, or type a discount rate.'}
+          </div>
+        )}
+        {def.help && !isOverridden && !isDiscount && (
           <div className="fin-subtle" style={{ fontSize: 11 }}>{def.help}</div>
         )}
         {(def.key === 'peBenchmark' || def.key === 'evEbitdaBenchmark') && (
@@ -389,6 +511,29 @@ export default function AnalysisCalculator({
       : target !== null && mos >= target
         ? 'fin-gain'
         : mos > 0
+          ? 'fin-warn'
+          : 'fin-loss'
+
+  // ── Blended read ──
+  const blended = computed.blendedFairValue !== null ? Number(computed.blendedFairValue) : null
+  const low = computed.fairValueLow !== null ? Number(computed.fairValueLow) : null
+  const high = computed.fairValueHigh !== null ? Number(computed.fairValueHigh) : null
+  const spread = computed.methodSpread !== null ? Number(computed.methodSpread) : null
+  const blendedMos = computed.blendedMarginOfSafety !== null ? Number(computed.blendedMarginOfSafety) : null
+  const agreement =
+    spread === null || computed.methodCount < 2
+      ? null
+      : spread < 0.15
+        ? { label: 'methods agree', cls: 'fin-gain' }
+        : spread < 0.35
+          ? { label: 'moderate spread', cls: 'fin-warn' }
+          : { label: 'wide spread — assumptions dominate', cls: 'fin-loss' }
+  const blendedMosClass =
+    blendedMos === null
+      ? 'fin-muted'
+      : target !== null && blendedMos >= target
+        ? 'fin-gain'
+        : blendedMos > 0
           ? 'fin-warn'
           : 'fin-loss'
 
@@ -492,6 +637,41 @@ export default function AnalysisCalculator({
           </div>
         </div>
       </div>
+
+      {/* ── Blended fair value ── */}
+      {blended !== null && low !== null && high !== null && (
+        <div className="fin-card">
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+            <div className="fin-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              Blended fair value
+              <InfoHint text="Equal-weighted average of the methods that produced a value (DCF, P/E, EV/EBITDA). No single method is authoritative — the DCF is an intrinsic estimate, the multiples are relative to the sector — so read the band and how tightly they agree, not one number. The margin of safety here is against the blend." />
+            </div>
+            <div className="fin-value-lg fin-gold" style={{ fontSize: 30, lineHeight: 1 }}>
+              {displayMoney(blended, asset.currency, fxFactor)}
+            </div>
+            <span className={`fin-mono ${blendedMosClass}`} style={{ fontSize: 14 }}>
+              {blendedMos !== null ? `MoS ${formatPercentSigned(blendedMos)}` : ''}
+            </span>
+            {agreement && (
+              <span className={`fin-badge ${agreement.cls === 'fin-gain' ? 'fin-badge-gold' : ''}`} style={{ marginLeft: 'auto', fontSize: 10 }}>
+                <span className={agreement.cls}>{agreement.label}</span>
+                {spread !== null && <> · ±{formatPercent(spread / 2, 0)}</>}
+              </span>
+            )}
+          </div>
+          <MethodRange
+            currency={asset.currency}
+            fxFactor={fxFactor}
+            dcf={computed.fairValue !== null ? Number(computed.fairValue) : null}
+            pe={computed.impliedFromPe !== null ? Number(computed.impliedFromPe) : null}
+            ev={computed.impliedFromEvEbitda !== null ? Number(computed.impliedFromEvEbitda) : null}
+            blended={blended}
+            low={low}
+            high={high}
+            price={price}
+          />
+        </div>
+      )}
 
       {fxFactor !== 1 && dataCurrency && (
         <p className="fin-subtle" style={{ margin: '-6px 0 0', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -605,20 +785,23 @@ export default function AnalysisCalculator({
               {computed.wacc ? formatPercent(computed.wacc) : '—'}
             </span>
           </span>
-          <button
-            type="button"
-            className="fin-btn"
-            disabled={computed.wacc === null && computed.capmRate === null}
-            onClick={() => {
-              const source = computed.wacc ?? computed.capmRate
-              if (source === null) return
-              const value = Number(source)
-              setLocal('discountRate', { manualValue: String(value) })
-              void persistField('discountRate', value)
-            }}
-          >
-            {computed.wacc ? 'Use WACC as discount rate' : 'Use cost of equity as discount rate'}
-          </button>
+          {inputs['discountRate']?.manualValue != null ? (
+            <button
+              type="button"
+              className="fin-btn"
+              title="Clear the manual discount so the DCF follows the WACC automatically"
+              onClick={() => {
+                setLocal('discountRate', { manualValue: null })
+                void persistField('discountRate', null)
+              }}
+            >
+              Reset discount to auto (WACC)
+            </button>
+          ) : (
+            <span className="fin-subtle" style={{ fontSize: 12 }}>
+              Discount rate follows the {computed.discountRateSource === 'capm' ? 'cost of equity' : 'WACC'} automatically
+            </span>
+          )}
         </div>
       </div>
 

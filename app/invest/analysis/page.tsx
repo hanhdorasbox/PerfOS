@@ -5,6 +5,7 @@ import { formatDate, formatMoney, formatPercentSigned } from '@/lib/invest/forma
 import { getFxFactor } from '@/lib/invest/fx/convert'
 import WatchlistManager, { type WatchlistRow } from '@/components/invest/WatchlistManager'
 import RefreshPricesButton from '@/components/invest/RefreshPricesButton'
+import AnchorDiscountsButton from '@/components/invest/AnchorDiscountsButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -131,7 +132,8 @@ export default async function AnalyzaPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <h2 className="fin-serif" style={{ fontSize: 22, margin: 0 }}>Analyses</h2>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <AnchorDiscountsButton />
           <RefreshPricesButton />
           <Link href="/invest/analysis/new" className="fin-btn fin-btn-primary" style={{ textDecoration: 'none' }}>
             + New analysis

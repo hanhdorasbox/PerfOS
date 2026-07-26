@@ -49,15 +49,47 @@ describe('computeValuation', () => {
 
   it('reports missing fields as problems instead of NaN', () => {
     const r = computeValuation(
-      complete.filter((i) => i.field !== 'discountRate' && i.field !== 'fcfBase'),
+      complete.filter((i) => i.field !== 'terminalGrowth' && i.field !== 'fcfBase'),
       '30',
     )
     expect(r.fairValue).toBeNull()
     const fields = r.problems.map((p) => p.field)
-    expect(fields).toContain('discountRate')
+    expect(fields).toContain('terminalGrowth')
     expect(fields).toContain('fcfBase')
     // relative valuation still works without the DCF pieces
     expect(Number(r.impliedFromPe)).toBeCloseTo(117, 6)
+  })
+
+  it('falls back to CAPM as the discount rate when none is entered', () => {
+    // No manual discount, and no debt inputs for a full WACC → cost of equity.
+    const noDiscount = complete.filter((i) => i.field !== 'discountRate')
+    const r = computeValuation(noDiscount, '30')
+    expect(r.problems).toHaveLength(0)
+    expect(r.discountRateSource).toBe('capm')
+    expect(Number(r.effectiveDiscountRate)).toBeCloseTo(0.1, 10) // 0.04 + 1.2×0.05
+    expect(r.fairValue).not.toBeNull()
+  })
+
+  it('prefers the full WACC over CAPM when the debt inputs are present', () => {
+    const withDebt = [
+      ...complete.filter((i) => i.field !== 'discountRate'),
+      input('costOfDebt', null, '0.05'),
+      input('taxRate', null, '0.21'),
+      input('totalDebt', '400'),
+    ]
+    const r = computeValuation(withDebt, '30')
+    expect(r.discountRateSource).toBe('wacc')
+    expect(Number(r.effectiveDiscountRate)).toBeCloseTo(Number(r.wacc), 10)
+  })
+
+  it('blends the available methods and reports their range', () => {
+    const r = computeValuation(complete, '30')
+    const parts = [r.fairValue, r.impliedFromPe, r.impliedFromEvEbitda].map(Number)
+    expect(r.methodCount).toBe(3)
+    expect(Number(r.fairValueLow)).toBeCloseTo(Math.min(...parts), 3)
+    expect(Number(r.fairValueHigh)).toBeCloseTo(Math.max(...parts), 3)
+    expect(Number(r.blendedFairValue)).toBeCloseTo(parts.reduce((a, b) => a + b, 0) / 3, 3)
+    expect(Number(r.blendedMarginOfSafety)).toBeCloseTo(1 - 30 / Number(r.blendedFairValue), 4)
   })
 
   it('surfaces the terminal-growth validation as a problem', () => {
