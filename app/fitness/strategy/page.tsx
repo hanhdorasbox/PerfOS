@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import FitnessStrategyView from '@/components/fitness/FitnessStrategyView'
 import FitnessStrategyGenerator from '@/components/fitness/FitnessStrategyGenerator'
 import StrategyHistory from '@/components/fitness/StrategyHistory'
+import RoutineBuilder, { type SavedRoutine } from '@/components/fitness/RoutineBuilder'
 
 export const dynamic = 'force-dynamic'
 
@@ -109,6 +110,17 @@ export default async function FitnessStrategyPage() {
     return true
   })
 
+  const routineRows = await prisma.workoutRoutine.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: 'desc' },
+  })
+  const initialRoutines: SavedRoutine[] = routineRows.map(r => ({
+    id: r.id,
+    name: r.name,
+    exercises: (() => { try { return JSON.parse(r.exercises) } catch { return [] } })(),
+    createdAt: r.createdAt.toISOString(),
+  }))
+
   return (
     <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
       <div style={{ marginBottom: 32 }}>
@@ -148,6 +160,15 @@ export default async function FitnessStrategyPage() {
           />
         </div>
       )}
+
+      {/* ── Build your own routine ── */}
+      <div style={{ marginTop: 44 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 600, color: '#EEEEF2', letterSpacing: '-0.02em' }}>Build your own routine</h2>
+        <p style={{ color: '#52525A', fontSize: 13, marginTop: 5, marginBottom: 18, lineHeight: 1.5 }}>
+          Pick exercises — the body map shows which muscles you&apos;ll train. Save routines to your account.
+        </p>
+        <RoutineBuilder initialRoutines={initialRoutines} />
+      </div>
 
       <StrategyHistory strategies={pastStrategies.map(s => ({ ...s, createdAt: s.createdAt.toISOString() }))} />
     </main>
