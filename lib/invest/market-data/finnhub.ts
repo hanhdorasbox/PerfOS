@@ -104,6 +104,10 @@ export class FinnhubProvider implements MarketDataProvider {
         const pct = pickNumber(metric, 'revenueGrowth3Y')
         return pct !== null ? pct / 100 : null
       })(),
+      // profile2.currency is the security's trading currency (e.g. USD). The
+      // monetary metrics above are reported in it, so it's what a conversion
+      // to the asset's display currency keys off.
+      currency: typeof profile.currency === 'string' ? profile.currency : null,
     }
 
     return { ticker, data, raw: { metric: metricRes, profile } }
