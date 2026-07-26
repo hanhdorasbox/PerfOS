@@ -42,8 +42,7 @@ const AI_FIELDS: Record<string, { percent: boolean; min: number; max: number; un
   fcfGrowthY4: { percent: true, min: -40, max: 45, unit: 'percent points' },
   fcfGrowthY5: { percent: true, min: -40, max: 40, unit: 'percent points' },
   terminalGrowth: { percent: true, min: 0, max: 4, unit: 'percent points' },
-  // ── WACC components ──
-  discountRate: { percent: true, min: 4, max: 20, unit: 'percent points (WACC)' },
+  // ── WACC components (the discount rate itself auto-derives from these) ──
   riskFreeRate: { percent: true, min: 0, max: 10, unit: 'percent points' },
   equityRiskPremium: { percent: true, min: 3, max: 8, unit: 'percent points' },
   costOfDebt: { percent: true, min: 0, max: 15, unit: 'percent points' },
@@ -104,7 +103,7 @@ export async function POST(_req: NextRequest, ctx: Ctx) {
     'You are given the company and the hard fundamentals already fetched from a data API (the "fundamentals" object).',
     'For the fundamental fields (fcfBase, netDebt, totalDebt, ebitda, eps, sharesOutstanding, beta): when the fundamentals object supplies the value, RETURN THAT EXACT VALUE — fcfBase=fcf, totalDebt=totalDebt, ebitda=ebitda, eps=eps, sharesOutstanding=sharesOutstanding, beta=beta, netDebt=totalDebt−cash. Estimate a fundamental only when its source value is null/missing.',
     'For the judgment inputs, estimate from what is generally known about the company.',
-    'Rules: FCF growth must fade DOWN from year 1 to year 5 toward the terminal rate (no flat high growth). Terminal growth must be at or below long-run GDP (~2–3%) and strictly below the discount rate. The discount rate should be a realistic WACC. Risk-free rate ≈ the current 10-year government-bond yield for the listing currency. Equity risk premium ≈ 4.5–5.5%.',
+    'Rules: FCF growth must fade DOWN from year 1 to year 5 toward the terminal rate (no flat high growth). Terminal growth must be at or below long-run GDP (~2–3%). The discount rate is NOT one of your fields — it is derived automatically from the WACC components, so fill those carefully: risk-free rate ≈ the current 10-year government-bond yield for the listing currency, equity risk premium ≈ 4.5–5.5%, plus a realistic cost of debt and tax rate.',
     'Give every value as a plain JSON number in the unit noted per field — never abbreviate large figures (write 100000000000, not "100B").',
     'You cannot see live filings or prices, so these are estimates to verify — never a buy/sell recommendation.',
     'Return ONLY a JSON object: {"values": {"<key>": <number>}, "rationale": "<one or two sentences>"}.',
@@ -154,9 +153,10 @@ export async function POST(_req: NextRequest, ctx: Ctx) {
     cleaned[key] = clamp(n, cfg.min, cfg.max)
   }
 
-  // Terminal growth must stay strictly below the discount rate (compute needs it).
-  if (cleaned.terminalGrowth !== undefined && cleaned.discountRate !== undefined) {
-    cleaned.terminalGrowth = Math.min(cleaned.terminalGrowth, cleaned.discountRate - 0.5)
+  // The discount rate auto-derives from the WACC/CAPM (not filled by the AI), so
+  // just keep terminal growth at a sane ceiling well below any realistic WACC.
+  if (cleaned.terminalGrowth !== undefined) {
+    cleaned.terminalGrowth = Math.min(cleaned.terminalGrowth, 3.5)
   }
 
   if (Object.keys(cleaned).length === 0) {

@@ -31,6 +31,21 @@ export interface ComputedValuation {
   capmRate: string | null
   /** Full WACC, blending cost of equity and after-tax cost of debt by E/D weights */
   wacc: string | null
+  /** The discount rate the DCF actually used (manual override, else WACC, else CAPM) */
+  effectiveDiscountRate: string | null
+  /** Where the effective discount rate came from */
+  discountRateSource: 'manual' | 'wacc' | 'capm' | null
+  /** Average of the available method values (DCF, P/E, EV/EBITDA) */
+  blendedFairValue: string | null
+  /** Lowest / highest of the available method values */
+  fairValueLow: string | null
+  fairValueHigh: string | null
+  /** Dispersion (high − low) ÷ blended — smaller = the methods agree more */
+  methodSpread: string | null
+  /** How many of the three methods produced a value */
+  methodCount: number
+  /** Margin of safety against the blended fair value */
+  blendedMarginOfSafety: string | null
   sensitivity: Array<
     Array<{ discountRate: string; terminalGrowth: string; fairValue: string | null; isBase: boolean }>
   > | null
@@ -84,11 +99,27 @@ export function computeValuation(
       ? waccDiscountRate(capmRate, costOfDebt, taxRate, priceForWacc.times(sharesForWacc), totalDebt)
       : null
 
+  // ── Discount rate ────────────────────────────────────────────────────────
+  // For an FCFF DCF the correct rate IS the WACC, so it's the default: a manual
+  // override wins, otherwise the model uses the computed WACC (or CAPM cost of
+  // equity when the debt inputs for a full WACC aren't all present). This keeps
+  // the discount anchored to the company's real cost of capital instead of a
+  // hand-typed guess.
+  const manualDiscount = val('discountRate')
+  const effectiveDiscount = manualDiscount ?? wacc ?? capmRate
+  const discountRateSource: ComputedValuation['discountRateSource'] = manualDiscount
+    ? 'manual'
+    : wacc
+      ? 'wacc'
+      : capmRate
+        ? 'capm'
+        : null
+
   // ── DCF ────────────────────────────────────────────────────────────────
   const required: Record<string, Decimal | null> = {
     fcfBase: val('fcfBase'),
     terminalGrowth: val('terminalGrowth'),
-    discountRate: val('discountRate'),
+    discountRate: effectiveDiscount,
     netDebt: val('netDebt'),
     sharesOutstanding: val('sharesOutstanding'),
   }
@@ -142,6 +173,26 @@ export function computeValuation(
   const price = toDecimal(currentPrice)
   const mos = dcf && price ? marginOfSafety(dcf.fairValuePerShare, price) : null
 
+  // ── Blended fair value ────────────────────────────────────────────────
+  // No single method is "right": the DCF is an intrinsic-value estimate, the
+  // multiples are relative to the sector. Blend the ones that produced a value
+  // (equal weight) and expose the low/high range and how tightly they agree, so
+  // the read is a band with a confidence signal rather than one fragile number.
+  const methods = [dcf?.fairValuePerShare ?? null, impliedFromPe, impliedFromEvEbitda].filter(
+    (m): m is Decimal => m !== null && m.isFinite() && m.gt(0),
+  )
+  let blended: Decimal | null = null
+  let low: Decimal | null = null
+  let high: Decimal | null = null
+  let methodSpread: Decimal | null = null
+  if (methods.length > 0) {
+    low = Decimal.min(...methods)
+    high = Decimal.max(...methods)
+    blended = methods.reduce((sum, m) => sum.plus(m), new Decimal(0)).div(methods.length)
+    methodSpread = blended.gt(0) ? high.minus(low).div(blended) : null
+  }
+  const blendedMos = blended && price ? marginOfSafety(blended, price) : null
+
   // ── Units/scale sanity check ─────────────────────────────────────────────
   // FCF, net debt and total debt must be in the SAME scale (all absolute, or
   // all in millions). Anchored on market cap (price × shares), flag anything
@@ -181,6 +232,14 @@ export function computeValuation(
     impliedFromEvEbitda: impliedFromEvEbitda?.toFixed(4) ?? null,
     capmRate: capmRate?.toFixed(6) ?? null,
     wacc: wacc?.toFixed(6) ?? null,
+    effectiveDiscountRate: effectiveDiscount?.toFixed(6) ?? null,
+    discountRateSource,
+    blendedFairValue: blended?.toFixed(4) ?? null,
+    fairValueLow: low?.toFixed(4) ?? null,
+    fairValueHigh: high?.toFixed(4) ?? null,
+    methodSpread: methodSpread?.toFixed(4) ?? null,
+    methodCount: methods.length,
+    blendedMarginOfSafety: blendedMos?.toFixed(4) ?? null,
     sensitivity:
       sensitivity?.map((row) =>
         row.map((cell) => ({

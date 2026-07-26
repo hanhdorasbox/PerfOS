@@ -14,6 +14,7 @@ import AnalysisCalculator, { type CalcInput } from '@/components/invest/Analysis
 import DueDiligenceChecklist from '@/components/invest/DueDiligenceChecklist'
 import { FIELD_DEFS } from '@/lib/invest/valuation/fields'
 import { normalizeChecklist } from '@/lib/invest/valuation/checklist'
+import { getFxFactor } from '@/lib/invest/fx/convert'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,11 +47,18 @@ export default async function AnalysisPage(props: { params: Promise<{ id: string
     .limit(1)
 
   const [fundamentals] = await db
-    .select({ fetchedAt: fundamentalsSnapshots.fetchedAt })
+    .select({ fetchedAt: fundamentalsSnapshots.fetchedAt, data: fundamentalsSnapshots.data })
     .from(fundamentalsSnapshots)
     .where(eq(fundamentalsSnapshots.assetId, asset.id))
     .orderBy(desc(fundamentalsSnapshots.fetchedAt))
     .limit(1)
+
+  // Finnhub reports the fundamentals (and the price) in the security's listing
+  // currency — USD for a US stock. When that differs from the asset's display
+  // currency we convert on the way out, so a $ figure isn't shown under a €.
+  const dataCurrency =
+    (fundamentals?.data as { currency?: string | null } | undefined)?.currency ?? null
+  const fxFactor = await getFxFactor(db, dataCurrency, asset.currency)
 
   const inputByField = new Map(inputs.map((i) => [i.field, i]))
   // Backfill any field added to FIELD_DEFS after this analysis was created
@@ -98,6 +106,8 @@ export default async function AnalysisPage(props: { params: Promise<{ id: string
         currentPrice={latestPrice?.price ?? null}
         targetMos={watchlist?.targetMos ?? null}
         fundamentalsFetchedAt={fundamentals?.fetchedAt.toISOString() ?? null}
+        fxFactor={fxFactor}
+        dataCurrency={dataCurrency}
       />
       <DueDiligenceChecklist
         analysisId={analysis.id}

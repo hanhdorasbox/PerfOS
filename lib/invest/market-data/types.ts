@@ -26,6 +26,12 @@ export interface FundamentalsData {
   evEbitda: number | null
   /** 3-year revenue CAGR as a fraction, e.g. 0.08 = 8 % */
   revenueGrowth3y: number | null
+  /**
+   * Reporting/listing currency of the monetary figures above (e.g. "USD" for a
+   * US-listed stock). Used to convert them into the asset's display currency —
+   * without it the numbers get shown under the wrong symbol (a $ figure as €).
+   */
+  currency: string | null
 }
 
 export interface FundamentalsResult {

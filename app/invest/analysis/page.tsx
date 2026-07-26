@@ -1,9 +1,11 @@
 import Link from 'next/link'
-import { asc, desc, eq } from 'drizzle-orm'
-import { getInvestDb, analyses, assets, watchlistItems } from '@/lib/invest/db'
+import { asc, desc, eq, inArray } from 'drizzle-orm'
+import { getInvestDb, analyses, assets, fundamentalsSnapshots, watchlistItems } from '@/lib/invest/db'
 import { formatDate, formatMoney, formatPercentSigned } from '@/lib/invest/format'
+import { getFxFactor } from '@/lib/invest/fx/convert'
 import WatchlistManager, { type WatchlistRow } from '@/components/invest/WatchlistManager'
 import RefreshPricesButton from '@/components/invest/RefreshPricesButton'
+import AnchorDiscountsButton from '@/components/invest/AnchorDiscountsButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,9 +23,13 @@ export default async function AnalyzaPage() {
     fairValue: string | null
     marginOfSafety: string | null
     updatedAt: Date
+    assetId: string
     ticker: string
     currency: string
   }> = []
+  // Fair value is stored in the asset's native (listing) currency; convert it to
+  // the display currency per asset so the list matches the analysis page.
+  const fairValueFactor = new Map<string, number>()
   let watchRows: WatchlistRow[] = []
   let assetOptions: Array<{ id: string; ticker: string; currency: string }> = []
   let dbError: string | null = null
@@ -38,12 +44,41 @@ export default async function AnalyzaPage() {
         fairValue: analyses.fairValue,
         marginOfSafety: analyses.marginOfSafety,
         updatedAt: analyses.updatedAt,
+        assetId: analyses.assetId,
         ticker: assets.ticker,
         currency: assets.currency,
       })
       .from(analyses)
       .innerJoin(assets, eq(analyses.assetId, assets.id))
       .orderBy(desc(analyses.updatedAt))
+
+    // Resolve one FX factor per asset (native data currency → display currency).
+    const assetIds = [...new Set(rows.map((r) => r.assetId))]
+    if (assetIds.length > 0) {
+      const snaps = await db
+        .select({ assetId: fundamentalsSnapshots.assetId, data: fundamentalsSnapshots.data, fetchedAt: fundamentalsSnapshots.fetchedAt })
+        .from(fundamentalsSnapshots)
+        .where(inArray(fundamentalsSnapshots.assetId, assetIds))
+        .orderBy(desc(fundamentalsSnapshots.fetchedAt))
+      const nativeByAsset = new Map<string, string | null>()
+      for (const s of snaps) {
+        if (nativeByAsset.has(s.assetId)) continue // first = most recent
+        nativeByAsset.set(s.assetId, (s.data as { currency?: string | null } | null)?.currency ?? null)
+      }
+      const displayByAsset = new Map(rows.map((r) => [r.assetId, r.currency]))
+      const factorCache = new Map<string, number>()
+      for (const assetId of assetIds) {
+        const native = nativeByAsset.get(assetId) ?? null
+        const display = displayByAsset.get(assetId) ?? null
+        const key = `${native ?? ''}->${display ?? ''}`
+        let factor = factorCache.get(key)
+        if (factor === undefined) {
+          factor = await getFxFactor(db, native, display)
+          factorCache.set(key, factor)
+        }
+        fairValueFactor.set(assetId, factor)
+      }
+    }
 
     const watch = await db
       .select({
@@ -97,7 +132,8 @@ export default async function AnalyzaPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <h2 className="fin-serif" style={{ fontSize: 22, margin: 0 }}>Analyses</h2>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <AnchorDiscountsButton />
           <RefreshPricesButton />
           <Link href="/invest/analysis/new" className="fin-btn fin-btn-primary" style={{ textDecoration: 'none' }}>
             + New analysis
@@ -133,7 +169,9 @@ export default async function AnalyzaPage() {
                     </td>
                     <td><span className={status.cls}>{status.label}</span></td>
                     <td className="fin-num fin-gold">
-                      {r.fairValue ? formatMoney(r.fairValue, r.currency) : '—'}
+                      {r.fairValue
+                        ? formatMoney(Number(r.fairValue) * (fairValueFactor.get(r.assetId) ?? 1), r.currency)
+                        : '—'}
                     </td>
                     <td className={`fin-num ${mos === null ? 'fin-muted' : mos > 0 ? 'fin-gain' : 'fin-loss'}`}>
                       {mos !== null ? formatPercentSigned(mos) : '—'}
