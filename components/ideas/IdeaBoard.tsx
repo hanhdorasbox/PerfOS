@@ -26,7 +26,36 @@ export default function IdeaBoard({ ideas }: Props) {
     byStatus['convert_to_goal'] = [...byStatus['convert_to_goal'], ...archivedIdeas]
   }
 
+  const pipelineTotal = COLUMNS.reduce((s, c) => s + (byStatus[c.status]?.length ?? 0), 0)
+  const filledCols = COLUMNS.filter(c => (byStatus[c.status]?.length ?? 0) > 0)
+
   return (
+    <>
+      {pipelineTotal > 0 && (
+        <div className="card" style={{ padding: '16px 18px', marginBottom: 20 }}>
+          <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6E6E73', marginBottom: 12 }}>
+            Idea pipeline
+          </div>
+          <div style={{ display: 'flex', gap: 2, height: 12, borderRadius: 999, overflow: 'hidden' }}>
+            {filledCols.map(c => (
+              <div
+                key={c.status}
+                title={`${c.label}: ${byStatus[c.status].length}`}
+                style={{ width: `${(byStatus[c.status].length / pipelineTotal) * 100}%`, background: c.color, minWidth: 3 }}
+              />
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 12 }}>
+            {filledCols.map(c => (
+              <div key={c.status} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                <span style={{ width: 8, height: 8, borderRadius: 3, background: c.color, flexShrink: 0 }} />
+                <span style={{ fontSize: 11, color: '#9E9EA6' }}>{c.label}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#EEEEF2', fontVariantNumeric: 'tabular-nums' }}>{byStatus[c.status].length}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     <div className="mob-1col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
       {COLUMNS.map(col => {
         const colIdeas = byStatus[col.status] || []
@@ -56,5 +85,6 @@ export default function IdeaBoard({ ideas }: Props) {
         )
       })}
     </div>
+    </>
   )
 }

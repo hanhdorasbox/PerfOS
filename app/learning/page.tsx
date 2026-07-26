@@ -101,6 +101,40 @@ export default async function LearningPage() {
         </div>
       )}
 
+      {/* Roadmap progress — steps-complete bar per active roadmap, coloured by health */}
+      {activeGoalsList.length > 0 && (
+        <div className="card" style={{ padding: '18px 22px', marginBottom: 20 }}>
+          <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6E6E73', marginBottom: 16 }}>
+            Roadmap progress
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {activeGoalsList.map(g => {
+              const steps = g.milestones.flatMap(m => m.steps)
+              const done = steps.filter(s => s.completed).length
+              const pct = steps.length > 0 ? (done / steps.length) * 100 : 0
+              const color = g.healthStatus === 'on_track'
+                ? '#64f0aa'
+                : ['at_risk', 'behind', 'stalled'].includes(g.healthStatus || '')
+                  ? '#ffce53'
+                  : '#61adff'
+              return (
+                <div key={g.id}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 3, background: color, flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, color: '#EEEEF2', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.title}</span>
+                    <span style={{ fontSize: 11, color: '#52525A', whiteSpace: 'nowrap' }}>{done}/{steps.length} steps</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 600, color: '#EEEEF2', fontVariantNumeric: 'tabular-nums' }}>{Math.round(pct)}%</span>
+                  </div>
+                  <div style={{ height: 6, borderRadius: 999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                    <div className="progress-fill" style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 999 }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Create new roadmap */}
       <div className="card" style={{ marginBottom: 24, padding: '20px 24px' }}>
         <AddCapabilityGoalForm userId={user.id} goals={activeGoals} />
