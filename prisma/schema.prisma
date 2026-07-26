@@ -64,6 +64,7 @@ model User {
   careerRoadmaps   CareerRoadmap[]
   // Habit Breaker
   alcoholLogs      AlcoholLog[]
+  workoutRoutines  WorkoutRoutine[]
   alcoholSettings  AlcoholSettings?
 }
 
@@ -209,6 +210,16 @@ model WorkoutLog {
   duration           Int?
   notes              String?
   linkedWeeklyTaskId String?  // WeeklyTask.id — for bidirectional fitness sync
+}
+
+model WorkoutRoutine {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  exercises String   // JSON: [{ exerciseId, sets, reps }]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model ProteinLog {
