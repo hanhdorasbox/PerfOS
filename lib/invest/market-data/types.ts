@@ -36,6 +36,8 @@ export interface FundamentalsData {
   sector: string | null
   /** Listing country code, e.g. "US" — for diversification breakdowns */
   country: string | null
+  /** Brand logo URL (Finnhub profile2.logo), shown next to the ticker */
+  logo: string | null
 }
 
 export interface FundamentalsResult {

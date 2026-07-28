@@ -111,6 +111,7 @@ export class FinnhubProvider implements MarketDataProvider {
       // profile2 industry + country power the diversification breakdowns.
       sector: typeof profile.finnhubIndustry === 'string' ? profile.finnhubIndustry : null,
       country: typeof profile.country === 'string' ? profile.country : null,
+      logo: typeof profile.logo === 'string' && profile.logo ? profile.logo : null,
     }
 
     return { ticker, data, raw: { metric: metricRes, profile } }

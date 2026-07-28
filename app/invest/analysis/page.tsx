@@ -1,40 +1,72 @@
 import Link from 'next/link'
-import { asc, desc, eq, inArray } from 'drizzle-orm'
+import { desc, eq, inArray } from 'drizzle-orm'
 import { getInvestDb, analyses, analysisInputs, assets, fundamentalsSnapshots, priceSnapshots, watchlistItems } from '@/lib/invest/db'
 import { formatDate, formatMoney, formatPercentSigned } from '@/lib/invest/format'
 import { getFxFactor, BASE_DISPLAY_CURRENCY } from '@/lib/invest/fx/convert'
 import { computeValuation } from '@/lib/invest/valuation/compute'
-import WatchlistManager, { type WatchlistRow } from '@/components/invest/WatchlistManager'
 import RefreshPricesButton from '@/components/invest/RefreshPricesButton'
 import AnchorDiscountsButton from '@/components/invest/AnchorDiscountsButton'
 import DiversificationBreakdown, { type BreakdownSlice } from '@/components/invest/DiversificationBreakdown'
+import TargetMosCells from '@/components/invest/TargetMosCells'
 
 export const dynamic = 'force-dynamic'
+
+// Brand logo (from Finnhub) or a monogram fallback, shown left of the ticker.
+function AssetGlyph({ ticker, logo }: { ticker: string; logo: string | null }) {
+  if (logo) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return (
+      <img
+        src={logo}
+        alt=""
+        width={22}
+        height={22}
+        style={{ borderRadius: 5, objectFit: 'contain', background: '#fff', flexShrink: 0 }}
+      />
+    )
+  }
+  const initials = ticker.replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase()
+  return (
+    <span
+      aria-hidden
+      style={{
+        width: 22,
+        height: 22,
+        borderRadius: 5,
+        background: '#2a2a31',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 9,
+        fontWeight: 700,
+        color: '#c9c9d0',
+        flexShrink: 0,
+      }}
+    >
+      {initials}
+    </span>
+  )
+}
 
 export default async function AnalyzaPage() {
   let rows: Array<{
     id: string
-    title: string
-    status: string
-    fairValue: string | null
-    marginOfSafety: string | null
     updatedAt: Date
     assetId: string
     ticker: string
-    currency: string
+    name: string
   }> = []
-  // Fair value is stored in the asset's native (listing) currency; convert it to
-  // the display currency per asset so the list matches the analysis page.
+  // Convert the stored (native-currency) fair value into the display currency.
   const fairValueFactor = new Map<string, number>()
-  // The list shows the blended fair value (a single DCF is a fragile outlier),
-  // computed per analysis in the native currency, plus its margin of safety.
+  // The list shows the blended fair value (a single DCF is a fragile outlier).
   const blendedByAnalysis = new Map<string, string>()
   const blendedMosByAnalysis = new Map<string, string>()
+  const logoByAsset = new Map<string, string>()
+  // Target margin of safety (folded in from the old watchlist), per asset.
+  const targetByAsset = new Map<string, { id: string; pct: number }>()
   // Diversification of the tracked (analysed) assets, by count.
   let sectorSlices: BreakdownSlice[] = []
   let countrySlices: BreakdownSlice[] = []
-  let watchRows: WatchlistRow[] = []
-  let assetOptions: Array<{ id: string; ticker: string; currency: string }> = []
   let dbError: string | null = null
 
   try {
@@ -42,20 +74,24 @@ export default async function AnalyzaPage() {
     rows = await db
       .select({
         id: analyses.id,
-        title: analyses.title,
-        status: analyses.status,
-        fairValue: analyses.fairValue,
-        marginOfSafety: analyses.marginOfSafety,
         updatedAt: analyses.updatedAt,
         assetId: analyses.assetId,
         ticker: assets.ticker,
-        currency: assets.currency,
+        name: assets.name,
       })
       .from(analyses)
       .innerJoin(assets, eq(analyses.assetId, assets.id))
       .orderBy(desc(analyses.updatedAt))
 
-    // Resolve one FX factor per asset (native data currency → display currency).
+    // Target MoS per asset, from watchlist rows (kept as storage so alerts work).
+    for (const w of await db
+      .select({ id: watchlistItems.id, assetId: watchlistItems.assetId, targetMos: watchlistItems.targetMos })
+      .from(watchlistItems)) {
+      if (!targetByAsset.has(w.assetId)) {
+        targetByAsset.set(w.assetId, { id: w.id, pct: Math.round(Number(w.targetMos) * 1000) / 10 })
+      }
+    }
+
     const assetIds = [...new Set(rows.map((r) => r.assetId))]
     if (assetIds.length > 0) {
       const snaps = await db
@@ -67,11 +103,11 @@ export default async function AnalyzaPage() {
       const sectorByAsset = new Map<string, string>()
       const countryByAsset = new Map<string, string>()
       for (const s of snaps) {
-        if (nativeByAsset.has(s.assetId)) continue // first = most recent
-        const d = s.data as { currency?: string | null; sector?: string | null; country?: string | null } | null
-        nativeByAsset.set(s.assetId, d?.currency ?? null)
-        if (d?.sector) sectorByAsset.set(s.assetId, d.sector)
-        if (d?.country) countryByAsset.set(s.assetId, d.country)
+        const d = s.data as { currency?: string | null; sector?: string | null; country?: string | null; logo?: string | null } | null
+        if (!nativeByAsset.has(s.assetId)) nativeByAsset.set(s.assetId, d?.currency ?? null)
+        if (d?.sector && !sectorByAsset.has(s.assetId)) sectorByAsset.set(s.assetId, d.sector)
+        if (d?.country && !countryByAsset.has(s.assetId)) countryByAsset.set(s.assetId, d.country)
+        if (d?.logo && !logoByAsset.has(s.assetId)) logoByAsset.set(s.assetId, d.logo)
       }
 
       // One count per distinct tracked asset → sector/country composition.
@@ -81,13 +117,12 @@ export default async function AnalyzaPage() {
       for (const r of rows) {
         if (seen.has(r.assetId)) continue
         seen.add(r.assetId)
-        const sec = sectorByAsset.get(r.assetId) || 'Unknown'
-        const cty = countryByAsset.get(r.assetId) || 'Unknown'
-        sectorCount.set(sec, (sectorCount.get(sec) ?? 0) + 1)
-        countryCount.set(cty, (countryCount.get(cty) ?? 0) + 1)
+        sectorCount.set(sectorByAsset.get(r.assetId) || 'Unknown', (sectorCount.get(sectorByAsset.get(r.assetId) || 'Unknown') ?? 0) + 1)
+        countryCount.set(countryByAsset.get(r.assetId) || 'Unknown', (countryCount.get(countryByAsset.get(r.assetId) || 'Unknown') ?? 0) + 1)
       }
       sectorSlices = [...sectorCount].map(([label, value]) => ({ label, value }))
       countrySlices = [...countryCount].map(([label, value]) => ({ label, value }))
+
       const factorCache = new Map<string, number>()
       for (const assetId of assetIds) {
         const native = nativeByAsset.get(assetId) ?? null
@@ -100,8 +135,7 @@ export default async function AnalyzaPage() {
         fairValueFactor.set(assetId, factor)
       }
 
-      // Blended fair value (+ MoS) per analysis, computed from its inputs and
-      // latest price — the same blend shown on the analysis detail page.
+      // Blended fair value (+ MoS) per analysis, from its inputs and latest price.
       const inputRows = await db
         .select({
           analysisId: analysisInputs.analysisId,
@@ -133,43 +167,6 @@ export default async function AnalyzaPage() {
         if (c.blendedMarginOfSafety) blendedMosByAnalysis.set(r.id, c.blendedMarginOfSafety)
       }
     }
-
-    const watch = await db
-      .select({
-        id: watchlistItems.id,
-        assetId: watchlistItems.assetId,
-        targetMos: watchlistItems.targetMos,
-        note: watchlistItems.note,
-        ticker: assets.ticker,
-        name: assets.name,
-      })
-      .from(watchlistItems)
-      .innerJoin(assets, eq(watchlistItems.assetId, assets.id))
-      .orderBy(asc(assets.ticker))
-
-    const activeByAsset = new Map<string, string | null>()
-    for (const r of await db
-      .select({ assetId: analyses.assetId, marginOfSafety: analyses.marginOfSafety, updatedAt: analyses.updatedAt })
-      .from(analyses)
-      .where(eq(analyses.status, 'active'))
-      .orderBy(desc(analyses.updatedAt))) {
-      if (!activeByAsset.has(r.assetId)) activeByAsset.set(r.assetId, r.marginOfSafety)
-    }
-
-    watchRows = watch.map((w) => ({
-      id: w.id,
-      assetId: w.assetId,
-      ticker: w.ticker,
-      name: w.name,
-      targetMos: w.targetMos,
-      note: w.note,
-      currentMos: activeByAsset.get(w.assetId) ?? null,
-    }))
-
-    assetOptions = await db
-      .select({ id: assets.id, ticker: assets.ticker, currency: assets.currency })
-      .from(assets)
-      .orderBy(asc(assets.ticker))
   } catch (e) {
     dbError = e instanceof Error ? e.message : 'Unknown error'
   }
@@ -202,9 +199,11 @@ export default async function AnalyzaPage() {
           <table className="fin-table">
             <thead>
               <tr>
-                <th>Analysis</th>
+                <th>Stock</th>
                 <th className="fin-num">Blended value</th>
                 <th className="fin-num">MoS</th>
+                <th className="fin-num">Target</th>
+                <th className="fin-num">Distance</th>
                 <th>Updated</th>
               </tr>
             </thead>
@@ -213,13 +212,20 @@ export default async function AnalyzaPage() {
                 const blended = blendedByAnalysis.get(r.id)
                 const blendedMosRaw = blendedMosByAnalysis.get(r.id)
                 const mos = blendedMosRaw !== undefined ? Number(blendedMosRaw) : null
+                const target = targetByAsset.get(r.assetId) ?? null
                 return (
                   <tr key={r.id}>
                     <td>
-                      <Link href={`/invest/analysis/${r.id}`} style={{ color: 'var(--fin-text)', fontWeight: 600, textDecoration: 'none' }}>
-                        {r.title}
+                      <Link
+                        href={`/invest/analysis/${r.id}`}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}
+                      >
+                        <AssetGlyph ticker={r.ticker} logo={logoByAsset.get(r.assetId) ?? null} />
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <span className="fin-mono" style={{ color: 'var(--fin-text)', fontWeight: 700 }}>{r.ticker}</span>
+                          <span className="fin-subtle"> — {r.name}</span>
+                        </span>
                       </Link>
-                      <div className="fin-subtle fin-mono" style={{ fontSize: 11 }}>{r.ticker}</div>
                     </td>
                     <td className="fin-num fin-gold">
                       {blended
@@ -229,6 +235,12 @@ export default async function AnalyzaPage() {
                     <td className={`fin-num ${mos === null ? 'fin-muted' : mos > 0 ? 'fin-gain' : 'fin-loss'}`}>
                       {mos !== null ? formatPercentSigned(mos) : '—'}
                     </td>
+                    <TargetMosCells
+                      assetId={r.assetId}
+                      watchId={target?.id ?? null}
+                      initialTargetPct={target?.pct ?? null}
+                      currentMos={mos}
+                    />
                     <td className="fin-subtle">{formatDate(r.updatedAt)}</td>
                   </tr>
                 )
@@ -247,13 +259,6 @@ export default async function AnalyzaPage() {
           </div>
         </section>
       )}
-
-      <section>
-        <h3 className="fin-serif" style={{ fontSize: 18, margin: '0 0 12px' }}>Watchlist</h3>
-        <div className="fin-card">
-          <WatchlistManager items={watchRows} assets={assetOptions} />
-        </div>
-      </section>
     </div>
   )
 }
