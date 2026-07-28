@@ -36,13 +36,15 @@ export async function POST(req: NextRequest) {
   }
 
   const db = getInvestDb()
+  // Idempotent by ticker: reuse the existing asset instead of erroring, so the
+  // "new asset" flow works even when the ticker is already tracked.
   const [existing] = await db
-    .select({ id: assets.id })
+    .select()
     .from(assets)
     .where(eq(assets.ticker, parsed.data.ticker))
     .limit(1)
   if (existing) {
-    return NextResponse.json({ error: `Asset ${parsed.data.ticker} already exists` }, { status: 409 })
+    return NextResponse.json({ asset: existing })
   }
 
   const [created] = await db
