@@ -97,9 +97,10 @@ const METHOD_COLORS = { dcf: 'var(--fin-gold)', pe: '#61adff', ev: '#4fd1c5' }
 
 /**
  * Horizontal band from the lowest to the highest method value, with a marker
- * per method, the blended point, and the current price — so the read is a range
- * with a visible spread, not one number. Positions use the native values (the
- * FX factor cancels in a ratio); only the end labels are converted.
+ * per method, the blended point, and the current price. Marker names + values
+ * live in a legend below the bar (not floating over it) so they never collide
+ * when two methods land close together. Positions use the native values (the FX
+ * factor cancels in a ratio); the legend values are converted for display.
  */
 function MethodRange({
   currency,
@@ -129,11 +130,26 @@ function MethodRange({
   const lo = dmin - pad
   const hi = dmax + pad
   const pos = (v: number) => Math.max(0, Math.min(100, ((v - lo) / (hi - lo)) * 100))
+  const fmt = (v: number) => formatMoney(v * fxFactor, currency)
   const markers = [
     { v: dcf, color: METHOD_COLORS.dcf, label: 'DCF' },
     { v: pe, color: METHOD_COLORS.pe, label: 'P/E' },
     { v: ev, color: METHOD_COLORS.ev, label: 'EV/EBITDA' },
-  ]
+  ].filter((m): m is { v: number; color: string; label: string } => m.v != null)
+
+  const legendDot = (color: string, ring = false) => (
+    <span
+      style={{
+        width: 9,
+        height: 9,
+        borderRadius: '50%',
+        background: color,
+        ...(ring ? { boxShadow: '0 0 0 2px rgba(255,255,255,0.15)' } : {}),
+        flex: '0 0 auto',
+      }}
+    />
+  )
+
   return (
     <div>
       <div
@@ -142,10 +158,10 @@ function MethodRange({
           height: 8,
           borderRadius: 4,
           background: 'rgba(255,255,255,0.06)',
-          marginTop: 30,
-          marginBottom: 32,
+          margin: '18px 0 16px',
         }}
       >
+        {/* low–high band */}
         <div
           style={{
             position: 'absolute',
@@ -157,31 +173,51 @@ function MethodRange({
             borderRadius: 4,
           }}
         />
+        {/* blended marker */}
         <div
           title="Blended fair value"
           style={{ position: 'absolute', left: `${pos(blended)}%`, top: -4, bottom: -4, width: 2, background: 'var(--fin-gold)', transform: 'translateX(-1px)' }}
         />
-        {markers.map((m) =>
-          m.v == null ? null : (
-            <div key={m.label} style={{ position: 'absolute', left: `${pos(m.v)}%`, top: '50%', transform: 'translate(-50%,-50%)' }}>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: m.color, border: '2px solid #0b0b0e' }} />
-              <div className="fin-mono" style={{ position: 'absolute', top: -22, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: m.color, whiteSpace: 'nowrap' }}>
-                {m.label}
-              </div>
-            </div>
-          ),
-        )}
+        {/* method dots */}
+        {markers.map((m) => (
+          <div
+            key={m.label}
+            title={`${m.label} ${fmt(m.v)}`}
+            style={{
+              position: 'absolute',
+              left: `${pos(m.v)}%`,
+              top: '50%',
+              transform: 'translate(-50%,-50%)',
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              background: m.color,
+              border: '2px solid #0b0b0e',
+            }}
+          />
+        ))}
+        {/* current price line */}
         {price != null && (
-          <div style={{ position: 'absolute', left: `${pos(price)}%`, top: -9, bottom: -9, width: 2, background: 'var(--fin-text)', transform: 'translateX(-1px)' }}>
-            <div className="fin-mono" style={{ position: 'absolute', bottom: -20, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: 'var(--fin-text)', whiteSpace: 'nowrap' }}>
-              price
-            </div>
-          </div>
+          <div
+            title={`Price ${fmt(price)}`}
+            style={{ position: 'absolute', left: `${pos(price)}%`, top: -9, bottom: -9, width: 2, background: 'var(--fin-text)', transform: 'translateX(-1px)' }}
+          />
         )}
       </div>
-      <div className="fin-subtle" style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
-        <span className="fin-mono">{formatMoney(low * fxFactor, currency)}</span>
-        <span className="fin-mono">{formatMoney(high * fxFactor, currency)}</span>
+      {/* legend with values — no overlap even when markers are close */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 18px', fontSize: 11 }}>
+        {markers.map((m) => (
+          <span key={m.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--fin-text-2)' }}>
+            {legendDot(m.color)}
+            {m.label} <span className="fin-mono" style={{ color: m.color }}>{fmt(m.v)}</span>
+          </span>
+        ))}
+        {price != null && (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--fin-text-2)' }}>
+            {legendDot('var(--fin-text)', true)}
+            Price <span className="fin-mono">{fmt(price)}</span>
+          </span>
+        )}
       </div>
     </div>
   )

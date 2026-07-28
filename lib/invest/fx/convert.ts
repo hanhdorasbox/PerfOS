@@ -2,6 +2,11 @@ import { desc, eq } from 'drizzle-orm'
 import { fxRates, type InvestDb } from '@/lib/invest/db'
 import { fetchCnbDailyRates } from './cnb'
 
+// The currency every stock analysis is shown in. Finnhub reports US names in
+// USD, but the analyses are read in EUR — so this is the single conversion
+// target, independent of an asset's stored (listing) currency.
+export const BASE_DISPLAY_CURRENCY = 'EUR'
+
 // Currency conversion for display. Finnhub reports US stocks in USD, but an
 // asset's display currency may be EUR (or CZK) — so the fetched figures need a
 // cross rate. All rates are keyed off the CNB fixing (CZK per unit), which the
