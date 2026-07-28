@@ -10,12 +10,6 @@ import AnchorDiscountsButton from '@/components/invest/AnchorDiscountsButton'
 
 export const dynamic = 'force-dynamic'
 
-const STATUS_LABELS: Record<string, { label: string; cls: string }> = {
-  draft: { label: 'draft', cls: 'fin-badge' },
-  active: { label: 'active', cls: 'fin-badge fin-badge-gold' },
-  archived: { label: 'archived', cls: 'fin-badge' },
-}
-
 export default async function AnalyzaPage() {
   let rows: Array<{
     id: string
@@ -185,7 +179,6 @@ export default async function AnalyzaPage() {
             <thead>
               <tr>
                 <th>Analysis</th>
-                <th>Status</th>
                 <th className="fin-num">Blended value</th>
                 <th className="fin-num">MoS</th>
                 <th>Updated</th>
@@ -193,7 +186,6 @@ export default async function AnalyzaPage() {
             </thead>
             <tbody>
               {rows.map((r) => {
-                const status = STATUS_LABELS[r.status] ?? STATUS_LABELS.draft
                 const blended = blendedByAnalysis.get(r.id)
                 const blendedMosRaw = blendedMosByAnalysis.get(r.id)
                 const mos = blendedMosRaw !== undefined ? Number(blendedMosRaw) : null
@@ -205,7 +197,6 @@ export default async function AnalyzaPage() {
                       </Link>
                       <div className="fin-subtle fin-mono" style={{ fontSize: 11 }}>{r.ticker}</div>
                     </td>
-                    <td><span className={status.cls}>{status.label}</span></td>
                     <td className="fin-num fin-gold">
                       {blended
                         ? formatMoney(Number(blended) * (fairValueFactor.get(r.assetId) ?? 1), BASE_DISPLAY_CURRENCY)
