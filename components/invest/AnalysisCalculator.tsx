@@ -539,16 +539,6 @@ export default function AnalysisCalculator({
 
   const price = currentPrice !== null ? Number(currentPrice) : null
   const target = targetMos !== null ? Number(targetMos) : null
-  const mos = computed.marginOfSafety !== null ? Number(computed.marginOfSafety) : null
-
-  const mosClass =
-    mos === null
-      ? 'fin-muted'
-      : target !== null && mos >= target
-        ? 'fin-gain'
-        : mos > 0
-          ? 'fin-warn'
-          : 'fin-loss'
 
   // ── Blended read ──
   const blended = computed.blendedFairValue !== null ? Number(computed.blendedFairValue) : null
@@ -666,10 +656,10 @@ export default function AnalysisCalculator({
         <div className="fin-card">
           <div className="fin-label" style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
             Margin of safety{target !== null && <> · target {formatPercent(target)}</>}
-            <InfoHint text="(Fair value − price) ÷ fair value. How far below intrinsic value the stock trades. Positive = trading below fair value (cushion); negative = above. The bigger the buffer, the more room for error in your assumptions." />
+            <InfoHint text="(Blended fair value − price) ÷ blended fair value. Measured against the blended fair value — not the DCF alone, which is a fragile single-method outlier. Positive = trading below fair value (cushion); negative = above." />
           </div>
-          <div className={`fin-value-lg ${mosClass}`} style={{ fontSize: 28 }}>
-            {mos !== null ? formatPercentSigned(mos) : '—'}
+          <div className={`fin-value-lg ${blendedMosClass}`} style={{ fontSize: 28 }}>
+            {blendedMos !== null ? formatPercentSigned(blendedMos) : '—'}
           </div>
         </div>
       </div>
