@@ -7,6 +7,7 @@ import { computeValuation } from '@/lib/invest/valuation/compute'
 import WatchlistManager, { type WatchlistRow } from '@/components/invest/WatchlistManager'
 import RefreshPricesButton from '@/components/invest/RefreshPricesButton'
 import AnchorDiscountsButton from '@/components/invest/AnchorDiscountsButton'
+import DiversificationBreakdown, { type BreakdownSlice } from '@/components/invest/DiversificationBreakdown'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,6 +30,9 @@ export default async function AnalyzaPage() {
   // computed per analysis in the native currency, plus its margin of safety.
   const blendedByAnalysis = new Map<string, string>()
   const blendedMosByAnalysis = new Map<string, string>()
+  // Diversification of the tracked (analysed) assets, by count.
+  let sectorSlices: BreakdownSlice[] = []
+  let countrySlices: BreakdownSlice[] = []
   let watchRows: WatchlistRow[] = []
   let assetOptions: Array<{ id: string; ticker: string; currency: string }> = []
   let dbError: string | null = null
@@ -60,10 +64,30 @@ export default async function AnalyzaPage() {
         .where(inArray(fundamentalsSnapshots.assetId, assetIds))
         .orderBy(desc(fundamentalsSnapshots.fetchedAt))
       const nativeByAsset = new Map<string, string | null>()
+      const sectorByAsset = new Map<string, string>()
+      const countryByAsset = new Map<string, string>()
       for (const s of snaps) {
         if (nativeByAsset.has(s.assetId)) continue // first = most recent
-        nativeByAsset.set(s.assetId, (s.data as { currency?: string | null } | null)?.currency ?? null)
+        const d = s.data as { currency?: string | null; sector?: string | null; country?: string | null } | null
+        nativeByAsset.set(s.assetId, d?.currency ?? null)
+        if (d?.sector) sectorByAsset.set(s.assetId, d.sector)
+        if (d?.country) countryByAsset.set(s.assetId, d.country)
       }
+
+      // One count per distinct tracked asset → sector/country composition.
+      const sectorCount = new Map<string, number>()
+      const countryCount = new Map<string, number>()
+      const seen = new Set<string>()
+      for (const r of rows) {
+        if (seen.has(r.assetId)) continue
+        seen.add(r.assetId)
+        const sec = sectorByAsset.get(r.assetId) || 'Unknown'
+        const cty = countryByAsset.get(r.assetId) || 'Unknown'
+        sectorCount.set(sec, (sectorCount.get(sec) ?? 0) + 1)
+        countryCount.set(cty, (countryCount.get(cty) ?? 0) + 1)
+      }
+      sectorSlices = [...sectorCount].map(([label, value]) => ({ label, value }))
+      countrySlices = [...countryCount].map(([label, value]) => ({ label, value }))
       const factorCache = new Map<string, number>()
       for (const assetId of assetIds) {
         const native = nativeByAsset.get(assetId) ?? null
@@ -213,6 +237,16 @@ export default async function AnalyzaPage() {
           </table>
         )}
       </div>
+
+      {rows.length > 0 && (
+        <section>
+          <h3 className="fin-serif" style={{ fontSize: 18, margin: '0 0 12px' }}>Diversification of tracked stocks</h3>
+          <div className="fin-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 28 }}>
+            <DiversificationBreakdown title="By sector" slices={sectorSlices} unit="count" />
+            <DiversificationBreakdown title="By country" slices={countrySlices} unit="count" />
+          </div>
+        </section>
+      )}
 
       <section>
         <h3 className="fin-serif" style={{ fontSize: 18, margin: '0 0 12px' }}>Watchlist</h3>

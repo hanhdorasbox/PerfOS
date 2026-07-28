@@ -108,6 +108,9 @@ export class FinnhubProvider implements MarketDataProvider {
       // monetary metrics above are reported in it, so it's what a conversion
       // to the asset's display currency keys off.
       currency: typeof profile.currency === 'string' ? profile.currency : null,
+      // profile2 industry + country power the diversification breakdowns.
+      sector: typeof profile.finnhubIndustry === 'string' ? profile.finnhubIndustry : null,
+      country: typeof profile.country === 'string' ? profile.country : null,
     }
 
     return { ticker, data, raw: { metric: metricRes, profile } }

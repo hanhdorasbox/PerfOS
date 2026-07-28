@@ -32,6 +32,10 @@ export interface FundamentalsData {
    * without it the numbers get shown under the wrong symbol (a $ figure as €).
    */
   currency: string | null
+  /** Industry/sector (Finnhub's finnhubIndustry), e.g. "Technology" */
+  sector: string | null
+  /** Listing country code, e.g. "US" — for diversification breakdowns */
+  country: string | null
 }
 
 export interface FundamentalsResult {
