@@ -1,52 +1,16 @@
 import Link from 'next/link'
 import { desc, eq, inArray } from 'drizzle-orm'
 import { getInvestDb, analyses, analysisInputs, assets, fundamentalsSnapshots, priceSnapshots, watchlistItems } from '@/lib/invest/db'
-import { formatDate, formatMoney, formatPercentSigned } from '@/lib/invest/format'
+import { formatDate, formatMoney } from '@/lib/invest/format'
 import { getFxFactor, BASE_DISPLAY_CURRENCY } from '@/lib/invest/fx/convert'
 import { computeValuation } from '@/lib/invest/valuation/compute'
+import { continentForCountry } from '@/lib/invest/geo'
 import RefreshPricesButton from '@/components/invest/RefreshPricesButton'
 import AnchorDiscountsButton from '@/components/invest/AnchorDiscountsButton'
 import DiversificationBreakdown, { type BreakdownSlice } from '@/components/invest/DiversificationBreakdown'
-import TargetMosCells from '@/components/invest/TargetMosCells'
+import AnalysesTable, { type AnalysisRow } from '@/components/invest/AnalysesTable'
 
 export const dynamic = 'force-dynamic'
-
-// Brand logo (from Finnhub) or a monogram fallback, shown left of the ticker.
-function AssetGlyph({ ticker, logo }: { ticker: string; logo: string | null }) {
-  if (logo) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return (
-      <img
-        src={logo}
-        alt=""
-        width={22}
-        height={22}
-        style={{ borderRadius: 5, objectFit: 'contain', background: '#fff', flexShrink: 0 }}
-      />
-    )
-  }
-  const initials = ticker.replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase()
-  return (
-    <span
-      aria-hidden
-      style={{
-        width: 22,
-        height: 22,
-        borderRadius: 5,
-        background: '#2a2a31',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: 9,
-        fontWeight: 700,
-        color: '#c9c9d0',
-        flexShrink: 0,
-      }}
-    >
-      {initials}
-    </span>
-  )
-}
 
 export default async function AnalyzaPage() {
   let rows: Array<{
@@ -67,6 +31,8 @@ export default async function AnalyzaPage() {
   // Diversification of the tracked (analysed) assets, by count.
   let sectorSlices: BreakdownSlice[] = []
   let countrySlices: BreakdownSlice[] = []
+  // Fully-resolved rows for the (client-side filterable) table.
+  let analysisRows: AnalysisRow[] = []
   let dbError: string | null = null
 
   try {
@@ -166,6 +132,28 @@ export default async function AnalyzaPage() {
         if (c.blendedFairValue) blendedByAnalysis.set(r.id, c.blendedFairValue)
         if (c.blendedMarginOfSafety) blendedMosByAnalysis.set(r.id, c.blendedMarginOfSafety)
       }
+
+      analysisRows = rows.map((r) => {
+        const blended = blendedByAnalysis.get(r.id)
+        const mosRaw = blendedMosByAnalysis.get(r.id)
+        const target = targetByAsset.get(r.assetId) ?? null
+        return {
+          id: r.id,
+          assetId: r.assetId,
+          ticker: r.ticker,
+          name: r.name,
+          logo: logoByAsset.get(r.assetId) ?? null,
+          blendedDisplay: blended
+            ? formatMoney(Number(blended) * (fairValueFactor.get(r.assetId) ?? 1), BASE_DISPLAY_CURRENCY)
+            : null,
+          mos: mosRaw !== undefined ? Number(mosRaw) : null,
+          targetPct: target?.pct ?? null,
+          watchId: target?.id ?? null,
+          updated: formatDate(r.updatedAt),
+          sector: sectorByAsset.get(r.assetId) || 'Unknown',
+          continent: continentForCountry(countryByAsset.get(r.assetId) ?? null),
+        }
+      })
     }
   } catch (e) {
     dbError = e instanceof Error ? e.message : 'Unknown error'
@@ -192,63 +180,13 @@ export default async function AnalyzaPage() {
         </div>
       </div>
 
-      <div className="fin-card" style={{ padding: 0, overflowX: 'auto' }}>
-        {rows.length === 0 ? (
+      {analysisRows.length === 0 ? (
+        <div className="fin-card">
           <div className="fin-empty">No analyses yet. Create the first one with “+ New analysis”.</div>
-        ) : (
-          <table className="fin-table">
-            <thead>
-              <tr>
-                <th>Stock</th>
-                <th className="fin-num">Blended value</th>
-                <th className="fin-num">MoS</th>
-                <th className="fin-num">Target</th>
-                <th className="fin-num">Distance</th>
-                <th>Updated</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => {
-                const blended = blendedByAnalysis.get(r.id)
-                const blendedMosRaw = blendedMosByAnalysis.get(r.id)
-                const mos = blendedMosRaw !== undefined ? Number(blendedMosRaw) : null
-                const target = targetByAsset.get(r.assetId) ?? null
-                return (
-                  <tr key={r.id}>
-                    <td>
-                      <Link
-                        href={`/invest/analysis/${r.id}`}
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}
-                      >
-                        <AssetGlyph ticker={r.ticker} logo={logoByAsset.get(r.assetId) ?? null} />
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          <span className="fin-mono" style={{ color: 'var(--fin-text)', fontWeight: 700 }}>{r.ticker}</span>
-                          <span className="fin-subtle"> — {r.name}</span>
-                        </span>
-                      </Link>
-                    </td>
-                    <td className="fin-num fin-gold">
-                      {blended
-                        ? formatMoney(Number(blended) * (fairValueFactor.get(r.assetId) ?? 1), BASE_DISPLAY_CURRENCY)
-                        : '—'}
-                    </td>
-                    <td className={`fin-num ${mos === null ? 'fin-muted' : mos > 0 ? 'fin-gain' : 'fin-loss'}`}>
-                      {mos !== null ? formatPercentSigned(mos) : '—'}
-                    </td>
-                    <TargetMosCells
-                      assetId={r.assetId}
-                      watchId={target?.id ?? null}
-                      initialTargetPct={target?.pct ?? null}
-                      currentMos={mos}
-                    />
-                    <td className="fin-subtle">{formatDate(r.updatedAt)}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+        </div>
+      ) : (
+        <AnalysesTable rows={analysisRows} />
+      )}
 
       {rows.length > 0 && (
         <section>
