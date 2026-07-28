@@ -1,7 +1,7 @@
 import Link from 'next/link'
-import { asc } from 'drizzle-orm'
+import { asc, desc, inArray } from 'drizzle-orm'
 import Decimal from 'decimal.js'
-import { getInvestDb, assets } from '@/lib/invest/db'
+import { getInvestDb, assets, fundamentalsSnapshots } from '@/lib/invest/db'
 import { loadPortfolioOverview, type PortfolioOverview } from '@/lib/invest/portfolio/overview'
 import { formatMoney, formatPercent, formatPercentSigned, formatQuantity, formatDate } from '@/lib/invest/format'
 import AllocationDonut, { type DonutSlice } from '@/components/invest/AllocationDonut'
@@ -35,6 +35,9 @@ export default async function PortfolioPage() {
   let overview: PortfolioOverview | null = null
   let allAssets: Array<{ id: string; ticker: string; currency: string }> = []
   let dbError: string | null = null
+  // Sector/country per asset from the latest fundamentals snapshot (Finnhub).
+  const sectorByAsset = new Map<string, string>()
+  const countryByAsset = new Map<string, string>()
   try {
     overview = await loadPortfolioOverview()
     const db = getInvestDb()
@@ -42,6 +45,21 @@ export default async function PortfolioPage() {
       .select({ id: assets.id, ticker: assets.ticker, currency: assets.currency })
       .from(assets)
       .orderBy(asc(assets.ticker))
+
+    const assetIds = [...new Set(overview.positions.map((p) => p.assetId))]
+    if (assetIds.length > 0) {
+      const snaps = await db
+        .select({ assetId: fundamentalsSnapshots.assetId, data: fundamentalsSnapshots.data, fetchedAt: fundamentalsSnapshots.fetchedAt })
+        .from(fundamentalsSnapshots)
+        .where(inArray(fundamentalsSnapshots.assetId, assetIds))
+        .orderBy(desc(fundamentalsSnapshots.fetchedAt))
+      for (const s of snaps) {
+        if (sectorByAsset.has(s.assetId) || countryByAsset.has(s.assetId)) continue
+        const d = s.data as { sector?: string | null; country?: string | null } | null
+        if (d?.sector) sectorByAsset.set(s.assetId, d.sector)
+        if (d?.country) countryByAsset.set(s.assetId, d.country)
+      }
+    }
   } catch (e) {
     dbError = e instanceof Error ? e.message : 'Unknown error'
   }
@@ -63,12 +81,18 @@ export default async function PortfolioPage() {
     .map((p) => ({ name: p.ticker, valueCzk: Number(p.marketValueCzk) }))
 
   const sectorMap = new Map<string, number>()
+  const countryMap = new Map<string, number>()
   for (const p of overview.positions) {
     if (p.marketValueCzk === null) continue
-    const key = p.sector ?? 'Unclassified'
-    sectorMap.set(key, (sectorMap.get(key) ?? 0) + Number(p.marketValueCzk))
+    const value = Number(p.marketValueCzk)
+    // Prefer the fetched Finnhub sector; fall back to the asset's stored one.
+    const sector = sectorByAsset.get(p.assetId) ?? p.sector ?? 'Unclassified'
+    const country = countryByAsset.get(p.assetId) ?? 'Unknown'
+    sectorMap.set(sector, (sectorMap.get(sector) ?? 0) + value)
+    countryMap.set(country, (countryMap.get(country) ?? 0) + value)
   }
   const bySector: DonutSlice[] = [...sectorMap.entries()].map(([name, valueCzk]) => ({ name, valueCzk }))
+  const byCountry: DonutSlice[] = [...countryMap.entries()].map(([name, valueCzk]) => ({ name, valueCzk }))
 
   const totalPct =
     overview.totalValueCzk && overview.totalUnrealizedPnlCzk
@@ -149,6 +173,7 @@ export default async function PortfolioPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
         <AllocationDonut title="Allocation by asset" slices={byAsset} />
         <AllocationDonut title="Allocation by sector" slices={bySector} />
+        <AllocationDonut title="Allocation by country" slices={byCountry} />
       </div>
 
       <div className="fin-card" style={{ padding: 0, overflowX: 'auto' }}>
