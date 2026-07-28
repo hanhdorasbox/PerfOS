@@ -14,7 +14,7 @@ import AnalysisCalculator, { type CalcInput } from '@/components/invest/Analysis
 import DueDiligenceChecklist from '@/components/invest/DueDiligenceChecklist'
 import { FIELD_DEFS } from '@/lib/invest/valuation/fields'
 import { normalizeChecklist } from '@/lib/invest/valuation/checklist'
-import { getFxFactor } from '@/lib/invest/fx/convert'
+import { getFxFactor, BASE_DISPLAY_CURRENCY } from '@/lib/invest/fx/convert'
 
 export const dynamic = 'force-dynamic'
 
@@ -54,11 +54,12 @@ export default async function AnalysisPage(props: { params: Promise<{ id: string
     .limit(1)
 
   // Finnhub reports the fundamentals (and the price) in the security's listing
-  // currency — USD for a US stock. When that differs from the asset's display
-  // currency we convert on the way out, so a $ figure isn't shown under a €.
+  // currency — USD for a US stock. Analyses are always read in the base display
+  // currency (EUR), so we convert on the way out regardless of what the asset's
+  // stored currency is — that's why a US name no longer shows raw dollar values.
   const dataCurrency =
     (fundamentals?.data as { currency?: string | null } | undefined)?.currency ?? null
-  const fxFactor = await getFxFactor(db, dataCurrency, asset.currency)
+  const fxFactor = await getFxFactor(db, dataCurrency, BASE_DISPLAY_CURRENCY)
 
   const inputByField = new Map(inputs.map((i) => [i.field, i]))
   // Backfill any field added to FIELD_DEFS after this analysis was created
@@ -101,7 +102,7 @@ export default async function AnalysisPage(props: { params: Promise<{ id: string
           status: analysis.status,
           qualitativeNotes: analysis.qualitativeNotes,
         }}
-        asset={{ ticker: asset.ticker, name: asset.name, currency: asset.currency }}
+        asset={{ ticker: asset.ticker, name: asset.name, currency: BASE_DISPLAY_CURRENCY }}
         initialInputs={calcInputs}
         currentPrice={latestPrice?.price ?? null}
         targetMos={watchlist?.targetMos ?? null}

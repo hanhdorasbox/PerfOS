@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { asc, desc, eq, inArray } from 'drizzle-orm'
-import { getInvestDb, analyses, assets, fundamentalsSnapshots, watchlistItems } from '@/lib/invest/db'
+import { getInvestDb, analyses, analysisInputs, assets, fundamentalsSnapshots, priceSnapshots, watchlistItems } from '@/lib/invest/db'
 import { formatDate, formatMoney, formatPercentSigned } from '@/lib/invest/format'
-import { getFxFactor } from '@/lib/invest/fx/convert'
+import { getFxFactor, BASE_DISPLAY_CURRENCY } from '@/lib/invest/fx/convert'
+import { computeValuation } from '@/lib/invest/valuation/compute'
 import WatchlistManager, { type WatchlistRow } from '@/components/invest/WatchlistManager'
 import RefreshPricesButton from '@/components/invest/RefreshPricesButton'
 import AnchorDiscountsButton from '@/components/invest/AnchorDiscountsButton'
@@ -30,6 +31,10 @@ export default async function AnalyzaPage() {
   // Fair value is stored in the asset's native (listing) currency; convert it to
   // the display currency per asset so the list matches the analysis page.
   const fairValueFactor = new Map<string, number>()
+  // The list shows the blended fair value (a single DCF is a fragile outlier),
+  // computed per analysis in the native currency, plus its margin of safety.
+  const blendedByAnalysis = new Map<string, string>()
+  const blendedMosByAnalysis = new Map<string, string>()
   let watchRows: WatchlistRow[] = []
   let assetOptions: Array<{ id: string; ticker: string; currency: string }> = []
   let dbError: string | null = null
@@ -65,18 +70,49 @@ export default async function AnalyzaPage() {
         if (nativeByAsset.has(s.assetId)) continue // first = most recent
         nativeByAsset.set(s.assetId, (s.data as { currency?: string | null } | null)?.currency ?? null)
       }
-      const displayByAsset = new Map(rows.map((r) => [r.assetId, r.currency]))
       const factorCache = new Map<string, number>()
       for (const assetId of assetIds) {
         const native = nativeByAsset.get(assetId) ?? null
-        const display = displayByAsset.get(assetId) ?? null
-        const key = `${native ?? ''}->${display ?? ''}`
+        const key = native ?? ''
         let factor = factorCache.get(key)
         if (factor === undefined) {
-          factor = await getFxFactor(db, native, display)
+          factor = await getFxFactor(db, native, BASE_DISPLAY_CURRENCY)
           factorCache.set(key, factor)
         }
         fairValueFactor.set(assetId, factor)
+      }
+
+      // Blended fair value (+ MoS) per analysis, computed from its inputs and
+      // latest price — the same blend shown on the analysis detail page.
+      const inputRows = await db
+        .select({
+          analysisId: analysisInputs.analysisId,
+          field: analysisInputs.field,
+          fetchedValue: analysisInputs.fetchedValue,
+          manualValue: analysisInputs.manualValue,
+        })
+        .from(analysisInputs)
+        .where(inArray(analysisInputs.analysisId, rows.map((r) => r.id)))
+      const inputsByAnalysis = new Map<string, Array<{ field: string; fetchedValue: string | null; manualValue: string | null }>>()
+      for (const i of inputRows) {
+        const arr = inputsByAnalysis.get(i.analysisId) ?? []
+        arr.push({ field: i.field, fetchedValue: i.fetchedValue, manualValue: i.manualValue })
+        inputsByAnalysis.set(i.analysisId, arr)
+      }
+      const priceRows = await db
+        .select({ assetId: priceSnapshots.assetId, price: priceSnapshots.price, date: priceSnapshots.date })
+        .from(priceSnapshots)
+        .where(inArray(priceSnapshots.assetId, assetIds))
+        .orderBy(desc(priceSnapshots.date))
+      const priceByAsset = new Map<string, string>()
+      for (const p of priceRows) if (!priceByAsset.has(p.assetId)) priceByAsset.set(p.assetId, p.price)
+
+      for (const r of rows) {
+        const inputs = inputsByAnalysis.get(r.id)
+        if (!inputs) continue
+        const c = computeValuation(inputs, priceByAsset.get(r.assetId) ?? null)
+        if (c.blendedFairValue) blendedByAnalysis.set(r.id, c.blendedFairValue)
+        if (c.blendedMarginOfSafety) blendedMosByAnalysis.set(r.id, c.blendedMarginOfSafety)
       }
     }
 
@@ -150,7 +186,7 @@ export default async function AnalyzaPage() {
               <tr>
                 <th>Analysis</th>
                 <th>Status</th>
-                <th className="fin-num">Fair value</th>
+                <th className="fin-num">Blended value</th>
                 <th className="fin-num">MoS</th>
                 <th>Updated</th>
               </tr>
@@ -158,7 +194,9 @@ export default async function AnalyzaPage() {
             <tbody>
               {rows.map((r) => {
                 const status = STATUS_LABELS[r.status] ?? STATUS_LABELS.draft
-                const mos = r.marginOfSafety !== null ? Number(r.marginOfSafety) : null
+                const blended = blendedByAnalysis.get(r.id)
+                const blendedMosRaw = blendedMosByAnalysis.get(r.id)
+                const mos = blendedMosRaw !== undefined ? Number(blendedMosRaw) : null
                 return (
                   <tr key={r.id}>
                     <td>
@@ -169,8 +207,8 @@ export default async function AnalyzaPage() {
                     </td>
                     <td><span className={status.cls}>{status.label}</span></td>
                     <td className="fin-num fin-gold">
-                      {r.fairValue
-                        ? formatMoney(Number(r.fairValue) * (fairValueFactor.get(r.assetId) ?? 1), r.currency)
+                      {blended
+                        ? formatMoney(Number(blended) * (fairValueFactor.get(r.assetId) ?? 1), BASE_DISPLAY_CURRENCY)
                         : '—'}
                     </td>
                     <td className={`fin-num ${mos === null ? 'fin-muted' : mos > 0 ? 'fin-gain' : 'fin-loss'}`}>

@@ -45,7 +45,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Asset not found' }, { status: 404 })
   }
 
-  const { data, fetchedAt } = await latestFundamentals(db, asset.id, asset.ticker)
+  let { data, fetchedAt } = await latestFundamentals(db, asset.id, asset.ticker)
+  // Snapshots cached before currency capture have no `currency`, which leaves
+  // the analysis unable to convert to the display currency (it would show raw
+  // USD). Refresh once when it's missing, but keep the cached data if the
+  // refresh fails so creation still works offline.
+  if (!data || data.currency == null) {
+    const fresh = await latestFundamentals(db, asset.id, asset.ticker, { forceFetch: true })
+    if (fresh.data) {
+      data = fresh.data
+      fetchedAt = fresh.fetchedAt
+    }
+  }
 
   const [created] = await db
     .insert(analyses)
