@@ -7,6 +7,7 @@ import { computeValuation } from '@/lib/invest/valuation/compute'
 import { continentForCountry } from '@/lib/invest/geo'
 import RefreshPricesButton from '@/components/invest/RefreshPricesButton'
 import AnchorDiscountsButton from '@/components/invest/AnchorDiscountsButton'
+import BackfillDataButton from '@/components/invest/BackfillDataButton'
 import DiversificationBreakdown, { type BreakdownSlice } from '@/components/invest/DiversificationBreakdown'
 import AnalysesTable, { type AnalysisRow } from '@/components/invest/AnalysesTable'
 
@@ -172,6 +173,7 @@ export default async function AnalyzaPage() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <h2 className="fin-serif" style={{ fontSize: 22, margin: 0 }}>Analyses</h2>
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <BackfillDataButton />
           <AnchorDiscountsButton />
           <RefreshPricesButton />
           <Link href="/invest/analysis/new" className="fin-btn fin-btn-primary" style={{ textDecoration: 'none' }}>
