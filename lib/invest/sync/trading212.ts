@@ -10,10 +10,15 @@ import {
   transactions,
   type InvestDb,
 } from '@/lib/invest/db'
-import { T212Client, type T212Instrument } from '@/lib/invest/t212/client'
+import { T212Client, type T212Instrument, type T212Position } from '@/lib/invest/t212/client'
 import { computeHolding } from '@/lib/invest/portfolio/calc'
 
 const INSTRUMENTS_CACHE_DAYS = 7
+
+// External-id prefix for the synthetic transaction that mirrors a T212 holding
+// when there is no order history to reconstruct it from. Keeps the seed
+// idempotent and lets us tell it apart from authoritative order/manual rows.
+const HOLDING_PREFIX = 't212-holding:'
 
 export interface ReconciliationWarning {
   ticker: string
@@ -22,11 +27,80 @@ export interface ReconciliationWarning {
   remote: string | null
 }
 
+// Reconciliation tolerances: quantity is compared absolutely (fractional
+// shares), average price relatively (rounding differs between brokers).
+const QTY_TOLERANCE = '0.0001'
+const PRICE_TOLERANCE = '0.01'
+
+/**
+ * Decides what a single asset needs, given its locally reconstructed holding
+ * (from real orders/manual transactions only) and the current T212 snapshot:
+ *
+ *  - `reconcile` — a real holding exists and wins; the optional warning flags a
+ *    drift from T212 (a real holding never gets a snapshot seed on top of it).
+ *  - `seed` — nothing to reconstruct locally but T212 holds shares, so mirror
+ *    them from the snapshot.
+ *  - `clear` — no holding locally or at T212; drop any stale seed and close out.
+ *
+ * Pure so the branch logic is unit-tested independently of the database.
+ */
+export function decideHolding(params: {
+  ticker: string
+  realQuantity: Decimal
+  realAvgCost: Decimal
+  remote: { quantity: Decimal; averagePrice: Decimal | null } | null
+}): { action: 'reconcile'; warning: ReconciliationWarning | null } | { action: 'seed' } | { action: 'clear' } {
+  const { ticker, realQuantity, realAvgCost, remote } = params
+
+  if (realQuantity.gt(0)) {
+    if (!remote) {
+      return {
+        action: 'reconcile',
+        warning: { ticker, field: 'missing_remote', local: realQuantity.toString(), remote: null },
+      }
+    }
+    if (remote.quantity.minus(realQuantity).abs().gt(QTY_TOLERANCE)) {
+      return {
+        action: 'reconcile',
+        warning: {
+          ticker,
+          field: 'quantity',
+          local: realQuantity.toString(),
+          remote: remote.quantity.toString(),
+        },
+      }
+    }
+    if (
+      remote.averagePrice !== null &&
+      remote.averagePrice.gt(0) &&
+      realAvgCost.gt(0) &&
+      remote.averagePrice.minus(realAvgCost).abs().div(remote.averagePrice).gt(PRICE_TOLERANCE)
+    ) {
+      return {
+        action: 'reconcile',
+        warning: {
+          ticker,
+          field: 'averagePrice',
+          local: realAvgCost.toFixed(4),
+          remote: remote.averagePrice.toString(),
+        },
+      }
+    }
+    return { action: 'reconcile', warning: null }
+  }
+
+  if (remote && remote.quantity.gt(0)) return { action: 'seed' }
+  return { action: 'clear' }
+}
+
 export interface SyncResult {
   ordersImported: number
   dividendsImported: number
   warnings: ReconciliationWarning[]
   needsMapping: string[]
+  /** Holdings taken straight from the T212 /portfolio snapshot because no order
+   * history was available to reconstruct them from */
+  holdingsSeeded: number
   /** Per-section failures (e.g. an API-key scope missing for one endpoint) */
   errors: string[]
 }
@@ -176,6 +250,82 @@ async function ensureOpenPosition(db: InvestDb, assetId: string, openedAt: Date)
 }
 
 /**
+ * Position to attach a snapshot-seeded holding to. Unlike ensureOpenPosition it
+ * reopens the asset's most recent closed position rather than starting a new
+ * lifecycle — a /portfolio snapshot represents the single current holding, so
+ * re-appearing after a full exit is the same position resuming.
+ */
+async function ensureHoldingPosition(db: InvestDb, assetId: string, openedAt: Date) {
+  const [open] = await db
+    .select()
+    .from(positions)
+    .where(and(eq(positions.assetId, assetId), eq(positions.status, 'open')))
+    .limit(1)
+  if (open) return open
+  const [latest] = await db
+    .select()
+    .from(positions)
+    .where(eq(positions.assetId, assetId))
+    .orderBy(sql`${positions.openedAt} DESC`)
+    .limit(1)
+  if (latest) {
+    const [reopened] = await db
+      .update(positions)
+      .set({ status: 'open', closedAt: null })
+      .where(eq(positions.id, latest.id))
+      .returning()
+    return reopened
+  }
+  const [created] = await db
+    .insert(positions)
+    .values({ assetId, status: 'open', openedAt })
+    .returning()
+  return created
+}
+
+/**
+ * Upserts the single synthetic "buy" that mirrors a T212 holding, valued at the
+ * broker's average price. Idempotent on external_id, so re-running a sync
+ * refreshes the quantity/price in place instead of adding rows.
+ */
+async function upsertHoldingTx(
+  db: InvestDb,
+  positionId: string,
+  asset: typeof assets.$inferSelect,
+  remotePos: T212Position,
+): Promise<void> {
+  const qty = new Decimal(remotePos.quantity)
+  const price = new Decimal(remotePos.averagePrice ?? 0)
+  const amount = qty.times(price)
+  const executedAt = remotePos.initialFillDate ? new Date(remotePos.initialFillDate) : new Date()
+  await db
+    .insert(transactions)
+    .values({
+      positionId,
+      type: 'buy',
+      quantity: qty.toString(),
+      price: price.toString(),
+      amount: amount.toString(),
+      currency: asset.currency,
+      executedAt,
+      externalId: `${HOLDING_PREFIX}${asset.t212Ticker}`,
+      source: 't212',
+      note: 'holding (T212 portfolio snapshot)',
+    })
+    .onConflictDoUpdate({
+      target: transactions.externalId,
+      set: {
+        positionId,
+        quantity: qty.toString(),
+        price: price.toString(),
+        amount: amount.toString(),
+        currency: asset.currency,
+        executedAt,
+      },
+    })
+}
+
+/**
  * Idempotent T212 sync (spec §4b): orders/dividends keyed by external_id so
  * a re-run never duplicates; positions are reconstructed from transactions
  * and /portfolio serves only as a reconciliation check.
@@ -194,6 +344,7 @@ export async function syncTrading212(): Promise<SyncResult> {
       dividendsImported: 0,
       warnings: [],
       needsMapping: [],
+      holdingsSeeded: 0,
       errors: [],
     }
 
@@ -304,10 +455,25 @@ export async function syncTrading212(): Promise<SyncResult> {
       result.errors.push(`dividends: ${errorMessage(e)}`)
     }
 
-    // ── Reconciliation: reconstructed positions vs. T212 /portfolio ──────
+    // ── Holdings sync & reconciliation: local positions vs. T212 /portfolio ─
+    // Positions are normally reconstructed from imported orders/dividends, with
+    // /portfolio only used to flag discrepancies. But an order-derived
+    // reconstruction is impossible when the API key lacks the history scope, or
+    // when shares came from a Pie/auto-invest that never lands in order history
+    // (spec §4b). So for any T212 holding we cannot reconstruct locally, we seed
+    // the holding straight from the snapshot — keyed by a `t212-holding:` id so
+    // it stays idempotent and is dropped the moment real orders can rebuild it.
     try {
     const remote = await client.getPortfolio()
     const remoteByT212 = new Map(remote.map((p) => [p.ticker, p]))
+    const activeRemote = remote.filter((p) => p.quantity !== 0)
+
+    // Make sure every current holding has an asset, so it can be shown even if
+    // no order for it was ever imported.
+    const reconInstrumentMap = await loadInstrumentMap(db, activeRemote.map((p) => p.ticker))
+    for (const pos of activeRemote) {
+      await ensureAssetForT212(db, pos.ticker, reconInstrumentMap.get(pos.ticker), result.needsMapping)
+    }
 
     const syncedAssets = await db
       .select()
@@ -323,76 +489,59 @@ export async function syncTrading212(): Promise<SyncResult> {
       const txs = positionIds.length
         ? await db.select().from(transactions).where(inArray(transactions.positionId, positionIds))
         : []
-      const holding = computeHolding(
-        txs.filter((t) => t.type === 'buy' || t.type === 'sell'),
-      )
 
-      // Close/reopen positions according to the reconstructed quantity
-      if (positionIds.length > 0) {
-        if (holding.quantity.lte(0)) {
-          await db
-            .update(positions)
-            .set({ status: 'closed', closedAt: new Date() })
-            .where(and(inArray(positions.id, positionIds), eq(positions.status, 'open')))
-        } else {
+      // Order/manual rows are authoritative; the synthetic snapshot row is only
+      // a fallback and never counts alongside a real reconstruction.
+      const seedTx = txs.find((t) => (t.externalId ?? '').startsWith(HOLDING_PREFIX))
+      const realHolding = computeHolding(
+        txs.filter(
+          (t) =>
+            (t.type === 'buy' || t.type === 'sell') &&
+            !(t.externalId ?? '').startsWith(HOLDING_PREFIX),
+        ),
+      )
+      const remotePos = asset.t212Ticker ? remoteByT212.get(asset.t212Ticker) : undefined
+      const decision = decideHolding({
+        ticker: asset.ticker,
+        realQuantity: realHolding.quantity,
+        realAvgCost: realHolding.avgCost,
+        remote: remotePos
+          ? {
+              quantity: new Decimal(remotePos.quantity),
+              averagePrice: remotePos.averagePrice !== null ? new Decimal(remotePos.averagePrice) : null,
+            }
+          : null,
+      })
+
+      if (decision.action === 'reconcile') {
+        // Real transactions can rebuild the holding — they win. Drop any stale
+        // snapshot row so it can never double-count, keep the position open, and
+        // surface any drift from T212.
+        if (seedTx) await db.delete(transactions).where(eq(transactions.id, seedTx.id))
+        if (positionIds.length > 0) {
           await db
             .update(positions)
             .set({ status: 'open', closedAt: null })
             .where(inArray(positions.id, positionIds))
         }
-      }
-
-      const remotePos = asset.t212Ticker ? remoteByT212.get(asset.t212Ticker) : undefined
-      const localQty = holding.quantity
-      const remoteQty = new Decimal(remotePos?.quantity ?? 0)
-
-      if (!remotePos && localQty.gt(0)) {
-        result.warnings.push({
-          ticker: asset.ticker,
-          field: 'missing_remote',
-          local: localQty.toString(),
-          remote: null,
-        })
-        continue
-      }
-      if (remotePos) {
-        if (remoteQty.minus(localQty).abs().gt('0.0001')) {
-          result.warnings.push({
-            ticker: asset.ticker,
-            field: 'quantity',
-            local: localQty.toString(),
-            remote: remoteQty.toString(),
-          })
-        } else if (
-          remotePos.averagePrice !== null &&
-          localQty.gt(0) &&
-          holding.avgCost.gt(0) &&
-          new Decimal(remotePos.averagePrice)
-            .minus(holding.avgCost)
-            .abs()
-            .div(remotePos.averagePrice)
-            .gt('0.01')
-        ) {
-          result.warnings.push({
-            ticker: asset.ticker,
-            field: 'averagePrice',
-            local: holding.avgCost.toFixed(4),
-            remote: String(remotePos.averagePrice),
-          })
+        if (decision.warning) result.warnings.push(decision.warning)
+      } else if (decision.action === 'seed' && remotePos) {
+        // Nothing to reconstruct from — mirror the holding from the snapshot so
+        // the shares actually show up in the portfolio.
+        const openedAt = remotePos.initialFillDate ? new Date(remotePos.initialFillDate) : new Date()
+        const position = await ensureHoldingPosition(db, asset.id, openedAt)
+        await upsertHoldingTx(db, position.id, asset, remotePos)
+        result.holdingsSeeded += 1
+      } else {
+        // No local holding and nothing at T212 either — clear any stale seed and
+        // close the position out.
+        if (seedTx) await db.delete(transactions).where(eq(transactions.id, seedTx.id))
+        if (positionIds.length > 0) {
+          await db
+            .update(positions)
+            .set({ status: 'closed', closedAt: new Date() })
+            .where(and(inArray(positions.id, positionIds), eq(positions.status, 'open')))
         }
-      }
-    }
-
-    // Remote positions we have no local asset/transactions for at all
-    for (const [t212Ticker, pos] of remoteByT212) {
-      const known = syncedAssets.some((a) => a.t212Ticker === t212Ticker)
-      if (!known && pos.quantity !== 0) {
-        result.warnings.push({
-          ticker: t212Ticker,
-          field: 'missing_local',
-          local: null,
-          remote: String(pos.quantity),
-        })
       }
     }
     } catch (e) {
