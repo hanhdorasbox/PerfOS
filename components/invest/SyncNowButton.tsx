@@ -22,8 +22,10 @@ export default function SyncNowButton() {
         const warnings = Array.isArray(data.warnings) ? data.warnings.length : 0
         const errors: string[] = Array.isArray(data.errors) ? data.errors : []
         setIsError(errors.length > 0)
+        const seeded = Number(data.holdingsSeeded) || 0
         setMessage(
           `Done: ${data.ordersImported} orders, ${data.dividendsImported} dividends` +
+            (seeded > 0 ? `, ${seeded} holdings from T212` : '') +
             (warnings > 0 ? `, ${warnings} discrepancies` : '') +
             (errors.length > 0 ? ` — skipped: ${errors.join('; ')}` : ''),
         )
