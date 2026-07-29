@@ -3,6 +3,8 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { ListTodo } from 'lucide-react'
+import EmptyState from '@/components/ui/EmptyState'
 
 interface Goal { id: string; title: string; category: string }
 
@@ -186,9 +188,15 @@ export default function WeeklyPlanner({ userId, weeklyPlanId, tasks, goals }: Pr
 
       {/* No tasks yet */}
       {tasks.length === 0 && !showAdd && (
-        <div className="card" style={{ textAlign: 'center', padding: '32px 20px' }}>
-          <div style={{ fontSize: 13, color: '#6E6E73', marginBottom: 12 }}>No tasks this week yet.</div>
-          <div style={{ fontSize: 12, color: '#48484A' }}>Click "+ Add Task" to start planning. A week plan will be created automatically.</div>
+        <div className="card">
+          <EmptyState
+            variant="page"
+            icon={<ListTodo size={24} strokeWidth={1.75} />}
+            title="No tasks this week yet"
+            description="Plan the week as Must / Should / Optional so your effort lines up with what actually matters. The week plan is created automatically."
+            ctaLabel="+ Add your first task"
+            onCtaClick={() => setShowAdd(true)}
+          />
         </div>
       )}
 

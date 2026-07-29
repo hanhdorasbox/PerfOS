@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Hammer } from 'lucide-react'
+import EmptyState from '@/components/ui/EmptyState'
 
 type ProofOfWork = {
   id: string
@@ -287,9 +289,14 @@ export default function ProofOfWorkTracker({
           )
         })}
         {proofOfWork.length === 0 && (
-          <div style={{ color: '#6E6E73', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>
-            No proof-of-work assets yet. Add your first deliverable.
-          </div>
+          <EmptyState
+            variant="card"
+            icon={<Hammer size={17} strokeWidth={1.75} />}
+            title="No proof-of-work assets yet"
+            description="Log shipped deliverables — the tangible evidence of your skills that makes your career capital legible to others."
+            ctaLabel="+ Add your first asset"
+            onCtaClick={() => setShowForm(true)}
+          />
         )}
       </div>
     </div>

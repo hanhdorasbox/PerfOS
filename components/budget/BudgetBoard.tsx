@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Wallet, ShoppingBag, ClipboardList, ShoppingCart } from 'lucide-react'
 import type { LifeMenuItem } from '@/components/life-menu/LifeMenuBoard'
+import EmptyState from '@/components/ui/EmptyState'
 
 interface Props {
   items: LifeMenuItem[]
@@ -505,7 +507,20 @@ export default function BudgetBoard({ items: initItems, userId }: Props) {
             {isOpen && (
               groupItems.length === 0 ? (
                 group.emptyLabel ? (
-                  <div style={{ fontSize: 13, color: '#6E6E73', padding: '12px 0' }}>{group.emptyLabel}</div>
+                  <EmptyState
+                    variant="card"
+                    compact
+                    icon={
+                      group.id === 'active' ? (
+                        <ShoppingBag size={17} strokeWidth={1.75} />
+                      ) : group.id === 'approved' ? (
+                        <ClipboardList size={17} strokeWidth={1.75} />
+                      ) : (
+                        <ShoppingCart size={17} strokeWidth={1.75} />
+                      )
+                    }
+                    title={group.emptyLabel.replace(/\.$/, '')}
+                  />
                 ) : null
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -520,11 +535,14 @@ export default function BudgetBoard({ items: initItems, userId }: Props) {
       })}
 
       {items.length === 0 && !showForm && (
-        <div style={{ textAlign: 'center', padding: '60px 20px', color: '#6E6E73' }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>🛍️</div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#A1A1A6', marginBottom: 6 }}>Your budget list is empty</div>
-          <div style={{ fontSize: 13 }}>Add things you want to buy and track approvals.</div>
-        </div>
+        <EmptyState
+          variant="page"
+          icon={<Wallet size={24} strokeWidth={1.75} />}
+          title="Your budget list is empty"
+          description="Track what you want to buy from wishlist to approved to bought, so spending stays a deliberate decision instead of an impulse."
+          ctaLabel="+ Add your first item"
+          onCtaClick={() => setShowForm(true)}
+        />
       )}
     </>
   )

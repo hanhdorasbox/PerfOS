@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Code2, BarChart2, Target, MessageSquare } from 'lucide-react'
+import { Code2, BarChart2, Target, MessageSquare, Award } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import EmptyState from '@/components/ui/EmptyState'
 
 type Skill = {
   id: string
@@ -266,9 +267,14 @@ export default function SkillTracker({
           </div>
         ))}
         {skills.length === 0 && (
-          <div style={{ color: '#6E6E73', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>
-            No skills added yet. Add your first skill.
-          </div>
+          <EmptyState
+            variant="card"
+            icon={<Award size={17} strokeWidth={1.75} />}
+            title="No skills added yet"
+            description="Track the skills that compound into career capital, and rate them so you can see where your leverage is growing."
+            ctaLabel="+ Add your first skill"
+            onCtaClick={() => setShowForm(true)}
+          />
         )}
       </div>
     </div>

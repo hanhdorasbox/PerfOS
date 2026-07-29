@@ -6,8 +6,10 @@ import {
   getQuarterProgress,
 } from '@/lib/calculations'
 import Link from 'next/link'
+import { Target, Sparkles, Trophy, Wrench } from 'lucide-react'
 import QuarterlyGoalRow from '@/components/quarterly/QuarterlyGoalRow'
 import GoalManager from '@/components/quarterly/GoalManager'
+import CategoryGroup from '@/components/ui/CategoryGroup'
 import { getOrCreateYearQuarters, currentYearAndQuarter, quarterDates } from '@/lib/quarters'
 
 export const dynamic = 'force-dynamic'
@@ -321,25 +323,38 @@ export default async function QuarterlyPage({
           <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#6E6E73', marginBottom: 16 }}>
             Portfolio Balance
           </div>
-          <div className="mob-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
-            {portfolioBuckets.map(bucket => (
-              <div key={bucket.label} style={{
-                padding: '12px 14px', background: 'rgba(255,255,255,0.03)',
-                borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)',
-              }}>
-                <div style={{ fontSize: 11, color: bucket.color, fontWeight: 700, marginBottom: 8 }}>{bucket.label}</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#F5F5F7', marginBottom: 6 }}>{bucket.goals.length}</div>
-                {bucket.goals.slice(0, 3).map(g => (
-                  <div key={g.id} style={{ fontSize: 11, color: '#6E6E73', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    · {g.title}
-                  </div>
-                ))}
-                {bucket.goals.length > 3 && (
-                  <div style={{ fontSize: 10, color: '#6E6E73' }}>+{bucket.goals.length - 3} more</div>
-                )}
-              </div>
-            ))}
-          </div>
+          <CategoryGroup
+            emptyNoun="goals"
+            gridStyle={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}
+            items={portfolioBuckets.map(bucket => ({
+              key: bucket.label,
+              label: bucket.label,
+              isEmpty: bucket.goals.length === 0,
+              emptyIcon:
+                bucket.label === 'Core Commitments' ? <Target size={17} strokeWidth={1.75} />
+                : bucket.label === 'Growth Investments' ? <Sparkles size={17} strokeWidth={1.75} />
+                : bucket.label === 'High-Upside Bets' ? <Trophy size={17} strokeWidth={1.75} />
+                : <Wrench size={17} strokeWidth={1.75} />,
+              emptyDescription: `No goals sit in ${bucket.label} this quarter — it shows here so the balance of your portfolio stays honest.`,
+              children: (
+                <div style={{
+                  padding: '12px 14px', background: 'rgba(255,255,255,0.03)',
+                  borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', height: '100%',
+                }}>
+                  <div style={{ fontSize: 11, color: bucket.color, fontWeight: 700, marginBottom: 8 }}>{bucket.label}</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#F5F5F7', marginBottom: 6 }}>{bucket.goals.length}</div>
+                  {bucket.goals.slice(0, 3).map(g => (
+                    <div key={g.id} style={{ fontSize: 11, color: '#6E6E73', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      · {g.title}
+                    </div>
+                  ))}
+                  {bucket.goals.length > 3 && (
+                    <div style={{ fontSize: 10, color: '#6E6E73' }}>+{bucket.goals.length - 3} more</div>
+                  )}
+                </div>
+              ),
+            }))}
+          />
         </div>
       )}
 
