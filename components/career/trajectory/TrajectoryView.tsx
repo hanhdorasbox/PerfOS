@@ -1,7 +1,17 @@
 'use client'
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { useRouter } from 'next/navigation'
 import type { CareerTrajectory, TrajectoryGap, TrajectoryQuarterPlan } from '@prisma/client'
+import InsightCardList from '@/components/ui/InsightCardList'
+import TrajectoryGapCard, { gapTag } from './TrajectoryGapCard'
+
+// Point the shared insight components' accent CSS vars at the Career purple.
+const PURPLE_ACCENT: CSSProperties = {
+  '--accent': 'var(--purple-text)',
+  '--accent-soft': 'var(--purple-bg)',
+  '--accent-border': 'var(--purple-border)',
+  '--accent-glow': 'var(--purple-glow)',
+} as CSSProperties
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,12 +53,6 @@ const GAP_COLORS: Record<string, string> = {
   scope: '#ffce53',
   visibility: '#a085ff',
   experience: '#ffa360',
-}
-
-const DIFF_COLORS: Record<string, string> = {
-  easy: '#64f0aa',
-  medium: '#ffce53',
-  hard: '#ff8168',
 }
 
 function gapColor(type: string) { return GAP_COLORS[type] ?? '#6E6E73' }
@@ -113,8 +117,6 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
     trajectory.nextBestAction ?? null
   )
 
-  // Gap expansion state
-  const [expandedGaps, setExpandedGaps] = useState<Set<string>>(new Set())
   const [showClosed, setShowClosed] = useState(false)
   const [showArchived, setShowArchived] = useState(false)
   const [showRoadmap, setShowRoadmap] = useState(roadmap.length > 0)
@@ -202,15 +204,6 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
     setTimeout(() => setError(''), 5000)
   }
 
-  function toggleExpand(gapId: string) {
-    setExpandedGaps(prev => {
-      const next = new Set(prev)
-      if (next.has(gapId)) next.delete(gapId)
-      else next.add(gapId)
-      return next
-    })
-  }
-
   // ── Actions ────────────────────────────────────────────────────────────────
 
   async function closeGap(gapId: string) {
@@ -285,7 +278,6 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
         weekEstimate: data.gap.weekEstimate,
         _whyItMatters: data.whyItMatters,
       } : g))
-      setExpandedGaps(prev => new Set([...prev, gapId]))
     } catch (e) {
       showError(e instanceof Error ? e.message : 'Error generating action plan')
     } finally {
@@ -451,244 +443,30 @@ export default function TrajectoryView({ trajectory, quarterId, userId }: Props)
         {openGaps.length === 0 ? (
           <p style={{ color: '#64f0aa', fontSize: 14 }}>All gaps closed — ready to define the next horizon.</p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {openGaps.map(gap => {
-              const color = gapColor(gap.gapType)
-              const isExpanded = expandedGaps.has(gap.id)
-              const isGenerating = generatingActionPlan === gap.id
-              const isDeleting = deletingGap === gap.id
-              const hasActionPlan = !!gap.actionPlan
-              let steps: ActionStep[] = []
-              if (gap.actionPlan) {
-                try { steps = JSON.parse(gap.actionPlan) } catch { steps = [] }
-              }
-
-              return (
-                <div
-                  key={gap.id}
-                  style={{
-                    border: `1px solid ${color}25`,
-                    borderRadius: 12,
-                    background: `${color}07`,
-                    opacity: isDeleting ? 0.4 : 1,
-                    transition: 'opacity 0.15s',
-                  }}
-                >
-                  {/* Gap header — always visible */}
-                  <div style={{ padding: '12px 14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                      <div style={{ flex: 1 }}>
-                        {/* Type chip + priority + difficulty */}
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 7 }}>
-                          <span style={{
-                            background: `${color}20`, color, border: `1px solid ${color}40`,
-                            padding: '2px 9px', borderRadius: 99, fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-                          }}>
-                            {gap.gapType.replace(/_/g, ' ')}
-                          </span>
-                          <span style={{
-                            color: gap.priority === 1 ? '#ff8168' : gap.priority === 2 ? '#ffce53' : '#6E6E73',
-                            fontSize: 10, fontWeight: 700,
-                          }}>
-                            {gap.priority === 1 ? 'High' : gap.priority === 2 ? 'Med' : 'Low'}
-                          </span>
-                          {gap.difficulty && (
-                            <span style={{ color: DIFF_COLORS[gap.difficulty] ?? '#6E6E73', fontSize: 10, fontWeight: 700 }}>
-                              {gap.difficulty}
-                            </span>
-                          )}
-                          {gap.weekEstimate && (
-                            <span style={{ color: '#6E6E73', fontSize: 10 }}>~{gap.weekEstimate}w</span>
-                          )}
-                        </div>
-
-                        <p style={{ color: '#F5F5F7', fontSize: 14, fontWeight: 600, marginBottom: 3 }}>{gap.title}</p>
-                        {gap.description && (
-                          <p style={{ color: '#6E6E73', fontSize: 12, lineHeight: 1.5 }}>{gap.description}</p>
-                        )}
-                        {gap._whyItMatters && (
-                          <p style={{ color: '#a085ff', fontSize: 12, marginTop: 5, fontStyle: 'italic' }}>{gap._whyItMatters}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Next best action — always visible if exists */}
-                    {gap.nextBestAction && (
-                      <div style={{ background: 'rgba(100, 240, 170,0.1)', border: '1px solid rgba(100, 240, 170,0.2)', borderRadius: 8, padding: '7px 11px', marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                        <div style={{ flex: 1 }}>
-                          <p style={{ color: '#64f0aa', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Next Action</p>
-                          <p style={{ color: '#F5F5F7', fontSize: 12 }}>{gap.nextBestAction}</p>
-                        </div>
-                        <button
-                          onClick={() => addNextActionToWeek(gap.id, gap.nextBestAction!)}
-                          disabled={addedNextAction.has(gap.id)}
-                          style={{
-                            flexShrink: 0,
-                            background: addedNextAction.has(gap.id) ? 'rgba(100, 240, 170,0.15)' : 'rgba(100, 240, 170,0.1)',
-                            border: '1px solid rgba(100, 240, 170,0.3)',
-                            color: '#64f0aa', borderRadius: 5, padding: '3px 9px',
-                            fontSize: 10, fontWeight: 600,
-                            cursor: addedNextAction.has(gap.id) ? 'default' : 'pointer',
-                            transition: 'all 0.15s', marginTop: 2,
-                          }}
-                        >
-                          {addedNextAction.has(gap.id) ? '✓ Added' : '+ Week'}
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Evidence needed */}
-                    {gap.evidenceNeeded && (
-                      <div style={{ marginTop: 6 }}>
-                        <span style={{ color: '#6E6E73', fontSize: 11 }}>
-                          <span style={{ color: '#A1A1A6', fontWeight: 600 }}>Done when: </span>{gap.evidenceNeeded}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Action row */}
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 12 }}>
-                      {!hasActionPlan && (
-                        <button
-                          onClick={() => generateActionPlan(gap.id)}
-                          disabled={isGenerating}
-                          style={{
-                            background: `${color}15`, border: `1px solid ${color}40`, color,
-                            padding: '5px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600,
-                            cursor: isGenerating ? 'not-allowed' : 'pointer',
-                          }}
-                        >
-                          {isGenerating ? 'Generating...' : 'How to Close'}
-                        </button>
-                      )}
-                      {hasActionPlan && (
-                        <button
-                          onClick={() => toggleExpand(gap.id)}
-                          style={{
-                            background: `${color}15`, border: `1px solid ${color}40`, color,
-                            padding: '5px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                          }}
-                        >
-                          {isExpanded ? '▲ Hide Plan' : '▼ View Plan'}
-                        </button>
-                      )}
-                      <button
-                        onClick={() => closeGap(gap.id)}
-                        style={{
-                          background: 'rgba(100, 240, 170,0.1)', border: '1px solid rgba(100, 240, 170,0.25)',
-                          color: '#64f0aa', padding: '5px 12px', borderRadius: 8,
-                          fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                        }}
-                      >
-                        ✓ Mark Closed
-                      </button>
-                      <button
-                        onClick={() => archiveGap(gap.id)}
-                        style={{
-                          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-                          color: '#6E6E73', padding: '5px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
-                        }}
-                      >
-                        Archive
-                      </button>
-                      <button
-                        onClick={() => deleteGap(gap.id)}
-                        disabled={isDeleting}
-                        style={{
-                          background: 'none', border: '1px solid rgba(255, 129, 104,0.2)',
-                          color: '#ff8168', padding: '5px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
-                        }}
-                      >
-                        {isDeleting ? '…' : 'Delete'}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Expandable: Action Plan steps */}
-                  {isExpanded && steps.length > 0 && (
-                    <div style={{ borderTop: `1px solid ${color}20`, padding: '12px 14px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                        <p style={{ color: '#6E6E73', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                          Action Plan — {steps.length} steps
-                        </p>
-                        <button
-                          onClick={() => addAllGapStepsToWeek(gap.id, steps)}
-                          disabled={addingAllGap === gap.id || (addedGapSteps[gap.id]?.size ?? 0) >= steps.length}
-                          style={{
-                            background: (addedGapSteps[gap.id]?.size ?? 0) >= steps.length
-                              ? `${color}15` : `${color}18`,
-                            border: `1px solid ${color}40`,
-                            color,
-                            borderRadius: 6, padding: '4px 12px',
-                            fontSize: 10, fontWeight: 700,
-                            cursor: addingAllGap === gap.id ? 'wait' : 'pointer',
-                            display: 'flex', alignItems: 'center', gap: 4,
-                          }}
-                        >
-                          {addingAllGap === gap.id ? '…' :
-                            (addedGapSteps[gap.id]?.size ?? 0) >= steps.length
-                              ? `✓ All ${steps.length} added`
-                              : `+ Add all ${steps.length} to week`}
-                        </button>
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {steps.map((step, i) => {
-                          const isAdded = addedGapSteps[gap.id]?.has(i) ?? false
-                          return (
-                            <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                              <div style={{
-                                width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                                background: `${color}20`, border: `1px solid ${color}40`,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                color, fontSize: 10, fontWeight: 700,
-                              }}>
-                                {step.step}
-                              </div>
-                              <div style={{ flex: 1 }}>
-                                <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', flexWrap: 'wrap' }}>
-                                  <span style={{ color: '#F5F5F7', fontSize: 13 }}>{step.action}</span>
-                                  <span style={{ color: '#6E6E73', fontSize: 11 }}>{step.timeframe}</span>
-                                </div>
-                                <span style={{ color: '#6E6E73', fontSize: 11 }}>→ {step.output}</span>
-                              </div>
-                              <button
-                                onClick={() => addGapStepToWeek(gap.id, i, step.action)}
-                                disabled={isAdded}
-                                title="Add to this week"
-                                style={{
-                                  flexShrink: 0,
-                                  background: isAdded ? 'rgba(100, 240, 170,0.1)' : 'rgba(255,255,255,0.04)',
-                                  border: `1px solid ${isAdded ? 'rgba(100, 240, 170,0.3)' : 'rgba(255,255,255,0.1)'}`,
-                                  color: isAdded ? '#64f0aa' : '#6E6E73',
-                                  borderRadius: 5, padding: '3px 8px', fontSize: 10, fontWeight: 600,
-                                  cursor: isAdded ? 'default' : 'pointer',
-                                  transition: 'all 0.15s',
-                                }}
-                              >
-                                {isAdded ? '✓ Added' : '+ Week'}
-                              </button>
-                            </div>
-                          )
-                        })}
-                      </div>
-                      <div style={{ marginTop: 12, display: 'flex', gap: 6 }}>
-                        <button
-                          onClick={() => generateActionPlan(gap.id)}
-                          disabled={isGenerating}
-                          style={{
-                            background: 'none', border: `1px solid ${color}30`, color: '#6E6E73',
-                            padding: '4px 10px', borderRadius: 6, fontSize: 11, cursor: isGenerating ? 'not-allowed' : 'pointer',
-                          }}
-                        >
-                          {isGenerating ? '⏳ Regenerating...' : '↻ Regenerate'}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
+          <InsightCardList
+            accentStyle={PURPLE_ACCENT}
+            items={openGaps.map(gap => ({
+              id: gap.id,
+              tag: gapTag(gap.gapType),
+              node: (
+                <TrajectoryGapCard
+                  gap={gap}
+                  addedGapSteps={addedGapSteps}
+                  addingAllGap={addingAllGap}
+                  addedNextAction={addedNextAction}
+                  generatingActionPlan={generatingActionPlan}
+                  deletingGap={deletingGap}
+                  onGenerate={generateActionPlan}
+                  onAddStep={addGapStepToWeek}
+                  onAddAll={addAllGapStepsToWeek}
+                  onAddNext={addNextActionToWeek}
+                  onClose={closeGap}
+                  onArchive={archiveGap}
+                  onDelete={deleteGap}
+                />
+              ),
+            }))}
+          />
         )}
       </div>
 

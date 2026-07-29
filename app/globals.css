@@ -420,6 +420,66 @@ body {
   background: var(--accent-soft);
 }
 
+/* ─── Insight card (collapsible) + filter list ────────────────────────────────── */
+
+/* Body expand — modern height-auto animation (grid rows), so nothing is clipped */
+.insight-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.insight-body.open { grid-template-rows: 1fr; }
+.insight-body > .insight-body-inner { overflow: hidden; min-height: 0; }
+
+/* Filter show/hide — same grid-rows technique; padding-bottom is the row gap so
+   it collapses with the row (no leftover gap for hidden cards). */
+.insight-item {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+.insight-item.hidden { grid-template-rows: 0fr; opacity: 0; pointer-events: none; }
+.insight-item > .insight-item-inner { overflow: hidden; min-height: 0; padding-bottom: 10px; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* Instant toggle — no animated height, no filter transition */
+  .insight-body, .insight-item { transition: none; }
+}
+
+/* Two-column expanded body → single column on narrow screens */
+.insight-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .insight-cols { grid-template-columns: 1fr; } }
+
+/* Small uppercase label for the left/right columns */
+.insight-collabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+/* Filter pills (accent-aware, follows --accent on the surface) */
+.insight-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.insight-tab:hover { color: var(--text-primary); border-color: var(--text-muted); }
+.insight-tab.active { background: var(--accent-soft); border-color: var(--accent-border); color: var(--accent); }
+.insight-tab .count { opacity: 0.6; font-variant-numeric: tabular-nums; }
+
 /* ─── Keyframes ───────────────────────────────────────────────────────────────── */
 
 @keyframes fadeSlideUp {
