@@ -23,6 +23,9 @@ export interface PositionOverview {
   currency: string
   sector: string | null
   manualPricing: boolean
+  /** Ticker isn't confidently resolved to a market-data symbol (e.g. non-US
+   * listings the provider doesn't know) — its price can't be auto-fetched. */
+  needsMapping: boolean
   quantity: string
   avgCost: string
   currentPrice: string | null
@@ -83,6 +86,7 @@ export async function loadPortfolioOverview(): Promise<PortfolioOverview> {
       currency: assets.currency,
       sector: assets.sector,
       manualPricing: assets.manualPricing,
+      needsMapping: assets.needsMapping,
     })
     .from(positions)
     .innerJoin(assets, eq(positions.assetId, assets.id))
@@ -195,6 +199,7 @@ export async function loadPortfolioOverview(): Promise<PortfolioOverview> {
       currency: p.currency,
       sector: p.sector,
       manualPricing: p.manualPricing,
+      needsMapping: p.needsMapping,
       quantity: holding.quantity.toString(),
       avgCost: holding.avgCost.toFixed(4),
       currentPrice: price?.price ?? null,

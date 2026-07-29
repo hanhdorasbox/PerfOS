@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import InvestNav from '@/components/invest/InvestNav'
+import AutomationAlert from '@/components/invest/AutomationAlert'
 import './finance-os.css'
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function InvestLayout({ children }: { children: React.ReactNode }
         </span>
       </header>
       <InvestNav />
+      <AutomationAlert />
       {children}
     </div>
   )

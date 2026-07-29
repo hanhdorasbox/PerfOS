@@ -201,9 +201,21 @@ export default async function PortfolioPage() {
               {overview.positions.map((p) => (
                 <tr key={p.positionId}>
                   <td>
-                    <Link href={`/invest/portfolio/${p.positionId}`} className="fin-mono" style={{ color: 'var(--fin-text)', fontWeight: 600, textDecoration: 'none' }}>
-                      {p.ticker}
-                    </Link>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                      <Link href={`/invest/portfolio/${p.positionId}`} className="fin-mono" style={{ color: 'var(--fin-text)', fontWeight: 600, textDecoration: 'none' }}>
+                        {p.ticker}
+                      </Link>
+                      {p.needsMapping && !p.manualPricing && (
+                        <Link
+                          href="/invest/settings"
+                          className="fin-badge fin-badge-warn"
+                          style={{ textDecoration: 'none', fontSize: 10 }}
+                          title={`No market-data symbol for ${p.ticker} — price can't be fetched automatically. Pair or set manual pricing in Settings.`}
+                        >
+                          price unavailable
+                        </Link>
+                      )}
+                    </span>
                     <div className="fin-subtle" style={{ fontSize: 11 }}>{p.name}</div>
                   </td>
                   <td className="fin-num">{formatQuantity(p.quantity)}</td>
