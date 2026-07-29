@@ -13,6 +13,10 @@
       "schedule": "30 21 * * 1-5"
     },
     {
+      "path": "/api/cron/news",
+      "schedule": "0 22 * * 1-5"
+    },
+    {
       "path": "/api/cron/weekly",
       "schedule": "0 19 * * 5"
     },

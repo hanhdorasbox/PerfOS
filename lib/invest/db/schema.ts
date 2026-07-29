@@ -194,6 +194,37 @@ export const alertEvents = financeOs.table('alert_events', {
   notified: boolean('notified').notNull().default(false),
 })
 
+// ─── News monitoring ─────────────────────────────────────────────────────────
+
+// One row per news article seen for a tracked asset (holding or watchlist).
+// Doubles as the dedup ledger: an article is fetched, classified once, stored,
+// and never reconsidered — so the same story is never sent twice. `significant`
+// marks the LLM verdict; only significant rows get pushed to Telegram.
+export const newsEvents = financeOs.table(
+  'news_events',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    assetId: uuid('asset_id')
+      .notNull()
+      .references(() => assets.id, { onDelete: 'cascade' }),
+    ticker: text('ticker').notNull(),
+    // Finnhub article id (or a url hash fallback) — the per-asset dedup key
+    externalId: text('external_id').notNull(),
+    headline: text('headline').notNull(),
+    url: text('url'),
+    source: text('source'),
+    summary: text('summary'),
+    publishedAt: timestamp('published_at', { withTimezone: true }),
+    // ── LLM verdict ──
+    significant: boolean('significant').notNull().default(false),
+    impact: text('impact'), // pozitivní | negativní | nejasný
+    reason: text('reason'), // one-line, why it matters / moves the price
+    detectedAt: timestamp('detected_at', { withTimezone: true }).notNull().defaultNow(),
+    notified: boolean('notified').notNull().default(false),
+  },
+  (t) => [unique('news_events_asset_external_unique').on(t.assetId, t.externalId)],
+)
+
 // ─── FX, sync & cron bookkeeping ─────────────────────────────────────────────
 
 export const fxRates = financeOs.table(
@@ -255,6 +286,8 @@ export type AnalysisInput = typeof analysisInputs.$inferSelect
 export type WatchlistItem = typeof watchlistItems.$inferSelect
 export type AlertRule = typeof alertRules.$inferSelect
 export type AlertEvent = typeof alertEvents.$inferSelect
+export type NewsEvent = typeof newsEvents.$inferSelect
+export type NewNewsEvent = typeof newsEvents.$inferInsert
 export type FxRate = typeof fxRates.$inferSelect
 export type SyncRun = typeof syncRuns.$inferSelect
 export type CronRun = typeof cronRuns.$inferSelect
