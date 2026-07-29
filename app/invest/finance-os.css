@@ -17,6 +17,12 @@
   --fin-gold-bg: rgba(235, 182, 63, 0.09);
   --fin-gold-border: rgba(235, 182, 63, 0.3);
 
+  /* Point the shared accent-aware components (EmptyState) at gold on this surface */
+  --accent: var(--fin-gold);
+  --accent-soft: var(--fin-gold-bg);
+  --accent-border: var(--fin-gold-border);
+  --accent-glow: var(--fin-gold-glow);
+
   /* Glows — soft haloes matching the accent/semantic colours */
   --fin-gold-glow: rgba(235, 182, 63, 0.42);
   --fin-gain-glow: var(--mint-glow);

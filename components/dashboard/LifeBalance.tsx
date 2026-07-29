@@ -3,6 +3,9 @@
 // categorical colour per area assigned in fixed order (validated dataviz
 // palette), never cycled — a 9th area folds into "Other" upstream.
 
+import { Target } from 'lucide-react'
+import CategoryGroup from '@/components/ui/CategoryGroup'
+
 const AREA_COLORS = ['#1f85ff', '#00b778', '#c98500', '#008300', '#7f6fff', '#ff4e4e', '#fc2a76', '#ff4900']
 
 export interface LifeArea {
@@ -14,7 +17,9 @@ export interface LifeArea {
   count: number
 }
 
-export default function LifeBalance({ areas }: { areas: LifeArea[] }) {
+const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
+export default function LifeBalance({ areas, emptyCategories = [] }: { areas: LifeArea[]; emptyCategories?: string[] }) {
   if (areas.length === 0) return null
 
   return (
@@ -73,6 +78,22 @@ export default function LifeBalance({ areas }: { areas: LifeArea[] }) {
           )
         })}
       </div>
+
+      {emptyCategories.length > 0 && (
+        <div style={{ marginTop: 14 }}>
+          <CategoryGroup
+            emptyNoun="goals"
+            gridStyle={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}
+            items={emptyCategories.map((name) => ({
+              key: name,
+              label: titleCase(name),
+              isEmpty: true,
+              emptyIcon: <Target size={17} strokeWidth={1.75} />,
+              emptyDescription: `No goals in ${titleCase(name)} yet — a life area you're not investing in right now.`,
+            }))}
+          />
+        </div>
+      )}
     </div>
   )
 }

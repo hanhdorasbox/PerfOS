@@ -1,6 +1,9 @@
 'use client'
+import type { ReactNode } from 'react'
 import type { Idea } from '@prisma/client'
+import { Inbox, Compass, PauseCircle, ArrowRightCircle } from 'lucide-react'
 import IdeaCard from './IdeaCard'
+import EmptyState from '@/components/ui/EmptyState'
 
 const COLUMNS: { status: string; label: string; color: string }[] = [
   { status: 'inbox', label: 'Inbox', color: '#ffce53' },
@@ -8,6 +11,15 @@ const COLUMNS: { status: string; label: string; color: string }[] = [
   { status: 'hold', label: 'Hold', color: '#6E6E73' },
   { status: 'convert_to_goal', label: 'Convert / Archive', color: '#a085ff' },
 ]
+
+// Icon + short label per empty column — the dashed column border already reads
+// as "empty", so no title/description sentence and never the word "Empty".
+const EMPTY_COL: Record<string, { icon: ReactNode; label: string }> = {
+  inbox: { icon: <Inbox size={18} strokeWidth={1.75} />, label: 'Nothing captured' },
+  worth_exploring: { icon: <Compass size={18} strokeWidth={1.75} />, label: 'Nothing to explore' },
+  hold: { icon: <PauseCircle size={18} strokeWidth={1.75} />, label: 'Nothing on hold' },
+  convert_to_goal: { icon: <ArrowRightCircle size={18} strokeWidth={1.75} />, label: 'Nothing converted' },
+}
 
 interface Props {
   ideas: Idea[]
@@ -73,11 +85,12 @@ export default function IdeaBoard({ ideas }: Props) {
                 <IdeaCard key={idea.id} idea={idea} />
               ))}
               {colIdeas.length === 0 && (
-                <div style={{
-                  border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 12,
-                  padding: '20px 12px', textAlign: 'center',
-                }}>
-                  <p style={{ color: '#444', fontSize: 12 }}>Empty</p>
+                <div style={{ border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 12 }}>
+                  <EmptyState
+                    variant="column"
+                    icon={EMPTY_COL[col.status]?.icon}
+                    title={EMPTY_COL[col.status]?.label ?? 'Nothing here'}
+                  />
                 </div>
               )}
             </div>

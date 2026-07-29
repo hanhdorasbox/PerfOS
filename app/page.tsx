@@ -152,6 +152,11 @@ export default async function Dashboard() {
     ]
   }
 
+  // Fixed life-area taxonomy → which have no goals this quarter (shown collapsed)
+  const LIFE_CATEGORIES = ['career', 'fitness', 'health', 'finance', 'learning', 'personal', 'other']
+  const presentCats = new Set([...areaMap.keys()].map(k => k.toLowerCase()))
+  const emptyLifeCategories = LIFE_CATEGORIES.filter(c => !presentCats.has(c))
+
   // C2: skip goals with no data (false critical for brand-new QUANTITATIVE goals)
   // C4: skip paused goals
   // M6: include 'watch' as an early-warning tier
@@ -334,7 +339,7 @@ export default async function Dashboard() {
 
           {lifeAreas.length > 0 && (
             <div style={{ marginTop: 16 }}>
-              <LifeBalance areas={lifeAreas} />
+              <LifeBalance areas={lifeAreas} emptyCategories={emptyLifeCategories} />
             </div>
           )}
 

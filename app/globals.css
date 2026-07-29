@@ -70,6 +70,12 @@
   --warning:  var(--amber-text);
   --danger:   var(--red-text);
 
+  /* Accent surfaces — Performance OS is blue; the .finance-os scope overrides
+     these to gold, so accent-aware components (EmptyState) follow the surface. */
+  --accent-soft:   var(--blue-bg);
+  --accent-border: var(--blue-border);
+  --accent-glow:   var(--blue-glow);
+
   /* Kept for gradient references */
   --blue:    #61adff;
   --green:   #64f0aa;
@@ -340,6 +346,78 @@ body {
   text-transform: uppercase;
   color: var(--text-subtle);
   margin-bottom: 16px;
+}
+
+/* ─── Empty state ─────────────────────────────────────────────────────────────── */
+
+/* Icon container with a soft accent-tinted "breathing" glow. Accent follows the
+   surface (blue on Performance OS, gold inside .finance-os) via --accent-*. */
+.empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-md);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.empty-icon-breath { animation: emptyBreath 3.2s ease-in-out infinite; }
+@keyframes emptyBreath {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50%      { box-shadow: 0 0 22px -3px var(--accent-glow); }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Off entirely, not merely faster */
+  .empty-icon-breath { animation: none; }
+}
+
+/* Accent-tinted CTA that fills solid accent with dark text on hover */
+.empty-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--r-md);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.18s ease;
+}
+.empty-cta:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0B0B0F;
+  box-shadow: 0 0 22px -6px var(--accent-glow);
+}
+.empty-cta.compact { padding: 6px 12px; font-size: 12px; }
+
+/* Collapsed sibling-category summary line (CategoryGroup) */
+.empty-collapsed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  border-radius: var(--r-md);
+  background: var(--bg-inset);
+  border: 1px dashed var(--border-strong);
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.empty-collapsed:hover {
+  color: var(--text-secondary);
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
 }
 
 /* ─── Keyframes ───────────────────────────────────────────────────────────────── */
