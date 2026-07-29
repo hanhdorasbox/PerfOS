@@ -148,7 +148,15 @@ export async function runDailyCron(): Promise<DailyRunResult> {
       result.errors.push(`alerts: ${errorMessage(e)}`)
     }
 
-    const failures = [
+    // A single unpriceable ticker (e.g. P911 on Finnhub's free tier) must not
+    // turn the whole run red — the loop already priced everything else and the
+    // bad ticker is surfaced per-row in the UI via `needsMapping`. Only a real
+    // job-section failure, or a *total* pricing outage (nothing priced at all),
+    // marks the run as error.
+    const totalPriceOutage =
+      autoPriced.length > 0 && result.pricesFetched === 0 && result.pricesFailed.length > 0
+    const isError = result.errors.length > 0 || totalPriceOutage
+    const errorDetail = [
       ...result.errors,
       ...result.pricesFailed.map((f) => `${f.ticker}: ${f.error}`),
     ]
@@ -156,8 +164,10 @@ export async function runDailyCron(): Promise<DailyRunResult> {
       .update(cronRuns)
       .set({
         finishedAt: new Date(),
-        status: failures.length === 0 ? 'success' : 'error',
-        error: failures.length > 0 ? failures.join(' | ').slice(0, 2000) : null,
+        status: isError ? 'error' : 'success',
+        // Keep per-ticker price gaps out of the run error when the run itself
+        // succeeded — they belong on the row, not in the automation log.
+        error: isError && errorDetail.length > 0 ? errorDetail.join(' | ').slice(0, 2000) : null,
       })
       .where(eq(cronRuns.id, run.id))
 

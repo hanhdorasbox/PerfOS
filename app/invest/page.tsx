@@ -36,7 +36,7 @@ function StatTile({ label, value, cls }: { label: string; value: string; cls?: s
 
 function CronStatusCard({ runs }: { runs: CronRun[] }) {
   return (
-    <div className="fin-card">
+    <div className="fin-card" id="automation" style={{ scrollMarginTop: 16 }}>
       <div className="fin-label" style={{ marginBottom: 12 }}>
         Automation status
       </div>
@@ -198,6 +198,16 @@ export default async function InvestDashboardPage() {
                         <span className="fin-mono" style={{ fontWeight: 700 }}>{p.ticker}</span>
                       )}
                       <span className="fin-mono fin-subtle" style={{ fontSize: 11 }}>{formatPercent(weight)}</span>
+                      {p.needsMapping && !p.manualPricing && (
+                        <Link
+                          href="/invest/settings"
+                          className="fin-badge fin-badge-warn"
+                          style={{ textDecoration: 'none', fontSize: 10 }}
+                          title={`No market-data symbol for ${p.ticker} — price can't be fetched automatically.`}
+                        >
+                          price unavailable
+                        </Link>
+                      )}
                     </div>
                     {/* weight bar — magnitude, single gold hue */}
                     <div style={{ height: 4, borderRadius: 999, background: 'var(--bg-inset)', marginTop: 6, overflow: 'hidden' }}>

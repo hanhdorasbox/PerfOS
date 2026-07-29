@@ -24,6 +24,7 @@
     "@neondatabase/serverless": "^1.1.0",
     "@prisma/client": "^6.19.3",
     "@react-email/components": "^1.0.12",
+    "@react-email/render": "^2.1.0",
     "@vercel/blob": "^2.4.0",
     "decimal.js": "^10.6.0",
     "drizzle-orm": "^0.45.2",
