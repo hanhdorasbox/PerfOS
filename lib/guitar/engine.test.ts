@@ -1,0 +1,189 @@
+import { describe, it, expect } from 'vitest'
+import {
+  TUNINGS,
+  parseTab,
+  renderTab,
+  detectKey,
+  harmoniseSegment,
+  makeKey,
+  diatonicChords,
+  chordContains,
+  generateArrangements,
+  generateArrangement,
+  toMidi,
+  toMusicXml,
+  pitchAt,
+  choosePosition,
+  EXAMPLE_TAB,
+  EXAMPLE_ODE,
+} from './index'
+import type { ArrangeOptions } from './types'
+
+const std = TUNINGS.standard
+
+const opts = (over: Partial<ArrangeOptions> = {}): ArrangeOptions => ({
+  style: 'simple-fingerstyle',
+  difficulty: 2,
+  tuning: 'standard',
+  capo: 0,
+  tempo: 90,
+  beatsPerMeasure: 4,
+  strictness: 'exact',
+  ...over,
+})
+
+describe('fretboard', () => {
+  it('computes open string pitches (standard tuning)', () => {
+    expect(pitchAt(std, 0, 0, 0)).toBe(64) // high e = E4
+    expect(pitchAt(std, 0, 5, 0)).toBe(40) // low E = E2
+    expect(pitchAt(std, 0, 5, 3)).toBe(43) // G on low E string
+  })
+
+  it('applies a capo', () => {
+    expect(pitchAt(std, 2, 0, 0)).toBe(66) // capo 2 raises high e to F#4
+  })
+
+  it('chooses a reachable position', () => {
+    const pos = choosePosition(std, 0, 64, { handFret: 0, preferHighStrings: true })
+    expect(pos).not.toBeNull()
+    expect(pitchAt(std, 0, pos!.string, pos!.fret)).toBe(64)
+  })
+})
+
+describe('tab parser', () => {
+  it('parses the example melody into pitched events', () => {
+    const mel = parseTab(EXAMPLE_TAB, std, 0)
+    expect(mel.events.length).toBe(3)
+    // D string fret 7 = A3(57), G string 7 = D4(62), G string 9 = E4(64)
+    expect(mel.events.map((e) => e.pitch)).toEqual([57, 62, 64])
+    // starts should be strictly increasing
+    for (let i = 1; i < mel.events.length; i++) {
+      expect(mel.events[i].start).toBeGreaterThan(mel.events[i - 1].start)
+    }
+  })
+
+  it('round-trips through renderTab without throwing and keeps 6 lines', () => {
+    const mel = parseTab(EXAMPLE_ODE, std, 0)
+    const arr = generateArrangement(mel, opts())
+    const rendered = renderTab(arr.notes, arr.beatsPerMeasure)
+    expect(rendered.split('\n').length).toBe(6)
+    expect(rendered).toContain('|')
+  })
+})
+
+describe('theory', () => {
+  it('detects C major from a C major scale', () => {
+    const events = [0, 2, 4, 5, 7, 9, 11, 12].map((p, i) => ({
+      pitch: 60 + p,
+      start: i,
+      duration: 1,
+    }))
+    const key = detectKey(events)
+    expect(key.tonic).toBe(0)
+    expect(key.mode).toBe('major')
+  })
+
+  it('builds diatonic chords of C major', () => {
+    const chords = diatonicChords(makeKey(0, 'major'))
+    expect(chords[0].symbol).toBe('C')
+    expect(chords[1].symbol).toBe('Dm')
+    expect(chords[4].symbol).toBe('G')
+  })
+
+  it('harmonises a melody note with a chord that contains it', () => {
+    const key = makeKey(0, 'major')
+    const choices = harmoniseSegment([{ pitch: 64, start: 0, duration: 2 }], key) // E
+    expect(choices.length).toBeGreaterThan(0)
+    expect(chordContains(choices[0], 64)).toBe(true)
+  })
+})
+
+describe('arranger', () => {
+  it('preserves every melody pitch (strictness: exact)', () => {
+    const mel = parseTab(EXAMPLE_ODE, std, 0)
+    const arr = generateArrangement(mel, opts({ difficulty: 3 }))
+    const melodyPitches = arr.notes.filter((n) => n.voice === 'melody').map((n) => n.pitch).sort()
+    const originalPitches = [...mel.events.map((e) => e.pitch)].sort()
+    expect(melodyPitches).toEqual(originalPitches)
+  })
+
+  it('adds bass and harmony beyond the melody', () => {
+    const mel = parseTab(EXAMPLE_ODE, std, 0)
+    const arr = generateArrangement(mel, opts({ difficulty: 3 }))
+    expect(arr.notes.some((n) => n.voice === 'bass')).toBe(true)
+    expect(arr.notes.length).toBeGreaterThan(mel.events.length)
+  })
+
+  it('every generated note is physically on the fretboard', () => {
+    const mel = parseTab(EXAMPLE_ODE, std, 0)
+    const arr = generateArrangement(mel, opts({ difficulty: 4, style: 'chord-melody' }))
+    for (const n of arr.notes) {
+      if (n.voice === 'percussion') continue
+      expect(n.fret).toBeGreaterThanOrEqual(0)
+      expect(n.fret).toBeLessThanOrEqual(15)
+      expect(pitchAt(arr.tuning, arr.capo, n.string, n.fret)).toBe(n.pitch)
+    }
+  })
+
+  it('never stacks two notes on the same string at the same instant (multi-measure)', () => {
+    // A three-bar melody so measures after the first are exercised too.
+    const longTab = `e|--0--2--3--5--3--2--0--2--3--5--7--5--3--2--0-------|
+B|---------------------------------------------------|
+G|---------------------------------------------------|
+D|---------------------------------------------------|
+A|---------------------------------------------------|
+E|---------------------------------------------------|`
+    const mel = parseTab(longTab, std, 0)
+    for (const style of ['simple-fingerstyle', 'chord-melody', 'latin-acoustic', 'travis'] as const) {
+      for (let d = 1; d <= 5; d++) {
+        const arr = generateArrangement(mel, opts({ style, difficulty: d }))
+        const seen = new Map<string, number>()
+        for (const n of arr.notes) {
+          if (n.voice === 'percussion') continue
+          const t = Math.round(n.start * 8)
+          const k = `${n.string}@${t}`
+          seen.set(k, (seen.get(k) ?? 0) + 1)
+          expect(seen.get(k), `collision ${k} in ${style} L${d}`).toBeLessThanOrEqual(1)
+          expect(pitchAt(arr.tuning, arr.capo, n.string, n.fret)).toBe(n.pitch)
+        }
+        expect(arr.measures.length).toBeGreaterThanOrEqual(2)
+      }
+    }
+  })
+
+  it('generates five distinct variants', () => {
+    const mel = parseTab(EXAMPLE_ODE, std, 0)
+    const { variants, key } = generateArrangements(mel, opts())
+    expect(variants.length).toBe(5)
+    expect(key.name).toBeTruthy()
+    const labels = variants.map((v) => v.label)
+    expect(new Set(labels).size).toBe(5)
+  })
+
+  it('higher difficulty adds more notes than lower', () => {
+    const mel = parseTab(EXAMPLE_ODE, std, 0)
+    const easy = generateArrangement(mel, opts({ difficulty: 1 }))
+    const hard = generateArrangement(mel, opts({ difficulty: 4, style: 'chord-melody' }))
+    expect(hard.notes.length).toBeGreaterThanOrEqual(easy.notes.length)
+  })
+})
+
+describe('exporters', () => {
+  it('produces a valid-looking MIDI header', () => {
+    const mel = parseTab(EXAMPLE_ODE, std, 0)
+    const arr = generateArrangement(mel, opts())
+    const midi = toMidi(arr)
+    // "MThd"
+    expect([midi[0], midi[1], midi[2], midi[3]]).toEqual([0x4d, 0x54, 0x68, 0x64])
+    expect(midi.length).toBeGreaterThan(30)
+  })
+
+  it('produces MusicXML with a part and measures', () => {
+    const mel = parseTab(EXAMPLE_ODE, std, 0)
+    const arr = generateArrangement(mel, opts())
+    const xml = toMusicXml(arr)
+    expect(xml).toContain('<score-partwise')
+    expect(xml).toContain('<measure number="1">')
+    expect(xml).toContain('Acoustic Guitar')
+  })
+})
