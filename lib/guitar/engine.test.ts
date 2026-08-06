@@ -17,6 +17,10 @@ import {
   yinPitch,
   transcribe,
   melodyToTab,
+  nameToMidi,
+  songToMelody,
+  findSongs,
+  SONG_LIBRARY,
   EXAMPLE_TAB,
   EXAMPLE_ODE,
 } from './index'
@@ -168,6 +172,63 @@ E|---------------------------------------------------|`
     const easy = generateArrangement(mel, opts({ difficulty: 1 }))
     const hard = generateArrangement(mel, opts({ difficulty: 4, style: 'chord-melody' }))
     expect(hard.notes.length).toBeGreaterThanOrEqual(easy.notes.length)
+  })
+})
+
+describe('multi-system tab parsing', () => {
+  it('parses stacked tab blocks in time order (a whole song, not just the last block)', () => {
+    const twoSystems = `e|--0--2--3--|
+B|-----------|
+G|-----------|
+D|-----------|
+A|-----------|
+E|-----------|
+
+e|--5--3--2--0--|
+B|--------------|
+G|--------------|
+D|--------------|
+A|--------------|
+E|--------------|`
+    const mel = parseTab(twoSystems, std, 0)
+    // 3 notes in the first block + 4 in the second = 7, and the second block's
+    // notes must start after the first block's (offset by a whole measure).
+    expect(mel.events.length).toBe(7)
+    const firstBlockEnd = Math.max(...mel.events.slice(0, 3).map((e) => e.start))
+    const secondBlockStart = Math.min(...mel.events.slice(3).map((e) => e.start))
+    expect(secondBlockStart).toBeGreaterThan(firstBlockEnd)
+  })
+})
+
+describe('song library', () => {
+  it('parses scientific pitch names to MIDI', () => {
+    expect(nameToMidi('C4')).toBe(60)
+    expect(nameToMidi('A4')).toBe(69)
+    expect(nameToMidi('F#3')).toBe(54)
+    expect(nameToMidi('Bb4')).toBe(70)
+    expect(nameToMidi('nonsense')).toBeNull()
+  })
+
+  it('converts every library song into a non-empty, arrangeable melody', () => {
+    expect(SONG_LIBRARY.length).toBeGreaterThan(8)
+    for (const song of SONG_LIBRARY) {
+      const melody = songToMelody(song)
+      expect(melody.events.length, song.title).toBeGreaterThan(4)
+      // starts strictly non-decreasing
+      for (let i = 1; i < melody.events.length; i++) {
+        expect(melody.events[i].start).toBeGreaterThanOrEqual(melody.events[i - 1].start)
+      }
+      // and it produces a valid arrangement
+      const arr = generateArrangement(melody, opts({ beatsPerMeasure: song.beatsPerMeasure, tempo: song.tempo }))
+      expect(arr.notes.length).toBeGreaterThan(melody.events.length)
+    }
+  })
+
+  it('finds songs by name (case-insensitive substring)', () => {
+    expect(findSongs('twinkle').some((s) => s.id === 'twinkle')).toBe(true)
+    expect(findSongs('JINGLE').some((s) => s.id === 'jingle-bells')).toBe(true)
+    expect(findSongs('zzznope').length).toBe(0)
+    expect(findSongs('').length).toBe(SONG_LIBRARY.length)
   })
 })
 

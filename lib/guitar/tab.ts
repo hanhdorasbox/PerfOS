@@ -20,14 +20,33 @@ interface RawNote {
   fret: number
 }
 
-/** Pull the six tab lines out of arbitrary pasted text. */
-function extractStringLines(text: string): string[] {
+const isTabLine = (l: string): boolean =>
+  /[-]/.test(l) && /^\s*[a-gA-G#]?\s*\|?[-\d|hpb/\\~*x().\s]+$/.test(l)
+
+/**
+ * Split pasted text into "systems" — each a group of up to 6 stacked string
+ * lines. A full song is usually written as several such blocks under each other;
+ * we parse them all and lay them end to end, so nothing gets dropped.
+ */
+function extractSystems(text: string): string[][] {
   const lines = text.replace(/\r/g, '').split('\n')
-  // A tab line looks like it contains dashes and/or a leading "X|" label.
-  const tabLike = lines.filter((l) => /[-]/.test(l) && /^\s*[a-gA-G#]?\s*\|?[-\d|hpb/\\~*x().\s]+$/.test(l))
-  // Prefer the last run of up to 6 consecutive tab-like lines.
-  if (tabLike.length >= 1) return tabLike.slice(-6)
-  return []
+  const runs: string[][] = []
+  let cur: string[] = []
+  for (const l of lines) {
+    if (isTabLine(l)) {
+      cur.push(l)
+    } else if (cur.length) {
+      runs.push(cur)
+      cur = []
+    }
+  }
+  if (cur.length) runs.push(cur)
+  // A run should be the 6 strings; if a block runs long, chunk it by 6.
+  const systems: string[][] = []
+  for (const run of runs) {
+    for (let i = 0; i < run.length; i += 6) systems.push(run.slice(i, i + 6))
+  }
+  return systems.filter((s) => s.length > 0)
 }
 
 /** Strip the "e|" style label so remaining content is column-aligned across strings. */
@@ -52,13 +71,32 @@ export function parseTab(
   const baseBeats = opts.baseBeats ?? 0.5
   const beatsPerMeasure = opts.beatsPerMeasure ?? 4
 
-  const rows = extractStringLines(text)
-  if (rows.length === 0) return { events: [], beatsPerMeasure }
+  const systems = extractSystems(text)
+  if (systems.length === 0) return { events: [], beatsPerMeasure }
 
-  // Top-most tab line is the highest string (index 0). If fewer than 6 rows are
-  // present, align them to the top strings.
-  const content = rows.map((r) => stripLabel(r).replace(/\|/g, '-'))
+  // Parse each system, then lay them end to end, snapping each to a bar line so
+  // the measures stay aligned across the whole song.
+  const allEvents: MelodyEvent[] = []
+  let offset = 0
+  for (const sys of systems) {
+    const content = sys.map((r) => stripLabel(r).replace(/\|/g, '-'))
+    const { events, totalBeats } = parseSystem(content, tuning, capo, baseBeats, beatsPerMeasure)
+    for (const e of events) allEvents.push({ ...e, start: e.start + offset })
+    offset += totalBeats
+  }
 
+  allEvents.sort((a, b) => a.start - b.start || b.pitch - a.pitch)
+  return { events: allEvents, beatsPerMeasure }
+}
+
+/** Parse one system (up to 6 already-label-stripped lines) into relative events. */
+function parseSystem(
+  content: string[],
+  tuning: Tuning,
+  capo: number,
+  baseBeats: number,
+  beatsPerMeasure: number,
+): { events: MelodyEvent[]; totalBeats: number } {
   const raw: RawNote[] = []
   content.forEach((line, stringIdx) => {
     let i = 0
@@ -67,16 +105,14 @@ export function parseTab(
       if (ch >= '0' && ch <= '9') {
         let j = i
         while (j < line.length && line[j] >= '0' && line[j] <= '9') j++
-        const fret = parseInt(line.slice(i, j), 10)
-        raw.push({ string: stringIdx, col: i, fret })
+        raw.push({ string: stringIdx, col: i, fret: parseInt(line.slice(i, j), 10) })
         i = j
       } else {
         i++
       }
     }
   })
-
-  if (raw.length === 0) return { events: [], beatsPerMeasure }
+  if (raw.length === 0) return { events: [], totalBeats: 0 }
 
   // Determine the timing grid from horizontal spacing between note columns.
   const cols = Array.from(new Set(raw.map((r) => r.col))).sort((a, b) => a - b)
@@ -87,7 +123,6 @@ export function parseTab(
   const firstCol = cols[0]
   const colToStep = (c: number) => Math.round((c - firstCol) / minGap)
 
-  // Group notes by column (simultaneous notes = a chord/dyad).
   const byCol = new Map<number, RawNote[]>()
   for (const r of raw) {
     if (!byCol.has(r.col)) byCol.set(r.col, [])
@@ -96,18 +131,21 @@ export function parseTab(
 
   const steps = cols.map(colToStep)
   const events: MelodyEvent[] = []
+  let maxEnd = 0
   cols.forEach((c, idx) => {
     const step = steps[idx]
     const nextStep = idx + 1 < steps.length ? steps[idx + 1] : step + 1
     const start = step * baseBeats
     const duration = Math.max(baseBeats, (nextStep - step) * baseBeats)
+    maxEnd = Math.max(maxEnd, start + duration)
     for (const r of byCol.get(c)!) {
       events.push({ pitch: pitchAt(tuning, capo, r.string, r.fret), start, duration })
     }
   })
 
-  events.sort((a, b) => a.start - b.start || b.pitch - a.pitch)
-  return { events, beatsPerMeasure }
+  // Round the system length up to a whole measure so the next system starts on a bar.
+  const totalBeats = Math.max(beatsPerMeasure, Math.ceil(maxEnd / beatsPerMeasure - 1e-6) * beatsPerMeasure)
+  return { events, totalBeats }
 }
 
 // ── Rendering ─────────────────────────────────────────────────────────────────

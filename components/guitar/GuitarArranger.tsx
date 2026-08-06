@@ -37,6 +37,7 @@ import TabView from './TabView'
 import Fretboard, { VOICE_COLORS } from './Fretboard'
 import AudioImport from './AudioImport'
 import YouTubeRef from './YouTubeRef'
+import SongPicker from './SongPicker'
 
 const STYLES: { id: ArrangementStyle; label: string }[] = [
   { id: 'simple-fingerstyle', label: 'Simple Fingerstyle' },
@@ -51,7 +52,7 @@ const VOICES: Voice[] = ['melody', 'bass', 'harmony', 'percussion']
 
 export default function GuitarArranger() {
   const [tab, setTab] = useState(EXAMPLE_ODE)
-  const [inputMode, setInputMode] = useState<'tab' | 'audio' | 'youtube'>('tab')
+  const [inputMode, setInputMode] = useState<'tab' | 'library' | 'audio' | 'youtube'>('tab')
   const [baseBeats, setBaseBeats] = useState(0.5) // eighth notes
   const [opts, setOpts] = useState<ArrangeOptions>({
     style: 'simple-fingerstyle',
@@ -103,11 +104,12 @@ export default function GuitarArranger() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [speed, metronome, countIn, volume, muted, solo, loopOn, loopStart, loopEnd, arrangement])
 
-  function generate(next: Partial<ArrangeOptions> = {}) {
+  function generate(next: Partial<ArrangeOptions> = {}, tabOverride?: string) {
     const merged = { ...opts, ...next }
     setOpts(merged)
+    const source = tabOverride ?? tab
     try {
-      const melody = parseTab(tab, TUNINGS[merged.tuning], merged.capo, {
+      const melody = parseTab(source, TUNINGS[merged.tuning], merged.capo, {
         baseBeats,
         beatsPerMeasure: merged.beatsPerMeasure,
       })
@@ -271,10 +273,25 @@ export default function GuitarArranger() {
 
         {/* Input mode */}
         <div style={{ display: 'flex', gap: 6, margin: '10px 0 14px', flexWrap: 'wrap' }}>
-          {([['tab', '⌨ Type TAB'], ['audio', '🎙 From audio'], ['youtube', '▶ YouTube reference']] as const).map(([m, label]) => (
+          {([['tab', '⌨ Type TAB'], ['library', '🎵 By name'], ['audio', '🎙 From audio'], ['youtube', '▶ YouTube reference']] as const).map(([m, label]) => (
             <button key={m} onClick={() => setInputMode(m)} style={miniBtn(inputMode === m)}>{label}</button>
           ))}
         </div>
+
+        {inputMode === 'library' && (
+          <div style={{ marginBottom: 14, padding: 12, borderRadius: 10, border: '1px solid var(--border, rgba(255,255,255,0.08))', background: 'rgba(255,255,255,0.015)' }}>
+            <SongPicker
+              tuning={opts.tuning}
+              capo={opts.capo}
+              onPick={({ tab: t, tempo, beatsPerMeasure }) => {
+                setTab(t)
+                setInputMode('tab')
+                // Load the song's tempo/metre and generate straight away.
+                generate({ tempo, beatsPerMeasure }, t)
+              }}
+            />
+          </div>
+        )}
 
         {inputMode === 'audio' && (
           <div style={{ marginBottom: 14, padding: 12, borderRadius: 10, border: '1px solid var(--border, rgba(255,255,255,0.08))', background: 'rgba(255,255,255,0.015)' }}>
