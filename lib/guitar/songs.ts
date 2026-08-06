@@ -33,11 +33,14 @@ export function nameToMidi(name: string): number | null {
   return (octave + 1) * 12 + step + alter
 }
 
-/** Convert a library song into a rhythmic melody the arranger can use. */
-export function songToMelody(song: Song): Melody {
+/**
+ * Parse the note DSL ("C4:1 F#3:0.5 R:1 …") into a rhythmic melody. Shared by
+ * the built-in library and the image/AI transcription endpoint.
+ */
+export function notesStringToMelody(notes: string, beatsPerMeasure: number): Melody {
   const events: MelodyEvent[] = []
   let start = 0
-  for (const tokenRaw of song.notes.trim().split(/\s+/)) {
+  for (const tokenRaw of notes.trim().split(/\s+/)) {
     const token = tokenRaw.replace(/\|/g, '')
     if (!token) continue
     const [pitchPart, durPart] = token.split(':')
@@ -51,7 +54,12 @@ export function songToMelody(song: Song): Melody {
     if (midi != null) events.push({ pitch: midi, start, duration })
     start += duration
   }
-  return { events, beatsPerMeasure: song.beatsPerMeasure }
+  return { events, beatsPerMeasure }
+}
+
+/** Convert a library song into a rhythmic melody the arranger can use. */
+export function songToMelody(song: Song): Melody {
+  return notesStringToMelody(song.notes, song.beatsPerMeasure)
 }
 
 // Melodies transcribed to their most recognisable phrases. Pitch-accurate;
