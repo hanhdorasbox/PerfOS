@@ -14,6 +14,9 @@ import {
   toMusicXml,
   pitchAt,
   choosePosition,
+  yinPitch,
+  transcribe,
+  melodyToTab,
   EXAMPLE_TAB,
   EXAMPLE_ODE,
 } from './index'
@@ -165,6 +168,45 @@ E|---------------------------------------------------|`
     const easy = generateArrangement(mel, opts({ difficulty: 1 }))
     const hard = generateArrangement(mel, opts({ difficulty: 4, style: 'chord-melody' }))
     expect(hard.notes.length).toBeGreaterThanOrEqual(easy.notes.length)
+  })
+})
+
+describe('pitch detection & transcription', () => {
+  const SR = 44100
+  function sine(freq: number, seconds: number, sr = SR): Float32Array {
+    const n = Math.floor(seconds * sr)
+    const out = new Float32Array(n)
+    for (let i = 0; i < n; i++) out[i] = Math.sin((2 * Math.PI * freq * i) / sr) * 0.8
+    return out
+  }
+
+  it('YIN detects the pitch of a pure tone within a few cents', () => {
+    const frame = sine(220, 0.05).subarray(0, 2048)
+    const { f0, confidence } = yinPitch(frame, SR)
+    expect(confidence).toBeGreaterThan(0.8)
+    expect(Math.abs(f0 - 220)).toBeLessThan(3) // < ~25 cents
+  })
+
+  it('YIN reports unvoiced on silence', () => {
+    const { f0 } = yinPitch(new Float32Array(2048), SR)
+    expect(f0).toBe(0)
+  })
+
+  it('transcribes a two-note tone sequence into two melody events', () => {
+    // A4 (440) then C#5 (554) — a major third, half a second each.
+    const a = sine(440, 0.5)
+    const b = sine(554.37, 0.5)
+    const buf = new Float32Array(a.length + b.length)
+    buf.set(a, 0)
+    buf.set(b, a.length)
+    const melody = transcribe(buf, SR, { tempo: 120 })
+    expect(melody.events.length).toBeGreaterThanOrEqual(2)
+    const pitches = melody.events.map((e) => e.pitch)
+    expect(pitches).toContain(69) // A4
+    expect(pitches).toContain(73) // C#5
+    // And it round-trips into a renderable tab.
+    const tab = melodyToTab(melody, std, 0)
+    expect(tab.split('\n').length).toBe(6)
   })
 })
 

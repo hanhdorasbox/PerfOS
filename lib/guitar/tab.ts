@@ -10,7 +10,7 @@
 // out on a fixed 16th-note grid with bar lines.
 
 import type { Melody, MelodyEvent, TabNote, Tuning } from './types'
-import { pitchAt } from './fretboard'
+import { pitchAt, choosePosition } from './fretboard'
 
 const STRING_LABELS = ['e', 'B', 'G', 'D', 'A', 'E'] // index 0 = highest
 
@@ -114,6 +114,24 @@ export function parseTab(
 
 const SUBDIV = 4 // 16th-note grid
 const CELL = 2 // characters per grid cell (fits a 2-digit fret)
+
+/** Lay a bare melody onto the fretboard (high strings) and render it as a tab. */
+export function melodyToTab(melody: Melody, tuning: Tuning, capo: number): string {
+  let handFret = 0
+  const notes: TabNote[] = []
+  for (const e of melody.events) {
+    const pos = choosePosition(tuning, capo, e.pitch, {
+      handFret,
+      preferHighStrings: true,
+      maxString: 3,
+      maxFret: 12,
+    })
+    if (!pos) continue
+    if (pos.fret > 0) handFret = pos.fret
+    notes.push({ pitch: e.pitch, string: pos.string, fret: pos.fret, start: e.start, duration: e.duration, voice: 'melody' })
+  }
+  return renderTab(notes, melody.beatsPerMeasure)
+}
 
 /** Render structured notes to a clean copy-pasteable six-string tab. */
 export function renderTab(
