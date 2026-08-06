@@ -1,10 +1,15 @@
 // ─── Acoustic guitar synthesis (Web Audio) ────────────────────────────────────
 //
 // A self-contained Karplus-Strong plucked-string synthesiser — no external
-// samples or soundfonts, so it works offline and inside a strict CSP. Each note
-// excites a short noise burst into a tuned feedback delay line, which naturally
-// produces the warm, resonant decay of a steel-string acoustic. A gentle body
-// resonance filter and a small room reverb add acoustic realism.
+// samples or soundfonts, so it works offline and inside a strict CSP.
+//
+// The string is synthesised *in JavaScript* into an AudioBuffer and played back
+// with an AudioBufferSourceNode. This is deliberate: Web Audio's DelayNode has a
+// one-render-quantum (128-sample) minimum delay when it sits inside a feedback
+// loop, so a "live" KS delay line mistunes every note above ~344 Hz (most of the
+// melody). Generating the samples ourselves gives correct pitch across the whole
+// guitar range. A gentle body-resonance filter, a soft limiter and a small room
+// reverb add acoustic realism.
 //
 // Everything is browser-only; guard construction behind `typeof window`.
 
@@ -36,6 +41,9 @@ export class AcousticGuitar {
   private reverb: ConvolverNode
   private reverbGain: GainNode
   private body: BiquadFilterNode
+  private limiter: DynamicsCompressorNode
+  // Cache one synthesised string per (pitch, voice) so busy passages stay cheap.
+  private bufferCache = new Map<string, AudioBuffer>()
 
   constructor() {
     const Ctor: typeof AudioContext =
@@ -53,16 +61,80 @@ export class AcousticGuitar {
     this.body.Q.value = 0.7
     this.body.gain.value = 3
 
+    // Soft limiter so dense chords + reverb never clip into harsh distortion.
+    this.limiter = this.ctx.createDynamicsCompressor()
+    this.limiter.threshold.value = -6
+    this.limiter.knee.value = 6
+    this.limiter.ratio.value = 12
+    this.limiter.attack.value = 0.003
+    this.limiter.release.value = 0.12
+
     this.reverb = this.ctx.createConvolver()
     this.reverb.buffer = makeImpulse(this.ctx)
     this.reverbGain = this.ctx.createGain()
-    this.reverbGain.gain.value = 0.18
+    this.reverbGain.gain.value = 0.16
 
     this.body.connect(this.master)
-    this.master.connect(this.ctx.destination)
+    this.master.connect(this.limiter)
     this.master.connect(this.reverb)
     this.reverb.connect(this.reverbGain)
-    this.reverbGain.connect(this.ctx.destination)
+    this.reverbGain.connect(this.limiter)
+    this.limiter.connect(this.ctx.destination)
+  }
+
+  /**
+   * Synthesise one plucked-string tone with the Karplus-Strong algorithm and
+   * cache it. `damp` (<1) sets how fast the tone decays; `tone` low-passes the
+   * excitation for a warmer/darker attack.
+   */
+  private stringBuffer(freq: number, voice: SynthVoice): AudioBuffer {
+    const key = `${Math.round(freq * 10)}:${voice}`
+    const cached = this.bufferCache.get(key)
+    if (cached) return cached
+
+    const sr = this.ctx.sampleRate
+    const N = Math.max(2, Math.round(sr / freq)) // delay-line length = one period
+    // Longer, warmer sustain for bass; brighter and shorter for the melody.
+    const decay = voice === 'bass' ? 0.9965 : voice === 'harmony' ? 0.994 : 0.9955
+    const seconds = voice === 'bass' ? 3.4 : 2.6
+    const total = Math.ceil(seconds * sr)
+    const buffer = this.ctx.createBuffer(1, total, sr)
+    const out = buffer.getChannelData(0)
+
+    // Excitation: white noise, lightly low-passed so the attack isn't fizzy.
+    const y = new Float32Array(N)
+    let prev = 0
+    for (let i = 0; i < N; i++) {
+      const white = Math.random() * 2 - 1
+      prev = 0.5 * white + 0.5 * prev
+      y[i] = prev
+    }
+
+    // Karplus-Strong: output the delay line, then write back the averaged
+    // (low-passed) and slightly decayed value — higher partials die first.
+    let ptr = 0
+    for (let n = 0; n < total; n++) {
+      const cur = y[ptr]
+      out[n] = cur
+      const next = y[(ptr + 1) % N]
+      y[ptr] = decay * 0.5 * (cur + next)
+      ptr = (ptr + 1) % N
+    }
+
+    // Normalise so every pitch has a consistent level, then fade the tail.
+    let peak = 0
+    for (let n = 0; n < total; n++) peak = Math.max(peak, Math.abs(out[n]))
+    const norm = peak > 0 ? 0.85 / peak : 1
+    const fade = Math.min(total, Math.floor(0.02 * sr))
+    for (let n = 0; n < total; n++) {
+      let g = norm
+      if (n < 64) g *= n / 64 // tiny attack ramp, no click
+      if (n > total - fade) g *= (total - n) / fade
+      out[n] *= g
+    }
+
+    this.bufferCache.set(key, buffer)
+    return buffer
   }
 
   get context(): AudioContext {
@@ -87,75 +159,40 @@ export class AcousticGuitar {
   }
 
   /**
-   * Pluck a string. Karplus-Strong: a noise burst enters a delay line tuned to
-   * the pitch period, fed back through a damping low-pass so higher partials die
-   * away first — exactly how a real string decays.
+   * Pluck a string: play the pre-synthesised Karplus-Strong tone for this pitch,
+   * shaped by an attack + note-off release envelope. Correct pitch at every
+   * frequency (no feedback-delay minimum), and cheap because the buffer is cached.
    */
   pluck(midi: number, at: number, duration: number, gain = 0.8, voice: SynthVoice = 'melody'): void {
     const ctx = this.ctx
     const t = Math.max(at, ctx.currentTime)
     const freq = midiToFreq(midi)
 
-    // Excitation: a short filtered noise burst = the pick attack.
-    const burstLen = 0.02
-    const burst = ctx.createBufferSource()
-    const buf = ctx.createBuffer(1, Math.ceil(burstLen * ctx.sampleRate), ctx.sampleRate)
-    const d = buf.getChannelData(0)
-    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1
-    burst.buffer = buf
+    const src = ctx.createBufferSource()
+    src.buffer = this.stringBuffer(freq, voice)
 
-    const burstGain = ctx.createGain()
-    burstGain.gain.value = gain
+    const g = ctx.createGain()
+    const peak = Math.max(0.05, Math.min(1, gain))
+    // Let the note ring, then release gently at its notated end.
+    const rel = voice === 'bass' ? 0.28 : 0.18
+    g.gain.setValueAtTime(peak, t)
+    g.gain.setValueAtTime(peak, t + duration)
+    g.gain.exponentialRampToValueAtTime(0.0008, t + duration + rel)
 
-    // Delay line tuned to the pitch period → the string.
-    const delay = ctx.createDelay(0.05)
-    delay.delayTime.value = 1 / freq
+    src.connect(g)
+    g.connect(this.body)
 
-    const feedback = ctx.createGain()
-    // Longer sustain for bass, brighter/shorter for melody.
-    const decayFactor = voice === 'bass' ? 0.99 : voice === 'harmony' ? 0.982 : 0.986
-    feedback.gain.value = decayFactor
-
-    const damp = ctx.createBiquadFilter()
-    damp.type = 'lowpass'
-    damp.frequency.value = voice === 'bass' ? 2600 : 4200
-    damp.Q.value = 0.2
-
-    // KS loop: delay → damping → feedback → back into delay.
-    delay.connect(damp)
-    damp.connect(feedback)
-    feedback.connect(delay)
-
-    burst.connect(burstGain)
-    burstGain.connect(delay)
-
-    // Output envelope so notes release cleanly at their duration.
-    const out = ctx.createGain()
-    out.gain.setValueAtTime(1, t)
-    const rel = Math.min(0.35, Math.max(0.12, duration))
-    out.gain.setValueAtTime(1, t + duration * 0.6)
-    out.gain.exponentialRampToValueAtTime(0.0008, t + duration * 0.6 + rel)
-
-    delay.connect(out)
-    out.connect(this.body)
-
-    burst.start(t)
-    burst.stop(t + burstLen)
-    // Stop the ringing eventually so nodes get GC'd.
-    const stopAt = t + duration * 0.6 + rel + 0.1
-    feedback.gain.setValueAtTime(decayFactor, t)
-    feedback.gain.setTargetAtTime(0, t + duration * 0.6, 0.08)
-    setTimeout(() => {
+    src.start(t)
+    const stopAt = t + duration + rel + 0.05
+    src.stop(stopAt)
+    src.onended = () => {
       try {
-        out.disconnect()
-        delay.disconnect()
-        damp.disconnect()
-        feedback.disconnect()
-        burstGain.disconnect()
+        src.disconnect()
+        g.disconnect()
       } catch {
         /* already gone */
       }
-    }, (stopAt - ctx.currentTime + 0.2) * 1000)
+    }
   }
 
   /** Percussive body tap / muted slap. */
