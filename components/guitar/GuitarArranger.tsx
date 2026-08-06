@@ -35,6 +35,8 @@ import type {
 import { useGuitarPlayer } from './useGuitarPlayer'
 import TabView from './TabView'
 import Fretboard, { VOICE_COLORS } from './Fretboard'
+import AudioImport from './AudioImport'
+import YouTubeRef from './YouTubeRef'
 
 const STYLES: { id: ArrangementStyle; label: string }[] = [
   { id: 'simple-fingerstyle', label: 'Simple Fingerstyle' },
@@ -49,6 +51,7 @@ const VOICES: Voice[] = ['melody', 'bass', 'harmony', 'percussion']
 
 export default function GuitarArranger() {
   const [tab, setTab] = useState(EXAMPLE_ODE)
+  const [inputMode, setInputMode] = useState<'tab' | 'audio' | 'youtube'>('tab')
   const [baseBeats, setBaseBeats] = useState(0.5) // eighth notes
   const [opts, setOpts] = useState<ArrangeOptions>({
     style: 'simple-fingerstyle',
@@ -264,7 +267,33 @@ export default function GuitarArranger() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* 1 — INPUT */}
       <Card>
-        <SectionTitle n="1" title="Your melody" sub="Paste a simple six-line TAB — mostly single notes. The engine keeps it and builds around it." />
+        <SectionTitle n="1" title="Your melody" sub="Type a TAB, transcribe from audio, or pull up a YouTube reference. The engine keeps your melody and builds around it." />
+
+        {/* Input mode */}
+        <div style={{ display: 'flex', gap: 6, margin: '10px 0 14px', flexWrap: 'wrap' }}>
+          {([['tab', '⌨ Type TAB'], ['audio', '🎙 From audio'], ['youtube', '▶ YouTube reference']] as const).map(([m, label]) => (
+            <button key={m} onClick={() => setInputMode(m)} style={miniBtn(inputMode === m)}>{label}</button>
+          ))}
+        </div>
+
+        {inputMode === 'audio' && (
+          <div style={{ marginBottom: 14, padding: 12, borderRadius: 10, border: '1px solid var(--border, rgba(255,255,255,0.08))', background: 'rgba(255,255,255,0.015)' }}>
+            <AudioImport
+              tempo={opts.tempo}
+              tuning={opts.tuning}
+              capo={opts.capo}
+              beatsPerMeasure={opts.beatsPerMeasure}
+              onMelody={(t) => { setTab(t); setInputMode('tab') }}
+            />
+          </div>
+        )}
+
+        {inputMode === 'youtube' && (
+          <div style={{ marginBottom: 14 }}>
+            <YouTubeRef />
+          </div>
+        )}
+
         <textarea
           value={tab}
           onChange={(e) => setTab(e.target.value)}

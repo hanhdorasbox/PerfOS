@@ -5,6 +5,7 @@ export * from './fretboard'
 export * from './tab'
 export * from './arranger'
 export * from './export'
+export * from './pitch'
 
 // A ready-to-use example so the UI (and demos) always have something to show.
 export const EXAMPLE_TAB = `e|----------------------|
